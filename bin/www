@@ -88,3 +88,9 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+
+
+// #Add# main logic
+var www = require ('../lib/www');
+www.main(app, server);

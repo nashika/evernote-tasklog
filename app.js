@@ -36,7 +36,7 @@
 
   app.use('/', routes);
 
-  app.use('/users', users);
+  app.use('/bower_components', express["static"](path.join(__dirname, '/bower_components')));
 
   app.use(function(req, res, next) {
     var err;
