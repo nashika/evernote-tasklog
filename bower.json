@@ -1,0 +1,20 @@
+{
+  "name": "evernote-tasklog",
+  "version": "0.0.0",
+  "homepage": "https://github.com/nashika/evernote-tasklog",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angularjs": "~1.4.3",
+    "angular-socket-io": "~0.7.0",
+    "angular-bootstrap": "~0.13.0",
+    "font-awesome": "~4.3.0"
+  }
+}
