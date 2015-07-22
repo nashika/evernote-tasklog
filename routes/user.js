@@ -14,7 +14,7 @@
     return userStore.getUser((function(_this) {
       return function(err, user) {
         if (err) {
-          res.json(err);
+          return res.status(500).send(err);
         }
         return res.json(user);
       };

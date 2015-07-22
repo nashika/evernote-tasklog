@@ -14,22 +14,17 @@
     var noteFilter, noteStore, resultSpec;
     noteStore = core.client.getNoteStore();
     noteFilter = new Evernote.NoteFilter();
+    if (req.query.words) {
+      noteFilter.words = req.query.words;
+    }
     resultSpec = new Evernote.NotesMetadataResultSpec();
     resultSpec.includeTitle = true;
     resultSpec.includeCreated = true;
     resultSpec.includeUpdated = true;
     return noteStore.findNotesMetadata(noteFilter, 0, 10, resultSpec, (function(_this) {
       return function(err, notesMeta) {
-        var i, len, note, ref;
         if (err) {
-          console.error(err);
-          return;
-        }
-        console.log('Found ' + notesMeta.notes.length + ' notes in your default notebook');
-        ref = notesMeta.notes;
-        for (i = 0, len = ref.length; i < len; i++) {
-          note = ref[i];
-          console.log(note.title);
+          return res.status(500).send(err);
         }
         return res.json(notesMeta.notes);
       };

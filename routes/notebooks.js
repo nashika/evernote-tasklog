@@ -16,8 +16,7 @@
     return noteStore.listNotebooks((function(_this) {
       return function(err, notebooks) {
         if (err) {
-          console.error(err);
-          return;
+          return req.status(500).send(err);
         }
         return res.json(notebooks);
       };

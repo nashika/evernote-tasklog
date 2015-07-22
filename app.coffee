@@ -18,10 +18,10 @@ app.use bodyParser.urlencoded(extended: false)
 app.use cookieParser()
 app.use express.static(path.join(__dirname, 'public'))
 app.use '/', require './routes/index'
-app.use '/user/', require './routes/user'
-app.use '/notes-metadata/', require './routes/notes-metadata'
-app.use '/notes/', require './routes/notes'
-app.use '/notebooks/', require './routes/notebooks'
+app.use '/user', require './routes/user'
+app.use '/notes-metadata', require './routes/notes-metadata'
+app.use '/notes', require './routes/notes'
+app.use '/notebooks', require './routes/notebooks'
 app.use '/bower_components', express.static(path.join(__dirname, '/bower_components'))
 
 # catch 404 and forward to error handler

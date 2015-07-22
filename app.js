@@ -34,13 +34,13 @@
 
   app.use('/', require('./routes/index'));
 
-  app.use('/user/', require('./routes/user'));
+  app.use('/user', require('./routes/user'));
 
-  app.use('/notes-metadata/', require('./routes/notes-metadata'));
+  app.use('/notes-metadata', require('./routes/notes-metadata'));
 
-  app.use('/notes/', require('./routes/notes'));
+  app.use('/notes', require('./routes/notes'));
 
-  app.use('/notebooks/', require('./routes/notebooks'));
+  app.use('/notebooks', require('./routes/notebooks'));
 
   app.use('/bower_components', express["static"](path.join(__dirname, '/bower_components')));
 

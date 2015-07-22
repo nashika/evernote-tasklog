@@ -16,22 +16,9 @@
     return noteStore.getNote(req.query.guid, true, false, false, false, (function(_this) {
       return function(err, note) {
         if (err) {
-          res.send(err, 500);
+          return res.status(500).send(err);
         }
         return res.json(note);
-      };
-    })(this));
-  });
-
-  router.get('/content', function(req, res, next) {
-    var noteStore;
-    noteStore = core.client.getNoteStore();
-    return noteStore.getNoteContent(req.query.guid, (function(_this) {
-      return function(err, content) {
-        if (err) {
-          res.send(err, 500);
-        }
-        return res.json(content);
       };
     })(this));
   });
