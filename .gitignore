@@ -1,4 +1,5 @@
 .idea/workspace.xml
 .idea/libraries/Generated_files.xml
+config.*
 bower_components
 node_modules
