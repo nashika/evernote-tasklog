@@ -5,7 +5,7 @@ core = {
   app: null
   server: null
   www: null
-  io: null
+  client: null
 }
 
 module.exports = core
