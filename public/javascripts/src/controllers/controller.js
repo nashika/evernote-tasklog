@@ -3,15 +3,16 @@
   var Controller;
 
   Controller = (function() {
-    function Controller($scope) {
+    function Controller($scope, viewUtil) {
       this.$scope = $scope;
+      this.viewUtil = viewUtil;
     }
 
     return Controller;
 
   })();
 
-  app.controller('Controller', ['$scope', Controller]);
+  app.controller('Controller', ['$scope', 'viewUtil', Controller]);
 
   module.exports = Controller;
 

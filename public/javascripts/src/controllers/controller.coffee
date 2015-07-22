@@ -1,5 +1,5 @@
 class Controller
-  constructor: (@$scope) ->
+  constructor: (@$scope, @viewUtil) ->
 
-app.controller 'Controller', ['$scope', Controller]
+app.controller 'Controller', ['$scope', 'viewUtil', Controller]
 module.exports = Controller

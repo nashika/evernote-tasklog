@@ -4,6 +4,8 @@
 
   require('./filters/order-object-by');
 
+  require('./factories/view-util');
+
   require('./controllers/controller');
 
   require('./controllers/timeline-controller');
