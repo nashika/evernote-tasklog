@@ -1,6 +1,4 @@
-core = require '../core'
-
-core.app.filter 'orderObjectBy', ->
+app.filter 'orderObjectBy', ->
   return (items, field = '$value', reverse = true) ->
     filtered = []
     angular.forEach items, (item, key) ->
