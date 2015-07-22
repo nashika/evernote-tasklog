@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Enable Source Map Support
+require('source-map-support').install();
+
 /**
  * Module dependencies.
  */
