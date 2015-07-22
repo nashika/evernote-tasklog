@@ -3,5 +3,8 @@ extends layout
 block script
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div(ng-app='App', ng-controller='Controller')
+    .container
+      .page-header
+        h1= title
+      #visualization
