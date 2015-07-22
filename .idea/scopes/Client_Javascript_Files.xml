@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Client Javascript Files" pattern="file[evernote-tasklog]:public/javascripts/src//*" />
+</component>

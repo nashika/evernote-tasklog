@@ -44,7 +44,7 @@
       <option name="program" value="$PROJECT_DIR$/node_modules/.bin/browserify.cmd" />
       <option name="scopeName" value="Client Javascript Files" />
       <option name="trackOnlyRoot" value="false" />
-      <option name="workingDir" value="C:\Users\Rokuro\Documents\workspace\evernote-tasklog\public\javascripts" />
+      <option name="workingDir" value="$ProjectFileDir$/public/javascripts" />
       <envs />
     </TaskOptions>
   </component>
