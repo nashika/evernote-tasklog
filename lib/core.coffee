@@ -6,7 +6,8 @@ core = {
   server: null
   www: null
   client: null
-  notes: null
+  db:
+    notes: null
 }
 
 module.exports = core
