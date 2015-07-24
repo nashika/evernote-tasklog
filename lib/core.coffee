@@ -8,6 +8,8 @@ core = {
   client: null
   db:
     notes: null
+    timeLogs: null
+    profitLogs: null
 }
 
 module.exports = core

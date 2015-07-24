@@ -5,7 +5,8 @@
   config = {
     consumerKey: '',
     consumerSecret: '',
-    developerToken: ''
+    developerToken: '',
+    personTexts: []
   };
 
   module.exports = config;

@@ -2,6 +2,7 @@ async = require 'async'
 Evernote = require('evernote').Evernote
 
 core = require './core'
+config = require '../config'
 
 class DataSource
 
@@ -10,7 +11,7 @@ class DataSource
   # @param {string} words
   # @param {function} callback
   ###
-  findNotes: (words = null, callback) =>
+  reloadNotes: (words = null, callback) =>
     noteStore = core.client.getNoteStore()
     noteFilter = new Evernote.NoteFilter()
     if words then noteFilter.words = words
@@ -21,124 +22,58 @@ class DataSource
         noteStore = core.client.getNoteStore()
         noteStore.getNote noteMeta.guid, true, false, false, false, (err, note) =>
           if err then return callback(err)
-          core.db.notes.insert note, (err, newDoc) =>
+          core.db.notes.update {guid: note.guid}, note, {upsert: true}, (err, numReplaced, newDoc) =>
             if err then return callback(err)
             console.log "A note is loaded. guid=#{note.guid} title=#{note.title}"
-            callback()
+            @_parseNote(note, callback)
       , (err) =>
         if err then return callback(err)
         callback()
 
   ###*
   # @protected
-  # @param {string} err
+  # @param {Object} note
+  # @param {function} callback
   ###
-  _checkError: (err) =>
-    if err
-      console.error err
-      return true
-    else
-      return false
-
-  ###*
-  # @protected
-  ###
-  _parseNoteContent: (content) =>
-    profits = []
-    logs = []
+  _parseNote: (note, callback) =>
+    content = note.content
+    timeLogs = []
+    profitLogs = []
     content = content.replace(/\r\n|\r|\n|<br\/>|<\/div>|<\/ul>|<\/li>/g, '<>')
     for line in content.split('<>')
       clearLine = line.replace(/<[^>]*>/g, '')
-      if matches = clearLine.match(/(.*)[@Åó][\\Åè](.+)/i)
-        true
-
-#            regExpLog.Pattern = "[@Åó](\d{2,4}/\d{1,2}/\d{1,2})"
-#            regExpDate.Pattern = "\d{2,4}/\d{1,2}/\d{1,2}"
-#            regExpTime.Pattern = "\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}"
-#            regExpSpentTime.Pattern = "\d+h\d+m|\d+m|\d+h|\d+\.\d+h"
-#            regExpSpentTime.IgnoreCase = True
-#
-#            For Each line In Split(content, "<>")
-#
-#                    Set attributes = New Dictionary
-#                    Set lineMatch = lineMatchs.Item(0)
-#                    'ÉRÉÅÉìÉgÇÃéÊìæ
-#                    If lineMatch.FirstIndex > 0 Then
-#                        attributes.Add "comment", Trim(Left(clearLine, lineMatch.FirstIndex - 1))
-#                    Else
-#                        attributes.Add "comment", ""
-#                    End If
-#                    'óòâväzÇÃéÊìæ
-#                    profitText = Trim(Mid(clearLine, lineMatch.FirstIndex + lineMatch.Length + 1))
-#                    attributes.Add "profit", Val(profitText)
-#                    myProfits.Add attributes
-#
-#                'ÉçÉOï∂éöóÒÇÃâêÕ
-#                Set lineMatchs = regExpLog.Execute(clearLine)
-#                If lineMatchs.count > 0 Then
-#                    Set attributes = New Dictionary
-#                    Set lineMatch = lineMatchs.Item(0)
-#                    'ÉRÉÅÉìÉgÇÃéÊìæ
-#                    If lineMatch.FirstIndex > 0 Then
-#                        attributes.Add "comment", Trim(Left(clearLine, lineMatch.FirstIndex - 1))
-#                    Else
-#                        attributes.Add "comment", ""
-#                    End If
-#                    'ÉRÉÅÉìÉgà»äOÇÃÉeÉLÉXÉgéÊìæ
-#                    attributesText = Trim(Mid(clearLine, lineMatch.FirstIndex + 1))
-#                    'ì˙ïtÇÃéÊìæ
-#                    Set logMatchs = regExpDate.Execute(attributesText)
-#                    If logMatchs.count > 0 Then
-#                        attributes.Add "date", logMatchs.Item(0)
-#                    End If
-#                    'éûçèÇÃéÊìæ
-#                    Set logMatchs = regExpTime.Execute(attributesText)
-#                    If logMatchs.count > 0 Then
-#                        attributes.Add "time", logMatchs.Item(0)
-#                    End If
-#                    'íSìñé“ÇÃéÊìæ
-#                    Dim alias As Dictionary
-#                    Dim p As Variant
-#                    For Each p In myPersonAliases
-#                        Set alias = p
-#                        If InStr(attributesText, alias.Item("aliasName")) Then
-#                            attributes.Add "personId", alias.Item("personId")
-#                            attributes.Add "personAbbrName", alias.Item("abbrName")
-#                            Exit For
-#                        End If
-#                    Next
-#                    'çÏã∆éûä‘ÇÃéÊìæ
-#                    Set logMatchs = regExpSpentTime.Execute(attributesText)
-#                    If logMatchs.count > 0 Then
-#                        Dim sSpentTime As String
-#                        Dim sSpentHour As String
-#                        Dim sSpentMinute As String
-#                        Dim nSpentMinute As Integer
-#                        sSpentTime = LCase(logMatchs.Item(0))
-#                        nSpentMinute = 0
-#                        If InStr(sSpentTime, "h") > 0 Then
-#                            sSpentHour = Left(sSpentTime, InStr(sSpentTime, "h") - 1)
-#                            nSpentMinute = nSpentMinute + Round(sSpentHour * 60)
-#                        End If
-#                        If InStr(sSpentTime, "m") > 0 Then
-#                            If InStr(sSpentTime, "h") > 0 Then
-#                                sSpentMinute = Mid(sSpentTime, InStr(sSpentTime, "h") + 1)
-#                                sSpentMinute = Left(sSpentMinute, Len(sSpentMinute) - 1)
-#                            Else
-#                                sSpentMinute = Left(sSpentTime, Len(sSpentTime) - 1)
-#                            End If
-#                            nSpentMinute = nSpentMinute + sSpentMinute
-#                        End If
-#                        sSpentTime = (nSpentMinute \ 60) & ":" & (nSpentMinute Mod 60)
-#                        attributes.Add "spentTime", sSpentTime
-#                    End If
-#                    'ì˙ïtÇ∆íSìñé“Ç™ë∂ç›Ç∑ÇÍÇŒÉçÉOÇ∆å©òÙÇµÇƒÉfÅ[É^ï€éù
-#                    If attributes.Exists("date") And attributes.Exists("personId") Then
-#                        myLogs.Add attributes
-#                    End If
-#                End If
-#            Next
-#        End Sub
-
+      # parse time logs
+      console.log clearLine
+      if matches = clearLine.match(/(.*)[@Ôº†](\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}.+)/)
+        timeLog =
+          comment: matches[1]
+          date: null
+          time: null
+          person: null
+          spentTime: null
+        attributesText = matches[2]
+        if matches = attributesText.match(/\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}/)
+          timeLog.date = matches[0]
+        if matches = attributesText.match(/\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}/)
+          timeLog.time = matches[0]
+        for personText in config.personTexts
+          if attributesText.indexOf(personText) isnt -1
+            timeLog.person = personText
+        if matches = attributesText.match(/\d+h\d+m|\d+m|\d+h|\d+\.\d+h/i)
+          spentTimeText = matches[0]
+          spentHour = if matches = spentTimeText.match(/(\d+)h/) then parseInt(matches[1]) else 0
+          spentMinute = if matches = spentTimeText.match(/(\d+)m/) then parseInt(matches[1]) else 0
+          spentMinute += spentHour * 60
+          timeLog.spentTime = Math.floor(spentMinute / 60) + ':' + (spentMinute % 60)
+        if timeLog.date and timeLog.person
+          timeLogs.push timeLog
+      # parse profit logs
+      if matches = clearLine.match(/(.*)[@Ôº†][\\Ôø•](.+)/i)
+        profitLogs.push
+          comment: matches[1]
+          profit: matches[2].toInt()
+    console.log JSON.stringify(timeLogs)
+    console.log JSON.stringify(profitLogs)
+    callback()
 
 module.exports = new DataSource()

@@ -19,11 +19,13 @@ class Www
     # Initialize database
     dbPath = __dirname + '/../db/'
     core.db.notes = new Datastore({filename: dbPath + 'notes.db', autoload: true})
+    core.db.timeLogs = new Datastore({filename: dbPath + 'time-logs.db', autoload: true})
+    core.db.profitLogs = new Datastore({filename: dbPath + 'profit-logs.db', autoload: true})
     # Initialize evernote client
     core.client = new Evernote.Client
       token: config.developerToken
     # Initialize datas
-    dataSource.findNotes '', (err) =>
+    dataSource.reloadNotes '', (err) =>
       if err then return console.error err
       console.log 'Done'
 
