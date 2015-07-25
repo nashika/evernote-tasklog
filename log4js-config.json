@@ -22,5 +22,7 @@
       "type": "console"
     }
   ],
-  "levels": {"system": "DEBUG"}
+  "levels": {
+    "system": "DEBUG"
+  }
 }

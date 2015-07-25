@@ -44,7 +44,7 @@ class Www
         callback()
       (callback) =>
         # Initialize datas
-        dataSource.reloadNotes 'notebook:01_今でしょ', (err) =>
+        dataSource.reloadNotes '', (err) =>
           if err then return callback(err)
           callback()
     ], (err) =>

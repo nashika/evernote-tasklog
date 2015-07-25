@@ -79,18 +79,22 @@ class DataSource
       (callback) =>
         core.db.timeLogs.remove {noteGuid: note.guid}, {multi: true}, (err, numRemoved) =>
           if err then return callback(err)
+          core.loggers.system.debug "Remove #{numRemoved} timeLogs."
           callback()
       (callback) =>
         core.db.profitLogs.remove {noteGuid: note.guid}, {multi: true}, (err, numRemoved) =>
           if err then return callback(err)
+          core.loggers.system.debug "Remove #{numRemoved} profitLogs."
           callback()
       (callback) =>
-        core.db.timeLogs.insert timeLogs, (err) =>
+        core.db.timeLogs.insert timeLogs, (err, newDocs) =>
           if err then return callback(err)
+          core.loggers.system.debug "Insert #{newDocs.length} timeLogs."
           callback()
       (callback) =>
-        core.db.profitLogs.insert profitLogs, (err) =>
+        core.db.profitLogs.insert profitLogs, (err, newDocs) =>
           if err then return callback(err)
+          core.loggers.system.debug "Insert #{newDocs.length} profitLogs."
           callback()
     ], (err) =>
       if err then callback(err)
