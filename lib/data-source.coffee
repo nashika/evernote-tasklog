@@ -117,9 +117,9 @@ class DataSource
         timeLog.date = new Date(dateText + ' ' + timeText)
         if timeText then timeLog.allDay = false
         # parse person
-        for personText in config.personTexts
-          if attributesText.indexOf(personText) isnt -1
-            timeLog.person = personText
+        for person in config.persons
+          if attributesText.indexOf(person) isnt -1
+            timeLog.person = person
         # parse spent time
         if matches = attributesText.match(/\d+h\d+m|\d+m|\d+h|\d+\.\d+h/i)
           spentTimeText = matches[0]

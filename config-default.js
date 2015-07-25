@@ -7,7 +7,7 @@
     consumerSecret: '',
     developerToken: '',
     sandbox: true,
-    personTexts: []
+    persons: []
   };
 
   module.exports = config;

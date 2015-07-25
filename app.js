@@ -40,6 +40,8 @@
 
   app.use('/notes', require('./routes/notes'));
 
+  app.use('/persons', require('./routes/persons'));
+
   app.use('/notebooks', require('./routes/notebooks'));
 
   app.use('/time-logs', require('./routes/time-logs'));

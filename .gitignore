@@ -3,5 +3,5 @@
 bower_components
 config.*
 db/**/*.db
-logs/*.log
+logs/*
 node_modules

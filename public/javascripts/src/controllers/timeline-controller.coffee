@@ -1,36 +1,64 @@
+async = require 'async'
+
 class TimelineController
 
-  timeLogs: {}
-  timelineDatas: []
-
   constructor: (@$scope, @$http) ->
+    @$scope.persons = {}
+    @$scope.notes = {}
+    @$scope.timeLogs = {}
+    @$scope.timelineItems = new vis.DataSet()
+    @$scope.timelineGroups = new vis.DataSet()
     container = document.getElementById('timeline')
-    @timelineDatas = [
-      {id: 1, content: 'item 1', start: '2013-04-20'},
-      {id: 2, content: 'item 2', start: '2013-04-14'},
-      {id: 3, content: 'item 3', start: '2013-04-18'},
-      {id: 4, content: 'item 4', start: '2013-04-16', end: '2013-04-19'},
-      {id: 5, content: 'item 5', start: '2013-04-25'},
-      {id: 6, content: 'item 6', start: '2013-04-27'}
-    ]
-    @$http
-      method : 'GET',
-      url : '/time-logs'
-    .success (datas, status) =>
-      for timeLog in datas
-        @timeLogs[timeLog.noteGuid] ?= {}
-        @timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
-      data = []
-      for noteGuid, noteTimeLogs of @timeLogs
-        for _id, timeLog of noteTimeLogs
-          data.push
-            id: _id
-            content: timeLog.comment
-            start: timeLog.date
-    .error (data, status) =>
-      console.error status
     options = {}
-    timeline = new vis.Timeline(container, @timelineDatas, options)
+    @$scope.timeline = new vis.Timeline(container, @$scope.timelineItems, @$scope.timelineGroups, options)
+
+    async.series [
+      # get persons
+      (callback) =>
+        @$http.get '/persons'
+        .success (data) =>
+          for person in data
+            @$scope.persons[person] = person
+            @$scope.timelineGroups.add
+              id: person
+              content: person
+          callback()
+        .error (data) => callback(data)
+      # get notes
+      (callback) =>
+        @$http.get '/notes'
+        .success (data) =>
+          for note in data
+            @$scope.notes[note.guid] = note
+          callback()
+        .error (data) => callback(data)
+      (callback) =>
+        @$http
+          method : 'GET'
+          url : '/time-logs'
+        .success (data) =>
+          for timeLog in data
+            @$scope.timeLogs[timeLog.noteGuid] ?= {}
+            @$scope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+          for noteGuid, noteTimeLogs of @$scope.timeLogs
+            for _id, timeLog of noteTimeLogs
+              start = new Date(timeLog.date)
+              if timeLog.spentTime
+                end = new Date(start)
+                end.setMinutes start.getMinutes() + timeLog.spentTime
+              else
+                end = null
+              @$scope.timelineItems.add
+                id: _id
+                group: timeLog.person
+                content: @$scope.notes[timeLog.noteGuid].title + '<br>' + timeLog.comment
+                start: start
+                end: end
+          callback()
+        .error (data) => callback(data)
+    ], (err) =>
+      if err then return throw new Error(err)
+      @$scope.timeline.fit()
 
 app.controller 'TimelineController', ['$scope', '$http', TimelineController]
 module.exports = TimelineController
