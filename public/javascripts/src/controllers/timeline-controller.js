@@ -3,11 +3,16 @@
   var TimelineController;
 
   TimelineController = (function() {
-    function TimelineController($scope) {
-      var container, data, options, timeline;
+    TimelineController.prototype.timeLogs = {};
+
+    TimelineController.prototype.timelineDatas = [];
+
+    function TimelineController($scope, $http) {
+      var container, options, timeline;
       this.$scope = $scope;
+      this.$http = $http;
       container = document.getElementById('timeline');
-      data = [
+      this.timelineDatas = [
         {
           id: 1,
           content: 'item 1',
@@ -35,15 +40,54 @@
           start: '2013-04-27'
         }
       ];
+      this.$http({
+        method: 'GET',
+        url: '/time-logs'
+      }).success((function(_this) {
+        return function(datas, status) {
+          var _id, base, data, i, len, name, noteGuid, noteTimeLogs, ref, results, timeLog;
+          for (i = 0, len = datas.length; i < len; i++) {
+            timeLog = datas[i];
+            if ((base = _this.timeLogs)[name = timeLog.noteGuid] == null) {
+              base[name] = {};
+            }
+            _this.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+          }
+          data = [];
+          ref = _this.timeLogs;
+          results = [];
+          for (noteGuid in ref) {
+            noteTimeLogs = ref[noteGuid];
+            results.push((function() {
+              var results1;
+              results1 = [];
+              for (_id in noteTimeLogs) {
+                timeLog = noteTimeLogs[_id];
+                results1.push(data.push({
+                  id: _id,
+                  content: timeLog.comment,
+                  start: timeLog.date
+                }));
+              }
+              return results1;
+            })());
+          }
+          return results;
+        };
+      })(this)).error((function(_this) {
+        return function(data, status) {
+          return console.error(status);
+        };
+      })(this));
       options = {};
-      timeline = new vis.Timeline(container, data, options);
+      timeline = new vis.Timeline(container, this.timelineDatas, options);
     }
 
     return TimelineController;
 
   })();
 
-  app.controller('TimelineController', ['$scope', TimelineController]);
+  app.controller('TimelineController', ['$scope', '$http', TimelineController]);
 
   module.exports = TimelineController;
 

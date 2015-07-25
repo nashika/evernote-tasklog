@@ -22,6 +22,7 @@ app.use '/user', require './routes/user'
 app.use '/notes-metadata', require './routes/notes-metadata'
 app.use '/notes', require './routes/notes'
 app.use '/notebooks', require './routes/notebooks'
+app.use '/time-logs', require './routes/time-logs'
 app.use '/bower_components', express.static(path.join(__dirname, '/bower_components'))
 
 # catch 404 and forward to error handler

@@ -9,12 +9,12 @@
   core = require('../lib/core');
 
   router.get('/', function(req, res, next) {
-    return core.db.notes.find({}, (function(_this) {
-      return function(err, notes) {
+    return core.db.timeLogs.find({}, (function(_this) {
+      return function(err, timeLogs) {
         if (err) {
           return res.status(500).send(err);
         }
-        return res.json(notes);
+        return res.json(timeLogs);
       };
     })(this));
   });
@@ -23,4 +23,4 @@
 
 }).call(this);
 
-//# sourceMappingURL=notes.js.map
+//# sourceMappingURL=time-logs.js.map
