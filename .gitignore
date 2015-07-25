@@ -2,5 +2,5 @@
 .idea/libraries/Generated_files.xml
 bower_components
 config.*
-db/*.db
+db/**/*.db
 node_modules

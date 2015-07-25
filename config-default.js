@@ -6,6 +6,7 @@
     consumerKey: '',
     consumerSecret: '',
     developerToken: '',
+    sandbox: true,
     personTexts: []
   };
 
