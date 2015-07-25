@@ -13,22 +13,81 @@ class DataSource
   ###
   reloadNotes: (words = null, callback) =>
     noteStore = core.client.getNoteStore()
-    noteFilter = new Evernote.NoteFilter()
-    if words then noteFilter.words = words
-    resultSpec = new Evernote.NotesMetadataResultSpec()
-    noteStore.findNotesMetadata noteFilter, 0, 100, resultSpec, (err, notesMeta) =>
-      if err then return callback(err)
-      async.eachSeries notesMeta.notes, (noteMeta, callback) =>
-        noteStore = core.client.getNoteStore()
-        noteStore.getNote noteMeta.guid, true, false, false, false, (err, note) =>
-          if err then return callback(err)
-          core.db.notes.update {guid: note.guid}, note, {upsert: true}, (err, numReplaced, newDoc) =>
+    clientSyncState = null
+    serverSyncState = null
+    lastSyncChunk = null
+    async.waterfall [
+      (callback) => @_loadClientSyncState(callback)
+      (syncState, callback) => clientSyncState = syncState; callback()
+      (callback) => @_getServerSyncState(callback)
+      (syncState, callback) => serverSyncState = syncState; callback()
+      (callback) =>
+        if clientSyncState.updateCount < serverSyncState.updateCount
+          syncChunkFilter = new Evernote.SyncChunkFilter()
+          syncChunkFilter.includeNotes = true
+          syncChunkFilter.includeExpunged = true
+          noteStore.getFilteredSyncChunk clientSyncState.updateCount, 100, syncChunkFilter, (err, syncChunk) =>
             if err then return callback(err)
-            console.log "A note is loaded. guid=#{note.guid} title=#{note.title}"
-            @_parseNote(note, callback)
-      , (err) =>
+            lastSyncChunk = syncChunk
+            @_storeNotes(syncChunk.notes, callback)
+        else
+          callback()
+      (callback) =>
+        if clientSyncState.updateCount < serverSyncState.updateCount
+          clientSyncState.updateCount = lastSyncChunk.chunkHighUSN
+          @_saveClientSyncState(clientSyncState, callback)
+        else
+          callback()
+    ], (err) =>
+      if err then return callback(err)
+      callback()
+
+  ###*
+  # @protected
+  # @param {function} callback
+  ###
+  _getServerSyncState: (callback) =>
+    noteStore = core.client.getNoteStore()
+    noteStore.getSyncState (err, syncState) =>
+      if err then return callback(err)
+      callback(null, syncState)
+
+  ###*
+  # @protected
+  # @param {function} callback
+  ###
+  _loadClientSyncState: (callback) =>
+    core.db.syncStates.find {_id: 1}, (err, docs) =>
+      if err then return callback(err)
+      if docs.length is 0
+        callback(null, {updateCount: 0})
+      else
+        callback(null, docs[0])
+
+  _saveClientSyncState: (clientSyncState, callback) =>
+    clientSyncState._id = 1
+    core.db.syncStates.update {_id: 1}, clientSyncState, {upsert: true}, (err, numReplaced, newDoc) =>
+      if err then return callback(err)
+      core.loggers.system.debug "Set client sync state update count to #{clientSyncState.updateCount}"
+      callback()
+
+  ###*
+  # @protected
+  # @param {Array} notesMeta
+  # @param {function} callback
+  ###
+  _storeNotes: (notesMeta, callback) =>
+    noteStore = core.client.getNoteStore()
+    async.eachSeries notesMeta, (noteMeta, callback) =>
+      noteStore.getNote noteMeta.guid, true, false, false, false, (err, note) =>
         if err then return callback(err)
-        callback()
+        core.db.notes.update {guid: note.guid}, note, {upsert: true}, (err, numReplaced, newDoc) =>
+          if err then return callback(err)
+          core.loggers.system.debug "A note is loaded. guid=#{note.guid} title=#{note.title}"
+          @_parseNote(note, callback)
+    , (err) =>
+      if err then return callback(err)
+      callback()
 
   ###*
   # @protected
@@ -99,5 +158,14 @@ class DataSource
     ], (err) =>
       if err then callback(err)
       callback()
+
+  _findNotesMeta: (words, callback) =>
+    noteStore = core.client.getNoteStore()
+    noteFilter = new Evernote.NoteFilter()
+    if words then noteFilter.words = words
+    resultSpec = new Evernote.NotesMetadataResultSpec()
+    noteStore.findNotesMetadata noteFilter, 0, 100, resultSpec, (err, notesMeta) =>
+      if err then return callback(err)
+      callback(null, notesMeta.notes)
 
 module.exports = new DataSource()

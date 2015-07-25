@@ -8,6 +8,7 @@ core = {
   client: null
   user: null
   db:
+    syncStates: null
     notes: null
     timeLogs: null
     profitLogs: null

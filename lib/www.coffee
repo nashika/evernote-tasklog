@@ -38,6 +38,7 @@ class Www
       (callback) =>
         # Initialize database
         dbPath = __dirname + '/../db/' + core.user.username + '/'
+        core.db.syncStates = new Datastore({filename: dbPath + 'sync-states.db', autoload: true})
         core.db.notes = new Datastore({filename: dbPath + 'notes.db', autoload: true})
         core.db.timeLogs = new Datastore({filename: dbPath + 'time-logs.db', autoload: true})
         core.db.profitLogs = new Datastore({filename: dbPath + 'profit-logs.db', autoload: true})
