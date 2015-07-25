@@ -1,4 +1,5 @@
 async = require 'async'
+log4js = require 'log4js'
 Evernote = require('evernote').Evernote
 Datastore = require 'nedb'
 
@@ -12,6 +13,11 @@ class Www
   # @public
   ###
   main: (app, server) ->
+    # Initialize logger
+    log4js.configure '../log4js-config.json', {cwd: '../'}
+    core.loggers.system = log4js.getLogger('system')
+    core.loggers.access = log4js.getLogger('access')
+    core.loggers.error = log4js.getLogger('error')
     # Initialize core object
     core.app = app
     core.server = server # TODO: Set password to web server
@@ -38,11 +44,11 @@ class Www
         callback()
       (callback) =>
         # Initialize datas
-        dataSource.reloadNotes '', (err) =>
+        dataSource.reloadNotes 'notebook:01_今でしょ', (err) =>
           if err then return callback(err)
           callback()
     ], (err) =>
-      if err then return console.error err
-      console.log 'Done'
+      if err then return core.loggers.error.error err
+      core.loggers.system.info 'Done'
 
 module.exports = new Www()
