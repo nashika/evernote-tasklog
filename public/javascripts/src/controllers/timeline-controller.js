@@ -15,11 +15,19 @@
       this.$scope.timelineItems = new vis.DataSet();
       this.$scope.timelineGroups = new vis.DataSet();
       container = document.getElementById('timeline');
-      options = {};
+      options = {
+        margin: {
+          item: 2
+        }
+      };
       this.$scope.timeline = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, options);
       async.series([
         (function(_this) {
           return function(callback) {
+            _this.$scope.timelineGroups.add({
+              id: 'updated',
+              content: 'Note Updated'
+            });
             return _this.$http.get('/persons').success(function(data) {
               var i, len, person;
               for (i = 0, len = data.length; i < len; i++) {
@@ -42,6 +50,13 @@
               for (i = 0, len = data.length; i < len; i++) {
                 note = data[i];
                 _this.$scope.notes[note.guid] = note;
+                _this.$scope.timelineItems.add({
+                  id: note.guid,
+                  group: 'updated',
+                  content: note.title,
+                  start: new Date(note.updated),
+                  type: 'point'
+                });
               }
               return callback();
             }).error(function(data) {

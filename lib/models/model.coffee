@@ -1,4 +1,5 @@
 async = require 'async'
+merge = require 'merge'
 
 core = require '../core'
 
@@ -15,6 +16,16 @@ class Model
   # @type {string}
   ###
   TITLE_FIELD: 'name'
+
+  ###*
+  # @public
+  # @static
+  # @param {Object} query
+  # @param {function} callback
+  ###
+  s_find: (query, callback) =>
+    merge query, {deleted: null}
+    core.db[@PLURAL_NAME].find(query).sort(updated: -1).limit(50).exec callback
 
   ###*
   # @public

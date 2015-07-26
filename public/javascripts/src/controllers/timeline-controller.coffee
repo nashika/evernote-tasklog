@@ -9,12 +9,16 @@ class TimelineController
     @$scope.timelineItems = new vis.DataSet()
     @$scope.timelineGroups = new vis.DataSet()
     container = document.getElementById('timeline')
-    options = {}
+    options =
+      margin: {item: 2}
     @$scope.timeline = new vis.Timeline(container, @$scope.timelineItems, @$scope.timelineGroups, options)
 
     async.series [
       # get persons
       (callback) =>
+        @$scope.timelineGroups.add
+          id: 'updated'
+          content: 'Note Updated'
         @$http.get '/persons'
         .success (data) =>
           for person in data
@@ -30,6 +34,12 @@ class TimelineController
         .success (data) =>
           for note in data
             @$scope.notes[note.guid] = note
+            @$scope.timelineItems.add
+              id: note.guid
+              group: 'updated'
+              content: note.title
+              start: new Date(note.updated)
+              type: 'point'
           callback()
         .error (data) => callback(data)
       (callback) =>
