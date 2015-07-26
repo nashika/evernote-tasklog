@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "notebook-model.js",
+  "sourceRoot": "",
+  "sources": [
+    "notebook-model.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA,oBAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;;;KAAsB;;EAE5B,MAAM,CAAC,OAAP,GAAiB;AAJjB"
+}

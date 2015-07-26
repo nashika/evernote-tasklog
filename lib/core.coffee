@@ -10,6 +10,10 @@ core = {
   db:
     syncStates: null
     notes: null
+    notebooks: null
+    tags: null
+    searches: null
+    linkedNotebooks: null
     timeLogs: null
     profitLogs: null
   loggers:

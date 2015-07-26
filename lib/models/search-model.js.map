@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "search-model.js",
+  "sourceRoot": "",
+  "sources": [
+    "search-model.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA,kBAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;;;KAAoB;;EAE1B,MAAM,CAAC,OAAP,GAAiB;AAJjB"
+}

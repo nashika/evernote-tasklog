@@ -1,105 +1,34 @@
 async = require 'async'
-Evernote = require('evernote').Evernote
 
-core = require './core'
-config = require '../config'
+core = require '../core'
+Model = require './model'
 
-class DataSource
+class NoteModel extends Model
 
   ###*
   # @public
-  # @param {function} callback
-  ###
-  sync: (callback) =>
-    noteStore = core.client.getNoteStore()
-    localSyncState = null
-    remoteSyncState = null
-    lastSyncChunk = null
-    async.waterfall [
-      (callback) => @_loadLocalSyncState(callback)
-      (syncState, callback) => localSyncState = syncState; callback()
-      (callback) => @_loadRemoteSyncState(callback)
-      (syncState, callback) => remoteSyncState = syncState; callback()
-      (callback) =>
-        core.loggers.system.info "Sync start. localUSN=#{localSyncState.updateCount} remoteUSN=#{remoteSyncState.updateCount}"
-        async.whilst (=> localSyncState.updateCount < remoteSyncState.updateCount)
-        , (callback) =>
-          core.loggers.system.info "Get sync chunk start. startUSN=#{localSyncState.updateCount}"
-          syncChunkFilter = new Evernote.SyncChunkFilter()
-          syncChunkFilter.includeNotes = true
-          syncChunkFilter.includeExpunged = true
-          async.waterfall [
-            (callback) => noteStore.getFilteredSyncChunk localSyncState.updateCount, 100, syncChunkFilter, callback
-            (syncChunk, callback) =>
-              lastSyncChunk = syncChunk
-              callback()
-            (callback) => @_saveLocalNotes lastSyncChunk.notes, callback
-            (callback) => localSyncState.updateCount = lastSyncChunk.chunkHighUSN; callback()
-            (callback) => @_saveLocalSyncState(localSyncState, callback)
-            (callback) => core.loggers.system.info "Get sync chunk end. endUSN=#{localSyncState.updateCount}"; callback()
-          ], callback
-        , (err) =>
-          if err then return callback(err)
-          core.loggers.system.info "Sync end. localUSN=#{localSyncState.updateCount} remoteUSN=#{remoteSyncState.updateCount}"
-          callback()
-    ], callback
-
-  ###*
-  # @protected
-  # @param {function} callback
-  ###
-  _loadRemoteSyncState: (callback) =>
-    noteStore = core.client.getNoteStore()
-    noteStore.getSyncState (err, syncState) =>
-      if err then return callback(err)
-      callback(null, syncState)
-
-  ###*
-  # @protected
-  # @param {function} callback
-  ###
-  _loadLocalSyncState: (callback) =>
-    core.db.syncStates.find {_id: 1}, (err, docs) =>
-      if err then return callback(err)
-      if docs.length is 0
-        callback(null, {updateCount: 0})
-      else
-        callback(null, docs[0])
-
-  ###*
-  # @protected
-  # @param {Object} syncState
-  # @param {function} callback
-  ###
-  _saveLocalSyncState: (syncState, callback) =>
-    syncState._id = 1
-    core.db.syncStates.update {_id: 1}, syncState, {upsert: true}, (err, numReplaced, newDoc) =>
-      if err then return callback(err)
-      core.loggers.system.debug "Set client sync state update count to #{syncState.updateCount}"
-      callback()
-
-  ###*
-  # @protected
+  # @static
   # @param {string} guid
   # @param {function} callback
   ###
-  _loadRemoteNote: (guid, callback) =>
+  s_loadRemote: (guid, callback) =>
     noteStore = core.client.getNoteStore()
     lastNote = null
     async.waterfall [
       (callback) => noteStore.getNote guid, true, false, false, false, callback
       (note, callback) => lastNote = note; core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
-      (numReplaced, newDoc, callback) => core.loggers.system.debug "A note is loaded. guid=#{newDoc.guid} title=#{newDoc.title}"; callback()
+      (numReplaced, newDoc..., callback) => core.loggers.system.debug "A note is loaded. guid=#{newDoc.guid} title=#{newDoc.title}"; callback()
       (callback) => @_parseNote(lastNote, callback)
     ], callback
 
   ###*
-  # @protected
+  # @public
+  # @static
   # @param {Array} notesMeta
   # @param {function} callback
   ###
-  _saveLocalNotes: (notes, callback) =>
-    if not notes then return callback()
+  s_saveLocal: (notes, callback) =>
+    if not notes or notes.length is 0 then return callback()
     core.loggers.system.debug "Save local notes start. notes.count=#{notes.length}"
     async.eachSeries notes, (note, callback) =>
       localNote = null
@@ -111,8 +40,8 @@ class DataSource
             core.loggers.system.debug "Upsert note start. guid=#{note.guid}, title=#{note.title}"
             async.waterfall [
               (callback) => core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
-              (numReplaced, newDoc, callback) =>
-                core.loggers.system.debug "Upsert note end. guid=#{note.guid}, title=#{note.title}"
+              (numReplaced, newDoc..., callback) =>
+                core.loggers.system.debug "Upsert note end. guid=#{note.guid}, numReplaced=#{numReplaced}"
                 callback()
             ], callback
           else
@@ -121,12 +50,29 @@ class DataSource
       ], callback
     , callback
 
+
   ###*
-  # @protected
+  # @public
+  # @static
+  # @param {Array.<string>} guids
+  # @param {function} callback
+  ###
+  s_removeLocal: (guids, callback) =>
+    if not guids or guids.length is 0 then return callback()
+    core.loggers.system.debug "Remove local notes start. guids.count=#{guids.length}"
+    core.db.notes.remove {guid: {$in: guids}}, (err, numRemoved) =>
+      if err then return callback(err)
+      core.loggers.system.debug "Remove local notes end. numRemoved=#{numRemoved}"
+      callback()
+
+
+  ###*
+  # @public
+  # @static
   # @param {Object} note
   # @param {function} callback
   ###
-  _parseNote: (note, callback) =>
+  s_parseNote: (note, callback) =>
     content = note.content
     timeLogs = []
     profitLogs = []
@@ -191,7 +137,11 @@ class DataSource
       if err then callback(err)
       callback()
 
-  _findNotesMeta: (words, callback) =>
+  ###*
+  # @public
+  # @static
+  ###
+  s_findNotesMeta: (words, callback) =>
     noteStore = core.client.getNoteStore()
     noteFilter = new Evernote.NoteFilter()
     if words then noteFilter.words = words
@@ -200,4 +150,4 @@ class DataSource
       if err then return callback(err)
       callback(null, notesMeta.notes)
 
-module.exports = new DataSource()
+module.exports = NoteModel

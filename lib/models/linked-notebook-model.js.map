@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "linked-notebook-model.js",
+  "sourceRoot": "",
+  "sources": [
+    "linked-notebook-model.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA,0BAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;;;KAA4B;;EAElC,MAAM,CAAC,OAAP,GAAiB;AAJjB"
+}
