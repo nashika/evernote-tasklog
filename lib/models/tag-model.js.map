@@ -6,5 +6,5 @@
     "tag-model.coffee"
   ],
   "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,eAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;;;KAAiB;;EAEvB,MAAM,CAAC,OAAP,GAAiB;AAJjB"
+  "mappings": ";AAAA;AAAA,MAAA,eAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;uBAEJ,WAAA,GAAa;;uBACb,WAAA,GAAa;;;;KAHQ;;EAKvB,MAAM,CAAC,OAAP,GAAiB;AAPjB"
 }

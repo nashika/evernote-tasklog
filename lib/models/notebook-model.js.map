@@ -6,5 +6,5 @@
     "notebook-model.coffee"
   ],
   "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,oBAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;;;KAAsB;;EAE5B,MAAM,CAAC,OAAP,GAAiB;AAJjB"
+  "mappings": ";AAAA;AAAA,MAAA,oBAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;4BAEJ,WAAA,GAAa;;4BACb,WAAA,GAAa;;;;KAHa;;EAK5B,MAAM,CAAC,OAAP,GAAiB;AAPjB"
 }

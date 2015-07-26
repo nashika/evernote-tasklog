@@ -90,14 +90,14 @@ class Www
               callback()
             (callback) => NoteModel::s_saveLocal lastSyncChunk.notes, callback
             (callback) => NoteModel::s_removeLocal lastSyncChunk.expungedNotes, callback
-            #(callback) => @_saveLocalNotebooks lastSyncChunk.notebooks, callback
-            #(callback) => @_removeLocalNotebooks lastSyncChunk.expungedNotebooks, callback
-            #(callback) => @_saveLocalTags lastSyncChunk.tags, callback
-            #(callback) => @_removeLocalTags lastSyncChunk.expungedTags, callback
-            #(callback) => @_saveLocalSearches lastSyncChunk.searches, callback
-            #(callback) => @_removeLocalSearches lastSyncChunk.expungedSearches, callback
-            #(callback) => @_saveLocalLinkedNotebooks lastSyncChunk.linkedNotebooks, callback
-            #(callback) => @_removeLocalLinkedNotebooks lastSyncChunk.expungedLinkedNotebooks, callback
+            (callback) => NotebookModel::s_saveLocal lastSyncChunk.notebooks, callback
+            (callback) => NotebookModel::s_removeLocal lastSyncChunk.expungedNotebooks, callback
+            (callback) => TagModel::s_saveLocal lastSyncChunk.tags, callback
+            (callback) => TagModel::s_removeLocal lastSyncChunk.expungedTags, callback
+            (callback) => SearchModel::s_saveLocal lastSyncChunk.searches, callback
+            (callback) => SearchModel::s_removeLocal lastSyncChunk.expungedSearches, callback
+            (callback) => LinkedNotebookModel::s_saveLocal lastSyncChunk.linkedNotebooks, callback
+            (callback) => LinkedNotebookModel::s_removeLocal lastSyncChunk.expungedLinkedNotebooks, callback
             (callback) => localSyncState.updateCount = lastSyncChunk.chunkHighUSN; callback()
             (callback) => SyncStateModel::s_saveLocal(localSyncState, callback)
             (callback) => core.loggers.system.info "Get sync chunk end. endUSN=#{localSyncState.updateCount}"; callback()
