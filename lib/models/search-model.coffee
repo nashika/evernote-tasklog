@@ -2,7 +2,9 @@ Model = require './model'
 
 class SearchModel extends Model
 
+  ###*
+  # @override
+  ###
   PLURAL_NAME: 'searches'
-  TITLE_FIELD: 'name'
 
 module.exports = SearchModel

@@ -2,7 +2,9 @@ Model = require './model'
 
 class LinkedNotebookModel extends Model
 
+  ###*
+  # @override
+  ###
   PLURAL_NAME: 'linkedNotebooks'
-  TITLE_FIELD: 'name'
 
 module.exports = LinkedNotebookModel

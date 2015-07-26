@@ -14,7 +14,7 @@ class Model
   # @const
   # @type {string}
   ###
-  TITLE_FIELD: ''
+  TITLE_FIELD: 'name'
 
   ###*
   # @public
@@ -26,11 +26,23 @@ class Model
     if not docs or docs.length is 0 then return callback()
     core.loggers.system.debug "Save local #{@PLURAL_NAME} start. docs.count=#{docs.length}"
     async.eachSeries docs, (doc, callback) =>
-      core.loggers.system.debug "Upsert #{@PLURAL_NAME} start. guid=#{doc.guid}, title=#{doc[@TITLE_FIELD]}"
-      core.db[@PLURAL_NAME].update {guid: doc.guid}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
-        if err then return callback(err)
-        core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. guid=#{doc.guid}, numReplaced=#{numReplaced}"
-        callback()
+      localDoc = null
+      async.waterfall [
+        (callback) => core.db[@PLURAL_NAME].find {guid: doc.guid}, callback
+        (docs, callback) =>
+          localDoc = if docs.length is 0 then null else docs[0]
+          if localDoc and localDoc.updateSequenceNum >= doc.updateSequenceNum
+            core.loggers.system.debug "Upsert #{@PLURAL_NAME} skipped. guid=#{doc.guid}, title=#{doc[@TITLE_FIELD]}"
+            callback()
+          else
+            core.loggers.system.debug "Upsert #{@PLURAL_NAME} start. guid=#{doc.guid}, title=#{doc[@TITLE_FIELD]}"
+            async.waterfall [
+              (callback) => core.db[@PLURAL_NAME].update {guid: doc.guid}, doc, {upsert: true}, callback
+              (numReplaced, newDoc..., callback) =>
+                core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. guid=#{doc.guid}, numReplaced=#{numReplaced}"
+                callback()
+            ], callback
+      ], callback
     , callback
 
   ###*

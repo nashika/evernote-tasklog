@@ -2,7 +2,9 @@ Model = require './model'
 
 class NotebookModel extends Model
 
+  ###*
+  # @override
+  ###
   PLURAL_NAME: 'notebooks'
-  TITLE_FIELD: 'name'
 
 module.exports = NotebookModel

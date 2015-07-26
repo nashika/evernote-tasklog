@@ -6,6 +6,16 @@ Model = require './model'
 class NoteModel extends Model
 
   ###*
+  # @override
+  ###
+  PLURAL_NAME: 'notes'
+
+  ###*
+  # @override
+  ###
+  TITLE_FIELD: 'title'
+
+  ###*
   # @public
   # @static
   # @param {string} guid
@@ -20,51 +30,6 @@ class NoteModel extends Model
       (numReplaced, newDoc..., callback) => core.loggers.system.debug "A note is loaded. guid=#{newDoc.guid} title=#{newDoc.title}"; callback()
       (callback) => @_parseNote(lastNote, callback)
     ], callback
-
-  ###*
-  # @public
-  # @static
-  # @param {Array} notesMeta
-  # @param {function} callback
-  ###
-  s_saveLocal: (notes, callback) =>
-    if not notes or notes.length is 0 then return callback()
-    core.loggers.system.debug "Save local notes start. notes.count=#{notes.length}"
-    async.eachSeries notes, (note, callback) =>
-      localNote = null
-      async.waterfall [
-        (callback) => core.db.notes.find {guid: note.guid}, callback
-        (docs, callback) =>
-          localNote = if docs.length is 0 then null else docs[0]
-          if not localNote or localNote.updateSequenceNum < note.updateSequenceNum
-            core.loggers.system.debug "Upsert note start. guid=#{note.guid}, title=#{note.title}"
-            async.waterfall [
-              (callback) => core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
-              (numReplaced, newDoc..., callback) =>
-                core.loggers.system.debug "Upsert note end. guid=#{note.guid}, numReplaced=#{numReplaced}"
-                callback()
-            ], callback
-          else
-            core.loggers.system.debug "Upsert note skipped. guid=#{note.guid}, title=#{note.title}"
-            callback()
-      ], callback
-    , callback
-
-
-  ###*
-  # @public
-  # @static
-  # @param {Array.<string>} guids
-  # @param {function} callback
-  ###
-  s_removeLocal: (guids, callback) =>
-    if not guids or guids.length is 0 then return callback()
-    core.loggers.system.debug "Remove local notes start. guids.count=#{guids.length}"
-    core.db.notes.remove {guid: {$in: guids}}, (err, numRemoved) =>
-      if err then return callback(err)
-      core.loggers.system.debug "Remove local notes end. numRemoved=#{numRemoved}"
-      callback()
-
 
   ###*
   # @public

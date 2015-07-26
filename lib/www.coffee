@@ -14,7 +14,7 @@ LinkedNotebookModel = require './models/linked-notebook-model'
 
 class Www
 
-  SYNC_CHUNK_COUNT: 3
+  SYNC_CHUNK_COUNT: 100
 
   ###*
   # @public
