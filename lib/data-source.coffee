@@ -29,7 +29,7 @@ class DataSource
           syncChunkFilter.includeNotes = true
           syncChunkFilter.includeExpunged = true
           async.waterfall [
-            (callback) => noteStore.getFilteredSyncChunk localSyncState.updateCount, 3, syncChunkFilter, callback
+            (callback) => noteStore.getFilteredSyncChunk localSyncState.updateCount, 100, syncChunkFilter, callback
             (syncChunk, callback) =>
               lastSyncChunk = syncChunk
               callback()
@@ -80,21 +80,46 @@ class DataSource
 
   ###*
   # @protected
+  # @param {string} guid
+  # @param {function} callback
+  ###
+  _loadRemoteNote: (guid, callback) =>
+    noteStore = core.client.getNoteStore()
+    lastNote = null
+    async.waterfall [
+      (callback) => noteStore.getNote guid, true, false, false, false, callback
+      (note, callback) => lastNote = note; core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
+      (numReplaced, newDoc, callback) => core.loggers.system.debug "A note is loaded. guid=#{newDoc.guid} title=#{newDoc.title}"; callback()
+      (callback) => @_parseNote(lastNote, callback)
+    ], callback
+
+  ###*
+  # @protected
   # @param {Array} notesMeta
   # @param {function} callback
   ###
-  _saveLocalNotes: (notesMeta, callback) =>
-    noteStore = core.client.getNoteStore()
-    async.eachSeries notesMeta, (noteMeta, callback) =>
-      noteStore.getNote noteMeta.guid, true, false, false, false, (err, note) =>
-        if err then return callback(err)
-        core.db.notes.update {guid: note.guid}, note, {upsert: true}, (err, numReplaced, newDoc) =>
-          if err then return callback(err)
-          core.loggers.system.debug "A note is loaded. guid=#{note.guid} title=#{note.title}"
-          @_parseNote(note, callback)
-    , (err) =>
-      if err then return callback(err)
-      callback()
+  _saveLocalNotes: (notes, callback) =>
+    if not notes then return callback()
+    core.loggers.system.debug "Save local notes start. notes.count=#{notes.length}"
+    async.eachSeries notes, (note, callback) =>
+      localNote = null
+      async.waterfall [
+        (callback) => core.db.notes.find {guid: note.guid}, callback
+        (docs, callback) =>
+          localNote = if docs.length is 0 then null else docs[0]
+          if not localNote or localNote.updateSequenceNum < note.updateSequenceNum
+            core.loggers.system.debug "Upsert note start. guid=#{note.guid}, title=#{note.title}"
+            async.waterfall [
+              (callback) => core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
+              (numReplaced, newDoc, callback) =>
+                core.loggers.system.debug "Upsert note end. guid=#{note.guid}, title=#{note.title}"
+                callback()
+            ], callback
+          else
+            core.loggers.system.debug "Upsert note skipped. guid=#{note.guid}, title=#{note.title}"
+            callback()
+      ], callback
+    , callback
 
   ###*
   # @protected
