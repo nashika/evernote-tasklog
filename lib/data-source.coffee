@@ -8,45 +8,47 @@ class DataSource
 
   ###*
   # @public
-  # @param {string} words
   # @param {function} callback
   ###
-  reloadNotes: (words = null, callback) =>
+  sync: (callback) =>
     noteStore = core.client.getNoteStore()
-    clientSyncState = null
-    serverSyncState = null
+    localSyncState = null
+    remoteSyncState = null
     lastSyncChunk = null
     async.waterfall [
-      (callback) => @_loadClientSyncState(callback)
-      (syncState, callback) => clientSyncState = syncState; callback()
-      (callback) => @_getServerSyncState(callback)
-      (syncState, callback) => serverSyncState = syncState; callback()
+      (callback) => @_loadLocalSyncState(callback)
+      (syncState, callback) => localSyncState = syncState; callback()
+      (callback) => @_loadRemoteSyncState(callback)
+      (syncState, callback) => remoteSyncState = syncState; callback()
       (callback) =>
-        if clientSyncState.updateCount < serverSyncState.updateCount
+        core.loggers.system.info "Sync start. localUSN=#{localSyncState.updateCount} remoteUSN=#{remoteSyncState.updateCount}"
+        async.whilst (=> localSyncState.updateCount < remoteSyncState.updateCount)
+        , (callback) =>
+          core.loggers.system.info "Get sync chunk start. startUSN=#{localSyncState.updateCount}"
           syncChunkFilter = new Evernote.SyncChunkFilter()
           syncChunkFilter.includeNotes = true
           syncChunkFilter.includeExpunged = true
-          noteStore.getFilteredSyncChunk clientSyncState.updateCount, 100, syncChunkFilter, (err, syncChunk) =>
-            if err then return callback(err)
-            lastSyncChunk = syncChunk
-            @_storeNotes(syncChunk.notes, callback)
-        else
+          async.waterfall [
+            (callback) => noteStore.getFilteredSyncChunk localSyncState.updateCount, 3, syncChunkFilter, callback
+            (syncChunk, callback) =>
+              lastSyncChunk = syncChunk
+              callback()
+            (callback) => @_saveLocalNotes lastSyncChunk.notes, callback
+            (callback) => localSyncState.updateCount = lastSyncChunk.chunkHighUSN; callback()
+            (callback) => @_saveLocalSyncState(localSyncState, callback)
+            (callback) => core.loggers.system.info "Get sync chunk end. endUSN=#{localSyncState.updateCount}"; callback()
+          ], callback
+        , (err) =>
+          if err then return callback(err)
+          core.loggers.system.info "Sync end. localUSN=#{localSyncState.updateCount} remoteUSN=#{remoteSyncState.updateCount}"
           callback()
-      (callback) =>
-        if clientSyncState.updateCount < serverSyncState.updateCount
-          clientSyncState.updateCount = lastSyncChunk.chunkHighUSN
-          @_saveClientSyncState(clientSyncState, callback)
-        else
-          callback()
-    ], (err) =>
-      if err then return callback(err)
-      callback()
+    ], callback
 
   ###*
   # @protected
   # @param {function} callback
   ###
-  _getServerSyncState: (callback) =>
+  _loadRemoteSyncState: (callback) =>
     noteStore = core.client.getNoteStore()
     noteStore.getSyncState (err, syncState) =>
       if err then return callback(err)
@@ -56,7 +58,7 @@ class DataSource
   # @protected
   # @param {function} callback
   ###
-  _loadClientSyncState: (callback) =>
+  _loadLocalSyncState: (callback) =>
     core.db.syncStates.find {_id: 1}, (err, docs) =>
       if err then return callback(err)
       if docs.length is 0
@@ -64,11 +66,16 @@ class DataSource
       else
         callback(null, docs[0])
 
-  _saveClientSyncState: (clientSyncState, callback) =>
-    clientSyncState._id = 1
-    core.db.syncStates.update {_id: 1}, clientSyncState, {upsert: true}, (err, numReplaced, newDoc) =>
+  ###*
+  # @protected
+  # @param {Object} syncState
+  # @param {function} callback
+  ###
+  _saveLocalSyncState: (syncState, callback) =>
+    syncState._id = 1
+    core.db.syncStates.update {_id: 1}, syncState, {upsert: true}, (err, numReplaced, newDoc) =>
       if err then return callback(err)
-      core.loggers.system.debug "Set client sync state update count to #{clientSyncState.updateCount}"
+      core.loggers.system.debug "Set client sync state update count to #{syncState.updateCount}"
       callback()
 
   ###*
@@ -76,7 +83,7 @@ class DataSource
   # @param {Array} notesMeta
   # @param {function} callback
   ###
-  _storeNotes: (notesMeta, callback) =>
+  _saveLocalNotes: (notesMeta, callback) =>
     noteStore = core.client.getNoteStore()
     async.eachSeries notesMeta, (noteMeta, callback) =>
       noteStore.getNote noteMeta.guid, true, false, false, false, (err, note) =>

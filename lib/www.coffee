@@ -27,27 +27,22 @@ class Www
     core.client = new Evernote.Client
       token: config.developerToken
       sandbox: config.sandbox
-    async.series [
+    async.waterfall [
+      # Initialize evernote user
       (callback) =>
-        # Initialize evernote user
         userStore = core.client.getUserStore()
-        userStore.getUser (err, user) =>
-          if err then return callback(err)
-          core.user = user
-          callback()
+        userStore.getUser callback
+      (user, callback) => core.user = user; callback()
+      # Initialize database
       (callback) =>
-        # Initialize database
         dbPath = __dirname + '/../db/' + core.user.username + '/'
         core.db.syncStates = new Datastore({filename: dbPath + 'sync-states.db', autoload: true})
         core.db.notes = new Datastore({filename: dbPath + 'notes.db', autoload: true})
         core.db.timeLogs = new Datastore({filename: dbPath + 'time-logs.db', autoload: true})
         core.db.profitLogs = new Datastore({filename: dbPath + 'profit-logs.db', autoload: true})
         callback()
-      (callback) =>
-        # Initialize datas
-        dataSource.reloadNotes '', (err) =>
-          if err then return callback(err)
-          callback()
+      # Initialize datas
+      (callback) => dataSource.sync callback
     ], (err) =>
       if err then return core.loggers.error.error err
       core.loggers.system.info 'Done'
