@@ -1,6 +1,8 @@
 async = require 'async'
+merge = require 'merge'
 
 core = require '../core'
+config = require '../../config'
 MultiModel = require './multi-model'
 
 class NoteModel extends MultiModel
@@ -16,20 +18,60 @@ class NoteModel extends MultiModel
   TITLE_FIELD: 'title'
 
   ###*
+  # @override
+  ###
+  s_findLocal: (query, callback) =>
+    merge query, {deleted: null}
+    super query, callback
+
+  ###*
+  # @public
+  # @static
+  # @param {Object} query
+  # @param {function} callback
+  ###
+  s_findLocalWithContent: (query, callback) =>
+    @s_findLocal query, (err, notes) =>
+      if err then return callback(err)
+      results = []
+      async.eachSeries notes, (note, callback) =>
+        if note.content
+          results.push note
+          callback()
+        else
+          @s_loadRemote note.guid, (err, loadNote) =>
+            if err then return callback(err)
+            results.push loadNote
+            callback()
+      , (err) =>
+        if err then return callback(err)
+        callback null, results
+
+  ###*
   # @public
   # @static
   # @param {string} guid
   # @param {function} callback
   ###
   s_loadRemote: (guid, callback) =>
+    core.loggers.system.debug "Loading note from remote was started. guid=#{guid}"
     noteStore = core.client.getNoteStore()
     lastNote = null
     async.waterfall [
       (callback) => noteStore.getNote guid, true, false, false, false, callback
-      (note, callback) => lastNote = note; core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
-      (numReplaced, newDoc..., callback) => core.loggers.system.debug "A note is loaded. guid=#{newDoc.guid} title=#{newDoc.title}"; callback()
-      (callback) => @_parseNote(lastNote, callback)
-    ], callback
+      (note, callback) =>
+        core.loggers.system.debug "Loading note was succeed. guid=#{note.guid} title=#{note.title}"
+        lastNote = note
+        core.loggers.system.debug "Saving note to local. guid=#{note.guid}"
+        core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
+      (numReplaced, newDoc..., callback) =>
+        core.loggers.system.debug "Saving note was succeed. guid=#{lastNote.guid} numReplaced=#{numReplaced}"
+        callback()
+      (callback) => @s_parseNote(lastNote, callback)
+    ], (err) =>
+      if err then return callback(err)
+      core.loggers.system.debug "Loading note from remote was finished. note is loaded. guid=#{lastNote.guid} title=#{lastNote.title}"
+      callback null, lastNote
 
   ###*
   # @public

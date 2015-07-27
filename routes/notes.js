@@ -11,14 +11,27 @@
   NoteModel = require('../lib/models/note-model');
 
   router.get('/', function(req, res, next) {
-    return NoteModel.prototype.s_find({}, (function(_this) {
-      return function(err, notes) {
-        if (err) {
-          return res.status(500).send(err);
-        }
-        return res.json(notes);
-      };
-    })(this));
+    var query;
+    query = req.query.query ? JSON.parse(req.query.query) : {};
+    if (req.query.content) {
+      return NoteModel.prototype.s_findLocalWithContent(query, (function(_this) {
+        return function(err, notes) {
+          if (err) {
+            return res.status(500).send(err);
+          }
+          return res.json(notes);
+        };
+      })(this));
+    } else {
+      return NoteModel.prototype.s_findLocal(query, (function(_this) {
+        return function(err, notes) {
+          if (err) {
+            return res.status(500).send(err);
+          }
+          return res.json(notes);
+        };
+      })(this));
+    }
   });
 
   module.exports = router;

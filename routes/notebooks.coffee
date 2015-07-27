@@ -2,11 +2,10 @@ express = require 'express'
 router = express.Router()
 Evernote = require('Evernote').Evernote
 
-core = require '../lib/core'
+NotebookModel = require '../lib/models/notebook-model'
 
 router.get '/', (req, res, next) ->
-  noteStore = core.client.getNoteStore()
-  noteStore.listNotebooks (err, notebooks) =>
+  NotebookModel::s_findLocal {}, (err, notebooks) =>
     if err then return req.status(500).send err
     res.json notebooks
 

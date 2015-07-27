@@ -45,7 +45,13 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            return _this.$http.get('/notes').success(function(data) {
+            return _this.$http.get('/notes', {
+              params: {
+                query: {
+                  1: 2
+                }
+              }
+            }).success(function(data) {
               var i, len, note;
               for (i = 0, len = data.length; i < len; i++) {
                 note = data[i];

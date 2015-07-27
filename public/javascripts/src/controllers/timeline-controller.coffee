@@ -30,7 +30,7 @@ class TimelineController
         .error (data) => callback(data)
       # get notes
       (callback) =>
-        @$http.get '/notes'
+        @$http.get '/notes', {params: {query: {1: 2}}}
         .success (data) =>
           for note in data
             @$scope.notes[note.guid] = note

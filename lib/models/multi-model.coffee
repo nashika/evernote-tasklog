@@ -1,5 +1,4 @@
 async = require 'async'
-merge = require 'merge'
 
 core = require '../core'
 Model = require './Model'
@@ -13,7 +12,6 @@ class MultiModel extends Model
   # @param {function} callback
   ###
   s_findLocal: (query, callback) =>
-    merge query, {deleted: null}
     sort = {updated: -1}
     limit = 50
     core.db[@PLURAL_NAME].find(query).sort(sort).limit(limit).exec callback
