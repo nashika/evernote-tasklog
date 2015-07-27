@@ -1,9 +1,9 @@
 async = require 'async'
 
 core = require '../core'
-Model = require './model'
+MultiModel = require './multi-model'
 
-class NoteModel extends Model
+class NoteModel extends MultiModel
 
   ###*
   # @override

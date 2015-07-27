@@ -1,6 +1,6 @@
-Model = require './model'
+MultiModel = require './multi-model'
 
-class TagModel extends Model
+class TagModel extends MultiModel
 
   ###*
   # @override

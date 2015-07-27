@@ -1,6 +1,6 @@
-Model = require './model'
+MultiModel = require './multi-model'
 
-class SearchModel extends Model
+class SearchModel extends MultiModel
 
   ###*
   # @override

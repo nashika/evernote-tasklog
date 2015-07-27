@@ -56,7 +56,7 @@ class Www
       (callback) => @sync callback
     ], (err) =>
       if err then return core.loggers.error.error err
-      core.loggers.system.info 'Done'
+      core.loggers.system.info 'Done.'
 
   ###*
   # @public

@@ -1,6 +1,6 @@
-Model = require './model'
+MultiModel = require './multi-model'
 
-class LinkedNotebookModel extends Model
+class LinkedNotebookModel extends MultiModel
 
   ###*
   # @override

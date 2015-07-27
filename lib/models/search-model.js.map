@@ -6,5 +6,5 @@
     "search-model.coffee"
   ],
   "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,kBAAA;IAAA;;;EAAA,KAAA,GAAQ,OAAA,CAAQ,SAAR;;EAEF;;;;;;;;AAEJ;;;;0BAGA,WAAA,GAAa;;;;KALW;;EAO1B,MAAM,CAAC,OAAP,GAAiB;AATjB"
+  "mappings": ";AAAA;AAAA,MAAA,uBAAA;IAAA;;;EAAA,UAAA,GAAa,OAAA,CAAQ,eAAR;;EAEP;;;;;;;;AAEJ;;;;0BAGA,WAAA,GAAa;;;;KALW;;EAO1B,MAAM,CAAC,OAAP,GAAiB;AATjB"
 }
