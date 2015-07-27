@@ -6,10 +6,11 @@
   async = require('async');
 
   Controller = (function() {
-    function Controller($scope, $rootScope, $http, viewUtil) {
+    function Controller($scope, $rootScope, $http, $modal, viewUtil) {
       this.$scope = $scope;
       this.$rootScope = $rootScope;
       this.$http = $http;
+      this.$modal = $modal;
       this.viewUtil = viewUtil;
       this.reload = bind(this.reload, this);
       this.$rootScope.persons = {};
@@ -22,11 +23,17 @@
     }
 
     Controller.prototype.reload = function(callback) {
+      var modalInstance;
       if (!callback) {
         callback = (function(_this) {
           return function() {};
         })(this);
       }
+      modalInstance = this.$modal.open({
+        templateUrl: 'progress.html',
+        backdrop: 'static',
+        keyboard: false
+      });
       return async.series([
         (function(_this) {
           return function(callback) {
@@ -92,6 +99,7 @@
         })(this)
       ], (function(_this) {
         return function(err) {
+          modalInstance.close();
           if (err) {
             throw new Error(err);
           }
@@ -104,7 +112,7 @@
 
   })();
 
-  app.controller('Controller', ['$scope', '$rootScope', '$http', 'viewUtil', Controller]);
+  app.controller('Controller', ['$scope', '$rootScope', '$http', '$modal', 'viewUtil', Controller]);
 
   module.exports = Controller;
 

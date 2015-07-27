@@ -48,9 +48,8 @@
       });
     };
 
-    TimelineController.prototype._onWatchNotes = function(newNotes, oldNotes) {
+    TimelineController.prototype._onWatchNotes = function() {
       var _id, end, guid, note, noteGuid, noteTimeLogs, ref, ref1, results, start, timeLog;
-      console.log('reload note');
       this.$scope.timelineItems.clear();
       ref = this.$scope.notes;
       for (guid in ref) {

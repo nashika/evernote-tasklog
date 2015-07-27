@@ -23,7 +23,7 @@
         };
       })(this));
     } else {
-      return NoteModel.prototype.s_findLocal(query, (function(_this) {
+      return NoteModel.prototype.s_findLocalWithoutContent(query, (function(_this) {
         return function(err, notes) {
           if (err) {
             return res.status(500).send(err);

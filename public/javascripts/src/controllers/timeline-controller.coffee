@@ -26,8 +26,7 @@ class TimelineController
       id: 'updated'
       content: 'Note Updated'
 
-  _onWatchNotes: (newNotes, oldNotes) =>
-    console.log 'reload note'
+  _onWatchNotes: () =>
     @$scope.timelineItems.clear()
     for guid, note of @$scope.notes
       @$scope.timelineItems.add

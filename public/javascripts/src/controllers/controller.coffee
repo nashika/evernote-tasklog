@@ -2,7 +2,7 @@ async = require 'async'
 
 class Controller
 
-  constructor: (@$scope, @$rootScope, @$http, @viewUtil) ->
+  constructor: (@$scope, @$rootScope, @$http, @$modal, @viewUtil) ->
     @$rootScope.persons = {}
     @$rootScope.notes = {}
     @$rootScope.timeLogs = {}
@@ -11,6 +11,10 @@ class Controller
 
   reload: (callback) =>
     if not callback then callback = =>
+    modalInstance = @$modal.open
+      templateUrl: 'progress.html'
+      backdrop: 'static'
+      keyboard: false
     async.series [
       # sync
       (callback) =>
@@ -47,8 +51,9 @@ class Controller
           callback()
         .error (data) => callback(data)
     ], (err) =>
+      modalInstance.close()
       if err then return throw new Error(err)
       callback(err)
 
-app.controller 'Controller', ['$scope', '$rootScope', '$http', 'viewUtil', Controller]
+app.controller 'Controller', ['$scope', '$rootScope', '$http', '$modal', 'viewUtil', Controller]
 module.exports = Controller

@@ -13,3 +13,7 @@ block content
         #timeline(ng-controller='TimelineController')
       tab(heading='Commands')
         button Sync
+    script(type='text/ng-template' id='progress.html')
+      .modal-header Processing...
+      .modal-body
+        progressbar.progress-striped.active(animate=true, value=100)

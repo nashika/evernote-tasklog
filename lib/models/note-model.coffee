@@ -52,6 +52,22 @@ class NoteModel extends MultiModel
   ###*
   # @public
   # @static
+  # @param {Object} query
+  # @param {function} callback
+  ###
+  s_findLocalWithoutContent: (query, callback) =>
+    @s_findLocal query, (err, notes) =>
+      if err then return callback(err)
+      results = []
+      for note in notes
+        result = merge(true, note)
+        result.content = null
+        results.push result
+      callback null, results
+
+  ###*
+  # @public
+  # @static
   # @param {string} guid
   # @param {function} callback
   ###

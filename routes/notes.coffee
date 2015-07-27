@@ -11,7 +11,7 @@ router.get '/', (req, res, next) ->
       if err then return res.status(500).send err
       res.json notes
   else
-    NoteModel::s_findLocal query, (err, notes) =>
+    NoteModel::s_findLocalWithoutContent query, (err, notes) =>
       if err then return res.status(500).send err
       res.json notes
 
