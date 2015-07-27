@@ -15,18 +15,28 @@
       this.$rootScope.persons = {};
       this.$rootScope.notes = {};
       this.$rootScope.timeLogs = {};
+      this.$scope.reload = this.reload;
       this.reload((function(_this) {
-        return function(err) {
-          if (err) {
-            throw new Error(err);
-          }
-        };
+        return function() {};
       })(this));
     }
 
     Controller.prototype.reload = function(callback) {
+      if (!callback) {
+        callback = (function(_this) {
+          return function() {};
+        })(this);
+      }
       return async.series([
         (function(_this) {
+          return function(callback) {
+            return _this.$http.get('/sync').success(function() {
+              return callback();
+            }).error(function(data) {
+              return callback(data);
+            });
+          };
+        })(this), (function(_this) {
           return function(callback) {
             return _this.$http.get('/persons').success(function(data) {
               var i, len, person;
@@ -44,7 +54,8 @@
           return function(callback) {
             return _this.$http.get('/notes', {
               params: {
-                query: {}
+                query: {},
+                content: true
               }
             }).success(function(data) {
               var i, len, note;
@@ -79,7 +90,14 @@
             });
           };
         })(this)
-      ], callback);
+      ], (function(_this) {
+        return function(err) {
+          if (err) {
+            throw new Error(err);
+          }
+          return callback(err);
+        };
+      })(this));
     };
 
     return Controller;

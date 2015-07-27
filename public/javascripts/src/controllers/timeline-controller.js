@@ -10,7 +10,6 @@
       var container, options;
       this.$scope = $scope;
       this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
-      this._onWatchTimeLogs = bind(this._onWatchTimeLogs, this);
       this._onWatchNotes = bind(this._onWatchNotes, this);
       this._onWatchPersons = bind(this._onWatchPersons, this);
       this.$scope.timelineItems = new vis.DataSet();
@@ -18,66 +17,56 @@
       container = document.getElementById('timeline');
       options = {
         margin: {
-          item: 2
+          item: 5
+        },
+        height: '1000px',
+        orientation: {
+          axis: 'both',
+          item: 'top'
         }
       };
       this.$scope.timeline = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, options);
       this.$scope.$watchCollection('persons', this._onWatchPersons);
       this.$scope.$watchCollection('notes', this._onWatchNotes);
-      this.$scope.$watchCollection('timeLogs', this._onWatchTimeLogs);
+      this.$scope.$watchCollection('timeLogs', this._onWatchNotes);
       this.$scope.$watchCollection('profitLogs', this._onWatchProfitLogs);
     }
 
     TimelineController.prototype._onWatchPersons = function(newPersons, oldPersons) {
-      var key, person, results;
+      var key, person;
       this.$scope.timelineGroups.clear();
-      this.$scope.timelineGroups.add({
+      for (key in newPersons) {
+        person = newPersons[key];
+        this.$scope.timelineGroups.add({
+          id: key,
+          content: person
+        });
+      }
+      return this.$scope.timelineGroups.add({
         id: 'updated',
         content: 'Note Updated'
       });
-      results = [];
-      for (key in newPersons) {
-        person = newPersons[key];
-        results.push(this.$scope.timelineGroups.add({
-          id: key,
-          content: person
-        }));
-      }
-      return results;
     };
 
     TimelineController.prototype._onWatchNotes = function(newNotes, oldNotes) {
-      var guid, note, results;
-      for (guid in oldNotes) {
-        note = oldNotes[guid];
-        this.$scope.timelineItems.remove(guid);
-      }
-      results = [];
-      for (guid in newNotes) {
-        note = newNotes[guid];
-        results.push(this.$scope.timelineItems.add({
+      var _id, end, guid, note, noteGuid, noteTimeLogs, ref, ref1, results, start, timeLog;
+      console.log('reload note');
+      this.$scope.timelineItems.clear();
+      ref = this.$scope.notes;
+      for (guid in ref) {
+        note = ref[guid];
+        this.$scope.timelineItems.add({
           id: guid,
           group: 'updated',
           content: note.title,
           start: new Date(note.updated),
           type: 'point'
-        }));
+        });
       }
-      return results;
-    };
-
-    TimelineController.prototype._onWatchTimeLogs = function(newTimeLogs, oldTimeLogs) {
-      var _id, end, noteGuid, noteTimeLogs, results, start, timeLog;
-      for (noteGuid in oldTimeLogs) {
-        noteTimeLogs = oldTimeLogs[noteGuid];
-        for (_id in noteTimeLogs) {
-          timeLog = noteTimeLogs[_id];
-          this.$scope.timelineItems.remove(_id);
-        }
-      }
+      ref1 = this.$scope.timeLogs;
       results = [];
-      for (noteGuid in newTimeLogs) {
-        noteTimeLogs = newTimeLogs[noteGuid];
+      for (noteGuid in ref1) {
+        noteTimeLogs = ref1[noteGuid];
         results.push((function() {
           var results1;
           results1 = [];
@@ -93,9 +82,10 @@
             results1.push(this.$scope.timelineItems.add({
               id: _id,
               group: timeLog.person,
-              content: this.$scope.notes[timeLog.noteGuid].title + '<br>' + timeLog.comment,
+              content: this.$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment,
               start: start,
-              end: end
+              end: end,
+              type: end ? 'range' : 'point'
             }));
           }
           return results1;

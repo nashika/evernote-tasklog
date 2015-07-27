@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "time-log-model.js",
+  "sourceRoot": "",
+  "sources": [
+    "time-log-model.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA,wBAAA;IAAA;;;EAAA,UAAA,GAAa,OAAA,CAAQ,eAAR;;EAEP;;;;;;;;AAEJ;;;;2BAGA,WAAA,GAAa;;;AAEb;;;;2BAGA,WAAA,GAAa;;;AAEb;;;;2BAGA,aAAA,GAAe;;;;KAfU;;EAiB3B,MAAM,CAAC,OAAP,GAAiB;AAnBjB"
+}

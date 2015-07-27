@@ -4,6 +4,8 @@ merge = require 'merge'
 core = require '../core'
 config = require '../../config'
 MultiModel = require './multi-model'
+TimeLogModel = require './time-log-model'
+ProfitLogModel = require './profit-log-model'
 
 class NoteModel extends MultiModel
 
@@ -60,7 +62,7 @@ class NoteModel extends MultiModel
     async.waterfall [
       (callback) => noteStore.getNote guid, true, false, false, false, callback
       (note, callback) =>
-        core.loggers.system.debug "Loading note was succeed. guid=#{note.guid} title=#{note.title}"
+        core.loggers.system.debug "Loading note was succeed. guid=#{note.guid} title=#{note[@TITLE_FIELD]}"
         lastNote = note
         core.loggers.system.debug "Saving note to local. guid=#{note.guid}"
         core.db.notes.update {guid: note.guid}, note, {upsert: true}, callback
@@ -80,6 +82,7 @@ class NoteModel extends MultiModel
   # @param {function} callback
   ###
   s_parseNote: (note, callback) =>
+    core.loggers.system.trace "Parsing note was started. guid=#{note.guid}"
     content = note.content
     timeLogs = []
     profitLogs = []
@@ -120,29 +123,13 @@ class NoteModel extends MultiModel
           comment: matches[1]
           profit: parseInt(matches[2].replace(/,/g, ''))
     async.series [
-      (callback) =>
-        core.db.timeLogs.remove {noteGuid: note.guid}, {multi: true}, (err, numRemoved) =>
-          if err then return callback(err)
-          core.loggers.system.debug "Remove #{numRemoved} timeLogs."
-          callback()
-      (callback) =>
-        core.db.profitLogs.remove {noteGuid: note.guid}, {multi: true}, (err, numRemoved) =>
-          if err then return callback(err)
-          core.loggers.system.debug "Remove #{numRemoved} profitLogs."
-          callback()
-      (callback) =>
-        core.db.timeLogs.insert timeLogs, (err, newDocs) =>
-          if err then return callback(err)
-          core.loggers.system.debug "Insert #{newDocs.length} timeLogs."
-          callback()
-      (callback) =>
-        core.db.profitLogs.insert profitLogs, (err, newDocs) =>
-          if err then return callback(err)
-          core.loggers.system.debug "Insert #{newDocs.length} profitLogs."
-          callback()
+      (callback) => TimeLogModel::s_removeLocal {noteGuid: note.guid}, callback
+      (callback) => ProfitLogModel::s_removeLocal {noteGuid: note.guid}, callback
+      (callback) => TimeLogModel::s_saveLocal timeLogs, callback
+      (callback) => ProfitLogModel::s_saveLocal profitLogs, callback
     ], (err) =>
-      if err then callback(err)
-      callback()
+      core.loggers.system.trace "Parsing note was #{if err then 'failed' else 'succeed'}. guid=#{note.guid}"
+      callback(err)
 
   ###*
   # @public

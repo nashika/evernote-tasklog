@@ -6,11 +6,17 @@ class Controller
     @$rootScope.persons = {}
     @$rootScope.notes = {}
     @$rootScope.timeLogs = {}
-    @reload (err) =>
-      if err then return throw new Error(err)
+    @$scope.reload = @reload
+    @reload =>
 
   reload: (callback) =>
+    if not callback then callback = =>
     async.series [
+      # sync
+      (callback) =>
+        @$http.get '/sync'
+        .success => callback()
+        .error (data) => callback(data)
       # get persons
       (callback) =>
         @$http.get '/persons'
@@ -22,7 +28,7 @@ class Controller
         .error (data) => callback(data)
       # get notes
       (callback) =>
-        @$http.get '/notes', {params: {query: {}}}
+        @$http.get '/notes', {params: {query: {}, content: true}}
         .success (data) =>
           @$rootScope.notes = {}
           for note in data
@@ -40,7 +46,9 @@ class Controller
             @$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
           callback()
         .error (data) => callback(data)
-    ], callback
+    ], (err) =>
+      if err then return throw new Error(err)
+      callback(err)
 
 app.controller 'Controller', ['$scope', '$rootScope', '$http', 'viewUtil', Controller]
 module.exports = Controller
