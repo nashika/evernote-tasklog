@@ -32,7 +32,9 @@
       modalInstance = this.$modal.open({
         templateUrl: 'progress.html',
         backdrop: 'static',
-        keyboard: false
+        keyboard: false,
+        size: 'sm',
+        animation: false
       });
       return async.series([
         (function(_this) {

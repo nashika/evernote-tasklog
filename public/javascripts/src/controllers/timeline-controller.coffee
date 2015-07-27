@@ -8,13 +8,14 @@ class TimelineController
     container = document.getElementById('timeline')
     options =
       margin: {item: 5}
-      height: '1000px'
+      height: window.innerHeight - 80
       orientation: {axis: 'both', item: 'top'}
     @$scope.timeline = new vis.Timeline(container, @$scope.timelineItems, @$scope.timelineGroups, options)
     @$scope.$watchCollection 'persons', @_onWatchPersons
     @$scope.$watchCollection 'notes', @_onWatchNotes
     @$scope.$watchCollection 'timeLogs', @_onWatchNotes
     @$scope.$watchCollection 'profitLogs', @_onWatchProfitLogs
+    @$scope.$on 'resize::resize', @_onResize
 
   _onWatchPersons: (newPersons, oldPersons) =>
     @$scope.timelineGroups.clear()
@@ -52,6 +53,10 @@ class TimelineController
           type: if end then 'range' else 'point'
 
   _onWatchProfitLogs: (newProfitLogs, oldProfitLogs) =>
+
+  _onResize: (event) =>
+    @$scope.timeline.setOptions
+      height: window.innerHeight - 80
 
 app.controller 'TimelineController', ['$scope', TimelineController]
 module.exports = TimelineController

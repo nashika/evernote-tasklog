@@ -6,6 +6,8 @@
 
   require('./factories/view-util');
 
+  require('./directives/resize');
+
   require('./controllers/controller');
 
   require('./controllers/timeline-controller');

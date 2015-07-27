@@ -15,6 +15,8 @@ class Controller
       templateUrl: 'progress.html'
       backdrop: 'static'
       keyboard: false
+      size: 'sm'
+      animation: false
     async.series [
       # sync
       (callback) =>

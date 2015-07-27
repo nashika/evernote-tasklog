@@ -7,6 +7,9 @@ require './filters/order-object-by'
 # angular.js factories
 require './factories/view-util'
 
+# angular.js directives
+require './directives/resize'
+
 # angular.js controllers
 require './controllers/controller'
 require './controllers/timeline-controller'

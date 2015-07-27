@@ -3,9 +3,7 @@ extends layout
 block script
 
 block content
-  div(ng-app='App', ng-controller='Controller')
-    .page-header
-      h1= title
+  div(ng-app='App', ng-controller='Controller', resize='resize')
     .pull-right
       button.btn.btn-primary(ng-click='reload()') Reload
     tabset(justified=true)

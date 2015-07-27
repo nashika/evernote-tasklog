@@ -9,6 +9,7 @@
     function TimelineController($scope) {
       var container, options;
       this.$scope = $scope;
+      this._onResize = bind(this._onResize, this);
       this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
       this._onWatchNotes = bind(this._onWatchNotes, this);
       this._onWatchPersons = bind(this._onWatchPersons, this);
@@ -19,7 +20,7 @@
         margin: {
           item: 5
         },
-        height: '1000px',
+        height: window.innerHeight - 80,
         orientation: {
           axis: 'both',
           item: 'top'
@@ -30,6 +31,7 @@
       this.$scope.$watchCollection('notes', this._onWatchNotes);
       this.$scope.$watchCollection('timeLogs', this._onWatchNotes);
       this.$scope.$watchCollection('profitLogs', this._onWatchProfitLogs);
+      this.$scope.$on('resize::resize', this._onResize);
     }
 
     TimelineController.prototype._onWatchPersons = function(newPersons, oldPersons) {
@@ -94,6 +96,12 @@
     };
 
     TimelineController.prototype._onWatchProfitLogs = function(newProfitLogs, oldProfitLogs) {};
+
+    TimelineController.prototype._onResize = function(event) {
+      return this.$scope.timeline.setOptions({
+        height: window.innerHeight - 80
+      });
+    };
 
     return TimelineController;
 
