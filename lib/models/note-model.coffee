@@ -127,9 +127,9 @@ class NoteModel extends MultiModel
         # parse spent time
         if matches = attributesText.match(/\d+h\d+m|\d+m|\d+h|\d+\.\d+h/i)
           spentTimeText = matches[0]
-          spentHour = if matches = spentTimeText.match(/(\d+)h/) then parseInt(matches[1]) else 0
-          spentMinute = if matches = spentTimeText.match(/(\d+)m/) then parseInt(matches[1]) else 0
-          timeLog.spentTime = spentHour * 60 + spentMinute
+          spentHour = if matches = spentTimeText.match(/(\d+\.?\d*)h/) then parseFloat(matches[1]) else 0
+          spentMinute = if matches = spentTimeText.match(/(\d+\.?\d*)m/) then parseFloat(matches[1]) else 0
+          timeLog.spentTime = Math.round(spentHour * 60 + spentMinute)
         if timeLog.date and timeLog.person
           timeLogs.push timeLog
       # parse profit logs
