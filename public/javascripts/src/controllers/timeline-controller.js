@@ -46,7 +46,7 @@
       }
       return this.$scope.timelineGroups.add({
         id: 'updated',
-        content: 'Note Updated'
+        content: 'Update'
       });
     };
 

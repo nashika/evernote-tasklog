@@ -25,7 +25,7 @@ class TimelineController
         content: person
     @$scope.timelineGroups.add
       id: 'updated'
-      content: 'Note Updated'
+      content: 'Update'
 
   _onWatchNotes: () =>
     @$scope.timelineItems.clear()
