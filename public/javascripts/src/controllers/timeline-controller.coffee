@@ -56,7 +56,7 @@ class TimelineController
 
   _onResize: (event) =>
     @$scope.timeline.setOptions
-      height: window.innerHeight - 80
+      height: window.innerHeight - 90
 
 app.controller 'TimelineController', ['$scope', TimelineController]
 module.exports = TimelineController

@@ -30,7 +30,7 @@
         })(this);
       }
       modalInstance = this.$modal.open({
-        templateUrl: 'progress.html',
+        templateUrl: 'progress',
         backdrop: 'static',
         keyboard: false,
         size: 'sm',

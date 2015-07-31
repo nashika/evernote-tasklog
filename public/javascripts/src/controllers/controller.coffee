@@ -12,7 +12,7 @@ class Controller
   reload: (callback) =>
     if not callback then callback = =>
     modalInstance = @$modal.open
-      templateUrl: 'progress.html'
+      templateUrl: 'progress'
       backdrop: 'static'
       keyboard: false
       size: 'sm'

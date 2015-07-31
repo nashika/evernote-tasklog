@@ -99,7 +99,7 @@
 
     TimelineController.prototype._onResize = function(event) {
       return this.$scope.timeline.setOptions({
-        height: window.innerHeight - 80
+        height: window.innerHeight - 90
       });
     };
 

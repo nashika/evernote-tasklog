@@ -15,6 +15,7 @@
     "angularjs": "~1.4.3",
     "angular-bootstrap": "~0.13.0",
     "font-awesome": "~4.3.0",
-    "vis": "~4.5.1"
+    "vis": "~4.5.1",
+    "angular-route": "~1.4.3"
   }
 }

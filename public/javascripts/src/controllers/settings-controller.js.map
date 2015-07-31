@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "settings-controller.js",
+  "sourceRoot": "",
+  "sources": [
+    "settings-controller.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,KAAA,GAAQ,OAAA,CAAQ,OAAR;;EAEF;IAES,4BAAC,MAAD;MAAC,IAAC,CAAA,SAAD;IAAD;;;;;;EAEf,GAAG,CAAC,UAAJ,CAAe,oBAAf,EAAqC,CAAC,QAAD,EAAW,kBAAX,CAArC;;EACA,MAAM,CAAC,OAAP,GAAiB;AAPjB"
+}
