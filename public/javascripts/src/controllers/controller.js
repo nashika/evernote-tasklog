@@ -61,6 +61,15 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            return _this.$http.get('/notebooks').success(function(data) {
+              _this.$rootScope.notebooks = data;
+              return callback();
+            }).error(function(data) {
+              return callback(data);
+            });
+          };
+        })(this), (function(_this) {
+          return function(callback) {
             return _this.$http.get('/notes', {
               params: {
                 query: {},

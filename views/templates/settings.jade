@@ -1,3 +1,18 @@
 script(type='text/ng-template' id='settings')
   #settings(ng-controller='SettingsController')
-    select
+    h1 Note Filter
+    form.form-horizontal
+      .form-group
+        label.col-sm-2.control-label Updated
+        .col-sm-10
+          select.form-control(ng-model='filters["updated"]')
+            option(value='') -- None --
+            option(ng-repeat='n in [1, 2, 3, 5, 7, 10, 15, 20, 30]', value='{{n}}') Recent notes update {{n}} days
+      .form-group
+        label.col-sm-2.control-label Notebook
+        .col-sm-10
+          select.form-control(ng-model='filters["notebooks"]', ng-options='notebook.guid as notebook.name group by notebook.stack for notebook in notebooks')
+            option(value='') -- None --
+      .form-group
+        label.col-sm-2.control-label Result Count
+        .col-sm-10.form-control-static Find {{count}} items.

@@ -32,6 +32,13 @@ class Controller
             @$rootScope.persons[person] = person
           callback()
         .error (data) => callback(data)
+      # get notebooks
+      (callback) =>
+        @$http.get '/notebooks'
+        .success (data) =>
+          @$rootScope.notebooks = data
+          callback()
+        .error (data) => callback(data)
       # get notes
       (callback) =>
         @$http.get '/notes', {params: {query: {}, content: true}}

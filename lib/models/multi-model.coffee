@@ -1,4 +1,5 @@
 async = require 'async'
+merge = require 'merge'
 
 core = require '../core'
 Model = require './Model'
@@ -7,23 +8,61 @@ class MultiModel extends Model
 
   ###*
   # @const
+  # @type {Object}
+  ###
+  DEFAULT_QUERY: {}
+
+  ###*
+  # @const
+  # @type {Object}
+  ###
+  APPEND_QUERY: {}
+
+  ###*
+  # @const
+  # @type {Object}
+  ###
+  DEFAULT_SORT: {updated: -1}
+
+  ###*
+  # @const
   # @type {number}
   ###
   DEFAULT_LIMIT: 50
 
   ###*
-  # @protected
+  # @public
   # @static
-  # @param {Object} query
+  # @param {Object} options
   # @param {function} callback
   ###
-  s_findLocal: (query, callback) =>
-    core.loggers.system.debug "Find local #{@PLURAL_NAME} was started. query=#{JSON.stringify(query)}"
-    sort = {updated: -1}
-    limit = @DEFAULT_LIMIT
+  s_findLocal: (options, callback) =>
+    if 'query' in options
+      query = options.query ? merge(true, @DEFAULT_QUERY)
+      sort = options.sort ? merge(true, @DEFAULT_SORT)
+      limit = options.limit ? @DEFAULT_LIMIT
+    else
+      query = options ? merge(true, @DEFAULT_QUERY)
+      sort = merge(true, @DEFAULT_SORT)
+      limit = @DEFAULT_LIMIT
+    merge query, @APPEND_QUERY
+    core.loggers.system.debug "Find local #{@PLURAL_NAME} was started. query=#{JSON.stringify(query)}, sort=#{JSON.stringify(sort)}, limit=#{limit}"
     core.db[@PLURAL_NAME].find(query).sort(sort).limit(limit).exec (err, docs) =>
       core.loggers.system.debug "Find local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. docs.length=#{docs.length}"
       callback(err, docs)
+
+  ###*
+  # @public
+  # @static
+  # @param {Object} options
+  # @param {function} callback
+  ###
+  s_countLocal: (options, callback) =>
+    core.loggers.system.debug "Count local #{@PLURAL_NAME} was started. options=#{JSON.stringify(options)}"
+    query = if 'query' in options then options.query else options
+    core.db[@PLURAL_NAME].count query, (err, count) =>
+      core.loggers.system.debug "Count local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. count=#{count}"
+      callback(err, count)
 
   ###*
   # @public

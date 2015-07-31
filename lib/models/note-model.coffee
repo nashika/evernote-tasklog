@@ -22,9 +22,7 @@ class NoteModel extends MultiModel
   ###*
   # @override
   ###
-  s_findLocal: (query, callback) =>
-    merge query, {deleted: null}
-    super query, callback
+  APPEND_QUERY: {deleted: null}
 
   ###*
   # @public
