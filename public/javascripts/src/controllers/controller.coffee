@@ -36,7 +36,9 @@ class Controller
         @progress.set 'Getting notebooks data.', 20
         @$http.get '/notebooks'
         .success (data) =>
-          @$rootScope.notebooks = data
+          @$rootScope.notebooks = {}
+          for notebook in data
+            @$rootScope.notebooks[notebook.guid] = notebook
           callback()
         .error (data) => callback(data)
       # get note count
@@ -58,16 +60,20 @@ class Controller
         @progress.set 'Getting notes.', 60
         @$http.get '/notes', {params: {query: query, content: false}}
         .success (data) =>
-          @$rootScope.notes = data
+          @$rootScope.notes = {}
+          for note in data
+            @$rootScope.notes[note.guid] = note
           callback()
         .error (data) => callback(data)
       (callback) =>
         @progress.set 'Getting time logs.', 80
-        @$http
-          method : 'GET'
-          url : '/time-logs'
+        guids = for noteGuid, note of @$rootScope.notes then note.guid
+        @$http.get '/time-logs', {params: {query: {noteGuid: {$in: guids}}, limit: 300}}
         .success (data) =>
-          @$rootScope.timeLogs = data
+          @$rootScope.timeLogs = {}
+          for timeLog in data
+            @$rootScope.timeLogs[timeLog.noteGuid] ?= {}
+            @$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog
           callback()
         .error (data) => callback(data)
     ], (err) =>

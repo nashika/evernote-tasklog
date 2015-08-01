@@ -51,11 +51,11 @@
     };
 
     TimelineController.prototype._onWatchNotes = function() {
-      var end, i, j, len, len1, note, ref, ref1, results, start, timeLog;
+      var end, note, noteGuid, noteTimeLog, ref, ref1, results, start, timeLog, timeLogsId;
       this.$scope.timelineItems.clear();
       ref = this.$scope.notes;
-      for (i = 0, len = ref.length; i < len; i++) {
-        note = ref[i];
+      for (noteGuid in ref) {
+        note = ref[noteGuid];
         this.$scope.timelineItems.add({
           id: note.guid,
           group: 'updated',
@@ -66,23 +66,31 @@
       }
       ref1 = this.$scope.timeLogs;
       results = [];
-      for (j = 0, len1 = ref1.length; j < len1; j++) {
-        timeLog = ref1[j];
-        start = new Date(timeLog.date);
-        if (timeLog.spentTime) {
-          end = new Date(start);
-          end.setMinutes(start.getMinutes() + timeLog.spentTime);
-        } else {
-          end = null;
-        }
-        results.push(this.$scope.timelineItems.add({
-          id: timeLog._id,
-          group: timeLog.person,
-          content: this.$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment,
-          start: start,
-          end: end,
-          type: end ? 'range' : 'point'
-        }));
+      for (noteGuid in ref1) {
+        noteTimeLog = ref1[noteGuid];
+        results.push((function() {
+          var results1;
+          results1 = [];
+          for (timeLogsId in noteTimeLog) {
+            timeLog = noteTimeLog[timeLogsId];
+            start = new Date(timeLog.date);
+            if (timeLog.spentTime) {
+              end = new Date(start);
+              end.setMinutes(start.getMinutes() + timeLog.spentTime);
+            } else {
+              end = null;
+            }
+            results1.push(this.$scope.timelineItems.add({
+              id: timeLog._id,
+              group: timeLog.person,
+              content: this.$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment,
+              start: start,
+              end: end,
+              type: end ? 'range' : 'point'
+            }));
+          }
+          return results1;
+        }).call(this));
       }
       return results;
     };

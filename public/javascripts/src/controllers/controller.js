@@ -60,7 +60,12 @@
           return function(callback) {
             _this.progress.set('Getting notebooks data.', 20);
             return _this.$http.get('/notebooks').success(function(data) {
-              _this.$rootScope.notebooks = data;
+              var i, len, notebook;
+              _this.$rootScope.notebooks = {};
+              for (i = 0, len = data.length; i < len; i++) {
+                notebook = data[i];
+                _this.$rootScope.notebooks[notebook.guid] = notebook;
+              }
               return callback();
             }).error(function(data) {
               return callback(data);
@@ -102,7 +107,12 @@
                 content: false
               }
             }).success(function(data) {
-              _this.$rootScope.notes = data;
+              var i, len, note;
+              _this.$rootScope.notes = {};
+              for (i = 0, len = data.length; i < len; i++) {
+                note = data[i];
+                _this.$rootScope.notes[note.guid] = note;
+              }
               return callback();
             }).error(function(data) {
               return callback(data);
@@ -110,12 +120,37 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            var guids, note, noteGuid;
             _this.progress.set('Getting time logs.', 80);
-            return _this.$http({
-              method: 'GET',
-              url: '/time-logs'
+            guids = (function() {
+              var ref, results;
+              ref = this.$rootScope.notes;
+              results = [];
+              for (noteGuid in ref) {
+                note = ref[noteGuid];
+                results.push(note.guid);
+              }
+              return results;
+            }).call(_this);
+            return _this.$http.get('/time-logs', {
+              params: {
+                query: {
+                  noteGuid: {
+                    $in: guids
+                  }
+                },
+                limit: 300
+              }
             }).success(function(data) {
-              _this.$rootScope.timeLogs = data;
+              var base, i, len, name, timeLog;
+              _this.$rootScope.timeLogs = {};
+              for (i = 0, len = data.length; i < len; i++) {
+                timeLog = data[i];
+                if ((base = _this.$rootScope.timeLogs)[name = timeLog.noteGuid] == null) {
+                  base[name] = {};
+                }
+                _this.$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+              }
               return callback();
             }).error(function(data) {
               return callback(data);
