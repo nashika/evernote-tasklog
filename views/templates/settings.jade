@@ -5,9 +5,10 @@ script(type='text/ng-template' id='settings')
       .form-group
         label.col-sm-2.control-label Updated
         .col-sm-10
-          select.form-control(ng-model='noteFilter.updated')
-            option(value='') -- None --
-            option(ng-repeat='n in [1, 2, 3, 5, 7, 10, 15, 20, 30]', value='{{n}}') Recent notes update {{n}} days
+          ui-select.form-control(ng-model='noteFilter.updated', theme='bootstrap')
+            ui-select-choices(repeat='n in [1, 2, 3, 5, 7, 10, 15, 20, 30]')
+              div(ng-bind-html="n")
+            //option(ng-repeat=, value='{{n}}') Recent notes update {{n}} days
       .form-group
         label.col-sm-2.control-label Notebook
         .col-sm-10

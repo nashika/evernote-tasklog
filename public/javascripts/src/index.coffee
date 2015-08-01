@@ -1,5 +1,5 @@
 # angular.js setting
-window.app = angular.module('App', ['ngRoute', 'ui.bootstrap'])
+window.app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select'])
 
 # route settings
 require './route'
