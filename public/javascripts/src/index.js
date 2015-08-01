@@ -2,19 +2,7 @@
 (function() {
   window.app = angular.module('App', ['ngRoute', 'ui.bootstrap']);
 
-  window.app.config([
-    '$routeProvider', function($routeProvider) {
-      return $routeProvider.when('/', {
-        redirectTo: '/timeline'
-      }).when('/timeline', {
-        templateUrl: 'timeline'
-      }).when('/settings', {
-        templateUrl: 'settings'
-      }).otherwise({
-        redirectTo: '/'
-      });
-    }
-  ]);
+  require('./route');
 
   require('./filters/order-object-by');
 
@@ -27,6 +15,8 @@
   require('./controllers/navigation-controller');
 
   require('./controllers/timeline-controller');
+
+  require('./controllers/notes-controller');
 
   require('./controllers/settings-controller');
 

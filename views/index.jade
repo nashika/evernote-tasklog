@@ -17,11 +17,14 @@ block content
           ul.nav.navbar-nav
             li(ng-class='{active: $route.current.templateUrl == "timeline"}')
               a(href='#/timeline') Timeline
+            li(ng-class='{active: $route.current.templateUrl == "notes"}')
+              a(href='#/notes') Notes
             li(ng-class='{active: $route.current.templateUrl == "settings"}')
               a(href='#/settings') Settings
           form.navbar-form.navbar-right
             button.btn.btn-primary(type='button', ng-click='reload()') Reload
     div(ng-view)
     include templates/timeline
+    include templates/notes
     include templates/settings
     include templates/progress-modal

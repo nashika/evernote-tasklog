@@ -29,28 +29,27 @@ class TimelineController
 
   _onWatchNotes: () =>
     @$scope.timelineItems.clear()
-    for guid, note of @$scope.notes
+    for note in @$scope.notes
       @$scope.timelineItems.add
-        id: guid
+        id: note.guid
         group: 'updated'
         content: note.title
         start: new Date(note.updated)
         type: 'point'
-    for noteGuid, noteTimeLogs of @$scope.timeLogs
-      for _id, timeLog of noteTimeLogs
-        start = new Date(timeLog.date)
-        if timeLog.spentTime
-          end = new Date(start)
-          end.setMinutes start.getMinutes() + timeLog.spentTime
-        else
-          end = null
-        @$scope.timelineItems.add
-          id: _id
-          group: timeLog.person
-          content: @$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment
-          start: start
-          end: end
-          type: if end then 'range' else 'point'
+    for timeLog in @$scope.timeLogs
+      start = new Date(timeLog.date)
+      if timeLog.spentTime
+        end = new Date(start)
+        end.setMinutes start.getMinutes() + timeLog.spentTime
+      else
+        end = null
+      @$scope.timelineItems.add
+        id: timeLog._id
+        group: timeLog.person
+        content: @$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment
+        start: start
+        end: end
+        type: if end then 'range' else 'point'
 
   _onWatchProfitLogs: (newProfitLogs, oldProfitLogs) =>
 

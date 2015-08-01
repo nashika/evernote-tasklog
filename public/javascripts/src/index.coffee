@@ -2,17 +2,7 @@
 window.app = angular.module('App', ['ngRoute', 'ui.bootstrap'])
 
 # route settings
-window.app.config ['$routeProvider', ($routeProvider) ->
-  $routeProvider
-    .when '/',
-      redirectTo: '/timeline'
-    .when '/timeline',
-      templateUrl: 'timeline'
-    .when '/settings',
-      templateUrl: 'settings'
-    .otherwise
-      redirectTo: '/'
-]
+require './route'
 
 # angular.js filters
 require './filters/order-object-by'
@@ -27,5 +17,6 @@ require './directives/resize'
 require './controllers/controller'
 require './controllers/navigation-controller'
 require './controllers/timeline-controller'
+require './controllers/notes-controller'
 require './controllers/settings-controller'
 require './controllers/progress-modal-controller'

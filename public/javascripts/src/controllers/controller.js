@@ -102,12 +102,7 @@
                 content: false
               }
             }).success(function(data) {
-              var i, len, note;
-              _this.$rootScope.notes = {};
-              for (i = 0, len = data.length; i < len; i++) {
-                note = data[i];
-                _this.$rootScope.notes[note.guid] = note;
-              }
+              _this.$rootScope.notes = data;
               return callback();
             }).error(function(data) {
               return callback(data);
@@ -120,15 +115,7 @@
               method: 'GET',
               url: '/time-logs'
             }).success(function(data) {
-              var base, i, len, name, timeLog;
-              _this.$rootScope.timeLogs = {};
-              for (i = 0, len = data.length; i < len; i++) {
-                timeLog = data[i];
-                if ((base = _this.$rootScope.timeLogs)[name = timeLog.noteGuid] == null) {
-                  base[name] = {};
-                }
-                _this.$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
-              }
+              _this.$rootScope.timeLogs = data;
               return callback();
             }).error(function(data) {
               return callback(data);

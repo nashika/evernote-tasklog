@@ -58,9 +58,7 @@ class Controller
         @progress.set 'Getting notes.', 60
         @$http.get '/notes', {params: {query: query, content: false}}
         .success (data) =>
-          @$rootScope.notes = {}
-          for note in data
-            @$rootScope.notes[note.guid] = note
+          @$rootScope.notes = data
           callback()
         .error (data) => callback(data)
       (callback) =>
@@ -69,10 +67,7 @@ class Controller
           method : 'GET'
           url : '/time-logs'
         .success (data) =>
-          @$rootScope.timeLogs = {}
-          for timeLog in data
-            @$rootScope.timeLogs[timeLog.noteGuid] ?= {}
-            @$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+          @$rootScope.timeLogs = data
           callback()
         .error (data) => callback(data)
     ], (err) =>

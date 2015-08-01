@@ -1,0 +1,9 @@
+script(type='text/ng-template' id='notes')
+  #settings(ng-controller='NotesController')
+    table.table.table-bordered.table-striped.table-hover.table-condensed
+      tr
+        th Title
+        th Spent Time
+      tr(ng-repeat='note in notes')
+        td {{note.title}}
+        td {{getSpentTime(note.guid)}}

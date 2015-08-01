@@ -51,13 +51,13 @@
     };
 
     TimelineController.prototype._onWatchNotes = function() {
-      var _id, end, guid, note, noteGuid, noteTimeLogs, ref, ref1, results, start, timeLog;
+      var end, i, j, len, len1, note, ref, ref1, results, start, timeLog;
       this.$scope.timelineItems.clear();
       ref = this.$scope.notes;
-      for (guid in ref) {
-        note = ref[guid];
+      for (i = 0, len = ref.length; i < len; i++) {
+        note = ref[i];
         this.$scope.timelineItems.add({
-          id: guid,
+          id: note.guid,
           group: 'updated',
           content: note.title,
           start: new Date(note.updated),
@@ -66,31 +66,23 @@
       }
       ref1 = this.$scope.timeLogs;
       results = [];
-      for (noteGuid in ref1) {
-        noteTimeLogs = ref1[noteGuid];
-        results.push((function() {
-          var results1;
-          results1 = [];
-          for (_id in noteTimeLogs) {
-            timeLog = noteTimeLogs[_id];
-            start = new Date(timeLog.date);
-            if (timeLog.spentTime) {
-              end = new Date(start);
-              end.setMinutes(start.getMinutes() + timeLog.spentTime);
-            } else {
-              end = null;
-            }
-            results1.push(this.$scope.timelineItems.add({
-              id: _id,
-              group: timeLog.person,
-              content: this.$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment,
-              start: start,
-              end: end,
-              type: end ? 'range' : 'point'
-            }));
-          }
-          return results1;
-        }).call(this));
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        timeLog = ref1[j];
+        start = new Date(timeLog.date);
+        if (timeLog.spentTime) {
+          end = new Date(start);
+          end.setMinutes(start.getMinutes() + timeLog.spentTime);
+        } else {
+          end = null;
+        }
+        results.push(this.$scope.timelineItems.add({
+          id: timeLog._id,
+          group: timeLog.person,
+          content: this.$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment,
+          start: start,
+          end: end,
+          type: end ? 'range' : 'point'
+        }));
       }
       return results;
     };
