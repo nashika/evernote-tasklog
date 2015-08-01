@@ -11,27 +11,34 @@
   NoteModel = require('../lib/models/note-model');
 
   router.get('/', function(req, res, next) {
-    var query;
-    query = req.query.query ? JSON.parse(req.query.query) : {};
-    if (req.query.content) {
-      return NoteModel.prototype.s_findLocalWithContent(query, (function(_this) {
-        return function(err, notes) {
-          if (err) {
-            return res.status(500).send(err);
-          }
-          return res.json(notes);
-        };
-      })(this));
-    } else {
-      return NoteModel.prototype.s_findLocalWithoutContent(query, (function(_this) {
-        return function(err, notes) {
-          if (err) {
-            return res.status(500).send(err);
-          }
-          return res.json(notes);
-        };
-      })(this));
-    }
+    return NoteModel.prototype.s_findLocal(req.query, (function(_this) {
+      return function(err, notes) {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        return res.json(notes);
+      };
+    })(this));
+  });
+
+  router.get('/get-content', function(req, res, next) {
+    return NoteModel.prototype.s_getRemoteContent(req.query, (function(_this) {
+      return function(err, result) {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        return res.json(result);
+      };
+    })(this));
+  });
+
+  router.get('/count', function(req, res, next) {
+    return NoteModel.prototype.s_countLocal(req.query, function(err, count) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      return res.json(count);
+    });
   });
 
   module.exports = router;

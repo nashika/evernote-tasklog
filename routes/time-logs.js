@@ -11,9 +11,7 @@
   TimeLogModel = require('../lib/models/time-log-model');
 
   router.get('/', function(req, res, next) {
-    var query;
-    query = req.query.query ? JSON.parse(req.query.query) : {};
-    return TimeLogModel.prototype.s_findLocal(query, (function(_this) {
+    return TimeLogModel.prototype.s_findLocal(req.query, (function(_this) {
       return function(err, timeLogs) {
         if (err) {
           return res.status(500).send(err);

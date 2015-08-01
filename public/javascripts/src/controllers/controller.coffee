@@ -11,6 +11,8 @@ class Controller
 
   reload: (callback) =>
     if not callback then callback = =>
+    query = {}
+    noteCount = 0
     modalInstance = @$modal.open
       templateUrl: 'progress'
       backdrop: 'static'
@@ -39,9 +41,21 @@ class Controller
           @$rootScope.notebooks = data
           callback()
         .error (data) => callback(data)
+      # get note count
+      (callback) =>
+        @$http.get '/notes/count', {params: {query: query}}
+        .success (data) =>
+          noteCount = data
+          callback()
+        .error (data) => callback(data)
+      # get content from remote
+      (callback) =>
+        @$http.get '/notes/get-content', {params: {query: query}}
+        .success (data) => callback()
+        .error (data) => callback(data)
       # get notes
       (callback) =>
-        @$http.get '/notes', {params: {query: {}, content: true}}
+        @$http.get '/notes', {params: {query: query, content: false}}
         .success (data) =>
           @$rootScope.notes = {}
           for note in data

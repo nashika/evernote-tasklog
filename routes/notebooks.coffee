@@ -5,7 +5,7 @@ Evernote = require('Evernote').Evernote
 NotebookModel = require '../lib/models/notebook-model'
 
 router.get '/', (req, res, next) ->
-  NotebookModel::s_findLocal {}, (err, notebooks) =>
+  NotebookModel::s_findLocal req.query, (err, notebooks) =>
     if err then return req.status(500).send err
     res.json notebooks
 

@@ -11,7 +11,7 @@
   NotebookModel = require('../lib/models/notebook-model');
 
   router.get('/', function(req, res, next) {
-    return NotebookModel.prototype.s_findLocal({}, (function(_this) {
+    return NotebookModel.prototype.s_findLocal(req.query, (function(_this) {
       return function(err, notebooks) {
         if (err) {
           return req.status(500).send(err);

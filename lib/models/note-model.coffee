@@ -25,26 +25,18 @@ class NoteModel extends MultiModel
   APPEND_QUERY: {deleted: null}
 
   ###*
-  # @public
-  # @static
-  # @param {Object} query
-  # @param {function} callback
+  # @override
   ###
-  s_findLocalWithContent: (query, callback) =>
-    @s_findLocal query, (err, notes) =>
-      if err then return callback(err)
-      results = []
-      async.eachSeries notes, (note, callback) =>
-        if note.content
-          results.push note
-          callback()
-        else
-          @s_loadRemote note.guid, (err, loadNote) =>
-            if err then return callback(err)
-            results.push loadNote
-            callback()
-      , (err) =>
-        if err then return callback(err)
+  s_findLocal: (options, callback) =>
+    super options, (err, notes) =>
+      if options.content
+        callback null, notes
+      else
+        results = []
+        for note in notes
+          result = merge(true, note)
+          result.content = null
+          results.push result
         callback null, results
 
   ###*
@@ -53,15 +45,20 @@ class NoteModel extends MultiModel
   # @param {Object} query
   # @param {function} callback
   ###
-  s_findLocalWithoutContent: (query, callback) =>
-    @s_findLocal query, (err, notes) =>
+  s_getRemoteContent: (options, callback) =>
+    options = merge(true, options, {content: true})
+    @s_findLocal options, (err, notes) =>
       if err then return callback(err)
-      results = []
-      for note in notes
-        result = merge(true, note)
-        result.content = null
-        results.push result
-      callback null, results
+      result = {count: notes.length, getRemoteContentCount: 0}
+      async.eachSeries notes, (note, callback) =>
+        if note.content then return callback()
+        @s_loadRemote note.guid, (err, loadNote) =>
+          if err then return callback(err)
+          result.getRemoteContentCount++
+          callback()
+      , (err) =>
+        if err then return callback(err)
+        callback null, result
 
   ###*
   # @public

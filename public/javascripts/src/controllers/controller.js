@@ -23,12 +23,14 @@
     }
 
     Controller.prototype.reload = function(callback) {
-      var modalInstance;
+      var modalInstance, noteCount, query;
       if (!callback) {
         callback = (function(_this) {
           return function() {};
         })(this);
       }
+      query = {};
+      noteCount = 0;
       modalInstance = this.$modal.open({
         templateUrl: 'progress',
         backdrop: 'static',
@@ -70,10 +72,35 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            return _this.$http.get('/notes/count', {
+              params: {
+                query: query
+              }
+            }).success(function(data) {
+              noteCount = data;
+              return callback();
+            }).error(function(data) {
+              return callback(data);
+            });
+          };
+        })(this), (function(_this) {
+          return function(callback) {
+            return _this.$http.get('/notes/get-content', {
+              params: {
+                query: query
+              }
+            }).success(function(data) {
+              return callback();
+            }).error(function(data) {
+              return callback(data);
+            });
+          };
+        })(this), (function(_this) {
+          return function(callback) {
             return _this.$http.get('/notes', {
               params: {
-                query: {},
-                content: true
+                query: query,
+                content: false
               }
             }).success(function(data) {
               var i, len, note;

@@ -26,6 +26,12 @@ class MultiModel extends Model
 
   ###*
   # @const
+  # @type {Object}
+  ###
+  APPEND_SORT: {}
+
+  ###*
+  # @const
   # @type {number}
   ###
   DEFAULT_LIMIT: 50
@@ -37,17 +43,9 @@ class MultiModel extends Model
   # @param {function} callback
   ###
   s_findLocal: (options, callback) =>
-    if 'query' in options
-      query = options.query ? merge(true, @DEFAULT_QUERY)
-      sort = options.sort ? merge(true, @DEFAULT_SORT)
-      limit = options.limit ? @DEFAULT_LIMIT
-    else
-      query = options ? merge(true, @DEFAULT_QUERY)
-      sort = merge(true, @DEFAULT_SORT)
-      limit = @DEFAULT_LIMIT
-    merge query, @APPEND_QUERY
-    core.loggers.system.debug "Find local #{@PLURAL_NAME} was started. query=#{JSON.stringify(query)}, sort=#{JSON.stringify(sort)}, limit=#{limit}"
-    core.db[@PLURAL_NAME].find(query).sort(sort).limit(limit).exec (err, docs) =>
+    options = @__parseFindOptions(options)
+    core.loggers.system.debug "Find local #{@PLURAL_NAME} was started. query=#{JSON.stringify(options.query)}, sort=#{JSON.stringify(options.sort)}, limit=#{options.limit}"
+    core.db[@PLURAL_NAME].find(options.query).sort(options.sort).limit(options.limit).exec (err, docs) =>
       core.loggers.system.debug "Find local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. docs.length=#{docs.length}"
       callback(err, docs)
 
@@ -58,11 +56,33 @@ class MultiModel extends Model
   # @param {function} callback
   ###
   s_countLocal: (options, callback) =>
-    core.loggers.system.debug "Count local #{@PLURAL_NAME} was started. options=#{JSON.stringify(options)}"
-    query = if 'query' in options then options.query else options
-    core.db[@PLURAL_NAME].count query, (err, count) =>
+    options = @__parseFindOptions(options)
+    core.loggers.system.debug "Count local #{@PLURAL_NAME} was started. query=#{JSON.stringify(options.query)}"
+    core.db[@PLURAL_NAME].count options.query, (err, count) =>
       core.loggers.system.debug "Count local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. count=#{count}"
       callback(err, count)
+
+  ###*
+  # @private
+  # @param {Object} options
+  # @return {Object}
+  ###
+  __parseFindOptions: (options) =>
+    result = {}
+    # Detect options has query only or has some parameters.
+    result.query = options.query ? merge(true, @DEFAULT_QUERY)
+    result.sort = options.sort ? merge(true, @DEFAULT_SORT)
+    result.limit = options.limit ? @DEFAULT_LIMIT
+    # If some parameter type is string, convert object.
+    for key in ['query', 'sort']
+      result[key] = switch typeof result[key]
+        when 'object' then result[key]
+        when 'string' then JSON.parse(result[key])
+        else {}
+    # Merge default append parameters.
+    merge result.query, @APPEND_QUERY
+    merge result.sort, @APPEND_SORT
+    return result
 
   ###*
   # @public
