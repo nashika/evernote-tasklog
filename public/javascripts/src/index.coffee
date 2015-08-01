@@ -8,6 +8,7 @@ require './route'
 require './filters/order-object-by'
 
 # angular.js services
+require './services/note-filter'
 require './services/progress'
 
 # angular.js directives

@@ -5,15 +5,17 @@
   async = require('async');
 
   SettingsController = (function() {
-    function SettingsController($scope) {
+    function SettingsController($scope, noteFilter) {
       this.$scope = $scope;
+      this.noteFilter = noteFilter;
+      this.$scope.noteFilter = this.noteFilter;
     }
 
     return SettingsController;
 
   })();
 
-  app.controller('SettingsController', ['$scope', SettingsController]);
+  app.controller('SettingsController', ['$scope', 'noteFilter', SettingsController]);
 
   module.exports = SettingsController;
 

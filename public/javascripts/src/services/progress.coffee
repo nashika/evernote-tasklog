@@ -1,4 +1,4 @@
-class ProgressFactory
+class ProgressService
 
   modalInstance: null
   value: 0
@@ -25,5 +25,5 @@ class ProgressFactory
     if value isnt null
       @value = value
 
-app.service 'progress', ['$modal', ProgressFactory]
-module.exports = ProgressFactory
+app.service 'progress', ['$modal', ProgressService]
+module.exports = ProgressService

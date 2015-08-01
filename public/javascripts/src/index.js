@@ -6,6 +6,8 @@
 
   require('./filters/order-object-by');
 
+  require('./services/note-filter');
+
   require('./services/progress');
 
   require('./directives/resize');
