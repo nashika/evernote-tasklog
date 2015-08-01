@@ -5,7 +5,8 @@ script(type='text/ng-template' id='settings')
       .form-group
         label.col-sm-2.control-label Updated
         .col-sm-10
-          ui-select.form-control(ng-model='noteFilter.updated', theme='bootstrap')
+          ui-select(ng-model='noteFilter.updated', theme='select2')
+            ui-select-match(placeholder='Select update days.') {{$select.selected}}
             ui-select-choices(repeat='n in [1, 2, 3, 5, 7, 10, 15, 20, 30]')
               div(ng-bind-html="n")
             //option(ng-repeat=, value='{{n}}') Recent notes update {{n}} days
