@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "modal-controller.js",
+  "sourceRoot": "",
+  "sources": [
+    "modal-controller.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAM;IAES,yBAAC,MAAD;MAAC,IAAC,CAAA,SAAD;IAAD;;;;;;EAEf,GAAG,CAAC,UAAJ,CAAe,iBAAf,EAAkC,CAAC,QAAD,EAAW,eAAX,CAAlC;;EACA,MAAM,CAAC,OAAP,GAAiB;AALjB"
+}

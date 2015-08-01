@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "progress-modal-controller.js",
+  "sourceRoot": "",
+  "sources": [
+    "progress-modal-controller.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA,wCAAA;IAAA;;;EAAA,eAAA,GAAkB,OAAA,CAAQ,oBAAR;;EAEZ;;;IAES,iCAAC,MAAD,EAAU,QAAV;MAAC,IAAC,CAAA,SAAD;MAAS,IAAC,CAAA,WAAD;MACrB,IAAC,CAAA,MAAM,CAAC,QAAR,GAAmB,IAAC,CAAA;IADT;;;;KAFuB;;EAKtC,GAAG,CAAC,UAAJ,CAAe,yBAAf,EAA0C,CAAC,QAAD,EAAW,UAAX,EAAuB,uBAAvB,CAA1C;;EACA,MAAM,CAAC,OAAP,GAAiB;AARjB"
+}

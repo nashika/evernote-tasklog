@@ -18,7 +18,7 @@
 
   require('./filters/order-object-by');
 
-  require('./factories/view-util');
+  require('./services/progress');
 
   require('./directives/resize');
 
@@ -29,6 +29,8 @@
   require('./controllers/timeline-controller');
 
   require('./controllers/settings-controller');
+
+  require('./controllers/progress-modal-controller');
 
 }).call(this);
 

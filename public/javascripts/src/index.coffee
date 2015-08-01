@@ -17,8 +17,8 @@ window.app.config ['$routeProvider', ($routeProvider) ->
 # angular.js filters
 require './filters/order-object-by'
 
-# angular.js factories
-require './factories/view-util'
+# angular.js services
+require './services/progress'
 
 # angular.js directives
 require './directives/resize'
@@ -28,3 +28,4 @@ require './controllers/controller'
 require './controllers/navigation-controller'
 require './controllers/timeline-controller'
 require './controllers/settings-controller'
+require './controllers/progress-modal-controller'

@@ -6,12 +6,11 @@
   async = require('async');
 
   Controller = (function() {
-    function Controller($scope, $rootScope, $http, $modal, viewUtil) {
+    function Controller($scope, $rootScope, $http, progress) {
       this.$scope = $scope;
       this.$rootScope = $rootScope;
       this.$http = $http;
-      this.$modal = $modal;
-      this.viewUtil = viewUtil;
+      this.progress = progress;
       this.reload = bind(this.reload, this);
       this.$rootScope.persons = {};
       this.$rootScope.notes = {};
@@ -23,7 +22,7 @@
     }
 
     Controller.prototype.reload = function(callback) {
-      var modalInstance, noteCount, query;
+      var noteCount, query;
       if (!callback) {
         callback = (function(_this) {
           return function() {};
@@ -31,16 +30,11 @@
       }
       query = {};
       noteCount = 0;
-      modalInstance = this.$modal.open({
-        templateUrl: 'progress',
-        backdrop: 'static',
-        keyboard: false,
-        size: 'sm',
-        animation: false
-      });
+      this.progress.open();
       return async.series([
         (function(_this) {
           return function(callback) {
+            _this.progress.set('Syncing remote server.', 0);
             return _this.$http.get('/sync').success(function() {
               return callback();
             }).error(function(data) {
@@ -49,6 +43,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            _this.progress.set('Getting persons data.', 10);
             return _this.$http.get('/persons').success(function(data) {
               var i, len, person;
               _this.$rootScope.persons = {};
@@ -63,6 +58,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            _this.progress.set('Getting notebooks data.', 20);
             return _this.$http.get('/notebooks').success(function(data) {
               _this.$rootScope.notebooks = data;
               return callback();
@@ -72,6 +68,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            _this.progress.set('Getting note count.', 30);
             return _this.$http.get('/notes/count', {
               params: {
                 query: query
@@ -85,6 +82,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            _this.progress.set('Request remote contents.', 40);
             return _this.$http.get('/notes/get-content', {
               params: {
                 query: query
@@ -97,6 +95,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            _this.progress.set('Getting notes.', 60);
             return _this.$http.get('/notes', {
               params: {
                 query: query,
@@ -116,6 +115,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
+            _this.progress.set('Getting time logs.', 80);
             return _this.$http({
               method: 'GET',
               url: '/time-logs'
@@ -137,7 +137,8 @@
         })(this)
       ], (function(_this) {
         return function(err) {
-          modalInstance.close();
+          _this.progress.set('Done.', 100);
+          _this.progress.close();
           if (err) {
             throw new Error(err);
           }
@@ -150,7 +151,7 @@
 
   })();
 
-  app.controller('Controller', ['$scope', '$rootScope', '$http', '$modal', 'viewUtil', Controller]);
+  app.controller('Controller', ['$scope', '$rootScope', '$http', 'progress', Controller]);
 
   module.exports = Controller;
 
