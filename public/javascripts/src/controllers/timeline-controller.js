@@ -34,11 +34,12 @@
       this.$scope.$on('resize::resize', this._onResize);
     }
 
-    TimelineController.prototype._onWatchPersons = function(newPersons, oldPersons) {
-      var key, person;
+    TimelineController.prototype._onWatchPersons = function() {
+      var key, person, ref;
       this.$scope.timelineGroups.clear();
-      for (key in newPersons) {
-        person = newPersons[key];
+      ref = this.$scope.persons;
+      for (key in ref) {
+        person = ref[key];
         this.$scope.timelineGroups.add({
           id: key,
           content: person
@@ -51,7 +52,7 @@
     };
 
     TimelineController.prototype._onWatchNotes = function() {
-      var end, note, noteGuid, noteTimeLog, ref, ref1, results, start, timeLog, timeLogsId;
+      var end, note, noteGuid, noteTimeLog, ref, ref1, results, start, timeLog, timeLogs_id;
       this.$scope.timelineItems.clear();
       ref = this.$scope.notes;
       for (noteGuid in ref) {
@@ -71,8 +72,8 @@
         results.push((function() {
           var results1;
           results1 = [];
-          for (timeLogsId in noteTimeLog) {
-            timeLog = noteTimeLog[timeLogsId];
+          for (timeLogs_id in noteTimeLog) {
+            timeLog = noteTimeLog[timeLogs_id];
             start = new Date(timeLog.date);
             if (timeLog.spentTime) {
               end = new Date(start);
@@ -95,7 +96,7 @@
       return results;
     };
 
-    TimelineController.prototype._onWatchProfitLogs = function(newProfitLogs, oldProfitLogs) {};
+    TimelineController.prototype._onWatchProfitLogs = function() {};
 
     TimelineController.prototype._onResize = function(event) {
       return this.$scope.timeline.setOptions({

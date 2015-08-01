@@ -17,9 +17,9 @@ class TimelineController
     @$scope.$watchCollection 'profitLogs', @_onWatchProfitLogs
     @$scope.$on 'resize::resize', @_onResize
 
-  _onWatchPersons: (newPersons, oldPersons) =>
+  _onWatchPersons: =>
     @$scope.timelineGroups.clear()
-    for key, person of newPersons
+    for key, person of @$scope.persons
       @$scope.timelineGroups.add
         id: key
         content: person
@@ -27,7 +27,7 @@ class TimelineController
       id: 'updated'
       content: 'Update'
 
-  _onWatchNotes: () =>
+  _onWatchNotes: =>
     @$scope.timelineItems.clear()
     for noteGuid, note of @$scope.notes
       @$scope.timelineItems.add
@@ -37,7 +37,7 @@ class TimelineController
         start: new Date(note.updated)
         type: 'point'
     for noteGuid, noteTimeLog of @$scope.timeLogs
-      for timeLogsId, timeLog of noteTimeLog
+      for timeLogs_id, timeLog of noteTimeLog
         start = new Date(timeLog.date)
         if timeLog.spentTime
           end = new Date(start)
@@ -52,7 +52,7 @@ class TimelineController
           end: end
           type: if end then 'range' else 'point'
 
-  _onWatchProfitLogs: (newProfitLogs, oldProfitLogs) =>
+  _onWatchProfitLogs: =>
 
   _onResize: (event) =>
     @$scope.timeline.setOptions

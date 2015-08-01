@@ -14,9 +14,10 @@ class NotesController
 
   _onWatchTimeLogs: (timeLogs) =>
     noteSpentTimes = {}
-    for timeLog in timeLogs
-      noteSpentTimes[timeLog.noteGuid] ?= 0
-      noteSpentTimes[timeLog.noteGuid] += timeLog.spentTime
+    for noteGuid, noteTimeLog of timeLogs
+      for timeLog_id, timeLog of noteTimeLog
+        noteSpentTimes[timeLog.noteGuid] ?= 0
+        noteSpentTimes[timeLog.noteGuid] += timeLog.spentTime
     @$scope.noteSpentTimes = noteSpentTimes
 
 app.controller 'NotesController', ['$scope', NotesController]

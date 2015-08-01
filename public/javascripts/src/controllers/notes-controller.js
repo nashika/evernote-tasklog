@@ -27,14 +27,17 @@
     };
 
     NotesController.prototype._onWatchTimeLogs = function(timeLogs) {
-      var i, len, name, noteSpentTimes, timeLog;
+      var name, noteGuid, noteSpentTimes, noteTimeLog, timeLog, timeLog_id;
       noteSpentTimes = {};
-      for (i = 0, len = timeLogs.length; i < len; i++) {
-        timeLog = timeLogs[i];
-        if (noteSpentTimes[name = timeLog.noteGuid] == null) {
-          noteSpentTimes[name] = 0;
+      for (noteGuid in timeLogs) {
+        noteTimeLog = timeLogs[noteGuid];
+        for (timeLog_id in noteTimeLog) {
+          timeLog = noteTimeLog[timeLog_id];
+          if (noteSpentTimes[name = timeLog.noteGuid] == null) {
+            noteSpentTimes[name] = 0;
+          }
+          noteSpentTimes[timeLog.noteGuid] += timeLog.spentTime;
         }
-        noteSpentTimes[timeLog.noteGuid] += timeLog.spentTime;
       }
       return this.$scope.noteSpentTimes = noteSpentTimes;
     };
