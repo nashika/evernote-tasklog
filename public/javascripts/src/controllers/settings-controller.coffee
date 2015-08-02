@@ -4,7 +4,7 @@ class SettingsController
 
   constructor: (@$scope, @$http, @noteFilter) ->
     @$scope.noteFilter = @noteFilter
-    @$scope.$watch 'noteFilter', @_onWatchNoteFilter, true
+    @$scope.$watchGroup ['noteFilter.updated', 'noteFilter.notebooks', 'noteFilter.stacks'], @_onWatchNoteFilter
 
   _onWatchNoteFilter: =>
     query = @noteFilter.query()

@@ -8,14 +8,17 @@
 
     NoteFilterService.prototype.notebooks = null;
 
+    NoteFilterService.prototype.stacks = null;
+
     NoteFilterService.prototype.count = null;
 
-    function NoteFilterService() {
+    function NoteFilterService($rootScope) {
+      this.$rootScope = $rootScope;
       this.query = bind(this.query, this);
     }
 
     NoteFilterService.prototype.query = function() {
-      var result;
+      var i, j, len, len1, notebook, notebookGuid, notebooksArray, notebooksHash, ref, ref1, ref2, result, stack;
       result = {};
       if (this.updated) {
         merge(result, {
@@ -24,10 +27,32 @@
           }
         });
       }
+      notebooksHash = {};
       if (this.notebooks && this.notebooks.length > 0) {
+        ref = this.notebooks;
+        for (i = 0, len = ref.length; i < len; i++) {
+          notebookGuid = ref[i];
+          notebooksHash[notebookGuid] = true;
+        }
+      }
+      if (this.stacks && this.stacks.length > 0) {
+        ref1 = this.stacks;
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          stack = ref1[j];
+          ref2 = this.$rootScope.notebooks;
+          for (notebookGuid in ref2) {
+            notebook = ref2[notebookGuid];
+            if (stack === notebook.stack) {
+              notebooksHash[notebook.guid] = true;
+            }
+          }
+        }
+      }
+      notebooksArray = Object.keys(notebooksHash);
+      if (notebooksArray.length > 0) {
         merge(result, {
           notebookGuid: {
-            $in: this.notebooks
+            $in: notebooksArray
           }
         });
       }
@@ -38,7 +63,7 @@
 
   })();
 
-  app.service('noteFilter', [NoteFilterService]);
+  app.service('noteFilter', ['$rootScope', NoteFilterService]);
 
   module.exports = NoteFilterService;
 

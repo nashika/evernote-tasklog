@@ -3,6 +3,7 @@ class Controller
   constructor: (@$scope, @$rootScope, @$http, @progress, @noteFilter) ->
     @$rootScope.persons = {}
     @$rootScope.notebooks = {}
+    @$rootScope.stacks = []
     @$rootScope.notes = {}
     @$rootScope.timeLogs = {}
     @$scope.reload = @reload
@@ -36,8 +37,11 @@ class Controller
         @$http.get '/notebooks'
           .success (data) =>
             @$rootScope.notebooks = {}
+            stackHash = {}
             for notebook in data
               @$rootScope.notebooks[notebook.guid] = notebook
+              stackHash[notebook.stack] = true if notebook.stack
+            @$rootScope.stacks = Object.keys(stackHash)
             callback()
           .error (data) => callback(data)
       (callback) =>

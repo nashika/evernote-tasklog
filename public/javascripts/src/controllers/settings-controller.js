@@ -12,7 +12,7 @@
       this.noteFilter = noteFilter;
       this._onWatchNoteFilter = bind(this._onWatchNoteFilter, this);
       this.$scope.noteFilter = this.noteFilter;
-      this.$scope.$watch('noteFilter', this._onWatchNoteFilter, true);
+      this.$scope.$watchGroup(['noteFilter.updated', 'noteFilter.notebooks', 'noteFilter.stacks'], this._onWatchNoteFilter);
     }
 
     SettingsController.prototype._onWatchNoteFilter = function() {

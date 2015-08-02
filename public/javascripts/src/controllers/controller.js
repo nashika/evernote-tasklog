@@ -13,6 +13,7 @@
       this.reload = bind(this.reload, this);
       this.$rootScope.persons = {};
       this.$rootScope.notebooks = {};
+      this.$rootScope.stacks = [];
       this.$rootScope.notes = {};
       this.$rootScope.timeLogs = {};
       this.$scope.reload = this.reload;
@@ -60,12 +61,17 @@
           return function(callback) {
             _this.progress.set('Getting notebooks data.', 20);
             return _this.$http.get('/notebooks').success(function(data) {
-              var i, len, notebook;
+              var i, len, notebook, stackHash;
               _this.$rootScope.notebooks = {};
+              stackHash = {};
               for (i = 0, len = data.length; i < len; i++) {
                 notebook = data[i];
                 _this.$rootScope.notebooks[notebook.guid] = notebook;
+                if (notebook.stack) {
+                  stackHash[notebook.stack] = true;
+                }
               }
+              _this.$rootScope.stacks = Object.keys(stackHash);
               return callback();
             }).error(function(data) {
               return callback(data);

@@ -18,5 +18,12 @@ script(type='text/ng-template' id='settings')
               div(ng-bind-html='notebook.name | highlight: $select.search')
               small stack: {{notebook.stack ? notebook.stack : 'None'}}
       .form-group
-        label.col-sm-2.control-label Result Count
-        .col-sm-10.form-control-static Find {{noteFilter.count}} notes.
+        label.col-sm-2.control-label Stack
+        .col-sm-10
+          ui-select.form-control(multiple, ng-model='noteFilter.stacks', theme='select2')
+            ui-select-match(placeholder='Select stacks...') {{$item}}
+            ui-select-choices(repeat='stack in stacks | filter: $select.search')
+              div(ng-bind-html='stack | highlight: $select.search')
+      .form-group
+          label.col-sm-2.control-label Result Count
+          .col-sm-10.form-control-static Find {{noteFilter.count}} notes.
