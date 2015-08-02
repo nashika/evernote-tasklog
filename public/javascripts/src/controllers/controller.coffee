@@ -1,9 +1,8 @@
-async = require 'async'
-
 class Controller
 
   constructor: (@$scope, @$rootScope, @$http, @progress) ->
     @$rootScope.persons = {}
+    @$rootScope.notebooks = {}
     @$rootScope.notes = {}
     @$rootScope.timeLogs = {}
     @$scope.reload = @reload
@@ -39,14 +38,6 @@ class Controller
           @$rootScope.notebooks = {}
           for notebook in data
             @$rootScope.notebooks[notebook.guid] = notebook
-          callback()
-        .error (data) => callback(data)
-      # get note count
-      (callback) =>
-        @progress.set 'Getting note count.', 30
-        @$http.get '/notes/count', {params: {query: query}}
-        .success (data) =>
-          noteCount = data
           callback()
         .error (data) => callback(data)
       # get content from remote

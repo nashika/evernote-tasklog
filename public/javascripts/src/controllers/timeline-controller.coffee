@@ -1,5 +1,3 @@
-async = require 'async'
-
 class TimelineController
 
   constructor: (@$scope) ->

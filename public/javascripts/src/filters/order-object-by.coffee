@@ -1,4 +1,4 @@
-app.filter 'orderObjectBy', ->
+orderObjectBy = ->
   return (items, field = '$value', reverse = true) ->
     filtered = []
     angular.forEach items, (item, key) ->
@@ -23,3 +23,6 @@ app.filter 'orderObjectBy', ->
       result['$key'] = item.key
       results.push result
     return results
+
+app.filter 'orderObjectBy', orderObjectBy
+module.exports = orderObjectBy

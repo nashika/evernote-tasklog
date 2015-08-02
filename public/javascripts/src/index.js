@@ -4,6 +4,8 @@
 
   require('./route');
 
+  require('./filters/filter-by-property');
+
   require('./filters/order-object-by');
 
   require('./services/note-filter');

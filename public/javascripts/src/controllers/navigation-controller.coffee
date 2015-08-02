@@ -1,5 +1,3 @@
-async = require 'async'
-
 class NavigationController
 
   constructor: (@$scope, @$route) ->

@@ -5,16 +5,18 @@ script(type='text/ng-template' id='settings')
       .form-group
         label.col-sm-2.control-label Updated
         .col-sm-10
-          ui-select(ng-model='noteFilter.updated', theme='select2')
-            ui-select-match(placeholder='Select update days.') {{$select.selected}}
-            ui-select-choices(repeat='n in [1, 2, 3, 5, 7, 10, 15, 20, 30]')
-              div(ng-bind-html="n")
-            //option(ng-repeat=, value='{{n}}') Recent notes update {{n}} days
+          ui-select.form-control(ng-model='noteFilter.updated', theme='select2', search-enabled='false')
+            ui-select-match(placeholder='Select update days.') Recent {{$select.selected}} day
+            ui-select-choices(repeat='n in [undefined, 1, 2, 3, 5, 7, 10, 15, 20, 30]')
+              div(ng-bind-html="n ? 'Recent ' + n + ' day' : '-- None --'")
       .form-group
         label.col-sm-2.control-label Notebook
         .col-sm-10
-          select.form-control(multiple, ng-model='noteFilter.notebooks', ng-options='notebook.guid as notebook.name group by notebook.stack for notebook in notebooks')
-            option(value='') -- None --
+          ui-select.form-control(multiple, ng-model='noteFilter.notebooks', theme='select2')
+            ui-select-match(placeholder='Select notebooks...') {{$item.name}}
+            ui-select-choices(group-by='"stack"', repeat='notebook.guid as notebook in notebooks | filterByProperty: {name: $select.search}')
+              div(ng-bind-html='notebook.name | highlight: $select.search')
+              small stack: {{notebook.stack ? notebook.stack : 'None'}}
       .form-group
         label.col-sm-2.control-label Result Count
-        .col-sm-10.form-control-static Find {{count}} items.
+        .col-sm-10.form-control-static Find {{noteFilter.count}} notes.

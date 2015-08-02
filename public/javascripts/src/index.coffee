@@ -5,6 +5,7 @@ window.app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui
 require './route'
 
 # angular.js filters
+require './filters/filter-by-property'
 require './filters/order-object-by'
 
 # angular.js services
