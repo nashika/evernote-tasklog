@@ -1,6 +1,6 @@
 class NoteFilterService
 
-  updated: null
+  updated: 3
   notebooks: null
   count: null
 

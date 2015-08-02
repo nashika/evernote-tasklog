@@ -4,11 +4,12 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   Controller = (function() {
-    function Controller($scope, $rootScope, $http, progress) {
+    function Controller($scope, $rootScope, $http, progress, noteFilter) {
       this.$scope = $scope;
       this.$rootScope = $rootScope;
       this.$http = $http;
       this.progress = progress;
+      this.noteFilter = noteFilter;
       this.reload = bind(this.reload, this);
       this.$rootScope.persons = {};
       this.$rootScope.notebooks = {};
@@ -27,7 +28,7 @@
           return function() {};
         })(this);
       }
-      query = {};
+      query = this.noteFilter.query();
       noteCount = 0;
       this.progress.open();
       return async.series([
@@ -66,6 +67,28 @@
                 _this.$rootScope.notebooks[notebook.guid] = notebook;
               }
               return callback();
+            }).error(function(data) {
+              return callback(data);
+            });
+          };
+        })(this), (function(_this) {
+          return function(callback) {
+            _this.progress.set('Getting notes count.', 30);
+            return _this.$http.get('/notes/count', {
+              params: {
+                query: query
+              }
+            }).success(function(data) {
+              noteCount = data;
+              if (noteCount > 100) {
+                if (window.confirm("Current query find " + noteCount + " notes. It is too many. Continue anyway?")) {
+                  return callback();
+                } else {
+                  return callback('User Canceled');
+                }
+              } else {
+                return callback();
+              }
             }).error(function(data) {
               return callback(data);
             });
@@ -117,15 +140,13 @@
               }
               return results;
             }).call(_this);
-            return _this.$http.get('/time-logs', {
-              params: {
-                query: {
-                  noteGuid: {
-                    $in: guids
-                  }
-                },
-                limit: 300
-              }
+            return _this.$http.post('/time-logs', {
+              query: {
+                noteGuid: {
+                  $in: guids
+                }
+              },
+              limit: 300
             }).success(function(data) {
               var base, i, len, name, timeLog;
               _this.$rootScope.timeLogs = {};
@@ -158,7 +179,7 @@
 
   })();
 
-  app.controller('Controller', ['$scope', '$rootScope', '$http', 'progress', Controller]);
+  app.controller('Controller', ['$scope', '$rootScope', '$http', 'progress', 'noteFilter', Controller]);
 
   module.exports = Controller;
 

@@ -4,7 +4,7 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   NoteFilterService = (function() {
-    NoteFilterService.prototype.updated = null;
+    NoteFilterService.prototype.updated = 3;
 
     NoteFilterService.prototype.notebooks = null;
 

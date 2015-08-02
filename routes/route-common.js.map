@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "route-common.js",
+  "sourceRoot": "",
+  "sources": [
+    "route-common.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA,kBAAA;IAAA;;EAAA,KAAA,GAAQ,OAAA,CAAQ,OAAR;;EAEF;;;;;0BAEJ,WAAA,GAAa,SAAC,GAAD;AACX,UAAA;MAAA,IAAA,oCAAkB;MAClB,KAAA,uCAAoB;AACpB,aAAO,KAAA,CAAM,IAAN,EAAY,IAAZ,EAAkB,KAAlB;IAHI;;;;;;EAKf,MAAM,CAAC,OAAP,GAAqB,IAAA,WAAA,CAAA;AATrB"
+}
