@@ -11,6 +11,7 @@
       this.progress = progress;
       this.noteFilter = noteFilter;
       this.reload = bind(this.reload, this);
+      this.$rootScope.user = null;
       this.$rootScope.persons = {};
       this.$rootScope.notebooks = {};
       this.$rootScope.stacks = [];
@@ -34,6 +35,19 @@
       this.progress.open();
       return async.series([
         (function(_this) {
+          return function(callback) {
+            if (_this.$rootScope.user) {
+              return callback();
+            }
+            _this.progress.set('Getting user data.', 0);
+            return _this.$http.get('/user').success(function(data) {
+              _this.$rootScope.user = data;
+              return callback();
+            }).error(function(data) {
+              return callback(data);
+            });
+          };
+        })(this), (function(_this) {
           return function(callback) {
             _this.progress.set('Syncing remote server.', 0);
             return _this.$http.get('/sync').success(function() {

@@ -1,6 +1,10 @@
 # angular.js setting
 window.app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select'])
 
+app.config ['$compileProvider', ($compileProvider) ->
+  $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|mailto|evernote):/);
+]
+
 # route settings
 require './route'
 

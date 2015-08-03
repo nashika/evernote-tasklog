@@ -5,5 +5,5 @@ script(type='text/ng-template' id='notes')
         th Title
         th Spent Time
       tr(ng-repeat='note in notes')
-        td {{note.title}}
+        td: a(href='evernote:///view/{{user.id}}/{{user.shardId}}/{{note.guid}}/{{note.guid}}/') {{note.title}}
         td {{getSpentTime(note.guid)}}

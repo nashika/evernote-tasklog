@@ -31,7 +31,7 @@ class TimelineController
       @$scope.timelineItems.add
         id: note.guid
         group: 'updated'
-        content: note.title
+        content: "<a href=\"evernote:///view/#{@$scope.user.id}/#{@$scope.user.shardId}/#{note.guid}/#{note.guid}/\">#{note.title}</a>"
         start: new Date(note.updated)
         type: 'point'
     for noteGuid, noteTimeLog of @$scope.timeLogs
@@ -45,7 +45,7 @@ class TimelineController
         @$scope.timelineItems.add
           id: timeLog._id
           group: timeLog.person
-          content: @$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment
+          content: "<a href=\"evernote:///view/#{@$scope.user.id}/#{@$scope.user.shardId}/#{timeLog.noteGuid}/#{timeLog.noteGuid}/\">#{@$scope.notes[timeLog.noteGuid].title} #{timeLog.comment}</a>"
           start: start
           end: end
           type: if end then 'range' else 'point'

@@ -23,9 +23,6 @@
         return;
       }
       this.lastQueryStr = queryStr;
-      console.log({
-        query: query
-      });
       return this.$http.get('/notes/count', {
         params: {
           query: query

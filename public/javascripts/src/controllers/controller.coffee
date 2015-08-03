@@ -1,6 +1,7 @@
 class Controller
 
   constructor: (@$scope, @$rootScope, @$http, @progress, @noteFilter) ->
+    @$rootScope.user = null
     @$rootScope.persons = {}
     @$rootScope.notebooks = {}
     @$rootScope.stacks = []
@@ -15,6 +16,15 @@ class Controller
     noteCount = 0
     @progress.open()
     async.series [
+      # get user
+      (callback) =>
+        if @$rootScope.user then return callback()
+        @progress.set 'Getting user data.', 0
+        @$http.get '/user'
+          .success (data) =>
+            @$rootScope.user = data
+            callback()
+          .error (data) => callback(data)
       # sync
       (callback) =>
         @progress.set 'Syncing remote server.', 0

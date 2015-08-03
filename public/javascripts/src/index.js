@@ -2,6 +2,12 @@
 (function() {
   window.app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
 
+  app.config([
+    '$compileProvider', function($compileProvider) {
+      return $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|mailto|evernote):/);
+    }
+  ]);
+
   require('./route');
 
   require('./filters/filter-by-property');

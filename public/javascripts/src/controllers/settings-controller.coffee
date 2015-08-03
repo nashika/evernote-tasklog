@@ -11,7 +11,6 @@ class SettingsController
     queryStr = JSON.stringify(query)
     if @lastQueryStr is queryStr then return
     @lastQueryStr = queryStr
-    console.log {query: query}
     @$http.get '/notes/count', {params: {query: query}}
       .success (data) =>
         @noteFilter.count = data

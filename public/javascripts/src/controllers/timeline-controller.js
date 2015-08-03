@@ -58,7 +58,7 @@
         this.$scope.timelineItems.add({
           id: note.guid,
           group: 'updated',
-          content: note.title,
+          content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + note.guid + "/" + note.guid + "/\">" + note.title + "</a>",
           start: new Date(note.updated),
           type: 'point'
         });
@@ -82,7 +82,7 @@
             results1.push(this.$scope.timelineItems.add({
               id: timeLog._id,
               group: timeLog.person,
-              content: this.$scope.notes[timeLog.noteGuid].title + ' ' + timeLog.comment,
+              content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\">" + this.$scope.notes[timeLog.noteGuid].title + " " + timeLog.comment + "</a>",
               start: start,
               end: end,
               type: end ? 'range' : 'point'
