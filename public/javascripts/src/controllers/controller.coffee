@@ -1,3 +1,5 @@
+async = require 'async'
+
 class Controller
 
   constructor: (@$scope, @$rootScope, @$http, @progress, @noteFilter) ->

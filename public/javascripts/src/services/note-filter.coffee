@@ -1,3 +1,5 @@
+merge = require 'merge'
+
 class NoteFilterService
 
   updated: 3

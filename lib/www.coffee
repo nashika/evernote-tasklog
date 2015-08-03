@@ -1,3 +1,5 @@
+path = require 'path'
+
 async = require 'async'
 log4js = require 'log4js'
 Evernote = require('evernote').Evernote
@@ -21,7 +23,7 @@ class Www
   ###
   main: (app, server) ->
     # Initialize logger
-    log4js.configure '../log4js-config.json', {cwd: '../'}
+    log4js.configure path.normalize(__dirname + '/../log4js-config.json'), {cwd: path.normalize(__dirname + '/..')}
     core.loggers.system = log4js.getLogger('system')
     core.loggers.access = log4js.getLogger('access')
     core.loggers.error = log4js.getLogger('error')
