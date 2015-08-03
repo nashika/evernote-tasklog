@@ -62,7 +62,7 @@
     };
 
     TimelineController.prototype._onWatchNotes = function() {
-      var end, note, noteGuid, noteTimeLog, ref, ref1, results, start, timeLog, timeLogs_id;
+      var note, noteGuid, noteTimeLog, ref, ref1, results, timeLog, timeLogs_id;
       this.$scope.timelineItems.clear();
       ref = this.$scope.notes;
       for (noteGuid in ref) {
@@ -84,20 +84,13 @@
           results1 = [];
           for (timeLogs_id in noteTimeLog) {
             timeLog = noteTimeLog[timeLogs_id];
-            start = new Date(timeLog.date);
-            if (timeLog.spentTime) {
-              end = new Date(start);
-              end.setMinutes(start.getMinutes() + timeLog.spentTime);
-            } else {
-              end = null;
-            }
             results1.push(this.$scope.timelineItems.add({
               id: timeLog._id,
               group: timeLog.person,
               content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\">" + this.$scope.notes[timeLog.noteGuid].title + " " + timeLog.comment + "</a>",
-              start: start,
-              end: end,
-              type: end ? 'range' : 'point'
+              start: moment(timeLog.date),
+              end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes') : null,
+              type: timeLog.spentTime ? 'range' : 'point'
             }));
           }
           return results1;

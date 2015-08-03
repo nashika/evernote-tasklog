@@ -43,19 +43,13 @@ class TimelineController
         type: 'point'
     for noteGuid, noteTimeLog of @$scope.timeLogs
       for timeLogs_id, timeLog of noteTimeLog
-        start = new Date(timeLog.date)
-        if timeLog.spentTime
-          end = new Date(start)
-          end.setMinutes start.getMinutes() + timeLog.spentTime
-        else
-          end = null
         @$scope.timelineItems.add
           id: timeLog._id
           group: timeLog.person
           content: "<a href=\"evernote:///view/#{@$scope.user.id}/#{@$scope.user.shardId}/#{timeLog.noteGuid}/#{timeLog.noteGuid}/\">#{@$scope.notes[timeLog.noteGuid].title} #{timeLog.comment}</a>"
-          start: start
-          end: end
-          type: if end then 'range' else 'point'
+          start: moment(timeLog.date)
+          end: if timeLog.spentTime then moment(timeLog.date).add(timeLog.spentTime, 'minutes') else null
+          type: if timeLog.spentTime then 'range' else 'point'
 
   _onWatchProfitLogs: =>
 
