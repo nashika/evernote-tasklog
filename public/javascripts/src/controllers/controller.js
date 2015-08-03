@@ -45,8 +45,8 @@
             return _this.$http.get('/user').success(function(data) {
               _this.$rootScope.user = data;
               return callback();
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this), (function(_this) {
@@ -54,8 +54,8 @@
             _this.progress.set('Syncing remote server.', 0);
             return _this.$http.get('/sync').success(function() {
               return callback();
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this), (function(_this) {
@@ -69,8 +69,8 @@
                 _this.$rootScope.persons[person] = person;
               }
               return callback();
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this), (function(_this) {
@@ -89,8 +89,8 @@
               }
               _this.$rootScope.stacks = Object.keys(stackHash);
               return callback();
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this), (function(_this) {
@@ -111,8 +111,8 @@
               } else {
                 return callback();
               }
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this), (function(_this) {
@@ -122,10 +122,10 @@
               params: {
                 query: query
               }
-            }).success(function(data) {
+            }).success(function() {
               return callback();
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this), (function(_this) {
@@ -144,8 +144,8 @@
                 _this.$rootScope.notes[note.guid] = note;
               }
               return callback();
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this), (function(_this) {
@@ -180,8 +180,8 @@
                 _this.$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
               }
               return callback();
-            }).error(function(data) {
-              return callback(data);
+            }).error(function() {
+              return callback('Error $http request');
             });
           };
         })(this)
