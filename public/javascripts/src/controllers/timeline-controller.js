@@ -22,6 +22,18 @@
         orientation: {
           axis: 'both',
           item: 'top'
+        },
+        start: moment().startOf('day'),
+        end: moment().endOf('day'),
+        hiddenDates: [
+          {
+            start: moment().subtract(1, 'days').startOf('day').hour(20),
+            end: moment().startOf('day').hour(8),
+            repeat: 'daily'
+          }
+        ],
+        order: function(a, b) {
+          return a.start - b.start;
         }
       };
       this.$scope.timeline = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, options);

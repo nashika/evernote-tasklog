@@ -8,6 +8,13 @@ class TimelineController
       margin: {item: 5}
       height: window.innerHeight - 80
       orientation: {axis: 'both', item: 'top'}
+      start: moment().startOf('day')
+      end: moment().endOf('day')
+      hiddenDates: [
+        {start: moment().subtract(1, 'days').startOf('day').hour(20), end: moment().startOf('day').hour(8), repeat: 'daily'}
+      ]
+      order: (a, b) -> a.start - b.start
+
     @$scope.timeline = new vis.Timeline(container, @$scope.timelineItems, @$scope.timelineGroups, options)
     @$scope.$watchCollection 'persons', @_onWatchPersons
     @$scope.$watchCollection 'notes', @_onWatchNotes
