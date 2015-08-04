@@ -1,7 +1,7 @@
 app.config ['$routeProvider', ($routeProvider) ->
   $routeProvider
   .when '/',
-    redirectTo: '/timeline'
+    templateUrl: 'menu'
   .when '/timeline',
     templateUrl: 'timeline'
   .when '/notes',
@@ -9,5 +9,5 @@ app.config ['$routeProvider', ($routeProvider) ->
   .when '/settings',
     templateUrl: 'settings'
   .otherwise
-      redirectTo: '/'
+    redirectTo: '/'
 ]

@@ -24,6 +24,8 @@
 
   require('./controllers/navigation-controller');
 
+  require('./controllers/menu-controller');
+
   require('./controllers/timeline-controller');
 
   require('./controllers/notes-controller');

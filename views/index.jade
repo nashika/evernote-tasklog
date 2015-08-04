@@ -12,7 +12,7 @@ block content
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand(href='https://github.com/nashika/evernote-tasklog') Evernote Tasklog
+          a.navbar-brand(href='/#/') Evernote Tasklog
         .collapse.navbar-collapse(collapse='navCollapse')
           ul.nav.navbar-nav(ng-click='navCollapse = true')
             li(ng-class='{active: $route.current.templateUrl == "timeline"}')
@@ -24,6 +24,7 @@ block content
           form.navbar-form.navbar-right
             button.btn.btn-primary(type='button', ng-click='navCollapse = true; reload()') Reload
     div(ng-view)
+    include templates/menu
     include templates/timeline
     include templates/notes
     include templates/settings

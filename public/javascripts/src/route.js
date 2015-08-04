@@ -3,7 +3,7 @@
   app.config([
     '$routeProvider', function($routeProvider) {
       return $routeProvider.when('/', {
-        redirectTo: '/timeline'
+        templateUrl: 'menu'
       }).when('/timeline', {
         templateUrl: 'timeline'
       }).when('/notes', {

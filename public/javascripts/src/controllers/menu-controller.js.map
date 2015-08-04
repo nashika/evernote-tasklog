@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "menu-controller.js",
+  "sourceRoot": "",
+  "sources": [
+    "menu-controller.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAM;IAES,wBAAC,MAAD;MAAC,IAAC,CAAA,SAAD;IAAD;;;;;;EAEf,GAAG,CAAC,UAAJ,CAAe,gBAAf,EAAiC,CAAC,QAAD,EAAW,cAAX,CAAjC;;EACA,MAAM,CAAC,OAAP,GAAiB;AALjB"
+}
