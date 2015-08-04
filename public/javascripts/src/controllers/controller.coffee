@@ -9,6 +9,7 @@ class Controller
     @$rootScope.stacks = []
     @$rootScope.notes = {}
     @$rootScope.timeLogs = {}
+    @$rootScope.profitLogs = {}
     @$scope.reload = @reload
     @reload =>
 
@@ -94,6 +95,16 @@ class Controller
           for timeLog in data
             @$rootScope.timeLogs[timeLog.noteGuid] ?= {}
             @$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog
+          callback()
+        .error => callback('Error $http request')
+      (callback) =>
+        @progress.set 'Getting profit logs.', 90
+        guids = for noteGuid, note of @$rootScope.notes then note.guid
+        @$http.post '/profit-logs', {query: {noteGuid: {$in: guids}}, limit: 300}
+        .success (data) =>
+          for profitLog in data
+            @$rootScope.profitLogs[profitLog.noteGuid] ?= {}
+            @$rootScope.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog
           callback()
         .error => callback('Error $http request')
     ], (err) =>

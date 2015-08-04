@@ -6,11 +6,14 @@
   NotesController = (function() {
     function NotesController($scope) {
       this.$scope = $scope;
+      this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
       this._onWatchTimeLogs = bind(this._onWatchTimeLogs, this);
       this._getSpentTime = bind(this._getSpentTime, this);
       this.$scope.noteSpentTimes = {};
+      this.$scope.noteProfits = {};
       this.$scope.getSpentTime = this._getSpentTime;
       this.$scope.$watchCollection('timeLogs', this._onWatchTimeLogs);
+      this.$scope.$watchCollection('profitLogs', this._onWatchProfitLogs);
     }
 
     NotesController.prototype._getSpentTime = function(noteGuid) {
@@ -40,6 +43,23 @@
         }
       }
       return this.$scope.noteSpentTimes = noteSpentTimes;
+    };
+
+    NotesController.prototype._onWatchProfitLogs = function(profitLogs) {
+      var name, noteGuid, noteProfitLog, noteProfits, profitLog, profitLog_id;
+      console.log('calc profits');
+      noteProfits = {};
+      for (noteGuid in profitLogs) {
+        noteProfitLog = profitLogs[noteGuid];
+        for (profitLog_id in noteProfitLog) {
+          profitLog = noteProfitLog[profitLog_id];
+          if (noteProfits[name = profitLog.noteGuid] == null) {
+            noteProfits[name] = 0;
+          }
+          noteProfits[profitLog.noteGuid] += profitLog.profit;
+        }
+      }
+      return this.$scope.noteProfits = noteProfits;
     };
 
     return NotesController;

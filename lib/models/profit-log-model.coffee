@@ -12,4 +12,8 @@ class ProfitLogModel extends MultiModel
   ###
   TITLE_FIELD: 'comment'
 
+  ###*
+  # @override
+  ###
+  DEFAULT_LIMIT: 2000
 module.exports = ProfitLogModel

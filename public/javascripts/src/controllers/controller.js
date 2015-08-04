@@ -19,6 +19,7 @@
       this.$rootScope.stacks = [];
       this.$rootScope.notes = {};
       this.$rootScope.timeLogs = {};
+      this.$rootScope.profitLogs = {};
       this.$scope.reload = this.reload;
       this.reload((function(_this) {
         return function() {};
@@ -178,6 +179,41 @@
                   base[name] = {};
                 }
                 _this.$rootScope.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+              }
+              return callback();
+            }).error(function() {
+              return callback('Error $http request');
+            });
+          };
+        })(this), (function(_this) {
+          return function(callback) {
+            var guids, note, noteGuid;
+            _this.progress.set('Getting profit logs.', 90);
+            guids = (function() {
+              var ref, results;
+              ref = this.$rootScope.notes;
+              results = [];
+              for (noteGuid in ref) {
+                note = ref[noteGuid];
+                results.push(note.guid);
+              }
+              return results;
+            }).call(_this);
+            return _this.$http.post('/profit-logs', {
+              query: {
+                noteGuid: {
+                  $in: guids
+                }
+              },
+              limit: 300
+            }).success(function(data) {
+              var base, i, len, name, profitLog;
+              for (i = 0, len = data.length; i < len; i++) {
+                profitLog = data[i];
+                if ((base = _this.$rootScope.profitLogs)[name = profitLog.noteGuid] == null) {
+                  base[name] = {};
+                }
+                _this.$rootScope.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog;
               }
               return callback();
             }).error(function() {

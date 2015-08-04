@@ -46,6 +46,8 @@
 
   app.use('/time-logs', require('./routes/time-logs'));
 
+  app.use('/profit-logs', require('./routes/profit-logs'));
+
   app.use('/sync', require('./routes/sync'));
 
   app.use('/bower_components', express["static"](path.join(__dirname, '/bower_components')));
