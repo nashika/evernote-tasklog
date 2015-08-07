@@ -20,7 +20,9 @@ class SingleModel extends Model
     query = {_id: 1}
     sort = {}
     limit = 1
+    core.loggers.system.debug "Load local #{@PLURAL_NAME} was started."
     core.db[@PLURAL_NAME].find(query).sort(sort).limit(limit).exec (err, docs) =>
+      core.loggers.system.debug "Load local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. docs.length=#{docs.length}"
       if err then return callback(err)
       if docs.length is 0
         callback null, merge(true, @DEFAULT_DOC)
@@ -34,9 +36,9 @@ class SingleModel extends Model
   ###
   s_saveLocal: (doc, callback) =>
     doc._id = 1
-    core.db.syncStates.update {_id: 1}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
+    core.db[@PLURAL_NAME].update {_id: 1}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
       if err then return callback(err)
-      core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. guid=#{doc.guid}, numReplaced=#{numReplaced}"
+      core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. numReplaced=#{numReplaced}"
       callback()
 
 module.exports = SingleModel

@@ -16,4 +16,5 @@ class ProfitLogModel extends MultiModel
   # @override
   ###
   DEFAULT_LIMIT: 2000
+
 module.exports = ProfitLogModel

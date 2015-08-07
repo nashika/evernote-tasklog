@@ -1,17 +1,17 @@
 core = require '../core'
 SingleModel = require './single-model'
 
-class SyncStateModel extends SingleModel
+class UserModel extends SingleModel
 
   ###*
   # @override
   ###
-  PLURAL_NAME: 'syncStates'
+  PLURAL_NAME: 'users'
 
   ###*
   # @override
   ###
-  DEFAULT_DOC: {updateCount: 0}
+  DEFAULT_DOC: {}
 
   ###*
   # @public
@@ -19,7 +19,7 @@ class SyncStateModel extends SingleModel
   # @param {function} callback
   ###
   s_loadRemote: (callback) =>
-    noteStore = core.client.getNoteStore()
-    noteStore.getSyncState callback
+    userStore = core.client.getUserStore()
+    userStore.getUser callback
 
-module.exports = SyncStateModel
+module.exports = UserModel

@@ -7,6 +7,7 @@ Datastore = require 'nedb'
 
 core = require './core'
 config = require '../config'
+UserModel = require './models/user-model'
 SyncStateModel = require './models/sync-state-model'
 NoteModel = require './models/note-model'
 NotebookModel = require './models/notebook-model'
@@ -45,6 +46,7 @@ class Www
       # Initialize database
       (callback) =>
         dbPath = __dirname + '/../db/' + core.user.username + '/'
+        core.db.users = new Datastore({filename: dbPath + 'users.db', autoload: true})
         core.db.syncStates = new Datastore({filename: dbPath + 'sync-states.db', autoload: true})
         core.db.notes = new Datastore({filename: dbPath + 'notes.db', autoload: true})
         core.db.notebooks = new Datastore({filename: dbPath + 'notebooks.db', autoload: true})
@@ -66,13 +68,17 @@ class Www
   ###
   sync: (callback) =>
     noteStore = core.client.getNoteStore()
+    user = null
     localSyncState = null
     remoteSyncState = null
     lastSyncChunk = null
     async.waterfall [
-      (callback) => SyncStateModel::s_loadLocal(callback)
+      (callback) => UserModel::s_loadRemote callback
+      (remoteUser, callback) => user = remoteUser; callback()
+      (callback) => UserModel::s_saveLocal user, callback
+      (callback) => SyncStateModel::s_loadLocal callback
       (syncState, callback) => localSyncState = syncState; callback()
-      (callback) => SyncStateModel::s_loadRemote(callback)
+      (callback) => SyncStateModel::s_loadRemote callback
       (syncState, callback) => remoteSyncState = syncState; callback()
       (callback) =>
         core.loggers.system.info "Sync start. localUSN=#{localSyncState.updateCount} remoteUSN=#{remoteSyncState.updateCount}"

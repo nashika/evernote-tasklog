@@ -16,11 +16,11 @@ block content
         .collapse.navbar-collapse(collapse='navCollapse')
           ul.nav.navbar-nav(ng-click='navCollapse = true')
             li(ng-class='{active: $route.current.templateUrl == "timeline"}')
-              a(href='#/timeline') Timeline
+              a(href='#/timeline') #[span.fa.fa-clock-o] Timeline
             li(ng-class='{active: $route.current.templateUrl == "notes"}')
-              a(href='#/notes') Notes
+              a(href='#/notes') #[span.fa.fa-files-o] Notes
             li(ng-class='{active: $route.current.templateUrl == "settings"}')
-              a(href='#/settings') Settings
+              a(href='#/settings') #[span.fa.fa-gear] Settings
           form.navbar-form.navbar-right
             button.btn.btn-primary(type='button', ng-click='navCollapse = true; reload()') Reload
     div(ng-view)

@@ -1,11 +1,10 @@
 express = require 'express'
 router = express.Router()
 
-core = require '../lib/core'
+UserModel = require '../lib/models/user-model'
 
 router.get '/', (req, res, next) ->
-  userStore = core.client.getUserStore()
-  userStore.getUser (err, user) =>
+  UserModel::s_loadLocal (err, user) =>
     if err then return res.status(500).send err
     res.json user
 

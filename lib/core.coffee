@@ -8,6 +8,7 @@ core = {
   client: null
   user: null
   db:
+    users: null
     syncStates: null
     notes: null
     notebooks: null
