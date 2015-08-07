@@ -8,58 +8,107 @@
       this.$scope = $scope;
       this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
       this._onWatchTimeLogs = bind(this._onWatchTimeLogs, this);
+      this._getProfit = bind(this._getProfit, this);
       this._getSpentTime = bind(this._getSpentTime, this);
       this.$scope.noteSpentTimes = {};
+      this.$scope.notePersonSpentTimes = {};
       this.$scope.noteProfits = {};
+      this.$scope.existPersons = {};
       this.$scope.getSpentTime = this._getSpentTime;
+      this.$scope.getProfit = this._getProfit;
       this.$scope.$watchCollection('timeLogs', this._onWatchTimeLogs);
       this.$scope.$watchCollection('profitLogs', this._onWatchProfitLogs);
     }
 
-    NotesController.prototype._getSpentTime = function(noteGuid) {
-      var hour, minute;
-      if (!this.$scope.noteSpentTimes[noteGuid]) {
+    NotesController.prototype._getSpentTime = function(noteGuid, person) {
+      var hour, minute, ref, spentTime;
+      if (person == null) {
+        person = null;
+      }
+      if (person) {
+        spentTime = (ref = this.$scope.notePersonSpentTimes[noteGuid]) != null ? ref[person] : void 0;
+      } else {
+        spentTime = this.$scope.noteSpentTimes[noteGuid];
+      }
+      if (spentTime === void 0) {
+        return '';
+      }
+      if (!spentTime) {
         return '0m';
       }
-      hour = Math.floor(this.$scope.noteSpentTimes[noteGuid] / 60);
-      minute = this.$scope.noteSpentTimes[noteGuid] % 60;
+      hour = Math.floor(spentTime / 60);
+      minute = spentTime % 60;
       if (hour) {
         return hour + 'h' + minute + 'm';
       }
       return minute + 'm';
     };
 
+    NotesController.prototype._getProfit = function(noteGuid, person) {
+      var ref;
+      if (person == null) {
+        person = null;
+      }
+      if (!this.$scope.noteProfits[noteGuid]) {
+        return null;
+      }
+      if (!((ref = this.$scope.notePersonSpentTimes[noteGuid]) != null ? ref[person] : void 0)) {
+        return null;
+      }
+      if (!this.$scope.noteSpentTimes[noteGuid]) {
+        return null;
+      }
+      return this.$scope.noteProfits[noteGuid] * this.$scope.notePersonSpentTimes[noteGuid][person] / this.$scope.noteSpentTimes[noteGuid];
+    };
+
     NotesController.prototype._onWatchTimeLogs = function(timeLogs) {
-      var name, noteGuid, noteSpentTimes, noteTimeLog, timeLog, timeLog_id;
-      noteSpentTimes = {};
+      var base, base1, base2, name, name1, name2, noteGuid, noteTimeLog, persons, timeLog, timeLog_id;
+      this.$scope.noteSpentTimes = {};
+      this.$scope.notePersonSpentTimes = {};
+      persons = {};
       for (noteGuid in timeLogs) {
         noteTimeLog = timeLogs[noteGuid];
         for (timeLog_id in noteTimeLog) {
           timeLog = noteTimeLog[timeLog_id];
-          if (noteSpentTimes[name = timeLog.noteGuid] == null) {
-            noteSpentTimes[name] = 0;
+          if ((base = this.$scope.noteSpentTimes)[name = timeLog.noteGuid] == null) {
+            base[name] = 0;
           }
-          noteSpentTimes[timeLog.noteGuid] += timeLog.spentTime;
+          this.$scope.noteSpentTimes[timeLog.noteGuid] += timeLog.spentTime;
+          if ((base1 = this.$scope.notePersonSpentTimes)[name1 = timeLog.noteGuid] == null) {
+            base1[name1] = {};
+          }
+          if ((base2 = this.$scope.notePersonSpentTimes[timeLog.noteGuid])[name2 = timeLog.person] == null) {
+            base2[name2] = 0;
+          }
+          this.$scope.notePersonSpentTimes[timeLog.noteGuid][timeLog.person] += timeLog.spentTime;
+          if (timeLog.spentTime > 0) {
+            persons[timeLog.person] = true;
+          }
         }
       }
-      return this.$scope.noteSpentTimes = noteSpentTimes;
+      return this.$scope.existPersons = Object.keys(persons);
     };
 
     NotesController.prototype._onWatchProfitLogs = function(profitLogs) {
-      var name, noteGuid, noteProfitLog, noteProfits, profitLog, profitLog_id;
-      console.log('calc profits');
-      noteProfits = {};
+      var noteGuid, noteProfitLog, profitLog, profitLog_id, results;
+      this.$scope.noteProfits = {};
+      results = [];
       for (noteGuid in profitLogs) {
         noteProfitLog = profitLogs[noteGuid];
-        for (profitLog_id in noteProfitLog) {
-          profitLog = noteProfitLog[profitLog_id];
-          if (noteProfits[name = profitLog.noteGuid] == null) {
-            noteProfits[name] = 0;
+        results.push((function() {
+          var base, name, results1;
+          results1 = [];
+          for (profitLog_id in noteProfitLog) {
+            profitLog = noteProfitLog[profitLog_id];
+            if ((base = this.$scope.noteProfits)[name = profitLog.noteGuid] == null) {
+              base[name] = 0;
+            }
+            results1.push(this.$scope.noteProfits[profitLog.noteGuid] += profitLog.profit);
           }
-          noteProfits[profitLog.noteGuid] += profitLog.profit;
-        }
+          return results1;
+        }).call(this));
       }
-      return this.$scope.noteProfits = noteProfits;
+      return results;
     };
 
     return NotesController;

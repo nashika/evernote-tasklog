@@ -3,9 +3,15 @@ script(type='text/ng-template' id='notes')
     table.table.table-bordered.table-striped.table-hover.table-condensed
       tr
         th Title
-        th Spent Time
-        th Profit
+        th(ng-repeat='person in existPersons') {{person}}
+        th Amount
       tr(ng-repeat='note in notes')
         td: a(href='evernote:///view/{{user.id}}/{{user.shardId}}/{{note.guid}}/{{note.guid}}/') {{note.title}}
-        td {{getSpentTime(note.guid)}}
-        td {{noteProfits[note.guid]}}
+        td.text-right(ng-repeat='person in existPersons')
+          | {{getSpentTime(note.guid,person)}}
+          br
+          | {{getProfit(note.guid, person) | currency: ''}}
+        td.text-right
+          | {{getSpentTime(note.guid)}}
+          br
+          | {{noteProfits[note.guid] | currency : ''}}
