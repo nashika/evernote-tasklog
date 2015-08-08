@@ -14,6 +14,8 @@
 
   require('./filters/order-object-by');
 
+  require('./filters/spent-time');
+
   require('./services/note-filter');
 
   require('./services/progress');

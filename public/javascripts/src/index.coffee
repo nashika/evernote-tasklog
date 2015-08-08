@@ -11,6 +11,7 @@ require './route'
 # angular.js filters
 require './filters/filter-by-property'
 require './filters/order-object-by'
+require './filters/spent-time'
 
 # angular.js services
 require './services/note-filter'

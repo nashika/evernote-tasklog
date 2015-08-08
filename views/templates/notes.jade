@@ -4,14 +4,18 @@ script(type='text/ng-template' id='notes')
       tr
         th Title
         th(ng-repeat='person in existPersons') {{person}}
-        th Amount
-      tr(ng-repeat='note in notes')
+        th Total
+      tr(ng-repeat="note in notes")
         td: a(href='evernote:///view/{{user.id}}/{{user.shardId}}/{{note.guid}}/{{note.guid}}/') {{note.title}}
-        td.text-right(ng-repeat='person in existPersons')
-          | {{getSpentTime(note.guid,person)}}
+        td.text-right(ng-repeat="person in existPersons.concat(['$total'])")
+          small(ng-if='notesSpentTimes[note.guid][person]') ({{notesSpentTimes[note.guid][person] / notesSpentTimes[note.guid]['$total'] * 100 | number: 0}}%)&nbsp;
+          | {{notesSpentTimes[note.guid][person] | spentTime}}
           br
-          | {{getProfit(note.guid, person) | currency: ''}}
-        td.text-right
-          | {{getSpentTime(note.guid)}}
+          | {{notesProfits[note.guid][person] | number: 0}}
+      tr
+        th Total
+        td.text-right(ng-repeat="person in existPersons.concat('$total')")
+          small(ng-if="notesSpentTimes['$total'][person]") ({{notesSpentTimes['$total'][person] / notesSpentTimes['$total']['$total'] * 100 | number: 0}}%)&nbsp;
+          | {{notesSpentTimes['$total'][person] | spentTime}}
           br
-          | {{noteProfits[note.guid] | currency : ''}}
+          | {{notesProfits['$total'][person] | number: 0}}
