@@ -9,7 +9,7 @@
   www = require('../lib/www');
 
   router.get('/', function(req, res, next) {
-    return www.sync((function(_this) {
+    return www.sync(req.session.evernote.user.username, (function(_this) {
       return function(err) {
         if (err) {
           return res.status(500).send(err);

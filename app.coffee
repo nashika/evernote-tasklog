@@ -1,9 +1,11 @@
-express = require('express')
-path = require('path')
-favicon = require('serve-favicon')
-logger = require('morgan')
-cookieParser = require('cookie-parser')
-bodyParser = require('body-parser')
+express = require 'express'
+path = require 'path'
+favicon = require 'serve-favicon'
+logger = require 'morgan'
+cookieParser = require 'cookie-parser'
+session = require 'express-session'
+bodyParser = require 'body-parser'
+NedbStore = require('connect-nedb-session')(session)
 app = express()
 
 # view engine setup
@@ -16,10 +18,16 @@ app.use logger('dev')
 app.use bodyParser.json()
 app.use bodyParser.urlencoded(extended: false)
 app.use cookieParser()
+app.use session
+  secret: 'mysecret'
+  key: 'mysessionkey'
+  cookie: {path: '/', httpOnly: true, maxAge: 365 * 24 * 3600 * 1000}
+  store: new NedbStore({filename: __dirname + '/db/session.db'})
+  resave: false
+  saveUninitialized: false
 app.use express.static(path.join(__dirname, 'public'))
 app.use '/', require './routes/index'
 app.use '/user', require './routes/user'
-app.use '/notes-metadata', require './routes/notes-metadata'
 app.use '/notes', require './routes/notes'
 app.use '/persons', require './routes/persons'
 app.use '/notebooks', require './routes/notebooks'

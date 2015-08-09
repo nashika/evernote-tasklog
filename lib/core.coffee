@@ -5,6 +5,14 @@ core = {
   app: null
   server: null
   www: null
+  loggers:
+    system: null
+    access: null
+    error: null
+  users: {}
+}
+
+user = {
   client: null
   user: null
   db:
@@ -17,10 +25,6 @@ core = {
     linkedNotebooks: null
     timeLogs: null
     profitLogs: null
-  loggers:
-    system: null
-    access: null
-    error: null
 }
 
 module.exports = core

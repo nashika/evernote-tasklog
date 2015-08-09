@@ -9,7 +9,7 @@
   UserModel = require('../lib/models/user-model');
 
   router.get('/', function(req, res, next) {
-    return UserModel.prototype.s_loadLocal((function(_this) {
+    return UserModel.prototype.s_loadLocal(req.session.evernote.user.username, (function(_this) {
       return function(err, user) {
         if (err) {
           return res.status(500).send(err);

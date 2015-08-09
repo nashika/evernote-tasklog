@@ -6,7 +6,7 @@ TimeLogModel = require '../lib/models/time-log-model'
 
 router.all '/', (req, res, next) ->
   params = routeCommon.mergeParams(req)
-  TimeLogModel::s_findLocal params, (err, timeLogs) ->
+  TimeLogModel::s_findLocal req.session.evernote.user.username, params, (err, timeLogs) ->
     if err then return res.status(500).send err
     res.json timeLogs
 

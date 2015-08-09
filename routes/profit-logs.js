@@ -13,7 +13,7 @@
   router.all('/', function(req, res, next) {
     var params;
     params = routeCommon.mergeParams(req);
-    return ProfitLogModel.prototype.s_findLocal(params, function(err, profitLogs) {
+    return ProfitLogModel.prototype.s_findLocal(req.session.evernote.user.username, params, function(err, profitLogs) {
       if (err) {
         return res.status(500).send(err);
       }

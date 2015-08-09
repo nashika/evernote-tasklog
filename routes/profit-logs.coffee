@@ -6,7 +6,7 @@ ProfitLogModel = require '../lib/models/profit-log-model'
 
 router.all '/', (req, res, next) ->
   params = routeCommon.mergeParams(req)
-  ProfitLogModel::s_findLocal params, (err, profitLogs) ->
+  ProfitLogModel::s_findLocal req.session.evernote.user.username, params, (err, profitLogs) ->
     if err then return res.status(500).send err
     res.json profitLogs
 
