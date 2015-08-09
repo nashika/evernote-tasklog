@@ -1,6 +1,6 @@
 class TimelineController
 
-  constructor: (@$scope) ->
+  constructor: (@$scope, @$filter) ->
     @$scope.timelineItems = new vis.DataSet()
     @$scope.timelineGroups = new vis.DataSet()
     container = document.getElementById('timeline')
@@ -38,7 +38,7 @@ class TimelineController
       @$scope.timelineItems.add
         id: note.guid
         group: 'updated'
-        content: "<a href=\"evernote:///view/#{@$scope.user.id}/#{@$scope.user.shardId}/#{note.guid}/#{note.guid}/\">#{note.title}</a>"
+        content: "<a href=\"evernote:///view/#{@$scope.user.id}/#{@$scope.user.shardId}/#{note.guid}/#{note.guid}/\" title=\"#{note.title}\">#{@$filter('abbreviate')(note.title, 40)}</a>"
         start: new Date(note.updated)
         type: 'point'
     for noteGuid, noteTimeLog of @$scope.timeLogs
@@ -46,7 +46,7 @@ class TimelineController
         @$scope.timelineItems.add
           id: timeLog._id
           group: timeLog.person
-          content: "<a href=\"evernote:///view/#{@$scope.user.id}/#{@$scope.user.shardId}/#{timeLog.noteGuid}/#{timeLog.noteGuid}/\">#{@$scope.notes[timeLog.noteGuid].title} #{timeLog.comment}</a>"
+          content: "<a href=\"evernote:///view/#{@$scope.user.id}/#{@$scope.user.shardId}/#{timeLog.noteGuid}/#{timeLog.noteGuid}/\" title=\"#{@$scope.notes[timeLog.noteGuid].title} #{timeLog.comment}\">#{@$filter('abbreviate')(@$scope.notes[timeLog.noteGuid].title, 20)} #{@$filter('abbreviate')(timeLog.comment, 20)}</a>"
           start: moment(timeLog.date)
           end: if timeLog.spentTime then moment(timeLog.date).add(timeLog.spentTime, 'minutes') else null
           type: if timeLog.spentTime then 'range' else 'point'
@@ -57,5 +57,6 @@ class TimelineController
     @$scope.timeline.setOptions
       height: window.innerHeight - 90
 
-app.controller 'TimelineController', ['$scope', TimelineController]
+
+app.controller 'TimelineController', ['$scope', '$filter', TimelineController]
 module.exports = TimelineController

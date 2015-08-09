@@ -4,9 +4,10 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   TimelineController = (function() {
-    function TimelineController($scope) {
+    function TimelineController($scope, $filter) {
       var container, options;
       this.$scope = $scope;
+      this.$filter = $filter;
       this._onResize = bind(this._onResize, this);
       this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
       this._onWatchNotes = bind(this._onWatchNotes, this);
@@ -70,7 +71,7 @@
         this.$scope.timelineItems.add({
           id: note.guid,
           group: 'updated',
-          content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + note.guid + "/" + note.guid + "/\">" + note.title + "</a>",
+          content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + (this.$filter('abbreviate')(note.title, 40)) + "</a>",
           start: new Date(note.updated),
           type: 'point'
         });
@@ -87,7 +88,7 @@
             results1.push(this.$scope.timelineItems.add({
               id: timeLog._id,
               group: timeLog.person,
-              content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\">" + this.$scope.notes[timeLog.noteGuid].title + " " + timeLog.comment + "</a>",
+              content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\" title=\"" + this.$scope.notes[timeLog.noteGuid].title + " " + timeLog.comment + "\">" + (this.$filter('abbreviate')(this.$scope.notes[timeLog.noteGuid].title, 20)) + " " + (this.$filter('abbreviate')(timeLog.comment, 20)) + "</a>",
               start: moment(timeLog.date),
               end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes') : null,
               type: timeLog.spentTime ? 'range' : 'point'
@@ -111,7 +112,7 @@
 
   })();
 
-  app.controller('TimelineController', ['$scope', TimelineController]);
+  app.controller('TimelineController', ['$scope', '$filter', TimelineController]);
 
   module.exports = TimelineController;
 

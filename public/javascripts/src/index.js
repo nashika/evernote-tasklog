@@ -10,6 +10,8 @@
 
   require('./route');
 
+  require('./filters/abbreviate');
+
   require('./filters/filter-by-property');
 
   require('./filters/object-length');

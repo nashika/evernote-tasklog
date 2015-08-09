@@ -9,6 +9,7 @@ app.config ['$compileProvider', ($compileProvider) ->
 require './route'
 
 # angular.js filters
+require './filters/abbreviate'
 require './filters/filter-by-property'
 require './filters/object-length'
 require './filters/order-object-by'
