@@ -10,6 +10,7 @@ require './route'
 
 # angular.js filters
 require './filters/filter-by-property'
+require './filters/object-length'
 require './filters/order-object-by'
 require './filters/spent-time'
 
