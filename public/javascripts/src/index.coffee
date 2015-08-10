@@ -24,6 +24,7 @@ require './directives/resize'
 
 # angular.js controllers
 require './controllers/controller'
+require './controllers/auth-controller'
 require './controllers/navigation-controller'
 require './controllers/menu-controller'
 require './controllers/timeline-controller'

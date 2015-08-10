@@ -3,7 +3,7 @@ extends layout
 block script
 
 block content
-  div
+  div(ng-app='App', ng-controller='AuthController')
     .container
       .page-header
         h1 #[span.fa.fa-tasks] Evernote Tasklog
@@ -12,15 +12,19 @@ block content
           a.btn.btn-default.btn-lg.btn-block(href='/auth/login') #[span.fa.fa-4x.fa-sign-in] #[br] Basic Login
           p: .well Login to system using the Evernote server authentication.
         .col-md-3.col-sm-6
-          a.btn.btn-default.btn-lg.btn-block(href='/auth/login?token=1') #[span.fa.fa-4x.fa-key] #[br] Token Login
+          a.btn.btn-default.btn-lg.btn-block(ng-href='{{production.token ? "/auth/login?token=1" : ""}}', ng-disabled='!production.token') #[span.fa.fa-4x.fa-key] #[br] Token Login
+          button.btn.btn-primary.btn-block(type='button', ng-click='setToken(false)') Set token #[br] (User: {{production ? production.username : 'none'}})
           p: .well Login to system using the Evernote developer token. Get token from&nbsp;
             a(href='https://www.evernote.com/api/DeveloperToken.action') Evernote developer token API
-            | &nbsp;and write token to config.json.
+            br
+            | Notice: All client in this server use this token.
         .col-md-3.col-sm-6
           a.btn.btn-default.btn-lg.btn-block(href='/auth/login?sandbox=1') #[span.fa.fa-4x.fa-sign-in] #[br] Sandbox Login
           p: .well Login to sandbox system using the Evernote sandbox server authentication.
         .col-md-3.col-sm-6
-          a.btn.btn-default.btn-lg.btn-block(href='/auth/login?sandbox=1&token=1') #[span.fa.fa-4x.fa-key] #[br] Sandbox Token Login
+          a.btn.btn-default.btn-lg.btn-block(ng-href='{{sandbox.token ? "/auth/login?sandbox=1&token=1" : ""}}', ng-disabled='!sandbox.token') #[span.fa.fa-4x.fa-key] #[br] Sandbox Token Login
+          button.btn.btn-primary.btn-block(type='button', ng-click='setToken(true)') Set token #[br] (User: {{sandbox ? sandbox.username : 'none'}})
           p: .well Login to sandbox system using the Evernote sandbox developer token. Get token from&nbsp;
             a(href='https://sandbox.evernote.com/api/DeveloperToken.action') Evernote sandbox developer token API
-            | &nbsp;and write token to config.json.
+            br
+            | Notice: All client in this server use this token.

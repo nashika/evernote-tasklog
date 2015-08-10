@@ -28,6 +28,8 @@
 
   require('./controllers/controller');
 
+  require('./controllers/auth-controller');
+
   require('./controllers/navigation-controller');
 
   require('./controllers/menu-controller');

@@ -33,6 +33,7 @@ class Www
     core.server = server # TODO: Set password to web server
     core.www = this
     core.app.locals.core = core
+    core.db.globalSettings = new Datastore({filename: __dirname + '/../db/global-settings.db', autoload: true})
     core.loggers.system.info 'Initialize web server finished.'
 
   initUser: (username, token, sandbox, callback) ->

@@ -9,6 +9,8 @@ core = {
     system: null
     access: null
     error: null
+  db:
+    globalSettings: null
   users: {}
 }
 
