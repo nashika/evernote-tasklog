@@ -49,7 +49,7 @@
       consumerSecret: config.consumerSecret,
       sandbox: config.sandbox
     });
-    return client.getRequestToken('http://localhost:3000/login_callback', function(error, oauthToken, oauthTokenSecret, results) {
+    return client.getRequestToken(req.protocol + "://" + (req.get('host')) + "/login_callback", function(error, oauthToken, oauthTokenSecret, results) {
       if (error) {
         return res.status(500).send("Error getting OAuth request token : " + JSON.stringify(error));
       }
@@ -81,6 +81,13 @@
       return req.session.save(function() {
         return res.redirect('/');
       });
+    });
+  });
+
+  router.get('/logout', function(req, res, next) {
+    req.session.evernote = void 0;
+    return req.session.save(function() {
+      return res.redirect('/');
     });
   });
 

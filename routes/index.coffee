@@ -28,7 +28,7 @@ router.get '/login', (req, res, next) ->
     consumerKey: config.consumerKey
     consumerSecret: config.consumerSecret
     sandbox: config.sandbox
-  client.getRequestToken 'http://localhost:3000/login_callback', (error, oauthToken, oauthTokenSecret, results) ->
+  client.getRequestToken "#{req.protocol}://#{req.get('host')}/login_callback", (error, oauthToken, oauthTokenSecret, results) ->
     if error then return res.status(500).send "Error getting OAuth request token : " + JSON.stringify(error)
     req.session.evernote = {authTokenSecret: oauthTokenSecret}
     req.session.save ->
@@ -49,5 +49,10 @@ router.get '/login_callback', (req, res, next) ->
     req.session.evernote.accessToken = oauthAccessToken
     req.session.save ->
       res.redirect '/'
+
+router.get '/logout', (req, res, next) ->
+  req.session.evernote = undefined
+  req.session.save ->
+    res.redirect '/'
 
 module.exports = router

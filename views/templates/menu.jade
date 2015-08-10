@@ -1,5 +1,5 @@
 script(type='text/ng-template' id='menu')
-  #settings(ng-controller='MenuController')
+  #settings.container(ng-controller='MenuController')
     .page-header
       h1 #[span.fa.fa-tasks] Evernote Tasklog
     .row
@@ -35,7 +35,7 @@ script(type='text/ng-template' id='menu')
                 ui-select-match(placeholder='Select stacks...') {{$item}}
                 ui-select-choices(repeat='stack in stacks | filter: $select.search')
                   div(ng-bind-html='stack | highlight: $select.search')
-        button.btn.btn-primary.btn-block(type='button', ng-click='reload()') #[span.fa.fa-refresh] Reload
+        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='reload()') #[span.fa.fa-refresh] Reload
       .col-md-4
         h2 #[span.fa.fa-user] User Info
         dl.dl-horizontal
@@ -47,6 +47,7 @@ script(type='text/ng-template' id='menu')
           dd {{user.email}}
           dt Name
           dd {{user.name}}
+        a.btn.btn-danger.btn-block(href='/logout') #[span.fa.fa-sign-out] Logout
       .col-md-4
         h2 #[span.fa.fa-database] Data Info
         dl.dl-horizontal
@@ -56,3 +57,4 @@ script(type='text/ng-template' id='menu')
           dd {{timeLogs | objectLength : 1}}
           dt Profit Logs
           dd {{profitLogs | objectLength: 1}}
+        button.btn.btn-primary.btn-block(type='button', ng-click='reloadLogs()') #[span.fa.fa-industry] Re Parse Notes

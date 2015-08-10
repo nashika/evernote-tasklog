@@ -13,9 +13,9 @@
   "dependencies": {
     "bootstrap": "~3.3.5",
     "angularjs": "~1.4.3",
-    "angular-bootstrap": "~0.13.0",
-    "font-awesome": "~4.3.0",
-    "vis": "~4.5.1",
+    "angular-bootstrap": "~0.13.3",
+    "font-awesome": "~4.4.0",
+    "vis": "~4.7.0",
     "angular-route": "~1.4.3",
     "angular-ui-select": "~0.12.1",
     "select2": "~3.5.2",

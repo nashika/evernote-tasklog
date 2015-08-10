@@ -33,6 +33,7 @@ class Www
     core.server = server # TODO: Set password to web server
     core.www = this
     core.app.locals.core = core
+    core.loggers.system.info 'Initialize web server finished.'
 
   initUser: (username, token, sandbox, callback) ->
     if core.users[username]
