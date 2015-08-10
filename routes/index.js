@@ -16,23 +16,24 @@
   /* GET home page. */
 
   router.get('/', function(req, res, next) {
-    var client, ref, token, userStore;
+    var client, ref, sandbox, token, userStore;
     if (!((ref = req.session.evernote) != null ? ref.accessToken : void 0)) {
-      return res.redirect('/login');
+      return res.redirect('/auth');
     } else {
+      sandbox = req.session.evernote.sandbox;
       token = req.session.evernote.accessToken;
       client = new Evernote.Client({
         token: token,
-        sandbox: config.sandbox
+        sandbox: sandbox
       });
       userStore = client.getUserStore();
       return userStore.getUser(function(err, user) {
         if (err) {
-          return res.redirect('/login');
+          return res.redirect('/auth');
         }
         req.session.evernote.user = user;
         return req.session.save(function() {
-          return core.www.initUser(user.username, token, config.sandbox, function() {
+          return core.www.initUser(user.username, token, sandbox, function() {
             return res.render('index', {
               title: 'Evernote Tasklog'
             });
@@ -40,55 +41,6 @@
         });
       });
     }
-  });
-
-  router.get('/login', function(req, res, next) {
-    var client;
-    client = new Evernote.Client({
-      consumerKey: config.consumerKey,
-      consumerSecret: config.consumerSecret,
-      sandbox: config.sandbox
-    });
-    return client.getRequestToken(req.protocol + "://" + (req.get('host')) + "/login_callback", function(error, oauthToken, oauthTokenSecret, results) {
-      if (error) {
-        return res.status(500).send("Error getting OAuth request token : " + JSON.stringify(error));
-      }
-      req.session.evernote = {
-        authTokenSecret: oauthTokenSecret
-      };
-      return req.session.save(function() {
-        return res.redirect(client.getAuthorizeUrl(oauthToken));
-      });
-    });
-  });
-
-  router.get('/login_callback', function(req, res, next) {
-    var client, oauthToken, oauthTokenSecret, oauthVerifier, ref;
-    oauthToken = req.query['oauth_token'];
-    oauthVerifier = req.query['oauth_verifier'];
-    oauthTokenSecret = (ref = req.session.evernote) != null ? ref.authTokenSecret : void 0;
-    if (!oauthToken || !oauthVerifier || !oauthTokenSecret) {
-      res.redirect('/login');
-      return;
-    }
-    client = new Evernote.Client({
-      consumerKey: config.consumerKey,
-      consumerSecret: config.consumerSecret,
-      sandbox: config.sandbox
-    });
-    return client.getAccessToken(oauthToken, oauthTokenSecret, oauthVerifier, function(error, oauthAccessToken, oauthAccessTokenSecret, results) {
-      req.session.evernote.accessToken = oauthAccessToken;
-      return req.session.save(function() {
-        return res.redirect('/');
-      });
-    });
-  });
-
-  router.get('/logout', function(req, res, next) {
-    req.session.evernote = void 0;
-    return req.session.save(function() {
-      return res.redirect('/');
-    });
   });
 
   module.exports = router;

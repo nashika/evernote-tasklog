@@ -89,7 +89,7 @@ class Controller
       (callback) =>
         @progress.set 'Getting time logs.', 80
         guids = for noteGuid, note of @$rootScope.notes then note.guid
-        @$http.post '/time-logs', {query: {noteGuid: {$in: guids}}, limit: 300}
+        @$http.post '/time-logs', {query: {noteGuid: {$in: guids}}}
         .success (data) =>
           @$rootScope.timeLogs = {}
           for timeLog in data
@@ -100,7 +100,7 @@ class Controller
       (callback) =>
         @progress.set 'Getting profit logs.', 90
         guids = for noteGuid, note of @$rootScope.notes then note.guid
-        @$http.post '/profit-logs', {query: {noteGuid: {$in: guids}}, limit: 300}
+        @$http.post '/profit-logs', {query: {noteGuid: {$in: guids}}}
         .success (data) =>
           for profitLog in data
             @$rootScope.profitLogs[profitLog.noteGuid] ?= {}

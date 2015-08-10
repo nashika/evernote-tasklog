@@ -168,8 +168,7 @@
                 noteGuid: {
                   $in: guids
                 }
-              },
-              limit: 300
+              }
             }).success(function(data) {
               var base, i, len, name, timeLog;
               _this.$rootScope.timeLogs = {};
@@ -204,8 +203,7 @@
                 noteGuid: {
                   $in: guids
                 }
-              },
-              limit: 300
+              }
             }).success(function(data) {
               var base, i, len, name, profitLog;
               for (i = 0, len = data.length; i < len; i++) {

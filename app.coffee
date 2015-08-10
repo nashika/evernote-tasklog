@@ -27,6 +27,7 @@ app.use session
   saveUninitialized: false
 app.use express.static(path.join(__dirname, 'public'))
 app.use '/', require './routes/index'
+app.use '/auth', require './routes/auth'
 app.use '/user', require './routes/user'
 app.use '/notes', require './routes/notes'
 app.use '/persons', require './routes/persons'
