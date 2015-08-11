@@ -15,12 +15,10 @@ class SyncStateModel extends SingleModel
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {function} callback
   ###
-  s_loadRemote: (username, callback) =>
-    noteStore = core.users[username].client.getNoteStore()
+  loadRemote: (callback) =>
+    noteStore = core.users[@_username].client.getNoteStore()
     noteStore.getSyncState callback
 
 module.exports = SyncStateModel

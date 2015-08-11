@@ -38,29 +38,25 @@ class MultiModel extends Model
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {Object} options
   # @param {function} callback
   ###
-  s_findLocal: (username, options, callback) =>
+  findLocal: (options, callback) =>
     options = @__parseFindOptions(options)
     core.loggers.system.debug "Find local #{@PLURAL_NAME} was started. query=#{JSON.stringify(options.query)}, sort=#{JSON.stringify(options.sort)}, limit=#{options.limit}"
-    core.users[username].db[@PLURAL_NAME].find(options.query).sort(options.sort).limit(options.limit).exec (err, docs) =>
+    @_datastore.find(options.query).sort(options.sort).limit(options.limit).exec (err, docs) =>
       core.loggers.system.debug "Find local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. docs.length=#{docs.length}"
       callback(err, docs)
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {Object} options
   # @param {function} callback
   ###
-  s_countLocal: (username,options, callback) =>
+  countLocal: (options, callback) =>
     options = @__parseFindOptions(options)
     core.loggers.system.debug "Count local #{@PLURAL_NAME} was started. query=#{JSON.stringify(options.query)}"
-    core.users[username].db[@PLURAL_NAME].count options.query, (err, count) =>
+    @_datastore.count options.query, (err, count) =>
       core.loggers.system.debug "Count local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. count=#{count}"
       callback(err, count)
 
@@ -88,18 +84,16 @@ class MultiModel extends Model
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {Array.<Object>|Object} docs
   # @param {function} callback
   ###
-  s_saveLocal: (username, docs, callback) =>
+  saveLocal: (docs, callback) =>
     if not docs or docs.length is 0 then return callback()
     if not Array.isArray(docs) then docs = [docs]
     core.loggers.system.debug "Save local #{@PLURAL_NAME} was started. docs.count=#{docs.length}"
     async.eachSeries docs, (doc, callback) =>
       core.loggers.system.trace "Upsert local #{@PLURAL_NAME} was started. guid=#{doc.guid}, title=#{doc[@TITLE_FIELD]}"
-      core.users[username].db[@PLURAL_NAME].update {guid: doc.guid}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
+      @_datastore.update {guid: doc.guid}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
         core.loggers.system.trace "Upsert local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. guid=#{doc.guid}, numReplaced=#{numReplaced}"
         callback err
     , (err) =>
@@ -108,19 +102,17 @@ class MultiModel extends Model
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {Array.<Object>|Object} docs
   # @param {function} callback
   ###
-  s_saveLocalUpdateOnly: (username, docs, callback) =>
+  saveLocalUpdateOnly: (docs, callback) =>
     if not docs or docs.length is 0 then return callback()
     if not Array.isArray(docs) then docs = [docs]
     core.loggers.system.debug "Save local update only #{@PLURAL_NAME} was started. docs.count=#{docs.length}"
     async.eachSeries docs, (doc, callback) =>
       localDoc = null
       async.waterfall [
-        (callback) => core.db[@PLURAL_NAME].find {guid: doc.guid}, callback
+        (callback) => @_datastore.find {guid: doc.guid}, callback
         (docs, callback) =>
           localDoc = if docs.length is 0 then null else docs[0]
           if localDoc and localDoc.updateSequenceNum >= doc.updateSequenceNum
@@ -129,7 +121,7 @@ class MultiModel extends Model
           else
             core.loggers.system.trace "Upsert local #{@PLURAL_NAME} was started. guid=#{doc.guid}, title=#{doc[@TITLE_FIELD]}"
             async.waterfall [
-              (callback) => core.users[username].db[@PLURAL_NAME].update {guid: doc.guid}, doc, {upsert: true}, callback
+              (callback) => @_datastore.db[@PLURAL_NAME].update {guid: doc.guid}, doc, {upsert: true}, callback
               (numReplaced, newDoc..., callback) =>
                 core.loggers.system.trace "Upsert local #{@PLURAL_NAME} was succeed. guid=#{doc.guid}, numReplaced=#{numReplaced}"
                 callback()
@@ -141,12 +133,10 @@ class MultiModel extends Model
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {Array.<string>|string|Object} query
   # @param {function} callback
   ###
-  s_removeLocal: (username, query, callback) =>
+  removeLocal: (query, callback) =>
     if not query then return callback()
     if Array.isArray(query)
       if query.length is 0 then callback()
@@ -154,7 +144,7 @@ class MultiModel extends Model
     if typeof query is 'string'
       query = {guid: query}
     core.loggers.system.debug "Remove local #{@PLURAL_NAME} was started. query=#{JSON.stringify(query)}"
-    core.users[username].db[@PLURAL_NAME].remove query, {multi: true}, (err, numRemoved) =>
+    @_datastore.remove query, {multi: true}, (err, numRemoved) =>
       core.loggers.system.debug "Remove local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. numRemoved=#{numRemoved}"
       callback(err)
 

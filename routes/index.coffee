@@ -8,11 +8,11 @@ router = express.Router()
 
 ### GET home page. ###
 router.get '/', (req, res, next) ->
-  if not req.session.evernote?.accessToken
+  if not req.session.evernote?.token
     res.redirect '/auth'
   else
     sandbox = req.session.evernote.sandbox
-    token = req.session.evernote.accessToken
+    token = req.session.evernote.token
     client = new Evernote.Client
       token: token
       sandbox: sandbox

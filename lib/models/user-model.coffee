@@ -15,12 +15,10 @@ class UserModel extends SingleModel
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {function} callback
   ###
-  s_loadRemote: (username, callback) =>
-    userStore = core.users[username].client.getUserStore()
+  loadRemote: (callback) =>
+    userStore = core.users[@_username].client.getUserStore()
     userStore.getUser callback
 
 module.exports = UserModel

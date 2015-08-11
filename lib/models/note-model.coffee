@@ -4,8 +4,6 @@ merge = require 'merge'
 core = require '../core'
 config = require '../../config'
 MultiModel = require './multi-model'
-TimeLogModel = require './time-log-model'
-ProfitLogModel = require './profit-log-model'
 
 class NoteModel extends MultiModel
 
@@ -27,8 +25,8 @@ class NoteModel extends MultiModel
   ###*
   # @override
   ###
-  s_findLocal: (username, options, callback) =>
-    super username, options, (err, notes) =>
+  findLocal: (options, callback) =>
+    super options, (err, notes) =>
       if options.content
         callback null, notes
       else
@@ -41,19 +39,17 @@ class NoteModel extends MultiModel
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {Object} query
   # @param {function} callback
   ###
-  s_getRemoteContent: (username, options, callback) =>
+  getRemoteContent: (options, callback) =>
     options = merge(true, options, {content: true})
-    @s_findLocal username, options, (err, notes) =>
+    @findLocal options, (err, notes) =>
       if err then return callback(err)
       result = {count: notes.length, getRemoteContentCount: 0}
       async.eachSeries notes, (note, callback) =>
         if note.content then return callback()
-        @s_loadRemote username, note.guid, (err, loadNote) =>
+        @loadRemote note.guid, (err, loadNote) =>
           if err then return callback(err)
           result.getRemoteContentCount++
           callback()
@@ -63,14 +59,12 @@ class NoteModel extends MultiModel
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {string} guid
   # @param {function} callback
   ###
-  s_loadRemote: (username, guid, callback) =>
+  loadRemote: (guid, callback) =>
     core.loggers.system.debug "Loading note from remote was started. guid=#{guid}"
-    noteStore = core.users[username].client.getNoteStore()
+    noteStore = core.users[@_username].client.getNoteStore()
     lastNote = null
     async.waterfall [
       (callback) => noteStore.getNote guid, true, false, false, false, callback
@@ -78,11 +72,11 @@ class NoteModel extends MultiModel
         core.loggers.system.debug "Loading note was succeed. guid=#{note.guid} title=#{note[@TITLE_FIELD]}"
         lastNote = note
         core.loggers.system.debug "Saving note to local. guid=#{note.guid}"
-        core.users[username].db.notes.update {guid: note.guid}, note, {upsert: true}, callback
+        @_datastore.update {guid: note.guid}, note, {upsert: true}, callback
       (numReplaced, newDoc..., callback) =>
         core.loggers.system.debug "Saving note was succeed. guid=#{lastNote.guid} numReplaced=#{numReplaced}"
         callback()
-      (callback) => @s_parseNote(username, lastNote, callback)
+      (callback) => @parseNote(lastNote, callback)
     ], (err) =>
       if err then return callback(err)
       core.loggers.system.debug "Loading note from remote was finished. note is loaded. guid=#{lastNote.guid} title=#{lastNote.title}"
@@ -90,12 +84,10 @@ class NoteModel extends MultiModel
 
   ###*
   # @public
-  # @static
-  # @param {string} username
   # @param {Object} note
   # @param {function} callback
   ###
-  s_parseNote: (username, note, callback) =>
+  parseNote: (note, callback) =>
     core.loggers.system.trace "Parsing note was started. guid=#{note.guid}"
     content = note.content
     timeLogs = []
@@ -137,10 +129,10 @@ class NoteModel extends MultiModel
           comment: matches[1]
           profit: parseInt(matches[2].replace(/,/g, ''))
     async.series [
-      (callback) => TimeLogModel::s_removeLocal username, {noteGuid: note.guid}, callback
-      (callback) => ProfitLogModel::s_removeLocal username, {noteGuid: note.guid}, callback
-      (callback) => TimeLogModel::s_saveLocal username, timeLogs, callback
-      (callback) => ProfitLogModel::s_saveLocal username, profitLogs, callback
+      (callback) => core.users[@_username].models.timeLogs.removeLocal {noteGuid: note.guid}, callback
+      (callback) => core.users[@_username].models.profitLogs.removeLocal {noteGuid: note.guid}, callback
+      (callback) => core.users[@_username].models.timeLogs.saveLocal timeLogs, callback
+      (callback) => core.users[@_username].models.profitLogs.saveLocal profitLogs, callback
     ], (err) =>
       core.loggers.system.trace "Parsing note was #{if err then 'failed' else 'succeed'}. guid=#{note.guid}"
       callback(err)

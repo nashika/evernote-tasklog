@@ -3,27 +3,29 @@ merge = require 'merge'
 core = require '../core'
 Model = require './Model'
 
-class SingleModel extends Model
+class SettingModel extends Model
 
   ###*
-  # @const
-  # @type {Object}
+  # @override
   ###
-  DEFAULT_DOC: {}
+  PLURAL_NAME: 'settings'
+
+  ###*
+  # @override
+  ###
+  REQUIRE_USER: false
 
   ###*
   # @public
+  # @param {string} key
   # @param {function} callback
   ###
-  loadLocal: (callback) =>
-    query = {_id: 1}
-    sort = {}
-    limit = 1
+  loadLocal: (key, callback) =>
     core.loggers.system.debug "Load local #{@PLURAL_NAME} was started."
-    @_datastore.find(query).sort(sort).limit(limit).exec (err, docs) =>
+    @_datastore.find({_id: key}).sort({}).limit(1).exec (err, docs) =>
       core.loggers.system.debug "Load local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. docs.length=#{docs.length}"
       if err then return callback(err)
-      doc = if docs.length is 0 then merge(true, @DEFAULT_DOC) else docs[0]
+      doc = if docs.length is 0 then null else docs[0]
       callback null, doc
 
   ###*
@@ -31,11 +33,11 @@ class SingleModel extends Model
   # @param {Object} doc
   # @param {function} callback
   ###
-  saveLocal: (doc, callback) =>
-    doc._id = 1
-    @_datastore.update {_id: 1}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
+  saveLocal: (key, doc, callback) =>
+    doc._id = key
+    @_datastore.update {_id: key}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
       if err then return callback(err)
       core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. numReplaced=#{numReplaced}"
       callback()
 
-module.exports = SingleModel
+module.exports = SettingModel

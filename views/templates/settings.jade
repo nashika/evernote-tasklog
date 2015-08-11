@@ -1,13 +1,15 @@
 script(type='text/ng-template' id='settings')
   #settings(ng-controller='SettingsController')
-    h2 Person Settings
-    form.form-horizontal
-      .form-group(ng-repeat='person in editPersons')
-        label.col-sm-2.control-label person-{{$index + 1}}
-        .col-sm-6
-          input.form-control(type='text', ng-model='person')
-        button.btn.btn-warning.col-sm-1(ng-click='up($index)') Up
-        button.btn.btn-warning.col-sm-1(ng-click='down($index)') Down
-        button.btn.btn-danger.col-sm-2(ng-click='remove($index)') Remove
-      button.btn.btn-success.btn-block(ng-click='add()') Add
-      button.btn.btn-primary.btn-block(ng-click='submit()') Submit
+    .container
+      h2 Person Settings
+      form.form-horizontal
+        .form-group(ng-repeat='person in editPersons')
+          label.col-sm-2.control-label person-{{$index + 1}}
+          .col-sm-6
+            input.form-control(type='text', ng-model='person')
+          .col-sm-4
+            button.btn.btn-warning(type='button', ng-click='up($index)') Up
+            button.btn.btn-warning(ng-click='down($index)') Down
+            button.btn.btn-danger(ng-click='remove($index)') Remove
+        button.btn.btn-success.btn-block(ng-click='add()') Add
+        button.btn.btn-primary.btn-block(ng-click='submit()') Submit

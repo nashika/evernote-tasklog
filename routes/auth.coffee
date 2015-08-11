@@ -14,13 +14,13 @@ router.get '/login', (req, res, next) ->
   token = if req.query.token then true else false
   envConfig = if sandbox then config.env.sandbox else config.env.production
   if token
-    _id = if sandbox then 'token.sandbox' else 'token.production'
-    core.db.globalSettings.find {_id: _id}, (err, docs) ->
-      if docs.length > 0
-        developerToken = docs[0].token
+    key = if sandbox then 'token.sandbox' else 'token.production'
+    core.models.settings.loadLocal key, (err, setting) ->
+      if setting
+        developerToken = setting.token
         req.session.evernote =
           sandbox: sandbox
-          accessToken: developerToken
+          token: developerToken
         req.session.save ->
           res.redirect '/'
   else
@@ -50,7 +50,7 @@ router.get '/callback', (req, res, next) ->
     consumerSecret: envConfig.consumerSecret
     sandbox: sandbox
   client.getAccessToken oauthToken, oauthTokenSecret, oauthVerifier, (error, oauthAccessToken, oauthAccessTokenSecret, results) ->
-    req.session.evernote.accessToken = oauthAccessToken
+    req.session.evernote.token = oauthAccessToken
     req.session.save ->
       res.redirect '/'
 
@@ -62,8 +62,6 @@ router.get '/logout', (req, res, next) ->
 router.all '/token', (req, res, next) ->
   sandbox = if req.body.sandbox ? req.body.sandbox then true else false
   token = req.body.token ? req.query.token
-  _id = if sandbox then 'token.sandbox' else 'token.production'
-  doc = {_id: _id, token: token}
   checkToken = (sandbox, token) ->
     if not token then return res.json null
     _client = new Evernote.Client
@@ -73,14 +71,16 @@ router.all '/token', (req, res, next) ->
     _userStore.getUser (err, user) ->
       if err then return res.json null
       res.json {token: token, username: user.username}
+  key = if sandbox then 'token.sandbox' else 'token.production'
   if token
-    core.db.globalSettings.update {_id: _id}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
+    doc = {token: token}
+    core.models.settings.saveLocal key, doc, (err) =>
       if err then return res.status(500).send "Error upsert token : #{JSON.stringify(err)}"
       checkToken sandbox, token
   else
-    core.db.globalSettings.find {_id: _id}, (err, docs) =>
+    core.models.settings.loadLocal key, (err, setting) =>
       if err then return res.status(500).send "Error find token: #{JSON.stringify(err)}"
-      token = if docs.length > 0 then docs[0].token else null
+      token = if setting then setting.token else null
       checkToken sandbox, token
 
 module.exports = router

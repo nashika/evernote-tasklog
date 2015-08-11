@@ -17,11 +17,11 @@
 
   router.get('/', function(req, res, next) {
     var client, ref, sandbox, token, userStore;
-    if (!((ref = req.session.evernote) != null ? ref.accessToken : void 0)) {
+    if (!((ref = req.session.evernote) != null ? ref.token : void 0)) {
       return res.redirect('/auth');
     } else {
       sandbox = req.session.evernote.sandbox;
-      token = req.session.evernote.accessToken;
+      token = req.session.evernote.token;
       client = new Evernote.Client({
         token: token,
         sandbox: sandbox

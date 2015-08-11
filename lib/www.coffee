@@ -3,17 +3,19 @@ path = require 'path'
 async = require 'async'
 log4js = require 'log4js'
 Evernote = require('evernote').Evernote
-Datastore = require 'nedb'
 
 core = require './core'
 config = require '../config'
-UserModel = require './models/user-model'
-SyncStateModel = require './models/sync-state-model'
+LinkedNotebookModel = require './models/linked-notebook-model'
 NoteModel = require './models/note-model'
 NotebookModel = require './models/notebook-model'
-TagModel = require './models/tag-model'
+ProfitLogsModel = require './models/profit-log-model'
 SearchModel = require './models/search-model'
-LinkedNotebookModel = require './models/linked-notebook-model'
+SettingModel = require './models/setting-model'
+SyncStateModel = require './models/sync-state-model'
+TagModel = require './models/tag-model'
+TimeLogsModel = require './models/time-log-model'
+UserModel = require './models/user-model'
 
 class Www
 
@@ -33,7 +35,7 @@ class Www
     core.server = server # TODO: Set password to web server
     core.www = this
     core.app.locals.core = core
-    core.db.globalSettings = new Datastore({filename: __dirname + '/../db/global-settings.db', autoload: true})
+    core.models.settings = new SettingModel()
     core.loggers.system.info 'Initialize web server finished.'
 
   initUser: (username, token, sandbox, callback) ->
@@ -55,15 +57,16 @@ class Www
       (callback) =>
         core.users[username].db = {}
         dbPath = __dirname + '/../db/' + core.users[username].user.username + '/'
-        core.users[username].db.users = new Datastore({filename: dbPath + 'users.db', autoload: true})
-        core.users[username].db.syncStates = new Datastore({filename: dbPath + 'sync-states.db', autoload: true})
-        core.users[username].db.notes = new Datastore({filename: dbPath + 'notes.db', autoload: true})
-        core.users[username].db.notebooks = new Datastore({filename: dbPath + 'notebooks.db', autoload: true})
-        core.users[username].db.tags = new Datastore({filename: dbPath + 'tags.db', autoload: true})
-        core.users[username].db.searches = new Datastore({filename: dbPath + 'searches.db', autoload: true})
-        core.users[username].db.linkedNotebooks = new Datastore({filename: dbPath + 'linked-notebooks.db', autoload: true})
-        core.users[username].db.timeLogs = new Datastore({filename: dbPath + 'time-logs.db', autoload: true})
-        core.users[username].db.profitLogs = new Datastore({filename: dbPath + 'profit-logs.db', autoload: true})
+        core.users[username].models =
+          users: new UserModel(username)
+          syncStates: new SyncStateModel(username)
+          notes: new NoteModel(username)
+          notebooks: new NotebookModel(username)
+          tags: new TagModel(username)
+          searches: new SearchModel(username)
+          linkedNotebooks: new LinkedNotebookModel(username)
+          timeLogs: new TimeLogsModel(username)
+          profitLogs: new ProfitLogsModel(username)
         callback()
       # Initialize datas
       (callback) => @sync username, callback
@@ -83,12 +86,12 @@ class Www
     remoteSyncState = null
     lastSyncChunk = null
     async.waterfall [
-      (callback) => UserModel::s_loadRemote username, callback
+      (callback) => core.users[username].models.users.loadRemote callback
       (remoteUser, callback) => user = remoteUser; callback()
-      (callback) => UserModel::s_saveLocal username, user, callback
-      (callback) => SyncStateModel::s_loadLocal username, callback
+      (callback) => core.users[username].models.users.saveLocal user, callback
+      (callback) => core.users[username].models.syncStates.loadLocal callback
       (syncState, callback) => localSyncState = syncState; callback()
-      (callback) => SyncStateModel::s_loadRemote username, callback
+      (callback) => core.users[username].models.syncStates.loadRemote callback
       (syncState, callback) => remoteSyncState = syncState; callback()
       (callback) =>
         core.loggers.system.info "Sync start. localUSN=#{localSyncState.updateCount} remoteUSN=#{remoteSyncState.updateCount}"
@@ -106,18 +109,18 @@ class Www
             (syncChunk, callback) =>
               lastSyncChunk = syncChunk
               callback()
-            (callback) => NoteModel::s_saveLocal username, lastSyncChunk.notes, callback
-            (callback) => NoteModel::s_removeLocal username, lastSyncChunk.expungedNotes, callback
-            (callback) => NotebookModel::s_saveLocal username, lastSyncChunk.notebooks, callback
-            (callback) => NotebookModel::s_removeLocal username, lastSyncChunk.expungedNotebooks, callback
-            (callback) => TagModel::s_saveLocal username, lastSyncChunk.tags, callback
-            (callback) => TagModel::s_removeLocal username, lastSyncChunk.expungedTags, callback
-            (callback) => SearchModel::s_saveLocal username, lastSyncChunk.searches, callback
-            (callback) => SearchModel::s_removeLocal username, lastSyncChunk.expungedSearches, callback
-            (callback) => LinkedNotebookModel::s_saveLocal username, lastSyncChunk.linkedNotebooks, callback
-            (callback) => LinkedNotebookModel::s_removeLocal username, lastSyncChunk.expungedLinkedNotebooks, callback
+            (callback) => core.users[username].models.notes.saveLocal lastSyncChunk.notes, callback
+            (callback) => core.users[username].models.notes.removeLocal lastSyncChunk.expungedNotes, callback
+            (callback) => core.users[username].models.notebooks.saveLocal lastSyncChunk.notebooks, callback
+            (callback) => core.users[username].models.notebooks.removeLocal lastSyncChunk.expungedNotebooks, callback
+            (callback) => core.users[username].models.tags.saveLocal lastSyncChunk.tags, callback
+            (callback) => core.users[username].models.tags.removeLocal lastSyncChunk.expungedTags, callback
+            (callback) => core.users[username].models.searches.saveLocal lastSyncChunk.searches, callback
+            (callback) => core.users[username].models.searches.removeLocal lastSyncChunk.expungedSearches, callback
+            (callback) => core.users[username].models.linkedNotebooks.saveLocal lastSyncChunk.linkedNotebooks, callback
+            (callback) => core.users[username].models.linkedNotebooks.removeLocal lastSyncChunk.expungedLinkedNotebooks, callback
             (callback) => localSyncState.updateCount = lastSyncChunk.chunkHighUSN; callback()
-            (callback) => SyncStateModel::s_saveLocal username, localSyncState, callback
+            (callback) => core.users[username].models.syncStates.saveLocal localSyncState, callback
             (callback) => core.loggers.system.info "Get sync chunk end. endUSN=#{localSyncState.updateCount}"; callback()
           ], callback
         , (err) =>

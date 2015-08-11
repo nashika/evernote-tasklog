@@ -1,7 +1,7 @@
 ###*
 # @type {Object}
 ###
-core = {
+core =
   app: null
   server: null
   www: null
@@ -9,15 +9,14 @@ core = {
     system: null
     access: null
     error: null
-  db:
-    globalSettings: null
+  models:
+    settings: null
   users: {}
-}
 
-user = {
+user =
   client: null
   user: null
-  db:
+  models:
     users: null
     syncStates: null
     notes: null
@@ -27,6 +26,5 @@ user = {
     linkedNotebooks: null
     timeLogs: null
     profitLogs: null
-}
 
 module.exports = core

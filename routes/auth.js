@@ -19,21 +19,19 @@
   });
 
   router.get('/login', function(req, res, next) {
-    var _id, client, envConfig, sandbox, token;
+    var client, envConfig, key, sandbox, token;
     sandbox = req.query.sandbox ? true : false;
     token = req.query.token ? true : false;
     envConfig = sandbox ? config.env.sandbox : config.env.production;
     if (token) {
-      _id = sandbox ? 'token.sandbox' : 'token.production';
-      return core.db.globalSettings.find({
-        _id: _id
-      }, function(err, docs) {
+      key = sandbox ? 'token.sandbox' : 'token.production';
+      return core.models.settings.loadLocal(key, function(err, setting) {
         var developerToken;
-        if (docs.length > 0) {
-          developerToken = docs[0].token;
+        if (setting) {
+          developerToken = setting.token;
           req.session.evernote = {
             sandbox: sandbox,
-            accessToken: developerToken
+            token: developerToken
           };
           return req.session.save(function() {
             return res.redirect('/');
@@ -78,7 +76,7 @@
       sandbox: sandbox
     });
     return client.getAccessToken(oauthToken, oauthTokenSecret, oauthVerifier, function(error, oauthAccessToken, oauthAccessTokenSecret, results) {
-      req.session.evernote.accessToken = oauthAccessToken;
+      req.session.evernote.token = oauthAccessToken;
       return req.session.save(function() {
         return res.redirect('/');
       });
@@ -93,14 +91,9 @@
   });
 
   router.all('/token', function(req, res, next) {
-    var _id, checkToken, doc, ref, ref1, sandbox, token;
+    var checkToken, doc, key, ref, ref1, sandbox, token;
     sandbox = ((ref = req.body.sandbox) != null ? ref : req.body.sandbox) ? true : false;
     token = (ref1 = req.body.token) != null ? ref1 : req.query.token;
-    _id = sandbox ? 'token.sandbox' : 'token.production';
-    doc = {
-      _id: _id,
-      token: token
-    };
     checkToken = function(sandbox, token) {
       var _client, _userStore;
       if (!token) {
@@ -121,13 +114,13 @@
         });
       });
     };
+    key = sandbox ? 'token.sandbox' : 'token.production';
     if (token) {
-      return core.db.globalSettings.update({
-        _id: _id
-      }, doc, {
-        upsert: true
-      }, (function(_this) {
-        return function(err, numReplaced, newDoc) {
+      doc = {
+        token: token
+      };
+      return core.models.settings.saveLocal(key, doc, (function(_this) {
+        return function(err) {
           if (err) {
             return res.status(500).send("Error upsert token : " + (JSON.stringify(err)));
           }
@@ -135,14 +128,12 @@
         };
       })(this));
     } else {
-      return core.db.globalSettings.find({
-        _id: _id
-      }, (function(_this) {
-        return function(err, docs) {
+      return core.models.settings.loadLocal(key, (function(_this) {
+        return function(err, setting) {
           if (err) {
             return res.status(500).send("Error find token: " + (JSON.stringify(err)));
           }
-          token = docs.length > 0 ? docs[0].token : null;
+          token = setting ? setting.token : null;
           return checkToken(sandbox, token);
         };
       })(this));

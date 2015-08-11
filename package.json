@@ -31,6 +31,7 @@
     "evernote": "^1.25.81",
     "express": "~4.13.1",
     "express-session": "^1.11.3",
+    "inflection": "^1.7.1",
     "jade": "~1.11.0",
     "log4js": "^0.6.26",
     "merge": "^1.2.0",
