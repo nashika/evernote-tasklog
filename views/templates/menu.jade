@@ -57,4 +57,4 @@ script(type='text/ng-template' id='menu')
           dd {{dataStore.timeLogs | objectLength : 1}}
           dt Profit Logs
           dd {{dataStore.profitLogs | objectLength: 1}}
-        button.btn.btn-primary.btn-block(type='button', ng-click='reloadLogs()') #[span.fa.fa-industry] Re Parse Notes
+        button.btn.btn-primary.btn-block(type='button', ng-click='dataTransciever.reParse()') #[span.fa.fa-industry] Re Parse Notes

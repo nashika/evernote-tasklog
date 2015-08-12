@@ -104,6 +104,7 @@ class DataTranscieverService
         guids = for noteGuid, note of @dataStore.notes then note.guid
         @$http.post '/profit-logs', {query: {noteGuid: {$in: guids}}}
         .success (data) =>
+          @dataStore.profitLogs = {}
           for profitLog in data
             @dataStore.profitLogs[profitLog.noteGuid] ?= {}
             @dataStore.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog
@@ -113,6 +114,20 @@ class DataTranscieverService
       @progress.set 'Done.', 100
       @progress.close()
       if err then return throw new Error(err)
+      callback(err)
+
+  reParse: (callback) ->
+    if not callback then callback = =>
+    @progress.open()
+    @progress.set 'Re Parse notes...', 0
+    async.waterfall [
+      (callback) =>
+        @$http.get '/notes/re-parse'
+        .success (data) => callback()
+        .error (data) => callback('Error $http request')
+    ], (err) =>
+      @progress.set 'Done.', 100
+      @progress.close()
       callback(err)
 
 app.service 'dataTransciever', ['$http', 'dataStore', 'noteQuery', 'progress', DataTranscieverService]

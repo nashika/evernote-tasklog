@@ -18,4 +18,9 @@ router.get '/count', (req, res, next) ->
     if err then return res.status(500).send err
     res.json count
 
+router.get '/re-parse', (req, res, next) ->
+  core.users[req.session.evernote.user.username].models.notes.reParseNotes req.query, (err) ->
+    if err then return res.status(500).send err
+    res.json true
+
 module.exports = router

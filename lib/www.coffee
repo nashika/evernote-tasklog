@@ -55,18 +55,17 @@ class Www
       (user, callback) => core.users[username].user = user; callback()
       # Initialize database
       (callback) =>
-        core.users[username].db = {}
-        dbPath = __dirname + '/../db/' + core.users[username].user.username + '/'
         core.users[username].models =
-          users: new UserModel(username)
-          syncStates: new SyncStateModel(username)
+          linkedNotebooks: new LinkedNotebookModel(username)
           notes: new NoteModel(username)
           notebooks: new NotebookModel(username)
-          tags: new TagModel(username)
-          searches: new SearchModel(username)
-          linkedNotebooks: new LinkedNotebookModel(username)
-          timeLogs: new TimeLogsModel(username)
           profitLogs: new ProfitLogsModel(username)
+          searches: new SearchModel(username)
+          settings: new SettingModel(username)
+          syncStates: new SyncStateModel(username)
+          tags: new TagModel(username)
+          timeLogs: new TimeLogsModel(username)
+          users: new UserModel(username)
         callback()
       # Initialize datas
       (callback) => @sync username, callback
@@ -77,6 +76,7 @@ class Www
 
   ###*
   # @public
+  # @param {string} username
   # @param {function} callback
   ###
   sync: (username, callback) =>

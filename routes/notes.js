@@ -39,6 +39,15 @@
     });
   });
 
+  router.get('/re-parse', function(req, res, next) {
+    return core.users[req.session.evernote.user.username].models.notes.reParseNotes(req.query, function(err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      return res.json(true);
+    });
+  });
+
   module.exports = router;
 
 }).call(this);

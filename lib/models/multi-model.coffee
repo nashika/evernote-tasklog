@@ -34,7 +34,7 @@ class MultiModel extends Model
   # @const
   # @type {number}
   ###
-  DEFAULT_LIMIT: 50
+  DEFAULT_LIMIT: 500
 
   ###*
   # @public

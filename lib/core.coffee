@@ -17,14 +17,15 @@ user =
   client: null
   user: null
   models:
-    users: null
-    syncStates: null
+    linkedNotebooks: null
     notes: null
     notebooks: null
-    tags: null
-    searches: null
-    linkedNotebooks: null
-    timeLogs: null
     profitLogs: null
+    searches: null
+    settings: null
+    syncStates: null
+    tags: null
+    timeLogs: null
+    users: null
 
 module.exports = core

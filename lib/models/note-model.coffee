@@ -76,7 +76,7 @@ class NoteModel extends MultiModel
       (numReplaced, newDoc..., callback) =>
         core.loggers.system.debug "Saving note was succeed. guid=#{lastNote.guid} numReplaced=#{numReplaced}"
         callback()
-      (callback) => @parseNote(lastNote, callback)
+      (callback) => @_parseNote(lastNote, callback)
     ], (err) =>
       if err then return callback(err)
       core.loggers.system.debug "Loading note from remote was finished. note is loaded. guid=#{lastNote.guid} title=#{lastNote.title}"
@@ -84,10 +84,25 @@ class NoteModel extends MultiModel
 
   ###*
   # @public
+  # @param {function} callback
+  ###
+  reParseNotes: (options, callback) =>
+    options ?= {}
+    options.limit = 0
+    options.content = true
+    @findLocal options, (err, notes) =>
+      if err then return callback(err)
+      async.eachSeries notes, (note, callback) =>
+        @_parseNote note, callback
+      , callback
+
+  ###*
+  # @protected
   # @param {Object} note
   # @param {function} callback
   ###
-  parseNote: (note, callback) =>
+  _parseNote: (note, callback) =>
+    if not note.content then return callback()
     core.loggers.system.trace "Parsing note was started. guid=#{note.guid}"
     content = note.content
     timeLogs = []

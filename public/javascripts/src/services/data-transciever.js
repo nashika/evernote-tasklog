@@ -208,6 +208,7 @@
               }
             }).success(function(data) {
               var base, i, len, name, profitLog;
+              _this.dataStore.profitLogs = {};
               for (i = 0, len = data.length; i < len; i++) {
                 profitLog = data[i];
                 if ((base = _this.dataStore.profitLogs)[name = profitLog.noteGuid] == null) {
@@ -228,6 +229,33 @@
           if (err) {
             throw new Error(err);
           }
+          return callback(err);
+        };
+      })(this));
+    };
+
+    DataTranscieverService.prototype.reParse = function(callback) {
+      if (!callback) {
+        callback = (function(_this) {
+          return function() {};
+        })(this);
+      }
+      this.progress.open();
+      this.progress.set('Re Parse notes...', 0);
+      return async.waterfall([
+        (function(_this) {
+          return function(callback) {
+            return _this.$http.get('/notes/re-parse').success(function(data) {
+              return callback();
+            }).error(function(data) {
+              return callback('Error $http request');
+            });
+          };
+        })(this)
+      ], (function(_this) {
+        return function(err) {
+          _this.progress.set('Done.', 100);
+          _this.progress.close();
           return callback(err);
         };
       })(this));
