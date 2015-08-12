@@ -1,14 +1,41 @@
 merge = require 'merge'
 
-class NoteFilterService
+class NoteQueryService
 
+  ###*
+  # @public
+  # @type {number}
+  ###
   updated: 3
+
+  ###*
+  # @public
+  # @type {Array}
+  ###
   notebooks: null
+
+  ###*
+  # @public
+  # @type {Array}
+  ###
   stacks: null
+
+  ###*
+  # @public
+  # @type {number}
+  ###
   count: null
 
-  constructor: (@$rootScope) ->
+  ###*
+  # @constructor
+  # @param {SyncDataService} syncData
+  ###
+  constructor: (@dataStore) ->
 
+  ###*
+  # @public
+  # @return {Object}
+  ###
   query: =>
     result = {}
     if @updated
@@ -19,7 +46,7 @@ class NoteFilterService
         notebooksHash[notebookGuid] = true
     if @stacks and @stacks.length > 0
       for stack in @stacks
-        for notebookGuid, notebook of @$rootScope.notebooks
+        for notebookGuid, notebook of @dataStore.notebooks
           if stack is notebook.stack
             notebooksHash[notebook.guid] = true
     notebooksArray = Object.keys(notebooksHash)
@@ -27,5 +54,5 @@ class NoteFilterService
       merge result, {notebookGuid: {$in: notebooksArray}}
     return result
 
-app.service 'noteFilter', ['$rootScope', NoteFilterService]
-module.exports = NoteFilterService
+app.service 'noteQuery', ['dataStore', NoteQueryService]
+module.exports = NoteQueryService

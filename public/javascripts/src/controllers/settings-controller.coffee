@@ -2,13 +2,14 @@ class SettingsController
 
   lastQueryStr: null
 
-  constructor: (@$scope) ->
+  constructor: (@$scope, @dataStore) ->
+    @$scope.dataStore = @dataStore
     @$scope.up = @_up
     @$scope.down = @_down
     @$scope.remove = @_remove
     @$scope.add = @_add
     @$scope.submit = @_submit
-    @$scope.$watchCollection 'persons', @_onWatchPersons
+    @$scope.$watchCollection 'dataStore.persons', @_onWatchPersons
 
   _up: (index) =>
     if index is 0 then return
@@ -25,7 +26,7 @@ class SettingsController
     @$scope.editPersons.push "Person #{@$scope.editPersons.length + 1}"
 
   _onWatchPersons: =>
-    @$scope.editPersons = Object.keys(@$scope.persons)
+    @$scope.editPersons = Object.keys(@dataStore.persons)
 
-app.controller 'SettingsController', ['$scope', SettingsController]
+app.controller 'SettingsController', ['$scope', 'dataStore', SettingsController]
 module.exports = SettingsController

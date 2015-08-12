@@ -4,15 +4,17 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   NotesController = (function() {
-    function NotesController($scope) {
+    function NotesController($scope, dataStore) {
       this.$scope = $scope;
+      this.dataStore = dataStore;
       this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
       this._onWatchTimeLogs = bind(this._onWatchTimeLogs, this);
+      this.$scope.dataStore = this.dataStore;
       this.$scope.notesSpentTimes = {};
       this.$scope.notesProfits = {};
       this.$scope.existPersons = [];
-      this.$scope.$watchCollection('timeLogs', this._onWatchTimeLogs);
-      this.$scope.$watchCollection('profitLogs', this._onWatchProfitLogs);
+      this.$scope.$watchCollection('dataStore.timeLogs', this._onWatchTimeLogs);
+      this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
     }
 
     NotesController.prototype._onWatchTimeLogs = function(timeLogs) {
@@ -106,7 +108,7 @@
 
   })();
 
-  app.controller('NotesController', ['$scope', NotesController]);
+  app.controller('NotesController', ['$scope', 'dataStore', NotesController]);
 
   module.exports = NotesController;
 

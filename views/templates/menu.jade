@@ -11,50 +11,50 @@ script(type='text/ng-template' id='menu')
       .col-md-4
         h2 #[span.fa.fa-search] Note Filter
         .well.h3
-          p #[span.fa.fa-2x.fa-files-o] {{noteFilter.count}} notes.
+          p #[span.fa.fa-2x.fa-files-o] {{noteQuery.count}} notes.
         form.form-horizontal
           .form-group
             label.col-sm-3.control-label Updated
             .col-sm-9
-              ui-select.form-control(ng-model='noteFilter.updated', theme='select2', search-enabled='false')
+              ui-select.form-control(ng-model='noteQuery.updated', theme='select2', search-enabled='false')
                 ui-select-match(placeholder='Select update days.') Recent {{$select.selected}} day
                 ui-select-choices(repeat='n in [undefined, 1, 2, 3, 5, 7, 10, 15, 20, 30]')
                   div(ng-bind-html="n ? 'Recent ' + n + ' day' : '-- None --'")
           .form-group
             label.col-sm-3.control-label Notebook
             .col-sm-9
-              ui-select.form-control(multiple, ng-model='noteFilter.notebooks', theme='select2')
+              ui-select.form-control(multiple, ng-model='noteQuery.notebooks', theme='select2')
                 ui-select-match(placeholder='Select notebooks...') {{$item.name}}
-                ui-select-choices(group-by='"stack"', repeat='notebook.guid as notebook in notebooks | filterByProperty: {name: $select.search}')
+                ui-select-choices(group-by='"stack"', repeat='notebook.guid as notebook in dataStore.notebooks | filterByProperty: {name: $select.search}')
                   div(ng-bind-html='notebook.name | highlight: $select.search')
                   small stack: {{notebook.stack ? notebook.stack : 'None'}}
           .form-group
             label.col-sm-3.control-label Stack
             .col-sm-9
-              ui-select.form-control(multiple, ng-model='noteFilter.stacks', theme='select2')
+              ui-select.form-control(multiple, ng-model='noteQuery.stacks', theme='select2')
                 ui-select-match(placeholder='Select stacks...') {{$item}}
-                ui-select-choices(repeat='stack in stacks | filter: $select.search')
+                ui-select-choices(repeat='stack in dataStore.stacks | filter: $select.search')
                   div(ng-bind-html='stack | highlight: $select.search')
-        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='reload()') #[span.fa.fa-refresh] Reload
+        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='dataTransciever.reload()') #[span.fa.fa-refresh] Reload
       .col-md-4
         h2 #[span.fa.fa-user] User Info
         dl.dl-horizontal
           dt Id
-          dd {{user.id}}
+          dd {{dataStore.user.id}}
           dt Username
-          dd {{user.username}}
+          dd {{dataStore.user.username}}
           dt Email
-          dd {{user.email}}
+          dd {{dataStore.user.email}}
           dt Name
-          dd {{user.name}}
+          dd {{dataStore.user.name}}
         a.btn.btn-danger.btn-block(href='/auth/logout') #[span.fa.fa-sign-out] Logout
       .col-md-4
         h2 #[span.fa.fa-database] Data Info
         dl.dl-horizontal
           dt Notes
-          dd {{notes | objectLength }}
+          dd {{dataStore.notes | objectLength }}
           dt Time Logs
-          dd {{timeLogs | objectLength : 1}}
+          dd {{dataStore.timeLogs | objectLength : 1}}
           dt Profit Logs
-          dd {{profitLogs | objectLength: 1}}
+          dd {{dataStore.profitLogs | objectLength: 1}}
         button.btn.btn-primary.btn-block(type='button', ng-click='reloadLogs()') #[span.fa.fa-industry] Re Parse Notes

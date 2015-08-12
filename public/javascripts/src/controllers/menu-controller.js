@@ -4,18 +4,22 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   MenuController = (function() {
-    function MenuController($scope, $http, noteFilter) {
+    function MenuController($scope, $http, dataStore, dataTransciever, noteQuery) {
       this.$scope = $scope;
       this.$http = $http;
-      this.noteFilter = noteFilter;
-      this._onWatchNoteFilter = bind(this._onWatchNoteFilter, this);
-      this.$scope.noteFilter = this.noteFilter;
-      this.$scope.$watchGroup(['noteFilter.updated', 'noteFilter.notebooks', 'noteFilter.stacks'], this._onWatchNoteFilter);
+      this.dataStore = dataStore;
+      this.dataTransciever = dataTransciever;
+      this.noteQuery = noteQuery;
+      this._onWatchNoteQuery = bind(this._onWatchNoteQuery, this);
+      this.$scope.dataStore = this.dataStore;
+      this.$scope.dataTransciever = this.dataTransciever;
+      this.$scope.noteQuery = this.noteQuery;
+      this.$scope.$watchGroup(['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks'], this._onWatchNoteQuery);
     }
 
-    MenuController.prototype._onWatchNoteFilter = function() {
+    MenuController.prototype._onWatchNoteQuery = function() {
       var query, queryStr;
-      query = this.noteFilter.query();
+      query = this.noteQuery.query();
       queryStr = JSON.stringify(query);
       if (this.lastQueryStr === queryStr) {
         return;
@@ -27,11 +31,11 @@
         }
       }).success((function(_this) {
         return function(data) {
-          return _this.noteFilter.count = data;
+          return _this.noteQuery.count = data;
         };
       })(this)).error((function(_this) {
         return function() {
-          return _this.noteFilter.count = null;
+          return _this.noteQuery.count = null;
         };
       })(this));
     };
@@ -40,7 +44,7 @@
 
   })();
 
-  app.controller('MenuController', ['$scope', '$http', 'noteFilter', MenuController]);
+  app.controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'noteQuery', MenuController]);
 
   module.exports = MenuController;
 

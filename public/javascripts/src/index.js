@@ -20,27 +20,31 @@
 
   require('./filters/spent-time');
 
-  require('./services/note-filter');
+  require('./services/data-store');
+
+  require('./services/data-transciever');
+
+  require('./services/note-query');
 
   require('./services/progress');
 
   require('./directives/resize');
 
-  require('./controllers/controller');
-
   require('./controllers/auth-controller');
 
-  require('./controllers/navigation-controller');
+  require('./controllers/controller');
 
   require('./controllers/menu-controller');
 
-  require('./controllers/timeline-controller');
+  require('./controllers/navigation-controller');
 
   require('./controllers/notes-controller');
 
+  require('./controllers/progress-modal-controller');
+
   require('./controllers/settings-controller');
 
-  require('./controllers/progress-modal-controller');
+  require('./controllers/timeline-controller');
 
 }).call(this);
 

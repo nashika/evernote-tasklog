@@ -4,14 +4,16 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   TimelineController = (function() {
-    function TimelineController($scope, $filter) {
+    function TimelineController($scope, $filter, dataStore) {
       var container, options;
       this.$scope = $scope;
       this.$filter = $filter;
+      this.dataStore = dataStore;
       this._onResize = bind(this._onResize, this);
       this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
       this._onWatchNotes = bind(this._onWatchNotes, this);
       this._onWatchPersons = bind(this._onWatchPersons, this);
+      this.$scope.dataStore = this.dataStore;
       this.$scope.timelineItems = new vis.DataSet();
       this.$scope.timelineGroups = new vis.DataSet();
       container = document.getElementById('timeline');
@@ -38,17 +40,17 @@
         }
       };
       this.$scope.timeline = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, options);
-      this.$scope.$watchCollection('persons', this._onWatchPersons);
-      this.$scope.$watchCollection('notes', this._onWatchNotes);
-      this.$scope.$watchCollection('timeLogs', this._onWatchNotes);
-      this.$scope.$watchCollection('profitLogs', this._onWatchProfitLogs);
+      this.$scope.$watchCollection('dataStore.persons', this._onWatchPersons);
+      this.$scope.$watchCollection('dataStore.notes', this._onWatchNotes);
+      this.$scope.$watchCollection('dataStore.timeLogs', this._onWatchNotes);
+      this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
       this.$scope.$on('resize::resize', this._onResize);
     }
 
     TimelineController.prototype._onWatchPersons = function() {
       var key, person, ref;
       this.$scope.timelineGroups.clear();
-      ref = this.$scope.persons;
+      ref = this.dataStore.persons;
       for (key in ref) {
         person = ref[key];
         this.$scope.timelineGroups.add({
@@ -65,18 +67,18 @@
     TimelineController.prototype._onWatchNotes = function() {
       var note, noteGuid, noteTimeLog, ref, ref1, results, timeLog, timeLogs_id;
       this.$scope.timelineItems.clear();
-      ref = this.$scope.notes;
+      ref = this.dataStore.notes;
       for (noteGuid in ref) {
         note = ref[noteGuid];
         this.$scope.timelineItems.add({
           id: note.guid,
           group: 'updated',
-          content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + (this.$filter('abbreviate')(note.title, 40)) + "</a>",
+          content: "<a href=\"evernote:///view/" + this.dataStore.user.id + "/" + this.dataStore.user.shardId + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + (this.$filter('abbreviate')(note.title, 40)) + "</a>",
           start: new Date(note.updated),
           type: 'point'
         });
       }
-      ref1 = this.$scope.timeLogs;
+      ref1 = this.dataStore.timeLogs;
       results = [];
       for (noteGuid in ref1) {
         noteTimeLog = ref1[noteGuid];
@@ -88,7 +90,7 @@
             results1.push(this.$scope.timelineItems.add({
               id: timeLog._id,
               group: timeLog.person,
-              content: "<a href=\"evernote:///view/" + this.$scope.user.id + "/" + this.$scope.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\" title=\"" + this.$scope.notes[timeLog.noteGuid].title + " " + timeLog.comment + "\">" + (this.$filter('abbreviate')(this.$scope.notes[timeLog.noteGuid].title, 20)) + " " + (this.$filter('abbreviate')(timeLog.comment, 20)) + "</a>",
+              content: "<a href=\"evernote:///view/" + this.dataStore.user.id + "/" + this.dataStore.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\" title=\"" + this.dataStore.notes[timeLog.noteGuid].title + " " + timeLog.comment + "\">" + (this.$filter('abbreviate')(this.dataStore.notes[timeLog.noteGuid].title, 20)) + " " + (this.$filter('abbreviate')(timeLog.comment, 20)) + "</a>",
               start: moment(timeLog.date),
               end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes') : null,
               type: timeLog.spentTime ? 'range' : 'point'
@@ -112,7 +114,7 @@
 
   })();
 
-  app.controller('TimelineController', ['$scope', '$filter', TimelineController]);
+  app.controller('TimelineController', ['$scope', '$filter', 'dataStore', TimelineController]);
 
   module.exports = TimelineController;
 

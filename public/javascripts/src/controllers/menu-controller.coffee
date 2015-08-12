@@ -1,19 +1,21 @@
 class MenuController
 
-  constructor: (@$scope, @$http, @noteFilter) ->
-    @$scope.noteFilter = @noteFilter
-    @$scope.$watchGroup ['noteFilter.updated', 'noteFilter.notebooks', 'noteFilter.stacks'], @_onWatchNoteFilter
+  constructor: (@$scope, @$http, @dataStore, @dataTransciever, @noteQuery) ->
+    @$scope.dataStore = @dataStore
+    @$scope.dataTransciever = @dataTransciever
+    @$scope.noteQuery = @noteQuery
+    @$scope.$watchGroup ['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks'], @_onWatchNoteQuery
 
-  _onWatchNoteFilter: =>
-    query = @noteFilter.query()
+  _onWatchNoteQuery: =>
+    query = @noteQuery.query()
     queryStr = JSON.stringify(query)
     if @lastQueryStr is queryStr then return
     @lastQueryStr = queryStr
     @$http.get '/notes/count', {params: {query: query}}
     .success (data) =>
-      @noteFilter.count = data
+      @noteQuery.count = data
     .error =>
-      @noteFilter.count = null
+      @noteQuery.count = null
 
-app.controller 'MenuController', ['$scope', '$http', 'noteFilter', MenuController]
+app.controller 'MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'noteQuery', MenuController]
 module.exports = MenuController

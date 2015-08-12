@@ -1,11 +1,12 @@
 class NotesController
 
-  constructor: (@$scope) ->
+  constructor: (@$scope, @dataStore) ->
+    @$scope.dataStore = @dataStore
     @$scope.notesSpentTimes = {}
     @$scope.notesProfits = {}
     @$scope.existPersons = []
-    @$scope.$watchCollection 'timeLogs', @_onWatchTimeLogs
-    @$scope.$watchCollection 'profitLogs', @_onWatchProfitLogs
+    @$scope.$watchCollection 'dataStore.timeLogs', @_onWatchTimeLogs
+    @$scope.$watchCollection 'dataStore.profitLogs', @_onWatchProfitLogs
 
   _onWatchTimeLogs: (timeLogs) =>
     @$scope.notesSpentTimes = {}
@@ -42,5 +43,5 @@ class NotesController
       for person in @$scope.existPersons
         @$scope.notesProfits[noteGuid][person] = calc(noteGuid, person)
 
-app.controller 'NotesController', ['$scope', NotesController]
+app.controller 'NotesController', ['$scope', 'dataStore', NotesController]
 module.exports = NotesController

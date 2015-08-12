@@ -6,19 +6,21 @@
   SettingsController = (function() {
     SettingsController.prototype.lastQueryStr = null;
 
-    function SettingsController($scope) {
+    function SettingsController($scope, dataStore) {
       this.$scope = $scope;
+      this.dataStore = dataStore;
       this._onWatchPersons = bind(this._onWatchPersons, this);
       this._add = bind(this._add, this);
       this._remove = bind(this._remove, this);
       this._down = bind(this._down, this);
       this._up = bind(this._up, this);
+      this.$scope.dataStore = this.dataStore;
       this.$scope.up = this._up;
       this.$scope.down = this._down;
       this.$scope.remove = this._remove;
       this.$scope.add = this._add;
       this.$scope.submit = this._submit;
-      this.$scope.$watchCollection('persons', this._onWatchPersons);
+      this.$scope.$watchCollection('dataStore.persons', this._onWatchPersons);
     }
 
     SettingsController.prototype._up = function(index) {
@@ -44,14 +46,14 @@
     };
 
     SettingsController.prototype._onWatchPersons = function() {
-      return this.$scope.editPersons = Object.keys(this.$scope.persons);
+      return this.$scope.editPersons = Object.keys(this.dataStore.persons);
     };
 
     return SettingsController;
 
   })();
 
-  app.controller('SettingsController', ['$scope', SettingsController]);
+  app.controller('SettingsController', ['$scope', 'dataStore', SettingsController]);
 
   module.exports = SettingsController;
 
