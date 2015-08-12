@@ -2,7 +2,7 @@ class SettingsController
 
   lastQueryStr: null
 
-  constructor: (@$scope, @dataStore) ->
+  constructor: (@$scope, @$http, @dataStore, @progress) ->
     @$scope.dataStore = @dataStore
     @$scope.up = @_up
     @$scope.down = @_down
@@ -22,11 +22,23 @@ class SettingsController
   _remove: (index) =>
     @$scope.editPersons.splice index, 1
 
-  _add: () =>
+  _add: =>
     @$scope.editPersons.push "Person #{@$scope.editPersons.length + 1}"
+
+  _submit: =>
+    @progress.open()
+    @progress.set 'Saving persons data...', 0
+    @$http.put '/settings/save', {key: 'persons', data: {persons: @$scope.editPersons}}
+    .success (data) =>
+      return
+    .error (data) =>
+      return
+    .finally =>
+      @progress.set 'Done.', 100
+      @progress.close()
 
   _onWatchPersons: =>
     @$scope.editPersons = Object.keys(@dataStore.persons)
 
-app.controller 'SettingsController', ['$scope', 'dataStore', SettingsController]
+app.controller 'SettingsController', ['$scope', '$http', 'dataStore', 'progress', SettingsController]
 module.exports = SettingsController

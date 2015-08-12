@@ -6,10 +6,13 @@
   SettingsController = (function() {
     SettingsController.prototype.lastQueryStr = null;
 
-    function SettingsController($scope, dataStore) {
+    function SettingsController($scope, $http, dataStore, progress) {
       this.$scope = $scope;
+      this.$http = $http;
       this.dataStore = dataStore;
+      this.progress = progress;
       this._onWatchPersons = bind(this._onWatchPersons, this);
+      this._submit = bind(this._submit, this);
       this._add = bind(this._add, this);
       this._remove = bind(this._remove, this);
       this._down = bind(this._down, this);
@@ -45,6 +48,26 @@
       return this.$scope.editPersons.push("Person " + (this.$scope.editPersons.length + 1));
     };
 
+    SettingsController.prototype._submit = function() {
+      this.progress.open();
+      this.progress.set('Saving persons data...', 0);
+      return this.$http.put('/settings/save', {
+        key: 'persons',
+        data: {
+          persons: this.$scope.editPersons
+        }
+      }).success((function(_this) {
+        return function(data) {};
+      })(this)).error((function(_this) {
+        return function(data) {};
+      })(this))["finally"]((function(_this) {
+        return function() {
+          _this.progress.set('Done.', 100);
+          return _this.progress.close();
+        };
+      })(this));
+    };
+
     SettingsController.prototype._onWatchPersons = function() {
       return this.$scope.editPersons = Object.keys(this.dataStore.persons);
     };
@@ -53,7 +76,7 @@
 
   })();
 
-  app.controller('SettingsController', ['$scope', 'dataStore', SettingsController]);
+  app.controller('SettingsController', ['$scope', '$http', 'dataStore', 'progress', SettingsController]);
 
   module.exports = SettingsController;
 
