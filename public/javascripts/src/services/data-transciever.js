@@ -54,7 +54,24 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Syncing remote server.', 0);
+            _this.progress.set('Getting settings data.', 10);
+            return _this.$http.get('/settings').success(function(data) {
+              _this.dataStore.settings = data;
+              return callback();
+            }).error(function() {
+              return callback('Error $http request');
+            });
+          };
+        })(this), (function(_this) {
+          return function(callback) {
+            if (!_this.dataStore.settings.persons || _this.dataStore.settings.persons.length === 0) {
+              return callback('This app need persons setting. Please switch "Settings Page" and set your persons data.');
+            }
+            return callback();
+          };
+        })(this), (function(_this) {
+          return function(callback) {
+            _this.progress.set('Syncing remote server.', 20);
             return _this.$http.get('/sync').success(function() {
               return callback();
             }).error(function() {
@@ -63,22 +80,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Getting persons data.', 10);
-            return _this.$http.get('/persons').success(function(data) {
-              var i, len, person;
-              _this.dataStore.persons = {};
-              for (i = 0, len = data.length; i < len; i++) {
-                person = data[i];
-                _this.dataStore.persons[person] = person;
-              }
-              return callback();
-            }).error(function() {
-              return callback('Error $http request');
-            });
-          };
-        })(this), (function(_this) {
-          return function(callback) {
-            _this.progress.set('Getting notebooks data.', 20);
+            _this.progress.set('Getting notebooks data.', 30);
             return _this.$http.get('/notebooks').success(function(data) {
               var i, len, notebook, stackHash;
               _this.dataStore.notebooks = {};
@@ -98,7 +100,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Getting notes count.', 30);
+            _this.progress.set('Getting notes count.', 40);
             return _this.$http.get('/notes/count', {
               params: {
                 query: query
@@ -120,7 +122,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Request remote contents.', 40);
+            _this.progress.set('Request remote contents.', 50);
             return _this.$http.get('/notes/get-content', {
               params: {
                 query: query
@@ -133,7 +135,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Getting notes.', 60);
+            _this.progress.set('Getting notes.', 70);
             return _this.$http.get('/notes', {
               params: {
                 query: query,
@@ -224,11 +226,12 @@
         })(this)
       ], (function(_this) {
         return function(err) {
-          _this.progress.set('Done.', 100);
-          _this.progress.close();
           if (err) {
-            throw new Error(err);
+            alert(err);
+          } else {
+            _this.progress.set('Done.', 100);
           }
+          _this.progress.close();
           return callback(err);
         };
       })(this));
@@ -241,7 +244,7 @@
         })(this);
       }
       this.progress.open();
-      this.progress.set('Re Parse notes...', 0);
+      this.progress.set('Re Parse notes...', 50);
       return async.waterfall([
         (function(_this) {
           return function(callback) {

@@ -25,10 +25,10 @@
     envConfig = sandbox ? config.env.sandbox : config.env.production;
     if (token) {
       key = sandbox ? 'token.sandbox' : 'token.production';
-      return core.models.settings.loadLocal(key, function(err, setting) {
+      return core.models.settings.loadLocal(key, function(err, token) {
         var developerToken;
-        if (setting) {
-          developerToken = setting.token;
+        if (token) {
+          developerToken = token;
           req.session.evernote = {
             sandbox: sandbox,
             token: developerToken
@@ -91,7 +91,7 @@
   });
 
   router.all('/token', function(req, res, next) {
-    var checkToken, doc, key, ref, ref1, sandbox, token;
+    var checkToken, key, ref, ref1, sandbox, token;
     sandbox = ((ref = req.body.sandbox) != null ? ref : req.body.sandbox) ? true : false;
     token = (ref1 = req.body.token) != null ? ref1 : req.query.token;
     checkToken = function(sandbox, token) {
@@ -116,10 +116,7 @@
     };
     key = sandbox ? 'token.sandbox' : 'token.production';
     if (token) {
-      doc = {
-        token: token
-      };
-      return core.models.settings.saveLocal(key, doc, (function(_this) {
+      return core.models.settings.saveLocal(key, token, (function(_this) {
         return function(err) {
           if (err) {
             return res.status(500).send("Error upsert token : " + (JSON.stringify(err)));
@@ -129,11 +126,10 @@
       })(this));
     } else {
       return core.models.settings.loadLocal(key, (function(_this) {
-        return function(err, setting) {
+        return function(err, token) {
           if (err) {
             return res.status(500).send("Error find token: " + (JSON.stringify(err)));
           }
-          token = setting ? setting.token : null;
           return checkToken(sandbox, token);
         };
       })(this));

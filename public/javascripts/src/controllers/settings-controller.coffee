@@ -2,14 +2,15 @@ class SettingsController
 
   lastQueryStr: null
 
-  constructor: (@$scope, @$http, @dataStore, @progress) ->
+  constructor: (@$scope, @$http, @dataStore, @dataTransciever, @progress) ->
     @$scope.dataStore = @dataStore
+    @$scope.editPersons = []
     @$scope.up = @_up
     @$scope.down = @_down
     @$scope.remove = @_remove
     @$scope.add = @_add
     @$scope.submit = @_submit
-    @$scope.$watchCollection 'dataStore.persons', @_onWatchPersons
+    @$scope.$watchCollection 'dataStore.settings.persons', @_onWatchPersons
 
   _up: (index) =>
     if index is 0 then return
@@ -28,17 +29,21 @@ class SettingsController
   _submit: =>
     @progress.open()
     @progress.set 'Saving persons data...', 0
-    @$http.put '/settings/save', {key: 'persons', data: {persons: @$scope.editPersons}}
+    persons = {}
+    for editPerson in @$scope.editPersons
+      persons[editPerson] = editPerson
+    @$http.put '/settings/save', {key: 'persons', value: persons}
     .success (data) =>
       return
     .error (data) =>
       return
     .finally =>
-      @progress.set 'Done.', 100
       @progress.close()
+      @dataTransciever.reParse()
 
   _onWatchPersons: =>
-    @$scope.editPersons = Object.keys(@dataStore.persons)
+    if @dataStore.settings?.persons
+      @$scope.editPersons = Object.keys(@dataStore.settings.persons)
 
-app.controller 'SettingsController', ['$scope', '$http', 'dataStore', 'progress', SettingsController]
+app.controller 'SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]
 module.exports = SettingsController

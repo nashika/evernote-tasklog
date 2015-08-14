@@ -22,19 +22,30 @@ class SettingModel extends Model
   ###
   loadLocal: (key, callback) =>
     core.loggers.system.debug "Load local #{@PLURAL_NAME} was started."
-    @_datastore.find({_id: key}).sort({}).limit(1).exec (err, docs) =>
+    if key
+      query = {_id: key}
+      limit = 1
+    else
+      query = {}
+      limit = 0
+    @_datastore.find(query).sort({}).limit(limit).exec (err, docs) =>
       core.loggers.system.debug "Load local #{@PLURAL_NAME} was #{if err then 'failed' else 'succeed'}. docs.length=#{docs.length}"
       if err then return callback(err)
-      doc = if docs.length is 0 then null else docs[0]
-      callback null, doc
+      if key
+        result = if docs.length is 0 then null else docs[0].value
+      else
+        result = {}
+        for doc in docs
+          result[doc._id] = doc.value
+      callback null, result
 
   ###*
   # @public
   # @param {Object} doc
   # @param {function} callback
   ###
-  saveLocal: (key, doc, callback) =>
-    doc._id = key
+  saveLocal: (key, value, callback) =>
+    doc = {_id: key, value: value}
     @_datastore.update {_id: key}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
       if err then return callback(err)
       core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. numReplaced=#{numReplaced}"

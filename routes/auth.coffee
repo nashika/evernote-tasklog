@@ -15,9 +15,9 @@ router.get '/login', (req, res, next) ->
   envConfig = if sandbox then config.env.sandbox else config.env.production
   if token
     key = if sandbox then 'token.sandbox' else 'token.production'
-    core.models.settings.loadLocal key, (err, setting) ->
-      if setting
-        developerToken = setting.token
+    core.models.settings.loadLocal key, (err, token) ->
+      if token
+        developerToken = token
         req.session.evernote =
           sandbox: sandbox
           token: developerToken
@@ -73,14 +73,12 @@ router.all '/token', (req, res, next) ->
       res.json {token: token, username: user.username}
   key = if sandbox then 'token.sandbox' else 'token.production'
   if token
-    doc = {token: token}
-    core.models.settings.saveLocal key, doc, (err) =>
+    core.models.settings.saveLocal key, token, (err) =>
       if err then return res.status(500).send "Error upsert token : #{JSON.stringify(err)}"
       checkToken sandbox, token
   else
-    core.models.settings.loadLocal key, (err, setting) =>
+    core.models.settings.loadLocal key, (err, token) =>
       if err then return res.status(500).send "Error find token: #{JSON.stringify(err)}"
-      token = if setting then setting.token else null
       checkToken sandbox, token
 
 module.exports = router
