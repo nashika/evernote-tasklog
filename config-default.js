@@ -6,13 +6,11 @@
     env: {
       sandbox: {
         consumerKey: '',
-        consumerSecret: '',
-        developerToken: ''
+        consumerSecret: ''
       },
       production: {
         consumerKey: '',
-        consumerSecret: '',
-        developerToken: ''
+        consumerSecret: ''
       }
     },
     persons: []

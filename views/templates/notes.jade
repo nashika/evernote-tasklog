@@ -6,7 +6,7 @@ script(type='text/ng-template' id='notes')
         th(ng-repeat='person in existPersons') {{person}}
         th Total
       tr(ng-repeat="note in dataStore.notes")
-        td: a(href='evernote:///view/{{user.id}}/{{user.shardId}}/{{note.guid}}/{{note.guid}}/') {{note.title}}
+        td: a(href='evernote:///view/{{dataStore.user.id}}/{{dataStore.user.shardId}}/{{note.guid}}/{{note.guid}}/') {{note.title}}
         td.text-right(ng-repeat="person in existPersons.concat(['$total'])")
           small(ng-if='notesSpentTimes[note.guid][person]') ({{notesSpentTimes[note.guid][person] / notesSpentTimes[note.guid]['$total'] * 100 | number: 0}}%)&nbsp;
           | {{notesSpentTimes[note.guid][person] | spentTime}}

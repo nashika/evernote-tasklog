@@ -9,27 +9,30 @@
   core = require('../lib/core');
 
   router.get('/', function(req, res, next) {
-    return core.users[req.session.evernote.user.username].models.notebooks.findLocal(req.query, (function(_this) {
-      return function(err, notebooks) {
+    if (!req.query.key) {
+      return res.status(500).send('Read settings need key parameter.');
+    }
+    return core.users[req.session.evernote.user.username].models.settings.loadLocal(req.query.key, (function(_this) {
+      return function(err, setting) {
         if (err) {
-          return req.status(500).send(err);
+          return res.status(500).send(err);
         }
-        return res.json(notebooks);
+        return res.json(setting);
       };
     })(this));
   });
 
   router.put('/save', function(req, res, next) {
     if (!req.body.key) {
-      return req.status(500).send('No key.');
+      return res.status(500).send('No key.');
     }
     if (!req.body.data) {
-      return req.status(500).send('No data.');
+      return res.status(500).send('No data.');
     }
     return core.users[req.session.evernote.user.username].models.settings.saveLocal(req.body.key, req.body.data, (function(_this) {
       return function(err) {
         if (err) {
-          return req.status(500).send(err);
+          return res.status(500).send(err);
         }
         return res.json(true);
       };
