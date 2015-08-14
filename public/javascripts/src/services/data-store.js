@@ -13,10 +13,10 @@
 
     /**
      * @public
-     * @type {Object}
+     * @type {Array}
      */
 
-    DataStoreService.prototype.persons = {};
+    DataStoreService.prototype.persons = [];
 
 
     /**

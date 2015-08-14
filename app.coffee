@@ -28,7 +28,6 @@ app.use session
 app.use express.static(path.join(__dirname, 'public'))
 app.use '/', require './routes/index'
 app.use '/auth', require './routes/auth'
-app.use '/persons', require './routes/persons'
 app.use '/notes', require './routes/notes'
 app.use '/notebooks', require './routes/notebooks'
 app.use '/settings', require './routes/settings'

@@ -8,9 +8,9 @@ class DataStoreService
 
   ###*
   # @public
-  # @type {Object}
+  # @type {Array}
   ###
-  persons: {}
+  persons: []
 
   ###*
   # @public

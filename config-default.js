@@ -12,8 +12,7 @@
         consumerKey: '',
         consumerSecret: ''
       }
-    },
-    persons: []
+    }
   };
 
   module.exports = config;

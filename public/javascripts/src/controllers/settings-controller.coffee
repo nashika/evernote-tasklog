@@ -24,15 +24,12 @@ class SettingsController
     @$scope.editPersons.splice index, 1
 
   _add: =>
-    @$scope.editPersons.push "Person #{@$scope.editPersons.length + 1}"
+    @$scope.editPersons.push {name: "Person #{@$scope.editPersons.length + 1}"}
 
   _submit: =>
     @progress.open()
     @progress.set 'Saving persons data...', 0
-    persons = {}
-    for editPerson in @$scope.editPersons
-      persons[editPerson] = editPerson
-    @$http.put '/settings/save', {key: 'persons', value: persons}
+    @$http.put '/settings/save', {key: 'persons', value: @$scope.editPersons}
     .success (data) =>
       return
     .error (data) =>
@@ -43,7 +40,7 @@ class SettingsController
 
   _onWatchPersons: =>
     if @dataStore.settings?.persons
-      @$scope.editPersons = Object.keys(@dataStore.settings.persons)
+      @$scope.editPersons = @dataStore.settings.persons
 
 app.controller 'SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]
 module.exports = SettingsController

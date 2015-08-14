@@ -103,53 +103,20 @@ class NoteModel extends MultiModel
   ###
   _parseNote: (note, callback) =>
     if not note.content then return callback()
-    core.loggers.system.trace "Parsing note was started. guid=#{note.guid}"
+    core.loggers.system.debug "Parsing note was started. guid=#{note.guid}"
     content = note.content
-    timeLogs = []
-    profitLogs = []
+    persons = []
     content = content.replace(/\r\n|\r|\n|<br\/>|<\/div>|<\/ul>|<\/li>/g, '<>')
+    lines = []
     for line in content.split('<>')
-      clearLine = line.replace(/<[^>]*>/g, '')
-      # parse time logs
-      if matches = clearLine.match(/(.*)[@＠](\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}.+)/)
-        timeLog =
-          noteGuid: note.guid
-          comment: matches[1]
-          allDay: true
-          date: null
-          person: null
-          spentTime: null
-        attributesText = matches[2]
-        # parse date and time
-        dateText = if matches = attributesText.match(/\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}/) then matches[0] else ''
-        timeText = if matches = attributesText.match(/\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}/) then matches[0] else ''
-        timeLog.date = new Date(dateText + ' ' + timeText)
-        if timeText then timeLog.allDay = false
-        # parse person
-        for person in config.persons
-          if attributesText.indexOf(person) isnt -1
-            timeLog.person = person
-        # parse spent time
-        if matches = attributesText.match(/\d+h\d+m|\d+m|\d+h|\d+\.\d+h/i)
-          spentTimeText = matches[0]
-          spentHour = if matches = spentTimeText.match(/(\d+\.?\d*)h/) then parseFloat(matches[1]) else 0
-          spentMinute = if matches = spentTimeText.match(/(\d+\.?\d*)m/) then parseFloat(matches[1]) else 0
-          timeLog.spentTime = Math.round(spentHour * 60 + spentMinute)
-        if timeLog.date and timeLog.person
-          timeLogs.push timeLog
-      # parse profit logs
-      if matches = clearLine.match(/(.*)[@＠][\\￥](.+)/i)
-        profitLogs.push
-          noteGuid: note.guid
-          comment: matches[1]
-          profit: parseInt(matches[2].replace(/,/g, ''))
-    async.series [
-      (callback) => core.users[@_username].models.timeLogs.removeLocal {noteGuid: note.guid}, callback
-      (callback) => core.users[@_username].models.profitLogs.removeLocal {noteGuid: note.guid}, callback
-      (callback) => core.users[@_username].models.timeLogs.saveLocal timeLogs, callback
-      (callback) => core.users[@_username].models.profitLogs.saveLocal profitLogs, callback
+      lines.push line.replace(/<[^>]*>/g, '')
+    async.waterfall [
+      (callback) => core.users[@_username].models.settings.loadLocal 'persons', callback
+      (loadPersons, callback) => persons = loadPersons; callback()
+      (callback) => core.users[@_username].models.timeLogs.parse note, persons, lines, callback
+      (callback) => core.users[@_username].models.profitLogs.parse note, lines, callback
     ], (err) =>
-      core.loggers.system.trace "Parsing note was #{if err then 'failed' else 'succeed'}. guid=#{note.guid}"
+      core.loggers.system.debug "Parsing note was #{if err then 'failed' else 'succeed'}. guid=#{note.guid}"
       callback(err)
 
 module.exports = NoteModel

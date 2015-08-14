@@ -18,9 +18,9 @@
     }
 
     NotesController.prototype._onWatchTimeLogs = function(timeLogs) {
-      var base, base1, base2, base3, base4, base5, name, name1, name2, noteGuid, noteTimeLog, persons, timeLog, timeLog_id;
+      var base, base1, base2, base3, base4, base5, name, name1, name2, noteGuid, noteTimeLog, personsHash, timeLog, timeLog_id;
       this.$scope.notesSpentTimes = {};
-      persons = {};
+      personsHash = {};
       for (noteGuid in timeLogs) {
         noteTimeLog = timeLogs[noteGuid];
         for (timeLog_id in noteTimeLog) {
@@ -48,11 +48,11 @@
           }
           this.$scope.notesSpentTimes['$total'][timeLog.person] += timeLog.spentTime;
           if (timeLog.spentTime > 0) {
-            persons[timeLog.person] = true;
+            personsHash[timeLog.person] = true;
           }
         }
       }
-      return this.$scope.existPersons = Object.keys(persons);
+      return this.$scope.existPersons = Object.keys(personsHash);
     };
 
     NotesController.prototype._onWatchProfitLogs = function(profitLogs) {

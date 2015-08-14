@@ -17,7 +17,7 @@ class TimelineController
       order: (a, b) -> a.start - b.start
 
     @$scope.timeline = new vis.Timeline(container, @$scope.timelineItems, @$scope.timelineGroups, options)
-    @$scope.$watchCollection 'dataStore.persons', @_onWatchPersons
+    @$scope.$watchCollection 'dataStore.settings.persons', @_onWatchPersons
     @$scope.$watchCollection 'dataStore.notes', @_onWatchNotes
     @$scope.$watchCollection 'dataStore.timeLogs', @_onWatchNotes
     @$scope.$watchCollection 'dataStore.profitLogs', @_onWatchProfitLogs
@@ -25,10 +25,10 @@ class TimelineController
 
   _onWatchPersons: =>
     @$scope.timelineGroups.clear()
-    for key, person of @dataStore.persons
+    for person, index in @dataStore.settings.persons
       @$scope.timelineGroups.add
-        id: key
-        content: person
+        id: person.name
+        content: person.name
     @$scope.timelineGroups.add
       id: 'updated'
       content: 'Update'

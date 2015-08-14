@@ -10,7 +10,7 @@ class NotesController
 
   _onWatchTimeLogs: (timeLogs) =>
     @$scope.notesSpentTimes = {}
-    persons = {}
+    personsHash = {}
     for noteGuid, noteTimeLog of timeLogs
       for timeLog_id, timeLog of noteTimeLog
         @$scope.notesSpentTimes[timeLog.noteGuid] ?= {}
@@ -23,8 +23,8 @@ class NotesController
         @$scope.notesSpentTimes['$total']['$total'] += timeLog.spentTime
         @$scope.notesSpentTimes['$total'][timeLog.person] ?= 0
         @$scope.notesSpentTimes['$total'][timeLog.person] += timeLog.spentTime
-        persons[timeLog.person] = true if timeLog.spentTime > 0
-    @$scope.existPersons = Object.keys(persons)
+        personsHash[timeLog.person] = true if timeLog.spentTime > 0
+    @$scope.existPersons = Object.keys(personsHash)
 
   _onWatchProfitLogs: (profitLogs) =>
     calc = (noteGuid, person) =>

@@ -47,22 +47,17 @@
     };
 
     SettingsController.prototype._add = function() {
-      return this.$scope.editPersons.push("Person " + (this.$scope.editPersons.length + 1));
+      return this.$scope.editPersons.push({
+        name: "Person " + (this.$scope.editPersons.length + 1)
+      });
     };
 
     SettingsController.prototype._submit = function() {
-      var editPerson, i, len, persons, ref;
       this.progress.open();
       this.progress.set('Saving persons data...', 0);
-      persons = {};
-      ref = this.$scope.editPersons;
-      for (i = 0, len = ref.length; i < len; i++) {
-        editPerson = ref[i];
-        persons[editPerson] = editPerson;
-      }
       return this.$http.put('/settings/save', {
         key: 'persons',
-        value: persons
+        value: this.$scope.editPersons
       }).success((function(_this) {
         return function(data) {};
       })(this)).error((function(_this) {
@@ -78,7 +73,7 @@
     SettingsController.prototype._onWatchPersons = function() {
       var ref;
       if ((ref = this.dataStore.settings) != null ? ref.persons : void 0) {
-        return this.$scope.editPersons = Object.keys(this.dataStore.settings.persons);
+        return this.$scope.editPersons = this.dataStore.settings.persons;
       }
     };
 

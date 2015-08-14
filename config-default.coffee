@@ -6,6 +6,5 @@ config =
     production:
       consumerKey: ''
       consumerSecret: ''
-  persons: []
 
 module.exports = config

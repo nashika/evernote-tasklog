@@ -40,7 +40,7 @@
         }
       };
       this.$scope.timeline = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, options);
-      this.$scope.$watchCollection('dataStore.persons', this._onWatchPersons);
+      this.$scope.$watchCollection('dataStore.settings.persons', this._onWatchPersons);
       this.$scope.$watchCollection('dataStore.notes', this._onWatchNotes);
       this.$scope.$watchCollection('dataStore.timeLogs', this._onWatchNotes);
       this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
@@ -48,14 +48,14 @@
     }
 
     TimelineController.prototype._onWatchPersons = function() {
-      var key, person, ref;
+      var i, index, len, person, ref;
       this.$scope.timelineGroups.clear();
-      ref = this.dataStore.persons;
-      for (key in ref) {
-        person = ref[key];
+      ref = this.dataStore.settings.persons;
+      for (index = i = 0, len = ref.length; i < len; index = ++i) {
+        person = ref[index];
         this.$scope.timelineGroups.add({
-          id: key,
-          content: person
+          id: person.name,
+          content: person.name
         });
       }
       return this.$scope.timelineGroups.add({

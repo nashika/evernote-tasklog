@@ -6,7 +6,7 @@ script(type='text/ng-template' id='settings')
         .form-group(ng-repeat='person in editPersons')
           label.col-sm-2.control-label person-{{$index + 1}}
           .col-sm-6
-            input.form-control(type='text', ng-model='person')
+            input.form-control(type='text', ng-model='person.name')
           .col-sm-4
             button.btn.btn-warning(type='button', ng-click='up($index)') Up
             button.btn.btn-warning(ng-click='down($index)') Down

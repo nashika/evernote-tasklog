@@ -55,8 +55,6 @@
 
   app.use('/auth', require('./routes/auth'));
 
-  app.use('/persons', require('./routes/persons'));
-
   app.use('/notes', require('./routes/notes'));
 
   app.use('/notebooks', require('./routes/notebooks'));
