@@ -4,6 +4,8 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   MenuController = (function() {
+    MenuController.prototype.lastQueryStr = null;
+
     function MenuController($scope, $http, dataStore, dataTransciever, noteQuery) {
       this.$scope = $scope;
       this.$http = $http;

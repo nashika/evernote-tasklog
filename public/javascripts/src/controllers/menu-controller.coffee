@@ -1,5 +1,7 @@
 class MenuController
 
+  lastQueryStr: null
+
   constructor: (@$scope, @$http, @dataStore, @dataTransciever, @noteQuery) ->
     @$scope.dataStore = @dataStore
     @$scope.dataTransciever = @dataTransciever
