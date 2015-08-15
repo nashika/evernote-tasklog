@@ -134,7 +134,10 @@
           if (err) {
             alert(err);
           }
-          return _this.progress.close();
+          _this.progress.close();
+          return _this.dataTransciever.reParse(function() {
+            return _this.dataTransciever.reload();
+          });
         };
       })(this));
     };

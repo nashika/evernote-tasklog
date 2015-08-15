@@ -74,6 +74,9 @@ class SettingsController
     , (err) =>
       if err then alert err
       @progress.close()
+      @dataTransciever.reParse =>
+        @dataTransciever.reload()
+
 
 app.controller 'SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]
 module.exports = SettingsController

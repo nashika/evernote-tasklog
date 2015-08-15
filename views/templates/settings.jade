@@ -3,7 +3,7 @@ mixin single-input(key)
     .form-group
       label.col-sm-2.control-label {{fields.#{key}.heading}}
       .col-sm-10
-        input.form-control(type="{{fields.#{key}.type}}", ng-model="dataStore.settings.#{key}")
+        input.form-control(type="{{fields.#{key}.type}}", ng-model="editStore.#{key}")
 
 script(type='text/ng-template' id='settings')
   #settings(ng-controller='SettingsController')
