@@ -11,7 +11,6 @@ router.get '/', (req, res, next) ->
 
 router.put '/save', (req, res, next) ->
   if not req.body.key then return res.status(500).send 'No key.'
-  if not req.body.value then return res.status(500).send 'No value.'
   core.users[req.session.evernote.user.username].models.settings.saveLocal req.body.key, req.body.value, (err) =>
     if err then return res.status(500).send err
     res.json true

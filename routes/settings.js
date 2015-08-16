@@ -25,9 +25,6 @@
     if (!req.body.key) {
       return res.status(500).send('No key.');
     }
-    if (!req.body.value) {
-      return res.status(500).send('No value.');
-    }
     return core.users[req.session.evernote.user.username].models.settings.saveLocal(req.body.key, req.body.value, (function(_this) {
       return function(err) {
         if (err) {

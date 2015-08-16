@@ -12,6 +12,7 @@
       this._onResize = bind(this._onResize, this);
       this._onWatchProfitLogs = bind(this._onWatchProfitLogs, this);
       this._onWatchNotes = bind(this._onWatchNotes, this);
+      this._onWatchWorkingTime = bind(this._onWatchWorkingTime, this);
       this._onWatchPersons = bind(this._onWatchPersons, this);
       this.$scope.dataStore = this.dataStore;
       this.$scope.timelineItems = new vis.DataSet();
@@ -28,19 +29,13 @@
         },
         start: moment().startOf('day'),
         end: moment().endOf('day'),
-        hiddenDates: [
-          {
-            start: moment().subtract(1, 'days').startOf('day').hour(20),
-            end: moment().startOf('day').hour(8),
-            repeat: 'daily'
-          }
-        ],
         order: function(a, b) {
           return a.start - b.start;
         }
       };
       this.$scope.timeline = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, options);
       this.$scope.$watchCollection('dataStore.settings.persons', this._onWatchPersons);
+      this.$scope.$watchGroup(['dataStore.settings.startWorkingTime', 'dataStore.settings.endWorkingTime'], this._onWatchWorkingTime);
       this.$scope.$watchCollection('dataStore.notes', this._onWatchNotes);
       this.$scope.$watchCollection('dataStore.timeLogs', this._onWatchNotes);
       this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
@@ -48,11 +43,14 @@
     }
 
     TimelineController.prototype._onWatchPersons = function() {
-      var i, index, len, person, ref;
+      var i, index, len, person, ref, ref1;
+      if (!((ref = this.dataStore.settings) != null ? ref.persons : void 0)) {
+        return;
+      }
       this.$scope.timelineGroups.clear();
-      ref = this.dataStore.settings.persons;
-      for (index = i = 0, len = ref.length; i < len; index = ++i) {
-        person = ref[index];
+      ref1 = this.dataStore.settings.persons;
+      for (index = i = 0, len = ref1.length; i < len; index = ++i) {
+        person = ref1[index];
         this.$scope.timelineGroups.add({
           id: person.name,
           content: person.name
@@ -62,6 +60,25 @@
         id: 'updated',
         content: 'Update'
       });
+    };
+
+    TimelineController.prototype._onWatchWorkingTime = function() {
+      var ref, ref1;
+      if (((ref = this.dataStore.settings) != null ? ref.startWorkingTime : void 0) && ((ref1 = this.dataStore.settings) != null ? ref1.endWorkingTime : void 0)) {
+        return this.$scope.timeline.setOptions({
+          hiddenDates: [
+            {
+              start: moment().subtract(1, 'days').startOf('day').hour(this.dataStore.settings.endWorkingTime),
+              end: moment().startOf('day').hour(this.dataStore.settings.startWorkingTime),
+              repeat: 'daily'
+            }
+          ]
+        });
+      } else {
+        return this.$scope.timeline.setOptions({
+          hiddenDates: {}
+        });
+      }
     };
 
     TimelineController.prototype._onWatchNotes = function() {

@@ -6,6 +6,11 @@
   async = require('async');
 
   SettingsController = (function() {
+
+    /**
+     * @const
+     * @type {Object}
+     */
     SettingsController.prototype.FIELDS = {
       persons: {
         reParse: true,
@@ -21,7 +26,13 @@
       }
     };
 
-    SettingsController.prototype.editStore = {};
+
+    /**
+     * @protected
+     * @type {Object}
+     */
+
+    SettingsController.prototype._editStore = {};
 
     function SettingsController($scope, $http, dataStore, dataTransciever, progress) {
       var field, key, ref;
@@ -30,22 +41,20 @@
       this.dataStore = dataStore;
       this.dataTransciever = dataTransciever;
       this.progress = progress;
-      this._onSubmit = bind(this._onSubmit, this);
       this._onWatchSetting = bind(this._onWatchSetting, this);
-      this._onWatchPersons = bind(this._onWatchPersons, this);
+      this._submit = bind(this._submit, this);
       this._add = bind(this._add, this);
       this._remove = bind(this._remove, this);
       this._down = bind(this._down, this);
       this._up = bind(this._up, this);
       this.$scope.dataStore = this.dataStore;
+      this.$scope.editStore = this._editStore;
       this.$scope.fields = this.FIELDS;
-      this.$scope.editStore = this.editStore;
       this.$scope.up = this._up;
       this.$scope.down = this._down;
       this.$scope.remove = this._remove;
       this.$scope.add = this._add;
-      this.$scope.submit = this._onSubmit;
-      this.$scope.$watchCollection('dataStore.settings.persons', this._onWatchPersons);
+      this.$scope.submit = this._submit;
       ref = this.FIELDS;
       for (key in ref) {
         field = ref[key];
@@ -57,43 +66,31 @@
       if (index === 0) {
         return;
       }
-      return this.$scope.editStore.persons.splice(index - 1, 2, this.$scope.editStore.persons[index], this.$scope.editStore.persons[index - 1]);
+      return this._editStore.persons.splice(index - 1, 2, this._editStore.persons[index], this._editStore.persons[index - 1]);
     };
 
     SettingsController.prototype._down = function(index) {
-      if (index >= this.$scope.editStore.persons.length - 1) {
+      if (index >= this._editStore.persons.length - 1) {
         return;
       }
-      return this.$scope.editStore.persons.splice(index, 2, this.$scope.editStore.persons[index + 1], this.$scope.editStore.persons[index]);
+      return this._editStore.persons.splice(index, 2, this._editStore.persons[index + 1], this._editStore.persons[index]);
     };
 
     SettingsController.prototype._remove = function(index) {
-      return this.$scope.editStore.persons.splice(index, 1);
+      return this._editStore.persons.splice(index, 1);
     };
 
     SettingsController.prototype._add = function() {
-      return this.$scope.editStore.persons.push({
-        name: "Person " + (this.$scope.editStore.persons.length + 1)
+      var base;
+      if ((base = this._editStore).persons == null) {
+        base.persons = [];
+      }
+      return this._editStore.persons.push({
+        name: "Person " + (this._editStore.persons.length + 1)
       });
     };
 
-    SettingsController.prototype._onWatchPersons = function() {
-      var ref;
-      if ((ref = this.dataStore.settings) != null ? ref.persons : void 0) {
-        return this.$scope.editStore.persons = this.dataStore.settings.persons;
-      }
-    };
-
-    SettingsController.prototype._onWatchSetting = function(key) {
-      return (function(_this) {
-        return function() {
-          var ref;
-          return _this.editStore[key] = angular.copy((ref = _this.dataStore.settings) != null ? ref[key] : void 0);
-        };
-      })(this);
-    };
-
-    SettingsController.prototype._onSubmit = function() {
+    SettingsController.prototype._submit = function() {
       var count, reParse, reload;
       this.progress.open();
       count = 0;
@@ -101,10 +98,9 @@
       reload = false;
       return async.forEachOfSeries(this.FIELDS, (function(_this) {
         return function(field, key, callback) {
-          if (JSON.stringify(_this.editStore[key]) === JSON.stringify(_this.dataStore.settings[key])) {
+          if (JSON.stringify(angular.copy(_this._editStore[key])) === JSON.stringify(_this.dataStore.settings[key])) {
             return callback();
           }
-          console.log(key);
           if (field.reParse) {
             reParse = true;
           }
@@ -114,9 +110,9 @@
           _this.progress.set("Saving " + key + "...", count++ / Object.keys(_this.FIELDS).count * 100);
           return _this.$http.put('/settings/save', {
             key: key,
-            value: _this.editStore[key]
+            value: _this._editStore[key]
           }).success(function() {
-            _this.dataStore.settings[key] = _this.editStore[key];
+            _this.dataStore.settings[key] = _this._editStore[key];
             return callback();
           }).error(function() {
             return callback("Error saving " + key);
@@ -131,14 +127,12 @@
           return async.waterfall([
             function(callback) {
               if (reParse) {
-                console.log('reParse');
                 return _this.dataTransciever.reParse(callback);
               } else {
                 return callback();
               }
             }, function(callback) {
               if (reload) {
-                console.log('reload');
                 return _this.dataTransciever.reload(callback);
               } else {
                 return callback();
@@ -147,6 +141,15 @@
           ]);
         };
       })(this));
+    };
+
+    SettingsController.prototype._onWatchSetting = function(key) {
+      return (function(_this) {
+        return function() {
+          var ref;
+          return _this._editStore[key] = angular.copy((ref = _this.dataStore.settings) != null ? ref[key] : void 0);
+        };
+      })(this);
     };
 
     return SettingsController;

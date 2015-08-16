@@ -11,19 +11,18 @@ class TimelineController
       orientation: {axis: 'both', item: 'top'}
       start: moment().startOf('day')
       end: moment().endOf('day')
-      hiddenDates: [
-        {start: moment().subtract(1, 'days').startOf('day').hour(20), end: moment().startOf('day').hour(8), repeat: 'daily'}
-      ]
       order: (a, b) -> a.start - b.start
 
     @$scope.timeline = new vis.Timeline(container, @$scope.timelineItems, @$scope.timelineGroups, options)
     @$scope.$watchCollection 'dataStore.settings.persons', @_onWatchPersons
+    @$scope.$watchGroup ['dataStore.settings.startWorkingTime', 'dataStore.settings.endWorkingTime'], @_onWatchWorkingTime
     @$scope.$watchCollection 'dataStore.notes', @_onWatchNotes
     @$scope.$watchCollection 'dataStore.timeLogs', @_onWatchNotes
     @$scope.$watchCollection 'dataStore.profitLogs', @_onWatchProfitLogs
     @$scope.$on 'resize::resize', @_onResize
 
   _onWatchPersons: =>
+    if not @dataStore.settings?.persons then return
     @$scope.timelineGroups.clear()
     for person, index in @dataStore.settings.persons
       @$scope.timelineGroups.add
@@ -32,6 +31,17 @@ class TimelineController
     @$scope.timelineGroups.add
       id: 'updated'
       content: 'Update'
+
+  _onWatchWorkingTime: =>
+    if @dataStore.settings?.startWorkingTime and @dataStore.settings?.endWorkingTime
+      @$scope.timeline.setOptions
+        hiddenDates: [{
+          start: moment().subtract(1, 'days').startOf('day').hour(@dataStore.settings.endWorkingTime)
+          end: moment().startOf('day').hour(@dataStore.settings.startWorkingTime)
+          repeat: 'daily'
+        }]
+    else
+      @$scope.timeline.setOptions {hiddenDates: {}}
 
   _onWatchNotes: =>
     @$scope.timelineItems.clear()
