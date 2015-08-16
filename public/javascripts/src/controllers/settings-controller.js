@@ -7,6 +7,10 @@
 
   SettingsController = (function() {
     SettingsController.prototype.FIELDS = {
+      persons: {
+        reParse: true,
+        reload: true
+      },
       startWorkingTime: {
         heading: 'Start Working Time',
         type: 'number'
@@ -29,7 +33,6 @@
       this._onSubmit = bind(this._onSubmit, this);
       this._onWatchSetting = bind(this._onWatchSetting, this);
       this._onWatchPersons = bind(this._onWatchPersons, this);
-      this._submit = bind(this._submit, this);
       this._add = bind(this._add, this);
       this._remove = bind(this._remove, this);
       this._down = bind(this._down, this);
@@ -37,13 +40,11 @@
       this.$scope.dataStore = this.dataStore;
       this.$scope.fields = this.FIELDS;
       this.$scope.editStore = this.editStore;
-      this.$scope.editPersons = [];
       this.$scope.up = this._up;
       this.$scope.down = this._down;
       this.$scope.remove = this._remove;
       this.$scope.add = this._add;
-      this.$scope.submit = this._submit;
-      this.$scope.submit2 = this._onSubmit;
+      this.$scope.submit = this._onSubmit;
       this.$scope.$watchCollection('dataStore.settings.persons', this._onWatchPersons);
       ref = this.FIELDS;
       for (key in ref) {
@@ -56,48 +57,30 @@
       if (index === 0) {
         return;
       }
-      return this.$scope.editPersons.splice(index - 1, 2, this.$scope.editPersons[index], this.$scope.editPersons[index - 1]);
+      return this.$scope.editStore.persons.splice(index - 1, 2, this.$scope.editStore.persons[index], this.$scope.editStore.persons[index - 1]);
     };
 
     SettingsController.prototype._down = function(index) {
-      if (index >= this.$scope.editPersons.length - 1) {
+      if (index >= this.$scope.editStore.persons.length - 1) {
         return;
       }
-      return this.$scope.editPersons.splice(index, 2, this.$scope.editPersons[index + 1], this.$scope.editPersons[index]);
+      return this.$scope.editStore.persons.splice(index, 2, this.$scope.editStore.persons[index + 1], this.$scope.editStore.persons[index]);
     };
 
     SettingsController.prototype._remove = function(index) {
-      return this.$scope.editPersons.splice(index, 1);
+      return this.$scope.editStore.persons.splice(index, 1);
     };
 
     SettingsController.prototype._add = function() {
-      return this.$scope.editPersons.push({
-        name: "Person " + (this.$scope.editPersons.length + 1)
+      return this.$scope.editStore.persons.push({
+        name: "Person " + (this.$scope.editStore.persons.length + 1)
       });
-    };
-
-    SettingsController.prototype._submit = function() {
-      this.progress.open();
-      this.progress.set('Saving persons data...', 0);
-      return this.$http.put('/settings/save', {
-        key: 'persons',
-        value: this.$scope.editPersons
-      }).success((function(_this) {
-        return function(data) {};
-      })(this)).error((function(_this) {
-        return function(data) {};
-      })(this))["finally"]((function(_this) {
-        return function() {
-          _this.progress.close();
-          return _this.dataTransciever.reParse();
-        };
-      })(this));
     };
 
     SettingsController.prototype._onWatchPersons = function() {
       var ref;
       if ((ref = this.dataStore.settings) != null ? ref.persons : void 0) {
-        return this.$scope.editPersons = this.dataStore.settings.persons;
+        return this.$scope.editStore.persons = this.dataStore.settings.persons;
       }
     };
 
@@ -105,25 +88,35 @@
       return (function(_this) {
         return function() {
           var ref;
-          return _this.editStore[key] = (ref = _this.dataStore.settings) != null ? ref[key] : void 0;
+          return _this.editStore[key] = angular.copy((ref = _this.dataStore.settings) != null ? ref[key] : void 0);
         };
       })(this);
     };
 
     SettingsController.prototype._onSubmit = function() {
-      var count;
+      var count, reParse, reload;
       this.progress.open();
       count = 0;
+      reParse = false;
+      reload = false;
       return async.forEachOfSeries(this.FIELDS, (function(_this) {
         return function(field, key, callback) {
-          if (_this.editStore[key] === _this.dataStore.settings[key]) {
+          if (JSON.stringify(_this.editStore[key]) === JSON.stringify(_this.dataStore.settings[key])) {
             return callback();
+          }
+          console.log(key);
+          if (field.reParse) {
+            reParse = true;
+          }
+          if (field.reload) {
+            reload = true;
           }
           _this.progress.set("Saving " + key + "...", count++ / Object.keys(_this.FIELDS).count * 100);
           return _this.$http.put('/settings/save', {
             key: key,
             value: _this.editStore[key]
           }).success(function() {
+            _this.dataStore.settings[key] = _this.editStore[key];
             return callback();
           }).error(function() {
             return callback("Error saving " + key);
@@ -135,9 +128,23 @@
             alert(err);
           }
           _this.progress.close();
-          return _this.dataTransciever.reParse(function() {
-            return _this.dataTransciever.reload();
-          });
+          return async.waterfall([
+            function(callback) {
+              if (reParse) {
+                console.log('reParse');
+                return _this.dataTransciever.reParse(callback);
+              } else {
+                return callback();
+              }
+            }, function(callback) {
+              if (reload) {
+                console.log('reload');
+                return _this.dataTransciever.reload(callback);
+              } else {
+                return callback();
+              }
+            }
+          ]);
         };
       })(this));
     };
