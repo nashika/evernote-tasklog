@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "description": "Evernote Tasklog is now construction.",
-  "main": "main.js",
+  "main": "./bin/evernote-tasklog",
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node ./bin/evernote-tasklog",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
