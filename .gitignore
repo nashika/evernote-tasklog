@@ -1,7 +1,6 @@
 .idea/workspace.xml
 .idea/libraries/Generated_files.xml
 bower_components
-config.*
 db/**/*.db
 logs/*
 node_modules

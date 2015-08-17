@@ -2,7 +2,6 @@ async = require 'async'
 merge = require 'merge'
 
 core = require '../core'
-config = require '../../config'
 MultiModel = require './multi-model'
 
 class NoteModel extends MultiModel

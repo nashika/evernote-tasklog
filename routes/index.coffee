@@ -2,7 +2,6 @@ express = require 'express'
 Evernote = require('evernote').Evernote
 
 core = require '../lib/core'
-config = require '../config'
 
 router = express.Router()
 

@@ -8,7 +8,7 @@
 
   core = require('../lib/core');
 
-  config = require('../config');
+  config = require('../lib/config');
 
   router = express.Router();
 

@@ -5,7 +5,6 @@ log4js = require 'log4js'
 Evernote = require('evernote').Evernote
 
 core = require './core'
-config = require '../config'
 LinkedNotebookModel = require './models/linked-notebook-model'
 NoteModel = require './models/note-model'
 NotebookModel = require './models/notebook-model'
