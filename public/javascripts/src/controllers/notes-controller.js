@@ -56,19 +56,7 @@
     };
 
     NotesController.prototype._onWatchProfitLogs = function(profitLogs) {
-      var base, base1, base2, base3, calc, name, noteGuid, noteProfitLog, person, profitLog, profitLog_id, results;
-      calc = (function(_this) {
-        return function(noteGuid, person) {
-          var ref, ref1;
-          if (!((ref = _this.$scope.notesSpentTimes[noteGuid]) != null ? ref[person] : void 0)) {
-            return null;
-          }
-          if (!((ref1 = _this.$scope.notesSpentTimes[noteGuid]) != null ? ref1['$total'] : void 0)) {
-            return null;
-          }
-          return Math.round(_this.$scope.notesProfits[noteGuid]['$total'] * _this.$scope.notesSpentTimes[noteGuid][person] / _this.$scope.notesSpentTimes[noteGuid]['$total']);
-        };
-      })(this);
+      var base, base1, base2, base3, name, noteGuid, noteProfitLog, person, profitLog, profitLog_id, results;
       this.$scope.notesProfits = {};
       results = [];
       for (noteGuid in profitLogs) {
@@ -91,12 +79,20 @@
           this.$scope.notesProfits['$total']['$total'] += profitLog.profit;
         }
         results.push((function() {
-          var i, len, ref, results1;
+          var base4, i, len, ref, ref1, ref2, results1;
           ref = this.$scope.existPersons;
           results1 = [];
           for (i = 0, len = ref.length; i < len; i++) {
             person = ref[i];
-            results1.push(this.$scope.notesProfits[noteGuid][person] = calc(noteGuid, person));
+            if (!((ref1 = this.$scope.notesSpentTimes[noteGuid]) != null ? ref1[person] : void 0) || !((ref2 = this.$scope.notesSpentTimes[noteGuid]) != null ? ref2['$total'] : void 0)) {
+              results1.push(this.$scope.notesProfits[noteGuid][person] = null);
+            } else {
+              this.$scope.notesProfits[noteGuid][person] = Math.round(this.$scope.notesProfits[noteGuid]['$total'] * this.$scope.notesSpentTimes[noteGuid][person] / this.$scope.notesSpentTimes[noteGuid]['$total']);
+              if ((base4 = this.$scope.notesProfits['$total'])[person] == null) {
+                base4[person] = 0;
+              }
+              results1.push(this.$scope.notesProfits['$total'][person] += this.$scope.notesProfits[noteGuid][person]);
+            }
           }
           return results1;
         }).call(this));

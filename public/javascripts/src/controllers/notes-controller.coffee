@@ -27,10 +27,6 @@ class NotesController
     @$scope.existPersons = Object.keys(personsHash)
 
   _onWatchProfitLogs: (profitLogs) =>
-    calc = (noteGuid, person) =>
-      if not @$scope.notesSpentTimes[noteGuid]?[person] then return null
-      if not @$scope.notesSpentTimes[noteGuid]?['$total'] then return null
-      return Math.round(@$scope.notesProfits[noteGuid]['$total'] * @$scope.notesSpentTimes[noteGuid][person] / @$scope.notesSpentTimes[noteGuid]['$total'])
     @$scope.notesProfits = {}
     for noteGuid, noteProfitLog of profitLogs
       for profitLog_id, profitLog of noteProfitLog
@@ -41,7 +37,12 @@ class NotesController
         @$scope.notesProfits['$total']['$total'] ?= 0
         @$scope.notesProfits['$total']['$total'] += profitLog.profit
       for person in @$scope.existPersons
-        @$scope.notesProfits[noteGuid][person] = calc(noteGuid, person)
 
+        if not @$scope.notesSpentTimes[noteGuid]?[person] or not @$scope.notesSpentTimes[noteGuid]?['$total']
+          @$scope.notesProfits[noteGuid][person] = null
+        else
+          @$scope.notesProfits[noteGuid][person] = Math.round(@$scope.notesProfits[noteGuid]['$total'] * @$scope.notesSpentTimes[noteGuid][person] / @$scope.notesSpentTimes[noteGuid]['$total'])
+          @$scope.notesProfits['$total'][person] ?= 0
+          @$scope.notesProfits['$total'][person] += @$scope.notesProfits[noteGuid][person]
 app.controller 'NotesController', ['$scope', 'dataStore', NotesController]
 module.exports = NotesController
