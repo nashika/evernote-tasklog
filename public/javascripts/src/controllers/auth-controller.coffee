@@ -2,6 +2,7 @@ class AuthController
 
   constructor: (@$scope, @$http) ->
     @$scope.message = null
+    @$scope.isDeveloper = false
     @$scope.sandbox = {token: null, username: null}
     @$scope.production = {token: null, username: null}
     @$scope.setToken = @_setToken

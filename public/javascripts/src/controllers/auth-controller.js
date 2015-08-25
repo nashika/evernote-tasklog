@@ -10,6 +10,7 @@
       this._setToken = bind(this._setToken, this);
       this._init = bind(this._init, this);
       this.$scope.message = null;
+      this.$scope.isDeveloper = false;
       this.$scope.sandbox = {
         token: null,
         username: null

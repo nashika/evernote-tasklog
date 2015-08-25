@@ -6,25 +6,38 @@ block content
   div(ng-app='App', ng-controller='AuthController')
     .container
       .page-header
-        h1 #[span.fa.fa-tasks] Evernote Tasklog
+        h1 #[span.fa.fa-sign-in] Login #[small Evernote Tasklog]
       .row
-        .col-lg-3.col-sm-6
+        .col-md-4
           a.btn.btn-default.btn-lg.btn-block(href='/auth/login') #[span.fa.fa-4x.fa-sign-in] #[br] Basic Login
+        .col-md-8
           p: .well Login to system using the Evernote server authentication.
-        .col-lg-3.col-sm-6
+      hr
+      .row
+        .col-md-4
           a.btn.btn-default.btn-lg.btn-block(ng-href='{{production.token ? "/auth/login?token=1" : ""}}', ng-disabled='!production.token') #[span.fa.fa-4x.fa-key] #[br] Token Login
           button.btn.btn-primary.btn-block(type='button', ng-click='setToken(false)') Set token #[br] (User: {{production ? production.username : 'none'}})
+        .col-md-8
           p: .well Login to system using the Evernote developer token. Get token from&nbsp;
             a(href='https://www.evernote.com/api/DeveloperToken.action') Evernote developer token API
             br
             | Notice: All client in this server use this token.
-        .col-lg-3.col-sm-6
-          a.btn.btn-default.btn-lg.btn-block(href='/auth/login?sandbox=1') #[span.fa.fa-4x.fa-sign-in] #[br] Sandbox Login
-          p: .well Login to sandbox system using the Evernote sandbox server authentication.
-        .col-lg-3.col-sm-6
-          a.btn.btn-default.btn-lg.btn-block(ng-href='{{sandbox.token ? "/auth/login?sandbox=1&token=1" : ""}}', ng-disabled='!sandbox.token') #[span.fa.fa-4x.fa-key] #[br] Sandbox Token Login
-          button.btn.btn-primary.btn-block(type='button', ng-click='setToken(true)') Set token #[br] (User: {{sandbox ? sandbox.username : 'none'}})
-          p: .well Login to sandbox system using the Evernote sandbox developer token. Get token from&nbsp;
-            a(href='https://sandbox.evernote.com/api/DeveloperToken.action') Evernote sandbox developer token API
-            br
-            | Notice: All client in this server use this token.
+      hr
+      button.btn.btn-default.btn-block(type='button', ng-click='isDeveloper = !isDeveloper') Toggle Developer Mode
+      div(collapse='!isDeveloper')
+        hr
+        .row
+          .col-md-4
+            a.btn.btn-default.btn-lg.btn-block(href='/auth/login?sandbox=1') #[span.fa.fa-4x.fa-sign-in] #[br] Sandbox Login
+          .col-md-8
+            p: .well Login to sandbox system using the Evernote sandbox server authentication.
+        hr
+        .row
+          .col-md-4
+            a.btn.btn-default.btn-lg.btn-block(ng-href='{{sandbox.token ? "/auth/login?sandbox=1&token=1" : ""}}', ng-disabled='!sandbox.token') #[span.fa.fa-4x.fa-key] #[br] Sandbox Token Login
+            button.btn.btn-primary.btn-block(type='button', ng-click='setToken(true)') Set token #[br] (User: {{sandbox ? sandbox.username : 'none'}})
+          .col-md-8
+            p: .well Login to sandbox system using the Evernote sandbox developer token. Get token from&nbsp;
+              a(href='https://sandbox.evernote.com/api/DeveloperToken.action') Evernote sandbox developer token API
+              br
+              | Notice: All client in this server use this token.

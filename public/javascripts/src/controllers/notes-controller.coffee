@@ -44,5 +44,6 @@ class NotesController
           @$scope.notesProfits[noteGuid][person] = Math.round(@$scope.notesProfits[noteGuid]['$total'] * @$scope.notesSpentTimes[noteGuid][person] / @$scope.notesSpentTimes[noteGuid]['$total'])
           @$scope.notesProfits['$total'][person] ?= 0
           @$scope.notesProfits['$total'][person] += @$scope.notesProfits[noteGuid][person]
+
 app.controller 'NotesController', ['$scope', 'dataStore', NotesController]
 module.exports = NotesController
