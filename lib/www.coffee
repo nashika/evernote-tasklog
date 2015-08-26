@@ -35,7 +35,13 @@ class Www
     core.www = this
     core.app.locals.core = core
     core.models.settings = new SettingModel()
-    core.loggers.system.info 'Initialize web server finished.'
+    # Initialize global settings
+    async.waterfall [
+      (callback) => core.models.settings.loadLocal null, callback
+      (settings, callback) => core.settings = settings; callback()
+    ], (err) =>
+      if err then return core.loggers.error.error err
+      core.loggers.system.info 'Initialize web server finished.'
 
   initUser: (username, token, sandbox, callback) ->
     if core.users[username]

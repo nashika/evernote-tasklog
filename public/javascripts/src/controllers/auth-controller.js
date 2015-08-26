@@ -64,7 +64,7 @@
         };
       })(this)).error((function(_this) {
         return function(data) {
-          return callback('Set token failed.');
+          return alert('Set token failed.');
         };
       })(this));
     };

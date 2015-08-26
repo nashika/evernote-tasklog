@@ -48,7 +48,10 @@ class SettingModel extends Model
     doc = {_id: key, value: value}
     @_datastore.update {_id: key}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
       if err then return callback(err)
-      core.users[@_username].settings[key] = value
+      if @_username
+        core.users[@_username].settings[key] = value
+      else
+        core.settings[key] = value
       core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. numReplaced=#{numReplaced}"
       callback()
 

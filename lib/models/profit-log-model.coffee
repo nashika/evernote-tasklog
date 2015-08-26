@@ -23,7 +23,7 @@ class ProfitLogModel extends MultiModel
   parse: (note, lines, callback) =>
     profitLogs = []
     for line in lines
-      if matches = line.match(/(.*)[@＠][\\￥](.+)/i)
+      if matches = line.match(/(.*)[@＠][\\￥$＄](.+)/i)
         profitLogs.push
           noteGuid: note.guid
           comment: matches[1]

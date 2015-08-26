@@ -5,6 +5,7 @@ core =
   app: null
   server: null
   www: null
+  settings: {}
   loggers:
     system: null
     access: null

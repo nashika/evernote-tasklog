@@ -30,7 +30,7 @@ class AuthController
       else
         @$scope.production = data
       if not data then alert 'Token is invalid.'
-    .error (data) => callback 'Set token failed.'
+    .error (data) => alert 'Set token failed.'
 
 app.controller 'AuthController', ['$scope', '$http', AuthController]
 module.exports = AuthController
