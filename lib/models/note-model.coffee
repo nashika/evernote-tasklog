@@ -104,15 +104,12 @@ class NoteModel extends MultiModel
     if not note.content then return callback()
     core.loggers.system.debug "Parsing note was started. guid=#{note.guid}"
     content = note.content
-    persons = []
     content = content.replace(/\r\n|\r|\n|<br\/>|<\/div>|<\/ul>|<\/li>/g, '<>')
     lines = []
     for line in content.split('<>')
       lines.push line.replace(/<[^>]*>/g, '')
     async.waterfall [
-      (callback) => core.users[@_username].models.settings.loadLocal 'persons', callback
-      (loadPersons, callback) => persons = loadPersons; callback()
-      (callback) => core.users[@_username].models.timeLogs.parse note, persons, lines, callback
+      (callback) => core.users[@_username].models.timeLogs.parse note, lines, callback
       (callback) => core.users[@_username].models.profitLogs.parse note, lines, callback
     ], (err) =>
       core.loggers.system.debug "Parsing note was #{if err then 'failed' else 'succeed'}. guid=#{note.guid}"

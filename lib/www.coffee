@@ -85,13 +85,19 @@ class Www
     remoteSyncState = null
     lastSyncChunk = null
     async.waterfall [
+      # Reload settings
+      (callback) => core.users[username].models.settings.loadLocal null, callback
+      (settings, callback) => core.users[username].settings = settings; callback()
+      # Reload userStore
       (callback) => core.users[username].models.users.loadRemote callback
       (remoteUser, callback) => user = remoteUser; callback()
       (callback) => core.users[username].models.users.saveLocal user, callback
+      # Get syncState
       (callback) => core.users[username].models.syncStates.loadLocal callback
       (syncState, callback) => localSyncState = syncState; callback()
       (callback) => core.users[username].models.syncStates.loadRemote callback
       (syncState, callback) => remoteSyncState = syncState; callback()
+      # Sync process
       (callback) =>
         core.loggers.system.info "Sync start. localUSN=#{localSyncState.updateCount} remoteUSN=#{remoteSyncState.updateCount}"
         async.whilst (=> localSyncState.updateCount < remoteSyncState.updateCount)

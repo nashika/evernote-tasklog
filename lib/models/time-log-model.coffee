@@ -20,7 +20,7 @@ class TimeLogModel extends MultiModel
   ###
   DEFAULT_LIMIT: 2000
 
-  parse: (note, persons, lines, callback) =>
+  parse: (note, lines, callback) =>
     timeLogs = []
     for line in lines
       if matches = line.match(/(.*)[@＠](\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}.+)/)
@@ -38,7 +38,7 @@ class TimeLogModel extends MultiModel
         timeLog.date = new Date(dateText + ' ' + timeText)
         if timeText then timeLog.allDay = false
         # parse person
-        for person in persons
+        for person in core.users[@_username].settings.persons
           if attributesText.indexOf(person.name) isnt -1
             timeLog.person = person.name
         # parse spent time

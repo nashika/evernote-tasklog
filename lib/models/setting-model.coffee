@@ -21,7 +21,7 @@ class SettingModel extends Model
   # @param {function} callback
   ###
   loadLocal: (key, callback) =>
-    core.loggers.system.debug "Load local #{@PLURAL_NAME} was started."
+    core.loggers.system.debug "Load local #{@PLURAL_NAME} was started. key=#{key}"
     if key
       query = {_id: key}
       limit = 1
@@ -48,6 +48,7 @@ class SettingModel extends Model
     doc = {_id: key, value: value}
     @_datastore.update {_id: key}, doc, {upsert: true}, (err, numReplaced, newDoc) =>
       if err then return callback(err)
+      core.users[@_username].settings[key] = value
       core.loggers.system.debug "Upsert #{@PLURAL_NAME} end. numReplaced=#{numReplaced}"
       callback()
 

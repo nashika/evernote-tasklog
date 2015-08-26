@@ -16,6 +16,7 @@ core =
 user =
   client: null
   user: null
+  settings: {}
   models:
     linkedNotebooks: null
     notes: null
