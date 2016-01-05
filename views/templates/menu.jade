@@ -4,11 +4,6 @@ script(type='text/ng-template' id='menu')
       h1 #[span.fa.fa-tasks] Evernote Tasklog
     .row
       .col-md-4
-        h2 #[span.fa.fa-th-large] Menu
-        a.btn.btn-default.btn-lg.btn-block(href='/#/timeline') #[span.fa.fa-4x.fa-clock-o] #[br] Timeline
-        a.btn.btn-default.btn-lg.btn-block(href='/#/notes') #[span.fa.fa-4x.fa-files-o] #[br] Notes
-        a.btn.btn-default.btn-lg.btn-block(href='/#/settings') #[span.fa.fa-4x.fa-gear] #[br] Settings
-      .col-md-4
         h2 #[span.fa.fa-search] Note Filter
         .well.h3
           p #[span.fa.fa-2x.fa-files-o] {{noteQuery.count}} notes.
@@ -35,6 +30,19 @@ script(type='text/ng-template' id='menu')
                 ui-select-match(placeholder='Select stacks...') {{$item}}
                 ui-select-choices(repeat='stack in dataStore.stacks | filter: $select.search')
                   div(ng-bind-html='stack | highlight: $select.search')
+        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='dataTransciever.reload()') #[span.fa.fa-refresh] Reload
+      .col-md-4
+        h2 #[span.fa.fa-search] Work Time Filter
+        .well.h3
+          p #[span.fa.fa-2x.fa-files-o] {{noteQuery.timeLogCount}} time logs.
+        form.form-horizontal
+          .form-group
+            label.col-sm-3.control-label Worked
+            .col-sm-9
+              ui-select.form-control(ng-model='noteQuery.worked', theme='select2', search-enabled='false')
+                ui-select-match(placeholder='Select time log days.') Recent {{$select.selected}} day
+                ui-select-choices(repeat='n in [undefined, 1, 2, 3, 5, 7, 10, 15, 20, 30]')
+                  div(ng-bind-html="n ? 'Recent ' + n + ' day' : '-- None --'")
         button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='dataTransciever.reload()') #[span.fa.fa-refresh] Reload
       .col-md-4
         h2 #[span.fa.fa-user] User Info

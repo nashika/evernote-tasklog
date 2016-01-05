@@ -6,7 +6,7 @@ class MenuController
     @$scope.dataStore = @dataStore
     @$scope.dataTransciever = @dataTransciever
     @$scope.noteQuery = @noteQuery
-    @$scope.$watchGroup ['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks'], @_onWatchNoteQuery
+    @$scope.$watchGroup ['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks', 'noteQuery.worked'], @_onWatchNoteQuery
 
   _onWatchNoteQuery: =>
     query = @noteQuery.query()

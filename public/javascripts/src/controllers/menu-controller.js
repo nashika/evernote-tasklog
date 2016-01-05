@@ -16,7 +16,7 @@
       this.$scope.dataStore = this.dataStore;
       this.$scope.dataTransciever = this.dataTransciever;
       this.$scope.noteQuery = this.noteQuery;
-      this.$scope.$watchGroup(['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks'], this._onWatchNoteQuery);
+      this.$scope.$watchGroup(['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks', 'noteQuery.worked'], this._onWatchNoteQuery);
     }
 
     MenuController.prototype._onWatchNoteQuery = function() {
