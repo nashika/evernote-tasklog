@@ -10,4 +10,9 @@ router.all '/', (req, res, next) ->
     if err then return res.status(500).send err
     res.json timeLogs
 
+router.get '/count', (req, res, next) ->
+  core.users[req.session.evernote.user.username].models.timeLogs.countLocal req.query, (err, count) ->
+    if err then return res.status(500).send err
+    res.json count
+
 module.exports = router

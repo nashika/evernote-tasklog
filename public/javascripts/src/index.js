@@ -28,6 +28,8 @@
 
   require('./services/progress');
 
+  require('./services/time-log-query');
+
   require('./directives/resize');
 
   require('./controllers/auth-controller');

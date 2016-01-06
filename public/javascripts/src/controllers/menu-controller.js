@@ -6,17 +6,21 @@
   MenuController = (function() {
     MenuController.prototype.lastQueryStr = null;
 
-    function MenuController($scope, $http, dataStore, dataTransciever, noteQuery) {
+    function MenuController($scope, $http, dataStore, dataTransciever, noteQuery, timeLogQuery) {
       this.$scope = $scope;
       this.$http = $http;
       this.dataStore = dataStore;
       this.dataTransciever = dataTransciever;
       this.noteQuery = noteQuery;
+      this.timeLogQuery = timeLogQuery;
+      this._onWatchTimeLogQuery = bind(this._onWatchTimeLogQuery, this);
       this._onWatchNoteQuery = bind(this._onWatchNoteQuery, this);
       this.$scope.dataStore = this.dataStore;
       this.$scope.dataTransciever = this.dataTransciever;
       this.$scope.noteQuery = this.noteQuery;
+      this.$scope.timeLogQuery = this.timeLogQuery;
       this.$scope.$watchGroup(['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks', 'noteQuery.worked'], this._onWatchNoteQuery);
+      this.$scope.$watchGroup(['timeLogQuery.worked'], this._onWatchTimeLogQuery);
     }
 
     MenuController.prototype._onWatchNoteQuery = function() {
@@ -42,11 +46,34 @@
       })(this));
     };
 
+    MenuController.prototype._onWatchTimeLogQuery = function() {
+      var query, queryStr;
+      query = this.timeLogQuery.query();
+      queryStr = JSON.stringify(query);
+      if (this.lastQueryStr === queryStr) {
+        return;
+      }
+      this.lastQueryStr = queryStr;
+      return this.$http.get('/time-logs/count', {
+        params: {
+          query: query
+        }
+      }).success((function(_this) {
+        return function(data) {
+          return _this.timeLogQuery.count = data;
+        };
+      })(this)).error((function(_this) {
+        return function() {
+          return _this.timeLogQuery.count = null;
+        };
+      })(this));
+    };
+
     return MenuController;
 
   })();
 
-  app.controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'noteQuery', MenuController]);
+  app.controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'noteQuery', 'timeLogQuery', MenuController]);
 
   module.exports = MenuController;
 

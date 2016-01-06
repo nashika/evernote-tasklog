@@ -21,6 +21,15 @@
     });
   });
 
+  router.get('/count', function(req, res, next) {
+    return core.users[req.session.evernote.user.username].models.timeLogs.countLocal(req.query, function(err, count) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      return res.json(count);
+    });
+  });
+
   module.exports = router;
 
 }).call(this);

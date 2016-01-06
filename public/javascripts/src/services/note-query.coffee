@@ -24,19 +24,7 @@ class NoteQueryService
   # @public
   # @type {number}
   ###
-  worked: 3
-
-  ###*
-  # @public
-  # @type {number}
-  ###
   count: null
-
-  ###*
-  # @public
-  # @type {number}
-  ###
-  timeLogCount: null
 
   ###*
   # @constructor
@@ -68,9 +56,6 @@ class NoteQueryService
     # set notebooks query checked before
     if notebooksArray.length > 0
       merge result, {notebookGuid: {$in: notebooksArray}}
-    # set worked query
-    if @worked
-      merge result, {worked: {$gte: parseInt(moment().startOf('day').subtract(@worked, 'days').format('x'))}}
     return result
 
 app.service 'noteQuery', ['dataStore', NoteQueryService]

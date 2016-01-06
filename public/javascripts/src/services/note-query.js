@@ -35,23 +35,7 @@
      * @type {number}
      */
 
-    NoteQueryService.prototype.worked = 3;
-
-
-    /**
-     * @public
-     * @type {number}
-     */
-
     NoteQueryService.prototype.count = null;
-
-
-    /**
-     * @public
-     * @type {number}
-     */
-
-    NoteQueryService.prototype.timeLogCount = null;
 
 
     /**
@@ -106,13 +90,6 @@
         merge(result, {
           notebookGuid: {
             $in: notebooksArray
-          }
-        });
-      }
-      if (this.worked) {
-        merge(result, {
-          worked: {
-            $gte: parseInt(moment().startOf('day').subtract(this.worked, 'days').format('x'))
           }
         });
       }

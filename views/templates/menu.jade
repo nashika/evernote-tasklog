@@ -32,14 +32,14 @@ script(type='text/ng-template' id='menu')
                   div(ng-bind-html='stack | highlight: $select.search')
         button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='dataTransciever.reload()') #[span.fa.fa-refresh] Reload
       .col-md-4
-        h2 #[span.fa.fa-search] Work Time Filter
+        h2 #[span.fa.fa-search] Time Log Filter
         .well.h3
-          p #[span.fa.fa-2x.fa-files-o] {{noteQuery.timeLogCount}} time logs.
+          p #[span.fa.fa-2x.fa-files-o] {{timeLogQuery.count}} time logs.
         form.form-horizontal
           .form-group
             label.col-sm-3.control-label Worked
             .col-sm-9
-              ui-select.form-control(ng-model='noteQuery.worked', theme='select2', search-enabled='false')
+              ui-select.form-control(ng-model='timeLogQuery.worked', theme='select2', search-enabled='false')
                 ui-select-match(placeholder='Select time log days.') Recent {{$select.selected}} day
                 ui-select-choices(repeat='n in [undefined, 1, 2, 3, 5, 7, 10, 15, 20, 30]')
                   div(ng-bind-html="n ? 'Recent ' + n + ' day' : '-- None --'")
