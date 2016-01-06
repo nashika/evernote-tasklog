@@ -3,18 +3,15 @@
   var Controller;
 
   Controller = (function() {
-    function Controller($scope, dataTransciever) {
+    function Controller($scope) {
       this.$scope = $scope;
-      this.dataTransciever = dataTransciever;
-      this.$scope.dataTransciever = this.dataTransciever;
-      this.dataTransciever.reload();
     }
 
     return Controller;
 
   })();
 
-  app.controller('Controller', ['$scope', 'dataTransciever', Controller]);
+  app.controller('Controller', ['$scope', Controller]);
 
   module.exports = Controller;
 

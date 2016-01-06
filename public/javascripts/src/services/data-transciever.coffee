@@ -4,22 +4,29 @@ merge = require 'merge'
 class DataTranscieverService
 
   ###*
+  # @public
+  # @type {Object}
+  ###
+  filterParams: null
+
+  ###*
   # @constructor
   # @param {$HttpProvider} $http
   # @param {DataStoreService} dataStore
-  # @param {NoteQueryService} noteQuery
-  # @param {TimeLogQueryService} timeLogQuery
   # @param {ProgressService} progress
   ###
-  constructor: (@$http, @dataStore, @noteQuery, @timeLogQuery, @progress) ->
+  constructor: (@$http, @dataStore, @progress) ->
+    @filterParams =
+      notebookGuids: []
+      stacks: []
 
   ###*
   # @public
   # @param {function} callback
   ###
-  reload: (callback) =>
+  reload: (params = {}, callback) =>
     if not callback then callback = =>
-    query = @noteQuery.query()
+    noteQuery = @_makeNoteQuery(params ? {})
     noteCount = 0
     @progress.open()
     async.series [
@@ -66,7 +73,7 @@ class DataTranscieverService
         .error => callback('Error $http request')
       (callback) =>
         @progress.set 'Getting notes count.', 40
-        @$http.get '/notes/count', {params: {query: query}}
+        @$http.get '/notes/count', {params: {query: noteQuery}}
         .success (data) =>
           noteCount = data
           if noteCount > 100
@@ -80,13 +87,13 @@ class DataTranscieverService
       # get content from remote
       (callback) =>
         @progress.set 'Request remote contents.', 50
-        @$http.get '/notes/get-content', {params: {query: query}}
+        @$http.get '/notes/get-content', {params: {query: noteQuery}}
         .success => callback()
         .error => callback('Error $http request')
       # get notes
       (callback) =>
         @progress.set 'Getting notes.', 70
-        @$http.get '/notes', {params: {query: query, content: false}}
+        @$http.get '/notes', {params: {query: noteQuery, content: false}}
         .success (data) =>
           @dataStore.notes = {}
           for note in data
@@ -97,7 +104,8 @@ class DataTranscieverService
       (callback) =>
         @progress.set 'Getting time logs.', 80
         guids = for noteGuid, note of @dataStore.notes then note.guid
-        @$http.post '/time-logs', {query: merge(true, @timeLogQuery.query(), {noteGuid: {$in: guids}})}
+        timeLogQuery = @_makeTimeLogQuery(merge(true, params, {noteGuids: guids}))
+        @$http.post '/time-logs', {query: timeLogQuery}
         .success (data) =>
           @dataStore.timeLogs = {}
           for timeLog in data
@@ -139,5 +147,65 @@ class DataTranscieverService
       @progress.close()
       callback(err)
 
-app.service 'dataTransciever', ['$http', 'dataStore', 'noteQuery', 'timeLogQuery', 'progress', DataTranscieverService]
+  countNotes: (callback) =>
+    query = @_makeNoteQuery()
+    @$http.get '/notes/count', {params: {query: query}}
+    .success (data) =>
+      callback null, data
+    .error =>
+      callback 'Error $http request'
+
+  countTimeLogs: (callback) =>
+    query = @_makeTimeLogQuery()
+    @$http.get '/time-logs/count', {params: {query: query}}
+    .success (data) =>
+      callback null, data
+    .error =>
+      callback 'Error $http request'
+
+  ###*
+  # @protected
+  # @param {Object} params
+  # @return {Object}
+  ###
+  _makeNoteQuery: (params = {}) =>
+    result = {}
+    # set updated query
+    if params.start
+      merge result, {updated: {$gte: params.start.valueOf()}}
+    # check notebooks
+    notebooksHash = {}
+    if @filterParams.notebookGuids and @filterParams.notebookGuids.length > 0
+      for notebookGuid in @filterParams.notebookGuids
+        notebooksHash[notebookGuid] = true
+    # check stacks
+    if @filterParams.stacks and @filterParams.stacks.length > 0
+      for stack in @filterParams.stacks
+        for notebookGuid, notebook of @dataStore.notebooks
+          if stack is notebook.stack
+            notebooksHash[notebook.guid] = true
+    # set notebooks query checked before
+    notebooksArray = Object.keys(notebooksHash)
+    if notebooksArray.length > 0
+      merge result, {notebookGuid: {$in: notebooksArray}}
+    return result
+
+  ###*
+  # @public
+  # @param {Object} params
+  # @return {Object}
+  ###
+  _makeTimeLogQuery: (params = {}) =>
+    result = {}
+    # set date query
+    if params.start
+      merge.recursive result, {date: {$gte: params.start.valueOf()}}
+    if params.end
+      merge.recursive result, {date: {$lte: params.end.valueOf()}}
+    # set note guids query
+    if params.noteGuids
+      merge result, {noteGuid: {$in: params.noteGuids}}
+    return result
+
+app.service 'dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]
 module.exports = DataTranscieverService

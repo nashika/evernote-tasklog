@@ -1,36 +1,21 @@
 class MenuController
 
-  lastQueryStr: null
-
-  constructor: (@$scope, @$http, @dataStore, @dataTransciever, @noteQuery, @timeLogQuery) ->
+  constructor: (@$scope, @$http, @dataStore, @dataTransciever) ->
     @$scope.dataStore = @dataStore
     @$scope.dataTransciever = @dataTransciever
-    @$scope.noteQuery = @noteQuery
-    @$scope.timeLogQuery = @timeLogQuery
-    @$scope.$watchGroup ['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks', 'noteQuery.worked'], @_onWatchNoteQuery
-    @$scope.$watchGroup ['timeLogQuery.worked'], @_onWatchTimeLogQuery
+    @$scope.noteCount = null
+    @$scope.$watchGroup ['dataTransciever.filterParams.notebookGuids', 'dataTransciever.filterParams.stacks'], @_onWatchFilterParams
+    @$scope.$on 'event::reload', @_onReload
 
-  _onWatchNoteQuery: =>
-    query = @noteQuery.query()
-    queryStr = JSON.stringify(query)
-    if @lastQueryStr is queryStr then return
-    @lastQueryStr = queryStr
-    @$http.get '/notes/count', {params: {query: query}}
-    .success (data) =>
-      @noteQuery.count = data
-    .error =>
-      @noteQuery.count = null
+  _onReload: =>
+    @dataTransciever.reload()
 
-  _onWatchTimeLogQuery: =>
-    query = @timeLogQuery.query()
-    queryStr = JSON.stringify(query)
-    if @lastQueryStr is queryStr then return
-    @lastQueryStr = queryStr
-    @$http.get '/time-logs/count', {params: {query: query}}
-    .success (data) =>
-      @timeLogQuery.count = data
-    .error =>
-      @timeLogQuery.count = null
+  _onWatchFilterParams: =>
+    @dataTransciever.countNotes (err, count) =>
+      if err
+        alert err
+        return
+      @$scope.noteCount = count
 
-app.controller 'MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'noteQuery', 'timeLogQuery', MenuController]
+app.controller 'MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]
 module.exports = MenuController

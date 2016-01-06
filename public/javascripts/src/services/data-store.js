@@ -60,6 +60,14 @@
 
 
     /**
+     * @public
+     * @type {Object}
+     */
+
+    DataStoreService.prototype.settings = {};
+
+
+    /**
      * @constructor
      */
 

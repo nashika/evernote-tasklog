@@ -6,165 +6,140 @@
   async = require('async');
 
   TimelineController = (function() {
-    function TimelineController($scope, $filter, $http, dataStore) {
-      var container, end, options, start;
+    function TimelineController($scope, $filter, $http, dataStore, dataTransciever) {
       this.$scope = $scope;
       this.$filter = $filter;
       this.$http = $http;
       this.dataStore = dataStore;
+      this.dataTransciever = dataTransciever;
       this._onResize = bind(this._onResize, this);
-      this._onWatchWorkingTime = bind(this._onWatchWorkingTime, this);
-      this._onWatchPersons = bind(this._onWatchPersons, this);
+      this._onReloadEnd = bind(this._onReloadEnd, this);
+      this._onReload = bind(this._onReload, this);
       this._onRangeChanged = bind(this._onRangeChanged, this);
       this.$scope.dataStore = this.dataStore;
       this.$scope.timelineItems = new vis.DataSet();
       this.$scope.timelineGroups = new vis.DataSet();
-      this.$scope.start = null;
-      this.$scope.end = null;
-      start = moment().startOf('day');
-      end = moment().endOf('day');
-      container = document.getElementById('timeline');
-      options = {
-        margin: {
-          item: 5
-        },
-        height: window.innerHeight - 80,
-        orientation: {
-          axis: 'both',
-          item: 'top'
-        },
-        start: start,
-        end: end,
-        order: function(a, b) {
-          return a.start - b.start;
-        }
-      };
-      this.$scope.timeline = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, options);
-      this.$scope.timeline.on('rangechanged', this._onRangeChanged);
-      this.$scope.$watchCollection('dataStore.settings.persons', this._onWatchPersons);
-      this.$scope.$watchGroup(['dataStore.settings.startWorkingTime', 'dataStore.settings.endWorkingTime'], this._onWatchWorkingTime);
-      this.$scope.$on('resize::resize', this._onResize);
-      this._onRangeChanged({
-        start: start,
-        end: end
-      });
+      this.$scope.start = moment().startOf('day');
+      this.$scope.end = moment().endOf('day');
+      this.dataTransciever.reload({
+        start: this.$scope.start,
+        end: this.$scope.end
+      }, (function(_this) {
+        return function() {
+          var container, hiddenDates, i, index, len, person, ref, ref1, ref2, ref3;
+          container = document.getElementById('timeline');
+          if (((ref = _this.dataStore.settings) != null ? ref.startWorkingTime : void 0) && ((ref1 = _this.dataStore.settings) != null ? ref1.endWorkingTime : void 0)) {
+            hiddenDates = [
+              {
+                start: moment().subtract(1, 'days').startOf('day').hour(_this.dataStore.settings.endWorkingTime),
+                end: moment().startOf('day').hour(_this.dataStore.settings.startWorkingTime),
+                repeat: 'daily'
+              }
+            ];
+          } else {
+            hiddenDates = {};
+          }
+          _this.$scope.timeline = new vis.Timeline(container, _this.$scope.timelineItems, _this.$scope.timelineGroups, {
+            margin: {
+              item: 5
+            },
+            height: window.innerHeight - 80,
+            orientation: {
+              axis: 'both',
+              item: 'top'
+            },
+            start: _this.$scope.start,
+            end: _this.$scope.end,
+            order: function(a, b) {
+              return a.start - b.start;
+            },
+            hiddenDates: hiddenDates
+          });
+          if (!((ref2 = _this.dataStore.settings) != null ? ref2.persons : void 0)) {
+            return;
+          }
+          ref3 = _this.dataStore.settings.persons;
+          for (index = i = 0, len = ref3.length; i < len; index = ++i) {
+            person = ref3[index];
+            _this.$scope.timelineGroups.add({
+              id: person.name,
+              content: person.name
+            });
+          }
+          _this.$scope.timelineGroups.add({
+            id: 'updated',
+            content: 'Update'
+          });
+          _this.$scope.timeline.on('rangechanged', _this._onRangeChanged);
+          _this.$scope.$on('resize::resize', _this._onResize);
+          _this.$scope.$on('event::reload', _this._onReload);
+          return _this._onReloadEnd();
+        };
+      })(this));
     }
 
     TimelineController.prototype._onRangeChanged = function(properties) {
-      var end, notes, start;
-      start = moment(properties.start).startOf('day');
-      end = moment(properties.end).endOf('day');
-      if (start.isSameOrAfter(this.$scope.start) && end.isSameOrBefore(this.$scope.end)) {
+      var currentEnd, currentStart;
+      currentStart = moment(properties.start).startOf('day');
+      currentEnd = moment(properties.end).endOf('day');
+      if (currentStart.isSameOrAfter(this.$scope.start) && currentEnd.isSameOrBefore(this.$scope.end)) {
         return;
       }
-      if (!this.$scope.start || start.isBefore(this.$scope.start)) {
-        this.$scope.start = start;
+      if (!this.$scope.start || currentStart.isBefore(this.$scope.start)) {
+        this.$scope.start = currentStart;
       }
-      if (!this.$scope.end || end.isAfter(this.$scope.end)) {
-        this.$scope.end = end;
+      if (!this.$scope.end || currentEnd.isAfter(this.$scope.end)) {
+        this.$scope.end = currentEnd;
       }
+      return this._onReload();
+    };
+
+    TimelineController.prototype._onReload = function() {
+      console.log('timeline controller reload');
+      return this.dataTransciever.reload({
+        start: this.$scope.start,
+        end: this.$scope.end
+      }, this._onReloadEnd);
+    };
+
+    TimelineController.prototype._onReloadEnd = function() {
+      var note, noteGuid, noteTimeLogs, noteTitle, ref, ref1, results, timeLog, timeLogId;
       this.$scope.timelineItems.clear();
-      notes = {};
-      return async.series([
-        (function(_this) {
-          return function(callback) {
-            return _this.$http.get('/notes', {
-              params: {
-                query: {
-                  updated: {
-                    $gte: _this.$scope.start.valueOf()
-                  }
-                }
-              }
-            }).success(function(data) {
-              var i, len, note;
-              for (i = 0, len = data.length; i < len; i++) {
-                note = data[i];
-                notes[note.guid] = note;
-                _this.$scope.timelineItems.add({
-                  id: note.guid,
-                  group: 'updated',
-                  content: "<a href=\"evernote:///view/" + _this.dataStore.user.id + "/" + _this.dataStore.user.shardId + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + (_this.$filter('abbreviate')(note.title, 40)) + "</a>",
-                  start: new Date(note.updated),
-                  type: 'point'
-                });
-              }
-              return callback();
-            }).error(function() {
-              return callback('Error $http request');
-            });
-          };
-        })(this), (function(_this) {
-          return function(callback) {
-            return _this.$http.get('/time-logs', {
-              params: {
-                query: {
-                  date: {
-                    $gte: _this.$scope.start.valueOf(),
-                    $lte: _this.$scope.end.valueOf()
-                  }
-                }
-              }
-            }).success(function(data) {
-              var i, len, noteTitle, timeLog;
-              for (i = 0, len = data.length; i < len; i++) {
-                timeLog = data[i];
-                noteTitle = notes[timeLog.noteGuid].title;
-                _this.$scope.timelineItems.add({
-                  id: timeLog._id,
-                  group: timeLog.person,
-                  content: "<a href=\"evernote:///view/" + _this.dataStore.user.id + "/" + _this.dataStore.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\" title=\"" + noteTitle + " " + timeLog.comment + "\">" + (_this.$filter('abbreviate')(noteTitle, 20)) + " " + (_this.$filter('abbreviate')(timeLog.comment, 20)) + "</a>",
-                  start: moment(timeLog.date),
-                  end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes') : null,
-                  type: timeLog.spentTime ? 'range' : 'point'
-                });
-              }
-              return callback();
-            }).error(function() {
-              return callback('Error $http request');
-            });
-          };
-        })(this)
-      ]);
-    };
-
-    TimelineController.prototype._onWatchPersons = function() {
-      var i, index, len, person, ref, ref1;
-      if (!((ref = this.dataStore.settings) != null ? ref.persons : void 0)) {
-        return;
-      }
-      this.$scope.timelineGroups.clear();
-      ref1 = this.dataStore.settings.persons;
-      for (index = i = 0, len = ref1.length; i < len; index = ++i) {
-        person = ref1[index];
-        this.$scope.timelineGroups.add({
-          id: person.name,
-          content: person.name
+      ref = this.dataStore.notes;
+      for (noteGuid in ref) {
+        note = ref[noteGuid];
+        notes[note.guid] = note;
+        this.$scope.timelineItems.add({
+          id: note.guid,
+          group: 'updated',
+          content: "<a href=\"evernote:///view/" + this.dataStore.user.id + "/" + this.dataStore.user.shardId + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + (this.$filter('abbreviate')(note.title, 40)) + "</a>",
+          start: new Date(note.updated),
+          type: 'point'
         });
       }
-      return this.$scope.timelineGroups.add({
-        id: 'updated',
-        content: 'Update'
-      });
-    };
-
-    TimelineController.prototype._onWatchWorkingTime = function() {
-      var ref, ref1;
-      if (((ref = this.dataStore.settings) != null ? ref.startWorkingTime : void 0) && ((ref1 = this.dataStore.settings) != null ? ref1.endWorkingTime : void 0)) {
-        return this.$scope.timeline.setOptions({
-          hiddenDates: [
-            {
-              start: moment().subtract(1, 'days').startOf('day').hour(this.dataStore.settings.endWorkingTime),
-              end: moment().startOf('day').hour(this.dataStore.settings.startWorkingTime),
-              repeat: 'daily'
-            }
-          ]
-        });
-      } else {
-        return this.$scope.timeline.setOptions({
-          hiddenDates: {}
-        });
+      ref1 = this.dataStore.timeLogs;
+      results = [];
+      for (noteGuid in ref1) {
+        noteTimeLogs = ref1[noteGuid];
+        results.push((function() {
+          var results1;
+          results1 = [];
+          for (timeLogId in noteTimeLogs) {
+            timeLog = noteTimeLogs[timeLogId];
+            noteTitle = notes[timeLog.noteGuid].title;
+            results1.push(this.$scope.timelineItems.add({
+              id: timeLog._id,
+              group: timeLog.person,
+              content: "<a href=\"evernote:///view/" + this.dataStore.user.id + "/" + this.dataStore.user.shardId + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\" title=\"" + noteTitle + " " + timeLog.comment + "\">" + (this.$filter('abbreviate')(noteTitle, 20)) + " " + (this.$filter('abbreviate')(timeLog.comment, 20)) + "</a>",
+              start: moment(timeLog.date),
+              end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes') : null,
+              type: timeLog.spentTime ? 'range' : 'point'
+            }));
+          }
+          return results1;
+        }).call(this));
       }
+      return results;
     };
 
     TimelineController.prototype._onResize = function(event) {
@@ -177,7 +152,7 @@
 
   })();
 
-  app.controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', TimelineController]);
+  app.controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
 
   module.exports = TimelineController;
 

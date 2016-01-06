@@ -1,8 +1,12 @@
 class NavigationController
 
-  constructor: (@$scope, @$route) ->
+  constructor: (@$scope, @$rootScope, @$route) ->
     @$scope.navCollapse = true
     @$scope.$route = @$route
+    @$scope.reload = @_reload
 
-app.controller 'NavigationController', ['$scope', '$route', NavigationController]
+  _reload: =>
+    @$rootScope.$broadcast 'event::reload'
+
+app.controller 'NavigationController', ['$scope', '$rootScope', '$route', NavigationController]
 module.exports = NavigationController

@@ -10,20 +10,32 @@
   DataTranscieverService = (function() {
 
     /**
+     * @public
+     * @type {Object}
+     */
+    DataTranscieverService.prototype.filterParams = null;
+
+
+    /**
      * @constructor
      * @param {$HttpProvider} $http
      * @param {DataStoreService} dataStore
-     * @param {NoteQueryService} noteQuery
-     * @param {TimeLogQueryService} timeLogQuery
      * @param {ProgressService} progress
      */
-    function DataTranscieverService($http, dataStore, noteQuery, timeLogQuery, progress) {
+
+    function DataTranscieverService($http, dataStore, progress) {
       this.$http = $http;
       this.dataStore = dataStore;
-      this.noteQuery = noteQuery;
-      this.timeLogQuery = timeLogQuery;
       this.progress = progress;
+      this._makeTimeLogQuery = bind(this._makeTimeLogQuery, this);
+      this._makeNoteQuery = bind(this._makeNoteQuery, this);
+      this.countTimeLogs = bind(this.countTimeLogs, this);
+      this.countNotes = bind(this.countNotes, this);
       this.reload = bind(this.reload, this);
+      this.filterParams = {
+        notebookGuids: [],
+        stacks: []
+      };
     }
 
 
@@ -32,14 +44,17 @@
      * @param {function} callback
      */
 
-    DataTranscieverService.prototype.reload = function(callback) {
-      var noteCount, query;
+    DataTranscieverService.prototype.reload = function(params, callback) {
+      var noteCount, noteQuery;
+      if (params == null) {
+        params = {};
+      }
       if (!callback) {
         callback = (function(_this) {
           return function() {};
         })(this);
       }
-      query = this.noteQuery.query();
+      noteQuery = this._makeNoteQuery(params != null ? params : {});
       noteCount = 0;
       this.progress.open();
       return async.series([
@@ -107,7 +122,7 @@
             _this.progress.set('Getting notes count.', 40);
             return _this.$http.get('/notes/count', {
               params: {
-                query: query
+                query: noteQuery
               }
             }).success(function(data) {
               noteCount = data;
@@ -129,7 +144,7 @@
             _this.progress.set('Request remote contents.', 50);
             return _this.$http.get('/notes/get-content', {
               params: {
-                query: query
+                query: noteQuery
               }
             }).success(function() {
               return callback();
@@ -142,7 +157,7 @@
             _this.progress.set('Getting notes.', 70);
             return _this.$http.get('/notes', {
               params: {
-                query: query,
+                query: noteQuery,
                 content: false
               }
             }).success(function(data) {
@@ -159,7 +174,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            var guids, note, noteGuid;
+            var guids, note, noteGuid, timeLogQuery;
             _this.progress.set('Getting time logs.', 80);
             guids = (function() {
               var ref, results;
@@ -171,12 +186,11 @@
               }
               return results;
             }).call(_this);
+            timeLogQuery = _this._makeTimeLogQuery(merge(true, params, {
+              noteGuids: guids
+            }));
             return _this.$http.post('/time-logs', {
-              query: merge(true, _this.timeLogQuery.query(), {
-                noteGuid: {
-                  $in: guids
-                }
-              })
+              query: timeLogQuery
             }).success(function(data) {
               var base, i, len, name, timeLog;
               _this.dataStore.timeLogs = {};
@@ -268,11 +282,136 @@
       })(this));
     };
 
+    DataTranscieverService.prototype.countNotes = function(callback) {
+      var query;
+      query = this._makeNoteQuery();
+      return this.$http.get('/notes/count', {
+        params: {
+          query: query
+        }
+      }).success((function(_this) {
+        return function(data) {
+          return callback(null, data);
+        };
+      })(this)).error((function(_this) {
+        return function() {
+          return callback('Error $http request');
+        };
+      })(this));
+    };
+
+    DataTranscieverService.prototype.countTimeLogs = function(callback) {
+      var query;
+      query = this._makeTimeLogQuery();
+      return this.$http.get('/time-logs/count', {
+        params: {
+          query: query
+        }
+      }).success((function(_this) {
+        return function(data) {
+          return callback(null, data);
+        };
+      })(this)).error((function(_this) {
+        return function() {
+          return callback('Error $http request');
+        };
+      })(this));
+    };
+
+
+    /**
+     * @protected
+     * @param {Object} params
+     * @return {Object}
+     */
+
+    DataTranscieverService.prototype._makeNoteQuery = function(params) {
+      var i, j, len, len1, notebook, notebookGuid, notebooksArray, notebooksHash, ref, ref1, ref2, result, stack;
+      if (params == null) {
+        params = {};
+      }
+      result = {};
+      if (params.start) {
+        merge(result, {
+          updated: {
+            $gte: params.start.valueOf()
+          }
+        });
+      }
+      notebooksHash = {};
+      if (this.filterParams.notebookGuids && this.filterParams.notebookGuids.length > 0) {
+        ref = this.filterParams.notebookGuids;
+        for (i = 0, len = ref.length; i < len; i++) {
+          notebookGuid = ref[i];
+          notebooksHash[notebookGuid] = true;
+        }
+      }
+      if (this.filterParams.stacks && this.filterParams.stacks.length > 0) {
+        ref1 = this.filterParams.stacks;
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          stack = ref1[j];
+          ref2 = this.dataStore.notebooks;
+          for (notebookGuid in ref2) {
+            notebook = ref2[notebookGuid];
+            if (stack === notebook.stack) {
+              notebooksHash[notebook.guid] = true;
+            }
+          }
+        }
+      }
+      notebooksArray = Object.keys(notebooksHash);
+      if (notebooksArray.length > 0) {
+        merge(result, {
+          notebookGuid: {
+            $in: notebooksArray
+          }
+        });
+      }
+      return result;
+    };
+
+
+    /**
+     * @public
+     * @param {Object} params
+     * @return {Object}
+     */
+
+    DataTranscieverService.prototype._makeTimeLogQuery = function(params) {
+      var result;
+      if (params == null) {
+        params = {};
+      }
+      result = {};
+      if (params.start) {
+        merge.recursive(result, {
+          date: {
+            $gte: params.start.valueOf()
+          }
+        });
+      }
+      if (params.end) {
+        merge.recursive(result, {
+          date: {
+            $lte: params.end.valueOf()
+          }
+        });
+      }
+      if (params.noteGuids) {
+        merge(result, {
+          noteGuid: {
+            $in: params.noteGuids
+          }
+        });
+      }
+      return result;
+    };
+
     return DataTranscieverService;
 
   })();
 
-  app.service('dataTransciever', ['$http', 'dataStore', 'noteQuery', 'timeLogQuery', 'progress', DataTranscieverService]);
+  app.service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
 
   module.exports = DataTranscieverService;
 

@@ -43,6 +43,12 @@ class DataStoreService
   profitLogs: {}
 
   ###*
+  # @public
+  # @type {Object}
+  ###
+  settings: {}
+
+  ###*
   # @constructor
   ###
   constructor: ->

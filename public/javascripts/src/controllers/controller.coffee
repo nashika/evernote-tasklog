@@ -1,8 +1,6 @@
 class Controller
 
-  constructor: (@$scope, @dataTransciever) ->
-    @$scope.dataTransciever = @dataTransciever
-    @dataTransciever.reload()
+  constructor: (@$scope) ->
 
-app.controller 'Controller', ['$scope', 'dataTransciever', Controller]
+app.controller 'Controller', ['$scope', Controller]
 module.exports = Controller

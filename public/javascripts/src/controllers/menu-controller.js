@@ -4,67 +4,32 @@
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   MenuController = (function() {
-    MenuController.prototype.lastQueryStr = null;
-
-    function MenuController($scope, $http, dataStore, dataTransciever, noteQuery, timeLogQuery) {
+    function MenuController($scope, $http, dataStore, dataTransciever) {
       this.$scope = $scope;
       this.$http = $http;
       this.dataStore = dataStore;
       this.dataTransciever = dataTransciever;
-      this.noteQuery = noteQuery;
-      this.timeLogQuery = timeLogQuery;
-      this._onWatchTimeLogQuery = bind(this._onWatchTimeLogQuery, this);
-      this._onWatchNoteQuery = bind(this._onWatchNoteQuery, this);
+      this._onWatchFilterParams = bind(this._onWatchFilterParams, this);
+      this._onReload = bind(this._onReload, this);
       this.$scope.dataStore = this.dataStore;
       this.$scope.dataTransciever = this.dataTransciever;
-      this.$scope.noteQuery = this.noteQuery;
-      this.$scope.timeLogQuery = this.timeLogQuery;
-      this.$scope.$watchGroup(['noteQuery.updated', 'noteQuery.notebooks', 'noteQuery.stacks', 'noteQuery.worked'], this._onWatchNoteQuery);
-      this.$scope.$watchGroup(['timeLogQuery.worked'], this._onWatchTimeLogQuery);
+      this.$scope.noteCount = null;
+      this.$scope.$watchGroup(['dataTransciever.filterParams.notebookGuids', 'dataTransciever.filterParams.stacks'], this._onWatchFilterParams);
+      this.$scope.$on('event::reload', this._onReload);
     }
 
-    MenuController.prototype._onWatchNoteQuery = function() {
-      var query, queryStr;
-      query = this.noteQuery.query();
-      queryStr = JSON.stringify(query);
-      if (this.lastQueryStr === queryStr) {
-        return;
-      }
-      this.lastQueryStr = queryStr;
-      return this.$http.get('/notes/count', {
-        params: {
-          query: query
-        }
-      }).success((function(_this) {
-        return function(data) {
-          return _this.noteQuery.count = data;
-        };
-      })(this)).error((function(_this) {
-        return function() {
-          return _this.noteQuery.count = null;
-        };
-      })(this));
+    MenuController.prototype._onReload = function() {
+      return this.dataTransciever.reload();
     };
 
-    MenuController.prototype._onWatchTimeLogQuery = function() {
-      var query, queryStr;
-      query = this.timeLogQuery.query();
-      queryStr = JSON.stringify(query);
-      if (this.lastQueryStr === queryStr) {
-        return;
-      }
-      this.lastQueryStr = queryStr;
-      return this.$http.get('/time-logs/count', {
-        params: {
-          query: query
-        }
-      }).success((function(_this) {
-        return function(data) {
-          return _this.timeLogQuery.count = data;
-        };
-      })(this)).error((function(_this) {
-        return function() {
-          return _this.timeLogQuery.count = null;
+    MenuController.prototype._onWatchFilterParams = function() {
+      return this.dataTransciever.countNotes((function(_this) {
+        return function(err, count) {
+          if (err) {
+            alert(err);
+            return;
+          }
+          return _this.$scope.noteCount = count;
         };
       })(this));
     };
@@ -73,7 +38,7 @@
 
   })();
 
-  app.controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'noteQuery', 'timeLogQuery', MenuController]);
+  app.controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
 
   module.exports = MenuController;
 

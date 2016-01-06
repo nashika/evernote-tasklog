@@ -24,11 +24,7 @@
 
   require('./services/data-transciever');
 
-  require('./services/note-query');
-
   require('./services/progress');
-
-  require('./services/time-log-query');
 
   require('./directives/resize');
 

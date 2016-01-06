@@ -18,9 +18,7 @@ require './filters/spent-time'
 # angular.js services
 require './services/data-store'
 require './services/data-transciever'
-require './services/note-query'
 require './services/progress'
-require './services/time-log-query'
 
 # angular.js directives
 require './directives/resize'
