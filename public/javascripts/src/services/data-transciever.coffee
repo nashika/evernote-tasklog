@@ -1,4 +1,5 @@
 async = require 'async'
+merge = require 'merge'
 
 class DataTranscieverService
 
@@ -7,9 +8,10 @@ class DataTranscieverService
   # @param {$HttpProvider} $http
   # @param {DataStoreService} dataStore
   # @param {NoteQueryService} noteQuery
+  # @param {TimeLogQueryService} timeLogQuery
   # @param {ProgressService} progress
   ###
-  constructor: (@$http, @dataStore, @noteQuery, @progress) ->
+  constructor: (@$http, @dataStore, @noteQuery, @timeLogQuery, @progress) ->
 
   ###*
   # @public
@@ -91,10 +93,11 @@ class DataTranscieverService
             @dataStore.notes[note.guid] = note
           callback()
         .error => callback('Error $http request')
+      # get time logs
       (callback) =>
         @progress.set 'Getting time logs.', 80
         guids = for noteGuid, note of @dataStore.notes then note.guid
-        @$http.post '/time-logs', {query: {noteGuid: {$in: guids}}}
+        @$http.post '/time-logs', {query: merge(true, @timeLogQuery.query(), {noteGuid: {$in: guids}})}
         .success (data) =>
           @dataStore.timeLogs = {}
           for timeLog in data
@@ -102,6 +105,7 @@ class DataTranscieverService
             @dataStore.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog
           callback()
         .error => callback('Error $http request')
+      # get profit logs
       (callback) =>
         @progress.set 'Getting profit logs.', 90
         guids = for noteGuid, note of @dataStore.notes then note.guid
@@ -135,5 +139,5 @@ class DataTranscieverService
       @progress.close()
       callback(err)
 
-app.service 'dataTransciever', ['$http', 'dataStore', 'noteQuery', 'progress', DataTranscieverService]
+app.service 'dataTransciever', ['$http', 'dataStore', 'noteQuery', 'timeLogQuery', 'progress', DataTranscieverService]
 module.exports = DataTranscieverService

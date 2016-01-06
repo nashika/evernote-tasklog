@@ -35,7 +35,6 @@
     "jade": "~1.11.0",
     "log4js": "^0.6.26",
     "merge": "^1.2.0",
-    "moment": "^2.11.0",
     "morgan": "~1.6.1",
     "nedb": "^1.1.2",
     "serve-favicon": "~2.3.0",
@@ -45,8 +44,6 @@
     "browserify": "^11.0.0",
     "coffee-script": "^1.9.3",
     "coffeeify": "^1.1.0",
-    "electron-packager": "^5.0.1",
-    "electron-prebuilt": "^0.30.2",
     "express-generator": "^4.13.1"
   }
 }

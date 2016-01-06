@@ -1,5 +1,4 @@
 async = require 'async'
-moment = require 'moment'
 
 core = require '../core'
 MultiModel = require './multi-model'
@@ -36,7 +35,7 @@ class TimeLogModel extends MultiModel
         # parse date and time
         dateText = if matches = attributesText.match(/\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}/) then matches[0] else ''
         timeText = if matches = attributesText.match(/\d{1,2}:\d{1,2}:\d{1,2}|\d{1,2}:\d{1,2}/) then matches[0] else ''
-        timeLog.date = parseInt(moment(dateText + ' ' + timeText).format('x'))
+        timeLog.date = (new Date(dateText + ' ' + timeText)).getTime()
         if timeText then timeLog.allDay = false
         # parse person
         for person in core.users[@_username].settings.persons
