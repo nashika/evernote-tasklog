@@ -2,7 +2,6 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$" libraries="{evernote-tasklog node_modules}" />
-    <file url="PROJECT" libraries="{Node.js v0.12.7 Core Modules, evernote-tasklog node_modules}" />
-    <includedPredefinedLibrary name="Node.js Globals" />
+    <file url="PROJECT" libraries="{evernote-tasklog node_modules}" />
   </component>
 </project>
