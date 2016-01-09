@@ -32,6 +32,7 @@ class NoteModel extends MultiModel
         results = []
         for note in notes
           result = merge(true, note)
+          result.hasContent = result.content isnt null
           result.content = null
           results.push result
         callback null, results
