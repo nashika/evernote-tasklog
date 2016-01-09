@@ -141,19 +141,6 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.next('Request remote contents.');
-            return _this.$http.get('/notes/get-content', {
-              params: {
-                query: noteQuery
-              }
-            }).success(function() {
-              return callback();
-            }).error(function() {
-              return callback('Error $http request');
-            });
-          };
-        })(this), (function(_this) {
-          return function(callback) {
             _this.progress.next('Getting notes.');
             return _this.$http.get('/notes', {
               params: {
@@ -169,6 +156,37 @@
               return callback();
             }).error(function() {
               return callback('Error $http request');
+            });
+          };
+        })(this), (function(_this) {
+          return function(callback) {
+            var count;
+            _this.progress.next('Request remote contents.');
+            count = 0;
+            return async.forEachOfSeries(_this.dataStore.notes, function(note, noteGuid, callback) {
+              _this.progress.set("Request remote contents. " + (++count) + " / " + (Object.keys(_this.dataStore.notes).length));
+              if (!note.hasContent) {
+                return _this.$http.get('/notes/get-content', {
+                  params: {
+                    query: {
+                      guid: noteGuid
+                    }
+                  }
+                }).success(function(data) {
+                  var i, len;
+                  for (i = 0, len = data.length; i < len; i++) {
+                    note = data[i];
+                    _this.dataStore.notes[note.guid] = note;
+                  }
+                  return callback();
+                }).error(function() {
+                  return callback('Error $http request');
+                });
+              } else {
+                return callback();
+              }
+            }, function(err) {
+              return callback(err);
             });
           };
         })(this), (function(_this) {

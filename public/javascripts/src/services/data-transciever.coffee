@@ -84,12 +84,6 @@ class DataTranscieverService
           else
             callback()
         .error => callback('Error $http request')
-      # get content from remote
-      (callback) =>
-        @progress.next 'Request remote contents.'
-        @$http.get '/notes/get-content', {params: {query: noteQuery}}
-        .success => callback()
-        .error => callback('Error $http request')
       # get notes
       (callback) =>
         @progress.next 'Getting notes.'
@@ -100,6 +94,23 @@ class DataTranscieverService
             @dataStore.notes[note.guid] = note
           callback()
         .error => callback('Error $http request')
+      # get content from remote
+      (callback) =>
+        @progress.next 'Request remote contents.'
+        count = 0
+        async.forEachOfSeries @dataStore.notes, (note, noteGuid, callback) =>
+          @progress.set "Request remote contents. #{++count} / #{Object.keys(@dataStore.notes).length}"
+          if not note.hasContent
+            @$http.get '/notes/get-content', {params: {query: {guid: noteGuid}}}
+            .success (data) =>
+              for note in data
+                @dataStore.notes[note.guid] = note
+              callback()
+            .error => callback('Error $http request')
+          else
+            callback()
+        , (err) =>
+          callback(err)
       # get time logs
       (callback) =>
         @progress.next 'Getting time logs.'

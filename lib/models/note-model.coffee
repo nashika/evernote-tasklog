@@ -43,16 +43,19 @@ class NoteModel extends MultiModel
   # @param {function} callback
   ###
   getRemoteContent: (options, callback) =>
-    options = merge(true, options, {content: true})
     @findLocal options, (err, notes) =>
       if err then return callback(err)
-      result = {count: notes.length, getRemoteContentCount: 0}
+      result = []
       async.eachSeries notes, (note, callback) =>
-        if note.content then return callback()
-        @loadRemote note.guid, (err, loadNote) =>
-          if err then return callback(err)
-          result.getRemoteContentCount++
+        if note.content or note.hasContent
+          result.push note
           callback()
+        else
+          @loadRemote note.guid, (err, loadedNote) =>
+            if err then return callback(err)
+            result.push loadedNote
+            #TODO: set hasContentProperty
+            callback()
       , (err) =>
         if err then return callback(err)
         callback null, result
