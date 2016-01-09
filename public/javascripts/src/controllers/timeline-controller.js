@@ -95,7 +95,6 @@
     };
 
     TimelineController.prototype._onReload = function() {
-      console.log('timeline controller reload');
       return this.dataTransciever.reload({
         start: this.$scope.start,
         end: this.$scope.end

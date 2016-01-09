@@ -8,18 +8,25 @@
 
     ProgressService.prototype.value = 0;
 
+    ProgressService.prototype.completeCount = 0;
+
+    ProgressService.prototype.allCount = 0;
+
     ProgressService.prototype.message = '';
 
     function ProgressService($modal) {
       this.$modal = $modal;
+      this.next = bind(this.next, this);
       this.set = bind(this.set, this);
       this.close = bind(this.close, this);
       this.open = bind(this.open, this);
     }
 
-    ProgressService.prototype.open = function() {
+    ProgressService.prototype.open = function(allCount) {
       this.message = 'processing...';
       this.value = 0;
+      this.completeCount = 0;
+      this.allCount = allCount;
       return this.modalInstance = this.$modal.open({
         templateUrl: 'progress-modal',
         controller: 'ProgressModalController',
@@ -42,6 +49,11 @@
       if (value !== null) {
         return this.value = value;
       }
+    };
+
+    ProgressService.prototype.next = function(message) {
+      this.completeCount++;
+      return this.set(message, this.completeCount / this.allCount * 100);
     };
 
     return ProgressService;

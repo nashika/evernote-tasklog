@@ -28,12 +28,12 @@ class DataTranscieverService
     if not callback then callback = =>
     noteQuery = @_makeNoteQuery(params ? {})
     noteCount = 0
-    @progress.open()
+    @progress.open(10)
     async.series [
       # get user
       (callback) =>
         if @dataStore.user then return callback()
-        @progress.set 'Getting user data.', 0
+        @progress.next 'Getting user data.'
         @$http.get '/user'
         .success (data) =>
           @dataStore.user = data
@@ -41,7 +41,7 @@ class DataTranscieverService
         .error => callback('Error $http request')
       # get settings
       (callback) =>
-        @progress.set 'Getting settings data.', 10
+        @progress.next 'Getting settings data.'
         @$http.get '/settings'
         .success (data) =>
           @dataStore.settings = data
@@ -54,13 +54,13 @@ class DataTranscieverService
         callback()
       # sync
       (callback) =>
-        @progress.set 'Syncing remote server.', 20
+        @progress.next 'Syncing remote server.'
         @$http.get '/sync'
         .success => callback()
         .error => callback('Error $http request')
       # get notebooks
       (callback) =>
-        @progress.set 'Getting notebooks data.', 30
+        @progress.next 'Getting notebooks data.'
         @$http.get '/notebooks'
         .success (data) =>
           @dataStore.notebooks = {}
@@ -72,7 +72,7 @@ class DataTranscieverService
           callback()
         .error => callback('Error $http request')
       (callback) =>
-        @progress.set 'Getting notes count.', 40
+        @progress.next 'Getting notes count.'
         @$http.get '/notes/count', {params: {query: noteQuery}}
         .success (data) =>
           noteCount = data
@@ -86,14 +86,14 @@ class DataTranscieverService
         .error => callback('Error $http request')
       # get content from remote
       (callback) =>
-        @progress.set 'Request remote contents.', 50
+        @progress.next 'Request remote contents.'
         @$http.get '/notes/get-content', {params: {query: noteQuery}}
         .success => callback()
         .error => callback('Error $http request')
       # get notes
       (callback) =>
-        @progress.set 'Getting notes.', 70
-        @$http.get '/notes', {params: {query: noteQuery, content: false}}
+        @progress.next 'Getting notes.'
+        @$http.get '/notes', {params: {query: noteQuery}}
         .success (data) =>
           @dataStore.notes = {}
           for note in data
@@ -102,7 +102,7 @@ class DataTranscieverService
         .error => callback('Error $http request')
       # get time logs
       (callback) =>
-        @progress.set 'Getting time logs.', 80
+        @progress.next 'Getting time logs.'
         guids = for noteGuid, note of @dataStore.notes then note.guid
         timeLogQuery = @_makeTimeLogQuery(merge(true, params, {noteGuids: guids}))
         @$http.post '/time-logs', {query: timeLogQuery}
@@ -115,7 +115,7 @@ class DataTranscieverService
         .error => callback('Error $http request')
       # get profit logs
       (callback) =>
-        @progress.set 'Getting profit logs.', 90
+        @progress.next 'Getting profit logs.'
         guids = for noteGuid, note of @dataStore.notes then note.guid
         @$http.post '/profit-logs', {query: {noteGuid: {$in: guids}}}
         .success (data) =>
@@ -129,21 +129,21 @@ class DataTranscieverService
       if err
         alert err
       else
-        @progress.set 'Done.', 100
+        @progress.next 'Done.'
       @progress.close()
       callback(err)
 
   reParse: (callback) ->
     if not callback then callback = =>
-    @progress.open()
-    @progress.set 'Re Parse notes...', 50
+    @progress.open(2)
+    @progress.next 'Re Parse notes...'
     async.waterfall [
       (callback) =>
         @$http.get '/notes/re-parse'
         .success (data) => callback()
         .error (data) => callback('Error $http request')
     ], (err) =>
-      @progress.set 'Done.', 100
+      @progress.next 'Done.'
       @progress.close()
       callback(err)
 

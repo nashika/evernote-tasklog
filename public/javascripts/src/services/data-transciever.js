@@ -56,14 +56,14 @@
       }
       noteQuery = this._makeNoteQuery(params != null ? params : {});
       noteCount = 0;
-      this.progress.open();
+      this.progress.open(10);
       return async.series([
         (function(_this) {
           return function(callback) {
             if (_this.dataStore.user) {
               return callback();
             }
-            _this.progress.set('Getting user data.', 0);
+            _this.progress.next('Getting user data.');
             return _this.$http.get('/user').success(function(data) {
               _this.dataStore.user = data;
               return callback();
@@ -73,7 +73,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Getting settings data.', 10);
+            _this.progress.next('Getting settings data.');
             return _this.$http.get('/settings').success(function(data) {
               _this.dataStore.settings = data;
               return callback();
@@ -90,7 +90,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Syncing remote server.', 20);
+            _this.progress.next('Syncing remote server.');
             return _this.$http.get('/sync').success(function() {
               return callback();
             }).error(function() {
@@ -99,7 +99,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Getting notebooks data.', 30);
+            _this.progress.next('Getting notebooks data.');
             return _this.$http.get('/notebooks').success(function(data) {
               var i, len, notebook, stackHash;
               _this.dataStore.notebooks = {};
@@ -119,7 +119,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Getting notes count.', 40);
+            _this.progress.next('Getting notes count.');
             return _this.$http.get('/notes/count', {
               params: {
                 query: noteQuery
@@ -141,7 +141,7 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Request remote contents.', 50);
+            _this.progress.next('Request remote contents.');
             return _this.$http.get('/notes/get-content', {
               params: {
                 query: noteQuery
@@ -154,11 +154,10 @@
           };
         })(this), (function(_this) {
           return function(callback) {
-            _this.progress.set('Getting notes.', 70);
+            _this.progress.next('Getting notes.');
             return _this.$http.get('/notes', {
               params: {
-                query: noteQuery,
-                content: false
+                query: noteQuery
               }
             }).success(function(data) {
               var i, len, note;
@@ -175,7 +174,7 @@
         })(this), (function(_this) {
           return function(callback) {
             var guids, note, noteGuid, timeLogQuery;
-            _this.progress.set('Getting time logs.', 80);
+            _this.progress.next('Getting time logs.');
             guids = (function() {
               var ref, results;
               ref = this.dataStore.notes;
@@ -209,7 +208,7 @@
         })(this), (function(_this) {
           return function(callback) {
             var guids, note, noteGuid;
-            _this.progress.set('Getting profit logs.', 90);
+            _this.progress.next('Getting profit logs.');
             guids = (function() {
               var ref, results;
               ref = this.dataStore.notes;
@@ -247,7 +246,7 @@
           if (err) {
             alert(err);
           } else {
-            _this.progress.set('Done.', 100);
+            _this.progress.next('Done.');
           }
           _this.progress.close();
           return callback(err);
@@ -261,8 +260,8 @@
           return function() {};
         })(this);
       }
-      this.progress.open();
-      this.progress.set('Re Parse notes...', 50);
+      this.progress.open(2);
+      this.progress.next('Re Parse notes...');
       return async.waterfall([
         (function(_this) {
           return function(callback) {
@@ -275,7 +274,7 @@
         })(this)
       ], (function(_this) {
         return function(err) {
-          _this.progress.set('Done.', 100);
+          _this.progress.next('Done.');
           _this.progress.close();
           return callback(err);
         };

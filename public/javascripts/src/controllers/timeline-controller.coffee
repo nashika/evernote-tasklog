@@ -54,7 +54,6 @@ class TimelineController
     @_onReload()
 
   _onReload: =>
-    console.log 'timeline controller reload'
     @dataTransciever.reload {start: @$scope.start, end: @$scope.end}, @_onReloadEnd
 
   _onReloadEnd: =>

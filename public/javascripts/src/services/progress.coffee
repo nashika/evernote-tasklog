@@ -1,14 +1,22 @@
 class ProgressService
 
   modalInstance: null
+
   value: 0
+
+  completeCount: 0
+
+  allCount: 0
+
   message: ''
 
   constructor: (@$modal) ->
 
-  open: =>
+  open: (allCount) =>
     @message = 'processing...'
     @value = 0
+    @completeCount = 0
+    @allCount = allCount
     @modalInstance = @$modal.open
       templateUrl: 'progress-modal'
       controller: 'ProgressModalController'
@@ -24,6 +32,10 @@ class ProgressService
     @message = message
     if value isnt null
       @value = value
+
+  next: (message) =>
+    @completeCount++
+    @set message, @completeCount / @allCount * 100
 
 app.service 'progress', ['$modal', ProgressService]
 module.exports = ProgressService
