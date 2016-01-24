@@ -20,15 +20,13 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-var anyApp:any = app;
-anyApp.use(session, {
+app.use(session({
     secret: 'mysecret',
-    key: 'mysessionkey',
     cookie: {path: '/', httpOnly: true, maxAge: 365 * 24 * 3600 * 1000},
     store: new NedbStore({filename: __dirname + '/db/session.db'}),
     resave: false,
     saveUninitialized: false,
-});
+}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));

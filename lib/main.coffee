@@ -37,7 +37,7 @@ onListening = ->
   debug 'Listening on ' + bind
 
 # Module dependencies.
-expressApp = require '../app_cs'
+expressApp = require '../app'
 debug = require('debug')('evernote-tasklog:server')
 http = require 'http'
 
