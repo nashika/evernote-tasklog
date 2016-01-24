@@ -4,3 +4,4 @@ bower_components
 db/**/*.db
 logs/*
 node_modules
+typings

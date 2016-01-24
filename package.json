@@ -44,6 +44,8 @@
     "browserify": "^11.0.0",
     "coffee-script": "^1.9.3",
     "coffeeify": "^1.1.0",
-    "express-generator": "^4.13.1"
+    "express-generator": "^4.13.1",
+    "tsd": "^0.6.5",
+    "typescript": "^1.7.5"
   }
 }

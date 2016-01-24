@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es3",
+    "noImplicitAny": false,
+    "outDir": ".",
+    "rootDir": ".",
+    "sourceMap": true
+  },
+  "filesGlob": [
+    "./typings/tsd.d.ts",
+    "./typings_my/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
