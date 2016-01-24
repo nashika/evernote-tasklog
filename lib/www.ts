@@ -1,7 +1,8 @@
-var path = require('path');
-var async = require('async');
-var log4js = require('log4js');
-var evernote_1 = require('evernote');
+import * as path from 'path';
+import * as async from 'async';
+import * as log4js from 'log4js';
+import {Evernote} from 'evernote';
+
 var core = require('./core');
 var LinkedNotebookModel = require('./models/linked-notebook-model');
 var NoteModel = require('./models/note-model');
@@ -13,16 +14,18 @@ var SyncStateModel = require('./models/sync-state-model');
 var TagModel = require('./models/tag-model');
 var TimeLogsModel = require('./models/time-log-model');
 var UserModel = require('./models/user-model');
-var Www = (function () {
-    function Www() {
-        this.SYNC_CHUNK_COUNT = 100;
-    }
-    Www.prototype.main = function (app, server) {
+
+class Www {
+
+    SYNC_CHUNK_COUNT = 100;
+
+    main(app, server): void {
         // Initialize logger
-        log4js.configure(path.normalize(__dirname + '/../log4js-config.json'), { cwd: path.normalize(__dirname + '/..') });
+        log4js.configure(path.normalize(__dirname + '/../log4js-config.json'), {cwd: path.normalize(__dirname + '/..')});
         core.loggers.system = log4js.getLogger('system');
         core.loggers.access = log4js.getLogger('access');
         core.loggers.error = log4js.getLogger('error');
+
         // Initialize core object
         core.app = app;
         core.server = server; // TODO: Set password to web server
@@ -31,45 +34,42 @@ var Www = (function () {
         core.models.settings = new SettingModel();
         // Initialize global settings
         async.waterfall([
-            function (callback) {
-                core.models.settings.loadLocal(null, callback);
+            (callback) => {
+                core.models.settings.loadLocal(null, callback)
             },
-            function (settings, callback) {
+            (settings, callback) => {
                 core.settings = settings;
-                callback();
+                callback()
             },
-        ], function (err) {
-            if (err)
-                return core.loggers.error.error(err);
+        ], (err) => {
+            if (err) return core.loggers.error.error(err);
             core.loggers.system.info('Initialize web server finished.');
         });
-    };
-    Www.prototype.initUser = function (username, token, sandbox, callback) {
-        var _this = this;
+    }
+
+    initUser(username, token, sandbox, callback): void {
         if (core.users[username]) {
             core.loggers.system.info('Init user finished. already initialized.');
             callback();
         }
         core.users[username] = {};
         // Initialize evernote client
-        core.users[username].client = new evernote_1.Evernote.Client({
+        core.users[username].client = new Evernote.Client({
             token: token,
-            sandbox: sandbox
+            sandbox: sandbox,
         });
         async.waterfall([
             // Initialize evernote user
-            // Initialize evernote user
-            function (callback) {
+            (callback) => {
                 var userStore = core.users[username].client.getUserStore();
                 userStore.getUser(callback);
             },
-            function (user, callback) {
+            (user, callback) => {
                 core.users[username].user = user;
                 callback();
             },
             // Initialize database
-            // Initialize database
-            function (callback) {
+            (callback) => {
                 core.users[username].models = {
                     linkedNotebooks: new LinkedNotebookModel(username),
                     notes: new NoteModel(username),
@@ -80,24 +80,22 @@ var Www = (function () {
                     syncStates: new SyncStateModel(username),
                     tags: new TagModel(username),
                     timeLogs: new TimeLogsModel(username),
-                    users: new UserModel(username)
+                    users: new UserModel(username),
                 };
                 callback();
             },
             // Initialize datas
-            // Initialize datas
-            function (callback) {
-                _this.sync(username, callback);
+            (callback) => {
+                this.sync(username, callback);
             },
-        ], function (err) {
-            if (err)
-                return core.loggers.error.error(err);
-            core.loggers.system.info("Init user finished. user:" + username + " data was initialized.");
+        ], (err) => {
+            if (err) return core.loggers.error.error(err);
+            core.loggers.system.info(`Init user finished. user:${username} data was initialized.`);
             callback();
         });
-    };
-    Www.prototype.sync = function (username, callback) {
-        var _this = this;
+    }
+
+    sync(username: string, callback:(err:Error, results?:any) => void) : void {
         var noteStore = core.users[username].client.getNoteStore();
         var user = null;
         var localSyncState = null;
@@ -105,116 +103,110 @@ var Www = (function () {
         var lastSyncChunk = null;
         async.waterfall([
             // Reload settings
-            // Reload settings
-            function (callback) {
+            (callback) => {
                 core.users[username].models.settings.loadLocal(null, callback);
             },
-            function (settings, callback) {
+            (settings, callback) => {
                 core.users[username].settings = settings;
                 callback();
             },
             // Reload userStore
-            // Reload userStore
-            function (callback) {
+            (callback) => {
                 core.users[username].models.users.loadRemote(callback);
             },
-            function (remoteUser, callback) {
+            (remoteUser, callback) => {
                 user = remoteUser;
                 callback();
             },
-            function (callback) {
+            (callback) => {
                 core.users[username].models.users.saveLocal(user, callback);
             },
             // Get syncState
-            // Get syncState
-            function (callback) {
+            (callback) => {
                 core.users[username].models.syncStates.loadLocal(callback);
             },
-            function (syncState, callback) {
+            (syncState, callback) => {
                 localSyncState = syncState;
                 callback();
             },
-            function (callback) {
+            (callback) => {
                 core.users[username].models.syncStates.loadRemote(callback);
             },
-            function (syncState, callback) {
+            (syncState, callback) => {
                 remoteSyncState = syncState;
                 callback();
             },
             // Sync process
-            // Sync process
-            function (callback) {
-                core.loggers.system.info("Sync start. localUSN=" + localSyncState.updateCount + " remoteUSN=" + remoteSyncState.updateCount);
-                async.whilst(function () {
-                    return localSyncState.updateCount < remoteSyncState.updateCount;
-                }, function (callback) {
-                    core.loggers.system.info("Get sync chunk start. startUSN=" + localSyncState.updateCount);
-                    var syncChunkFilter = new evernote_1.Evernote.SyncChunkFilter();
+            (callback) => {
+                core.loggers.system.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
+                async.whilst(() => {
+                    return localSyncState.updateCount < remoteSyncState.updateCount
+                }, (callback) => {
+                    core.loggers.system.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
+                    var syncChunkFilter = new Evernote.SyncChunkFilter();
                     syncChunkFilter.includeNotes = true;
                     syncChunkFilter.includeNotebooks = true;
                     syncChunkFilter.includeTags = true;
                     syncChunkFilter.includeSearches = true;
                     syncChunkFilter.includeExpunged = true;
                     async.waterfall([
-                        function (callback) {
-                            noteStore.getFilteredSyncChunk(localSyncState.updateCount, _this.SYNC_CHUNK_COUNT, syncChunkFilter, callback);
+                        (callback) => {
+                            noteStore.getFilteredSyncChunk(localSyncState.updateCount, this.SYNC_CHUNK_COUNT, syncChunkFilter, callback)
                         },
-                        function (syncChunk, callback) {
+                        (syncChunk, callback) => {
                             lastSyncChunk = syncChunk;
                             callback();
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.notes.saveLocal(lastSyncChunk.notes, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.notes.removeLocal(lastSyncChunk.expungedNotes, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.notebooks.saveLocal(lastSyncChunk.notebooks, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.notebooks.removeLocal(lastSyncChunk.expungedNotebooks, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.tags.saveLocal(lastSyncChunk.tags, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.tags.removeLocal(lastSyncChunk.expungedTags, callback);
                         },
-                        function (callback) {
-                            core.users[username].models.searches.saveLocal(lastSyncChunk.searches, callback);
+                        (callback) => {
+                            core.users[username].models.searches.saveLocal(lastSyncChunk.searches, callback)
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.searches.removeLocal(lastSyncChunk.expungedSearches, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.linkedNotebooks.saveLocal(lastSyncChunk.linkedNotebooks, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.linkedNotebooks.removeLocal(lastSyncChunk.expungedLinkedNotebooks, callback);
                         },
-                        function (callback) {
+                        (callback) => {
                             localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
                             callback();
                         },
-                        function (callback) {
+                        (callback) => {
                             core.users[username].models.syncStates.saveLocal(localSyncState, callback);
                         },
-                        function (callback) {
-                            core.loggers.system.info("Get sync chunk end. endUSN=" + localSyncState.updateCount);
+                        (callback) => {
+                            core.loggers.system.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
                             callback();
                         },
                     ], callback);
-                }, function (err) {
-                    if (err)
-                        return callback(err);
-                    core.loggers.system.info("Sync end. localUSN=" + localSyncState.updateCount + " remoteUSN=" + remoteSyncState.updateCount);
+                }, (err) => {
+                    if (err) return callback(err);
+                    core.loggers.system.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
                     callback();
                 });
             },
         ], callback);
-    };
-    return Www;
-})();
-module.exports = new Www();
-//# sourceMappingURL=www.js.map
+    }
+}
+
+export = new Www();

@@ -34,6 +34,18 @@
     },
     "nedb/nedb.d.ts": {
       "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
+    },
+    "async/async.d.ts": {
+      "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
+    },
+    "log4js/log4js.d.ts": {
+      "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
+    },
+    "thrift/thrift.d.ts": {
+      "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
+    },
+    "evernote/evernote.d.ts": {
+      "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
     }
   }
 }
