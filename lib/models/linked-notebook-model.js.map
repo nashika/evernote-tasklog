@@ -1,10 +1,1 @@
-{
-  "version": 3,
-  "file": "linked-notebook-model.js",
-  "sourceRoot": "",
-  "sources": [
-    "linked-notebook-model.coffee"
-  ],
-  "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,+BAAA;IAAA;;;EAAA,UAAA,GAAa,OAAA,CAAQ,eAAR;;EAEP;;;;;;;;AAEJ;;;;kCAGA,WAAA,GAAa;;;;KALmB;;EAOlC,MAAM,CAAC,OAAP,GAAiB;AATjB"
-}
+{"version":3,"file":"linked-notebook-model.js","sourceRoot":"","sources":["linked-notebook-model.ts"],"names":["LinkedNotebookModel","LinkedNotebookModel.constructor"],"mappings":";;;;;AAAA,4BAAyB,eAEzB,CAAC,CAFuC;AAExC;IAAkCA,uCAAUA;IAA5CA;QAAkCC,8BAAUA;QAExCA,gBAAWA,GAAUA,iBAAiBA,CAACA;IAE3CA,CAACA;IAADD,0BAACA;AAADA,CAACA,AAJD,EAAkC,wBAAU,EAI3C;AAED,iBAAS,mBAAmB,CAAC"}

@@ -1,7 +1,7 @@
 merge = require 'merge'
 
 core = require '../core'
-Model = require './Model'
+Model = require './model'
 
 class SingleModel extends Model
 

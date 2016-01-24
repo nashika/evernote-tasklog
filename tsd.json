@@ -46,6 +46,9 @@
     },
     "evernote/evernote.d.ts": {
       "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
+    },
+    "inflection/inflection.d.ts": {
+      "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
     }
   }
 }
