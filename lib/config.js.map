@@ -1,10 +1,1 @@
-{
-  "version": 3,
-  "file": "config.js",
-  "sourceRoot": "",
-  "sources": [
-    "config.coffee"
-  ],
-  "names": [],
-  "mappings": ";AAAA;AAAA,MAAA;;EAAA,MAAA,GACE;IAAA,GAAA,EACE;MAAA,OAAA,EACE;QAAA,WAAA,EAAa,EAAb;QACA,cAAA,EAAgB,EADhB;OADF;MAGA,UAAA,EACE;QAAA,WAAA,EAAa,EAAb;QACA,cAAA,EAAgB,EADhB;OAJF;KADF;;;EAQF,MAAM,CAAC,OAAP,GAAiB;AATjB"
-}
+{"version":3,"file":"config.js","sourceRoot":"","sources":["config.ts"],"names":[],"mappings":"AAAA,IAAI,MAAM,GAAG;IACT,GAAG,EAAE;QACD,OAAO,EAAE;YACL,WAAW,EAAE,EAAE;YACf,cAAc,EAAE,EAAE;SACrB;KACJ;IACD,UAAU,EAAE;QACR,WAAW,EAAE,EAAE;QACf,cAAc,EAAE,EAAE;KACrB;CACJ,CAAA;AAED,iBAAS,MAAM,CAAC"}

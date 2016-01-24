@@ -6,10 +6,10 @@ var core = {
     loggers: {
         system: null,
         access: null,
-        error: null
+        error: null,
     },
     models: {
-        settings: null
+        settings: null,
     },
     users: {
         client: null,
@@ -25,9 +25,9 @@ var core = {
             syncStates: null,
             tags: null,
             timeLogs: null,
-            users: null
-        }
-    }
+            users: null,
+        },
+    },
 };
-module.exports = core;
-//# sourceMappingURL=core.js.map
+
+export = core;
