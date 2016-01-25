@@ -59,7 +59,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 // main logic
-var www = require('./www');
+import www from './www';
 www.main(expressApp, server);
 
 // app executed from electron then call electron window
@@ -80,7 +80,3 @@ if (electronApp) {
         });
     });
 }
-
-/*
-
- */

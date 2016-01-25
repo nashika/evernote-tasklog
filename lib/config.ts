@@ -1,4 +1,4 @@
-var config = {
+export default {
     env: {
         sandbox: {
             consumerKey: '',
@@ -10,5 +10,3 @@ var config = {
         consumerSecret: '',
     },
 }
-
-export = config;

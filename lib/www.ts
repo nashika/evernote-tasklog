@@ -209,4 +209,4 @@ class Www {
     }
 }
 
-export = new Www();
+export default new Www();
