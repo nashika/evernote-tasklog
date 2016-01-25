@@ -1,10 +1,1 @@
-{
-  "version": 3,
-  "file": "notebook-model.js",
-  "sourceRoot": "",
-  "sources": [
-    "notebook-model.coffee"
-  ],
-  "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,yBAAA;IAAA;;;EAAA,UAAA,GAAa,OAAA,CAAQ,eAAR;;EAEP;;;;;;;;AAEJ;;;;4BAGA,WAAA,GAAa;;;AAEb;;;;4BAGA,YAAA,GAAc;MAAC,KAAA,EAAO,CAAR;MAAW,IAAA,EAAM,CAAjB;;;;;KAVY;;EAY5B,MAAM,CAAC,OAAP,GAAiB;AAdjB"
-}
+{"version":3,"file":"notebook-model.js","sourceRoot":"","sources":["notebook-model.ts"],"names":["NotebookModel","NotebookModel.constructor"],"mappings":";;;;;AAAA,4BAAuB,eAAe,CAAC,CAAA;AAEvC;IAA2CA,iCAAUA;IAArDA;QAA2CC,8BAAUA;IAKrDA,CAACA;IAHUD,yBAAWA,GAAUA,WAAWA,CAACA;IACjCA,0BAAYA,GAAUA,EAACA,KAAKA,EAAEA,CAACA,EAAEA,IAAIA,EAAEA,CAACA,EAACA,CAACA;IAErDA,oBAACA;AAADA,CAACA,AALD,EAA2C,wBAAU,EAKpD;AALD;kCAKC,CAAA"}

@@ -1,10 +1,1 @@
-{
-  "version": 3,
-  "file": "tag-model.js",
-  "sourceRoot": "",
-  "sources": [
-    "tag-model.coffee"
-  ],
-  "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,oBAAA;IAAA;;;EAAA,UAAA,GAAa,OAAA,CAAQ,eAAR;;EAEP;;;;;;;;AAEJ;;;;uBAGA,WAAA,GAAa;;;;KALQ;;EAOvB,MAAM,CAAC,OAAP,GAAiB;AATjB"
-}
+{"version":3,"file":"tag-model.js","sourceRoot":"","sources":["tag-model.ts"],"names":["TagModel","TagModel.constructor"],"mappings":";;;;;AAAA,4BAAuB,eAAe,CAAC,CAAA;AAEvC;IAAsCA,4BAAUA;IAAhDA;QAAsCC,8BAAUA;IAIhDA,CAACA;IAFUD,oBAAWA,GAAUA,MAAMA,CAACA;IAEvCA,eAACA;AAADA,CAACA,AAJD,EAAsC,wBAAU,EAI/C;AAJD;6BAIC,CAAA"}

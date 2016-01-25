@@ -4,16 +4,16 @@ import * as log4js from 'log4js';
 import {Evernote} from 'evernote';
 
 import core from './core';
-var LinkedNotebookModel = require('./models/linked-notebook-model');
-var NoteModel = require('./models/note-model');
-var NotebookModel = require('./models/notebook-model');
-var ProfitLogsModel = require('./models/profit-log-model');
-var SearchModel = require('./models/search-model');
-var SettingModel = require('./models/setting-model');
-var SyncStateModel = require('./models/sync-state-model');
-var TagModel = require('./models/tag-model');
-var TimeLogsModel = require('./models/time-log-model');
-var UserModel = require('./models/user-model');
+import LinkedNotebookModel from './models/linked-notebook-model';
+import NoteModel from './models/note-model';
+import NotebookModel from './models/notebook-model';
+import ProfitLogsModel from './models/profit-log-model';
+import SearchModel from './models/search-model';
+import SettingModel from './models/setting-model';
+import SyncStateModel from './models/sync-state-model';
+import TagModel from './models/tag-model';
+import TimeLogsModel from './models/time-log-model';
+import UserModel from './models/user-model';
 
 class Www {
 

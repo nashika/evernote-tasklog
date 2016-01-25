@@ -1,10 +1,1 @@
-{
-  "version": 3,
-  "file": "search-model.js",
-  "sourceRoot": "",
-  "sources": [
-    "search-model.coffee"
-  ],
-  "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,uBAAA;IAAA;;;EAAA,UAAA,GAAa,OAAA,CAAQ,eAAR;;EAEP;;;;;;;;AAEJ;;;;0BAGA,WAAA,GAAa;;;;KALW;;EAO1B,MAAM,CAAC,OAAP,GAAiB;AATjB"
-}
+{"version":3,"file":"search-model.js","sourceRoot":"","sources":["search-model.ts"],"names":["SearchModel","SearchModel.constructor"],"mappings":";;;;;AAAA,4BAAuB,eAAe,CAAC,CAAA;AAEvC;IAAyCA,+BAAUA;IAAnDA;QAAyCC,8BAAUA;IAInDA,CAACA;IAFUD,uBAAWA,GAAUA,UAAUA,CAACA;IAE3CA,kBAACA;AAADA,CAACA,AAJD,EAAyC,wBAAU,EAIlD;AAJD;gCAIC,CAAA"}
