@@ -1,10 +1,10 @@
-import * as async from 'async'
+import * as async from 'async';
 var merge = require('merge');
 
-import * as core from '../core'
-import {Model} from './model';
+import core from '../core';
+import Model from './model';
 
-export class MultiModel extends Model {
+export default class MultiModel extends Model {
 
     DEFAULT_QUERY: Object = {};
 
@@ -14,9 +14,9 @@ export class MultiModel extends Model {
 
     APPEND_SORT: Object = {};
 
-    DEFAULT_LIMIT:number = 500;
+    DEFAULT_LIMIT: number = 500;
 
-    findLocal(options:Object, callback:(err:Error, results?:any) => void):void {
+    findLocal(options:Object, callback:(err:Error, results?:any) => void): void {
         options = this.__parseFindOptions(options);
         core.loggers.system.debug(`Find local ${this.PLURAL_NAME} was started. query=${JSON.stringify(options['query'])}, sort=${JSON.stringify(options['sort'])}, limit=${options['limit']}`);
         this._datastore.find(options['query']).sort(options['sort']).limit(options['limit']).exec((err, docs) => {
@@ -25,7 +25,7 @@ export class MultiModel extends Model {
         });
     }
 
-    countLocal(options:Object, callback:(err:Error, results?:any) => void):void {
+    countLocal(options:Object, callback:(err:Error, results?:any) => void): void {
         options = this.__parseFindOptions(options);
         core.loggers.system.debug(`Count local #{@PLURAL_NAME} was started. query=#{JSON.stringify(options.query)}`);
         this._datastore.count(options['query'], (err:Error, count:number) => {
@@ -34,7 +34,7 @@ export class MultiModel extends Model {
         });
     }
 
-    private __parseFindOptions(options:Object):Object {
+    private __parseFindOptions(options:Object): Object {
         var result = {};
         // Detect options has query only or has some parameters.
         result['query'] = options['query'] || merge(true, this.DEFAULT_QUERY);
@@ -57,7 +57,7 @@ export class MultiModel extends Model {
         return result;
     }
 
-    saveLocal(docs:Array<Object> | Object, callback:(err?:Error, results?:any) => void):void {
+    saveLocal(docs:Array<Object> | Object, callback:(err?:Error, results?:any) => void): void {
         var arrDocs: Array<Object>;
         if (!docs || docs['length'] == 0) return callback();
         if (!Array.isArray(docs)) arrDocs = [docs];
@@ -74,7 +74,7 @@ export class MultiModel extends Model {
         });
     }
 
-    saveLocalUpdateOnly(docs:Array<Object> | Object, callback:(err?:Error, results?:any) => void):void {
+    saveLocalUpdateOnly(docs:Array<Object> | Object, callback:(err?:Error, results?:any) => void): void {
         var arrDocs:Array<Object>;
         if (!docs || docs['length'] == 0) return callback();
         if (!Array.isArray(docs)) arrDocs = [docs];
@@ -110,7 +110,7 @@ export class MultiModel extends Model {
         });
     }
 
-    removeLocal(query:Array<string> | string | Object, callback:(err?: Error, results?: any) => void):void {
+    removeLocal(query:Array<string> | string | Object, callback:(err?: Error, results?: any) => void): void {
         if (!query) return callback();
         if (Array.isArray(query)) {
             if (query['length'] == 0) return callback();

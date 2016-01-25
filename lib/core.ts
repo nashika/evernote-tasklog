@@ -1,4 +1,4 @@
-var core = {
+export default {
     app: null,
     server: null,
     www: null,
@@ -29,5 +29,3 @@ var core = {
         },
     },
 };
-
-export = core;

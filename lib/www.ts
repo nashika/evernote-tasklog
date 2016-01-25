@@ -3,7 +3,7 @@ import * as async from 'async';
 import * as log4js from 'log4js';
 import {Evernote} from 'evernote';
 
-import * as core from './core';
+import core from './core';
 var LinkedNotebookModel = require('./models/linked-notebook-model');
 var NoteModel = require('./models/note-model');
 var NotebookModel = require('./models/notebook-model');

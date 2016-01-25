@@ -1,4 +1,4 @@
-import {MultiModel} from './multi-model'
+import MultiModel from './multi-model';
 
 class LinkedNotebookModel extends MultiModel {
 
