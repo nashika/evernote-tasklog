@@ -11,7 +11,7 @@ export default class ProfitLogModel extends MultiModel {
 
     parse(note, lines, callback):void {
         var profitLogs:Array<Object> = [];
-        for (var line in lines) {
+        for (var line of lines) {
             var matches: Array<string>;
             if (matches = line.match(/(.*)[@＠][\\￥$＄](.+)/i)) {
                 profitLogs.push({

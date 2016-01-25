@@ -16,7 +16,7 @@ export default class NoteModel extends MultiModel {
                 callback(null, notes);
             } else {
                 var results:Array<Object> = [];
-                for (var note in notes) {
+                for (var note of notes) {
                     var result = merge(true, note);
                     result.hasContent = result.content != null;
                     result.content = null;
@@ -64,7 +64,8 @@ export default class NoteModel extends MultiModel {
                 core.loggers.system.debug(`Saving note to local. guid=${note.guid}`);
                 this._datastore.update({guid: note.guid}, note, {upsert: true}, callback);
             },
-            (numReplaced, upsert, callback) => {
+            (numReplaced, ...restArgs) => {
+                var callback = restArgs.pop();
                 core.loggers.system.debug(`Saving note was succeed. guid=${lastNote.guid} numReplaced=${numReplaced}`);
                 callback();
             },
@@ -92,11 +93,11 @@ export default class NoteModel extends MultiModel {
 
     _parseNote(note:Object, callback:(err?:Error, results?:any) => void):void {
         if (!note['content']) return callback();
-        core.loggers.system.debug(`Parsing note was started. guid=${note['guid']}`);
+        core.loggers.system.debug(`Parsing note was started. guid=${note['guid']}, title=${note['title']}`);
         var content:string = note['content'];
         content = content.replace(/\r\n|\r|\n|<br\/>|<\/div>|<\/ul>|<\/li>/g, '<>');
         var lines:Array<string> = [];
-        for (var line in content.split('<>')) {
+        for (var line of content.split('<>')) {
             lines.push(line.replace(/<[^>]*>/g, ''));
         }
         async.waterfall([
@@ -107,7 +108,7 @@ export default class NoteModel extends MultiModel {
                 core.users[this._username].models.profitLogs.parse(note, lines, callback);
             },
         ], (err) => {
-            core.loggers.system.debug(`"Parsing note was #{if err then 'failed' else 'succeed'}. guid=#{note.guid}`);
+            core.loggers.system.debug(`Parsing note was ${err ? 'failed' : 'succeed'}. guid=${note['guid']}`);
             callback(err);
         });
     }

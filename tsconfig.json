@@ -8,8 +8,7 @@
     "sourceMap": true
   },
   "filesGlob": [
-    "./typings/tsd.d.ts",
-    "./typings_my/*.d.ts"
+    "./typings/tsd.d.ts"
   ],
   "exclude": [
     "node_modules",

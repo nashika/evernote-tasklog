@@ -24,7 +24,7 @@ export default class SettingModel extends Model {
                 result = docs.length == 0 ? null : docs[0].value;
             } else {
                 result = {};
-                for (var doc in docs) {
+                for (var doc of docs) {
                     result[doc._id] = doc.value;
                 }
             }

@@ -1,13 +1,24 @@
-import express = require('express');
-import path = require('path');
-import favicon = require('serve-favicon');
-import logger = require('morgan');
-import cookieParser = require('cookie-parser');
-import session = require('express-session');
-import bodyParser = require('body-parser');
-import connectNedbSession = require('connect-nedb-session');
-var NedbStore = connectNedbSession(session);
+import * as express from 'express';
+import * as path from 'path';
+import * as favicon from 'serve-favicon';
+import * as logger from 'morgan';
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
+import * as bodyParser from 'body-parser';
+var connectNedbSession = require('connect-nedb-session');
 
+import indexRoute from './routes/index';
+import authRoute from './routes/auth';
+import notesRoute from './routes/notes';
+import notebooksRoute from './routes/notebooks';
+import settingsRoute from './routes/settings';
+import syncRoute from './routes/sync';
+import timeLogsRoute from './routes/time-logs';
+import profitLogsRoute from './routes/profit-logs';
+import userRoute from './routes/user';
+import {settings} from "cluster";
+
+var NedbStore = connectNedbSession(session);
 var app = express();
 
 // view engine setup
@@ -25,18 +36,18 @@ app.use(session({
     cookie: {path: '/', httpOnly: true, maxAge: 365 * 24 * 3600 * 1000},
     store: new NedbStore({filename: __dirname + '/db/session.db'}),
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: false
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', require('./routes/index'));
-app.use('/auth', require('./routes/auth'));
-app.use('/notes', require('./routes/notes'));
-app.use('/notebooks', require('./routes/notebooks'));
-app.use('/settings', require('./routes/settings'));
-app.use('/sync', require('./routes/sync'));
-app.use('/time-logs', require('./routes/time-logs'));
-app.use('/profit-logs', require('./routes/profit-logs'));
-app.use('/user', require('./routes/user'));
+app.use('/', indexRoute);
+app.use('/auth', authRoute);
+app.use('/notes', notesRoute);
+app.use('/notebooks', notebooksRoute);
+app.use('/settings', settingsRoute);
+app.use('/sync', syncRoute);
+app.use('/time-logs', timeLogsRoute);
+app.use('/profit-logs', profitLogsRoute);
+app.use('/user', userRoute);
 app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
 
 // catch 404 and forward to error handler

@@ -37,7 +37,7 @@ export default class MultiModel extends Model {
         result['sort'] = options['sort'] || merge(true, (<typeof MultiModel>this.constructor).DEFAULT_SORT);
         result['limit'] = options['limit'] || (<typeof MultiModel>this.constructor).DEFAULT_LIMIT;
         // If some parameter type is string, convert object.
-        for (var key in ['query', 'sort']) {
+        for (var key of ['query', 'sort']) {
             switch (typeof result[key]) {
                 case 'object':
                     result[key] = result[key];
@@ -54,13 +54,13 @@ export default class MultiModel extends Model {
     }
 
     saveLocal(docs:Array<Object> | Object, callback:(err?:Error, results?:any) => void):void {
-        var arrDocs:Array<Object>;
-        if (!docs || docs['length'] == 0) return callback();
-        if (!Array.isArray(docs)) arrDocs = [docs];
+        if (!docs) return callback();
+        var arrDocs:Array<Object> = (Array.isArray(docs)) ? docs : [docs];
+        if (arrDocs.length == 0) return callback();
         core.loggers.system.debug(`Save local ${(<typeof MultiModel>this.constructor).PLURAL_NAME} was started. docs.count=${docs['length']}`);
         async.eachSeries(arrDocs, (doc, callback) => {
             core.loggers.system.trace(`Upsert local ${(<typeof MultiModel>this.constructor).PLURAL_NAME} was started. guid=${doc['guid']}, title=${doc[(<typeof MultiModel>this.constructor).TITLE_FIELD]}`);
-            this._datastore.update({guid: doc['guid']}, doc, {upsert: true}, (err, numReplaced, newDoc) => {
+            this._datastore.update({guid: doc['guid']}, doc, {upsert: true}, (err, numReplaced, ...restArgs) => {
                 core.loggers.system.trace(`Upsert local ${(<typeof MultiModel>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. guid=${doc['guid']}, numReplaced=${numReplaced}`);
                 callback(err);
             });
@@ -92,7 +92,8 @@ export default class MultiModel extends Model {
                             (callback) => {
                                 this._datastore.db[(<typeof MultiModel>this.constructor).PLURAL_NAME].update({guid: doc['guid']}, doc, {upsert: true}, callback);
                             },
-                            (numReplaced, upsert, callback) => {
+                            (numReplaced, ...restArgs) => {
+                                var callback = restArgs.pop();
                                 core.loggers.system.trace(`Upsert local ${(<typeof MultiModel>this.constructor).PLURAL_NAME} was succeed. guid=${doc['guid']}, numReplaced=${numReplaced}`);
                                 callback();
                             },

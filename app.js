@@ -5,6 +5,15 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var bodyParser = require('body-parser');
 var connectNedbSession = require('connect-nedb-session');
+var index_1 = require('./routes/index');
+var auth_1 = require('./routes/auth');
+var notes_1 = require('./routes/notes');
+var notebooks_1 = require('./routes/notebooks');
+var settings_1 = require('./routes/settings');
+var sync_1 = require('./routes/sync');
+var time_logs_1 = require('./routes/time-logs');
+var profit_logs_1 = require('./routes/profit-logs');
+var user_1 = require('./routes/user');
 var NedbStore = connectNedbSession(session);
 var app = express();
 // view engine setup
@@ -24,15 +33,15 @@ app.use(session({
     saveUninitialized: false
 }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/', require('./routes/index'));
-app.use('/auth', require('./routes/auth'));
-app.use('/notes', require('./routes/notes'));
-app.use('/notebooks', require('./routes/notebooks'));
-app.use('/settings', require('./routes/settings'));
-app.use('/sync', require('./routes/sync'));
-app.use('/time-logs', require('./routes/time-logs'));
-app.use('/profit-logs', require('./routes/profit-logs'));
-app.use('/user', require('./routes/user'));
+app.use('/', index_1["default"]);
+app.use('/auth', auth_1["default"]);
+app.use('/notes', notes_1["default"]);
+app.use('/notebooks', notebooks_1["default"]);
+app.use('/settings', settings_1["default"]);
+app.use('/sync', sync_1["default"]);
+app.use('/time-logs', time_logs_1["default"]);
+app.use('/profit-logs', profit_logs_1["default"]);
+app.use('/user', user_1["default"]);
 app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
