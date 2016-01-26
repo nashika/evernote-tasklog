@@ -1,34 +1,36 @@
-// angular.js setting
-window['app'] = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
+import core from './core';
 
-app.config(['$compileProvider', ($compileProvider) => {
+// angular.js setting
+(<any>window).app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
+
+core.app.config(['$compileProvider', ($compileProvider) => {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|mailto|evernote):/);
 }]);
 
 // route settings
-require('./route');
+import './route';
 
 // angular.js filters
-require('./filters/abbreviate');
-require('./filters/filter-by-property');
-require('./filters/object-length');
-require('./filters/order-object-by');
-require('./filters/spent-time');
+import './filters/abbreviate';
+import './filters/filter-by-property';
+import './filters/object-length';
+import './filters/order-object-by';
+import './filters/spent-time';
 
 // angular.js services
-require('./services/data-store');
-require('./services/data-transciever');
-require('./services/progress');
+import './services/data-store';
+import './services/data-transciever';
+import './services/progress';
 
 // angular.js directives
-require('./directives/resize');
+import './directives/resize';
 
 // angular.js controllers
-require('./controllers/auth-controller');
-require('./controllers/controller');
-require('./controllers/menu-controller');
-require('./controllers/navigation-controller');
-require('./controllers/notes-controller');
-require('./controllers/progress-modal-controller');
-require('./controllers/settings-controller');
-require('./controllers/timeline-controller');
+import './controllers/auth-controller';
+import './controllers/controller';
+import './controllers/menu-controller';
+import './controllers/navigation-controller';
+import './controllers/notes-controller';
+import './controllers/progress-modal-controller';
+import './controllers/settings-controller';
+import './controllers/timeline-controller';

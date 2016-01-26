@@ -1,6 +1,7 @@
+var core_1 = require('./core');
 // angular.js setting
-window['app'] = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
-app.config(['$compileProvider', function ($compileProvider) {
+window.app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
+core_1["default"].app.config(['$compileProvider', function ($compileProvider) {
         $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|mailto|evernote):/);
     }]);
 // route settings
