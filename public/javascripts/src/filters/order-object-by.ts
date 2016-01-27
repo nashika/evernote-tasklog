@@ -1,16 +1,15 @@
-var core_1 = require('../core');
-var orderObjectBy = function () {
-    return function (items, field, reverse) {
-        if (field === void 0) { field = '$value'; }
-        if (reverse === void 0) { reverse = true; }
+import core from '../core';
+
+var orderObjectBy = () => {
+    return (items, field:any = '$value', reverse = true) => {
         var filtered = [];
-        angular.forEach(items, function (item, key) {
+        angular.forEach(items, (item, key) => {
             filtered.push({
                 key: key,
-                item: item
+                item: item,
             });
         });
-        filtered.sort(function (a, b) {
+        filtered.sort((a, b) => {
             if (field == '$key')
                 return (a.key > b.key) ? -1 : 1;
             if (field == '$value')
@@ -23,7 +22,7 @@ var orderObjectBy = function () {
         if (reverse)
             filtered.reverse();
         var results = [];
-        angular.forEach(filtered, function (item) {
+        angular.forEach(filtered, (item) => {
             var result = item.item;
             result['$key'] = item.key;
             results.push(result);
@@ -31,7 +30,7 @@ var orderObjectBy = function () {
         return results;
     };
 };
-core_1["default"].app.filter('orderObjectBy', orderObjectBy);
-exports.__esModule = true;
-exports["default"] = orderObjectBy;
-//# sourceMappingURL=order-object-by.js.map
+
+core.app.filter('orderObjectBy', orderObjectBy);
+
+export default orderObjectBy;

@@ -1,5 +1,6 @@
-var core_1 = require('../core');
-var checkItemMatches = function (item, props) {
+import core from '../core';
+
+var checkItemMatches = (item, props) => {
     var itemMatches = false;
     for (var prop in props) {
         var text = props[prop];
@@ -11,8 +12,9 @@ var checkItemMatches = function (item, props) {
     }
     return itemMatches;
 };
-var filterByProperty = function () {
-    return function (items, props) {
+
+var filterByProperty = () => {
+    return (items, props) => {
         var out = [];
         if (angular.isArray(items))
             for (var item in items) {
@@ -20,19 +22,17 @@ var filterByProperty = function () {
                 if (itemMatches)
                     out.push(item);
                 else if (angular.isObject(items))
-                    for (var _i = 0; _i < items.length; _i++) {
-                        item = items[_i];
+                    for (item of items) {
                         itemMatches = checkItemMatches(item, props);
-                        if (itemMatches)
-                            out.push(item);
+                        if (itemMatches) out.push(item);
                     }
                 else
                     out = items;
                 return out;
             }
-    };
+    }
 };
-core_1["default"].app.filter('filterByProperty', filterByProperty);
-exports.__esModule = true;
-exports["default"] = filterByProperty;
-//# sourceMappingURL=filter-by-property.js.map
+
+core.app.filter('filterByProperty', filterByProperty);
+
+export default filterByProperty;

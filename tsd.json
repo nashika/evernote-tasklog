@@ -61,6 +61,12 @@
     },
     "angular-modal/angular-modal.d.ts": {
       "commit": "46719185c564694c5583c4b7ad94dbb786ecad46"
+    },
+    "moment/moment.d.ts": {
+      "commit": "7ce80dafc0df189d61950e80e04548d8304d1538"
+    },
+    "moment/moment-node.d.ts": {
+      "commit": "7ce80dafc0df189d61950e80e04548d8304d1538"
     }
   }
 }

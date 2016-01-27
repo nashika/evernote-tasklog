@@ -1,10 +1,1 @@
-{
-  "version": 3,
-  "file": "modal-controller.js",
-  "sourceRoot": "",
-  "sources": [
-    "modal-controller.coffee"
-  ],
-  "names": [],
-  "mappings": ";AAAA;AAAA,MAAA;;EAAM;IAES,yBAAC,MAAD;MAAC,IAAC,CAAA,SAAD;IAAD;;;;;;EAEf,GAAG,CAAC,UAAJ,CAAe,iBAAf,EAAkC,CAAC,QAAD,EAAW,eAAX,CAAlC;;EACA,MAAM,CAAC,OAAP,GAAiB;AALjB"
-}
+{"version":3,"file":"modal-controller.js","sourceRoot":"","sources":["modal-controller.ts"],"names":["ModalController","ModalController.constructor"],"mappings":"AAAA,qBAAiB,SAAS,CAAC,CAAA;AAE3B;IAEEA,yBAAsBA,MAAqBA;QAArBC,WAAMA,GAANA,MAAMA,CAAeA;IAC3CA,CAACA;IAEHD,sBAACA;AAADA,CAACA,AALD,IAKC;AAED,iBAAI,CAAC,GAAG,CAAC,UAAU,CAAC,iBAAiB,EAAE,CAAC,QAAQ,EAAE,eAAe,CAAC,CAAC,CAAC;AAEpE;qBAAe,eAAe,CAAC"}

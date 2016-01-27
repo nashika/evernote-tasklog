@@ -7,7 +7,7 @@ class DataStoreService {
     notebooks:any = {};
     stacks:Array<string> = [];
     notes:any = {};
-    timeLogs:Object = {};
+    timeLogs:any = {};
     profitLogs:Object = {};
     settings:Object = {};
 

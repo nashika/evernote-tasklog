@@ -16,7 +16,7 @@ class DataTranscieverService {
         };
     }
 
-    reload(params = {}, callback):void {
+    reload(params = {}, callback?):void {
         if (!callback) callback = () => {
         };
         var noteQuery = this._makeNoteQuery(params || {});
