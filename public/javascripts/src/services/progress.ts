@@ -11,7 +11,7 @@ class ProgressService {
     constructor(public $modal) {
     }
 
-    open(allCount:number):void {
+    open = (allCount:number):void => {
         this.message = 'processing...';
         this.value = 0;
         this.completeCount = 0;
@@ -24,22 +24,22 @@ class ProgressService {
             size: 'sm',
             animation: false,
         });
-    }
+    };
 
-    close():void {
+    close = ():void => {
         this.modalInstance.close();
-    }
+    };
 
-    set(message:string, value:number = null) {
+    set = (message:string, value:number = null):void => {
         this.message = message;
         if (value !== null)
             this.value = value;
-    }
+    };
 
-    next(message:string) {
+    next = (message:string):void => {
         this.completeCount++
         this.set(message, this.completeCount / this.allCount * 100);
-    }
+    };
 
 }
 

@@ -10,7 +10,7 @@ class NavigationController {
         this.$scope['reload'] = this._reload;
     }
 
-    _reload():void {
+    protected _reload = ():void => {
         this.$rootScope.$broadcast('event::reload');
     }
 

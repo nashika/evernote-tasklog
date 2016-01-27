@@ -62,7 +62,7 @@ class TimelineController {
         });
     }
 
-    _onRangeChanged(properties):void {
+    protected _onRangeChanged = (properties):void => {
         var currentStart = moment(properties.start).startOf('day');
         var currentEnd = moment(properties.end).endOf('day');
         if (currentStart.isSameOrAfter(this.$scope['start']) && currentEnd.isSameOrBefore(this.$scope['end']))
@@ -70,16 +70,17 @@ class TimelineController {
         if (!this.$scope['start'] || currentStart.isBefore(this.$scope['start'])) this.$scope['start'] = currentStart;
         if (!this.$scope['end'] || currentEnd.isAfter(this.$scope['end'])) this.$scope['end'] = currentEnd;
         this._onReload();
-    }
+    };
 
-    _onReload():void {
+    protected _onReload = ():void => {
         this.dataTransciever.reload({start: this.$scope['start'], end: this.$scope['end']}, this._onReloadEnd);
     }
 
-    _onReloadEnd():void {
+    protected _onReloadEnd = ():void => {
         this.$scope['timelineItems'].clear();
         var notes = {};
-        for (var note of this.dataStore.notes) {
+        for (var noteGuid in this.dataStore.notes) {
+            var note = this.dataStore.notes[noteGuid];
             notes[note.guid] = note;
             this.$scope['timelineItems'].add({
                 id: note.guid,
@@ -89,8 +90,10 @@ class TimelineController {
                 type: 'point',
             });
         }
-        for (var noteTimeLogs of this.dataStore.timeLogs)
-            for (var timeLog of noteTimeLogs) {
+        for (var noteGuid in this.dataStore.timeLogs) {
+            var noteTimeLogs = this.dataStore.timeLogs[noteGuid];
+            for (var timeLogId in noteTimeLogs) {
+                var timeLog = noteTimeLogs[timeLogId];
                 var noteTitle = notes[timeLog.noteGuid].title;
                 this.$scope['timelineItems'].add({
                     id: timeLog._id,
@@ -101,9 +104,10 @@ class TimelineController {
                     type: timeLog.spentTime ? 'range' : 'point',
                 });
             }
-    }
+        }
+    };
 
-    _onResize(event):void {
+    protected _onResize = (event):void => {
         this.$scope['timeline'].setOptions({
             height: window.innerHeight - 90,
         });

@@ -16,7 +16,7 @@ class DataTranscieverService {
         };
     }
 
-    reload(params = {}, callback?):void {
+    reload = (params = {}, callback?):void => {
         if (!callback) callback = () => {
         };
         var noteQuery = this._makeNoteQuery(params || {});
@@ -140,7 +140,10 @@ class DataTranscieverService {
             (callback) => {
                 this.progress.next('Getting time logs.');
                 var guids:Array<string> = [];
-                for (var note of this.dataStore.notes) guids.push(note.guid);
+                for (var noteGuid in this.dataStore.notes) {
+                    var note = this.dataStore.notes[noteGuid];
+                    guids.push(note.guid);
+                }
                 var timeLogQuery = this._makeTimeLogQuery(merge(true, params, {noteGuids: guids}));
                 this.$http.post('/time-logs', {query: timeLogQuery})
                     .success((data:any) => {
@@ -159,8 +162,11 @@ class DataTranscieverService {
             // get profit logs
             (callback) => {
                 this.progress.next('Getting profit logs.');
-                var guids:Array<string>;
-                for (var note of this.dataStore.notes) guids = note.guid;
+                var guids:Array<string> = [];
+                for (var noteGuid in this.dataStore.notes) {
+                    var note = this.dataStore.notes[noteGuid];
+                    guids.push(note.guid);
+                }
                 this.$http.post('/profit-logs', {query: {noteGuid: {$in: guids}}})
                     .success((data:any) => {
                         this.dataStore.profitLogs = {};
@@ -185,7 +191,7 @@ class DataTranscieverService {
         });
     }
 
-    reParse(callback):void {
+    reParse = (callback):void => {
         if (!callback) callback = () => {
         };
         this.progress.open(2);
@@ -204,9 +210,9 @@ class DataTranscieverService {
             this.progress.close();
             callback(err);
         });
-    }
+    };
 
-    countNotes(callback):void {
+    countNotes = (callback):void => {
         var query = this._makeNoteQuery();
         this.$http.get('/notes/count', {params: {query: query}})
             .success((data) => {
@@ -215,9 +221,9 @@ class DataTranscieverService {
             .error(() => {
                 callback('Error $http request');
             });
-    }
+    };
 
-    countTimeLogs(callback):void {
+    countTimeLogs = (callback):void => {
         var query = this._makeTimeLogQuery();
         this.$http.get('/time-logs/count', {params: {query: query}})
             .success((data) => {
@@ -228,7 +234,7 @@ class DataTranscieverService {
             });
     }
 
-    protected _makeNoteQuery(params:{start?:Date} = {}):Object {
+    protected _makeNoteQuery = (params:{start?:Date} = {}):Object => {
         var result = {};
         // set updated query
         if (params.start)
@@ -241,9 +247,11 @@ class DataTranscieverService {
         // check stacks
         if (this.filterParams.stacks && this.filterParams.stacks.length > 0)
             for (var stack of this.filterParams.stacks)
-                for (var notebook of this.dataStore.notebooks)
+                for (let notebookGuid in this.dataStore.notebooks) {
+                    var notebook = this.dataStore.notebooks[notebookGuid];
                     if (stack == notebook.stack)
                         notebooksHash[notebook.guid] = true;
+                }
         // set notebooks query checked before
         var notebooksArray = Object.keys(notebooksHash);
         if (notebooksArray.length > 0)
@@ -251,7 +259,7 @@ class DataTranscieverService {
         return result;
     }
 
-    protected _makeTimeLogQuery(params:{start?:Date, end?:Date, noteGuids?:Array<string>} = {}):Object {
+    protected _makeTimeLogQuery = (params:{start?:Date, end?:Date, noteGuids?:Array<string>} = {}):Object => {
         var result = {};
         // set date query
         if (params.start)

@@ -1,5 +1,4 @@
 var core_1 = require('../core');
-var querystring_1 = require("querystring");
 var abbreviate = function () {
     return function (text, len, truncation) {
         if (len === void 0) { len = 10; }
@@ -7,7 +6,7 @@ var abbreviate = function () {
         var count = 0;
         var str = '';
         for (var i = 0; i < text.length; i++) {
-            var n = querystring_1.escape(text.charAt(i));
+            var n = encodeURI(text.charAt(i));
             if (n.length < 4)
                 count++;
             else

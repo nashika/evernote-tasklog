@@ -15,11 +15,13 @@ class NotesController {
         this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
     }
 
-    _onWatchTimeLogs(timeLogs):void {
+    protected _onWatchTimeLogs = (timeLogs):void => {
         this.$scope['notesSpentTimes'] = {};
         var personsHash = {};
-        for (var noteTimeLog of timeLogs)
-            for (var timeLog of noteTimeLog) {
+        for (var noteGuid of timeLogs) {
+            var noteTimeLog = timeLogs[noteGuid];
+            for (var timeLogId in noteTimeLog) {
+                var timeLog = noteTimeLog[timeLogId];
                 if (!this.$scope['notesSpentTimes'][timeLog.noteGuid])
                     this.$scope['notesSpentTimes'][timeLog.noteGuid] = {$total: 0};
                 this.$scope['notesSpentTimes'][timeLog.noteGuid]['$total'] += timeLog.spentTime;
@@ -35,14 +37,16 @@ class NotesController {
                 if (timeLog.spentTime > 0)
                     personsHash[timeLog.person] = true;
             }
+        }
         this.$scope['existPersons'] = Object.keys(personsHash);
     }
 
-    _onWatchProfitLogs(profitLogs):void {
+    protected _onWatchProfitLogs = (profitLogs):void => {
         this.$scope['notesProfits'] = {};
         for (var noteGuid in profitLogs) {
             var noteProfitLog = profitLogs[noteGuid];
-            for (var profitLog of noteProfitLog) {
+            for (var profitLogId in noteProfitLog) {
+                var profitLog = noteProfitLog[profitLogId];
                 if (!this.$scope['notesProfits'][profitLog.noteGuid])
                     this.$scope['notesProfits'][profitLog.noteGuid] = {$total: 0};
                 this.$scope['notesProfits'][profitLog.noteGuid]['$total'] += profitLog.profit;

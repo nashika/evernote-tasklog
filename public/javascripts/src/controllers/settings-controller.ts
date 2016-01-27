@@ -41,27 +41,27 @@ class SettingsController {
             this.$scope.$watch(`dataStore.settings.${key}`, this._onWatchSetting(key));
     }
 
-    _up(index):void {
+    protected _up = (index):void => {
         if (index == 0) return;
         this._editStore['persons'].splice(index - 1, 2, this._editStore['persons'][index], this._editStore['persons'][index - 1]);
-    }
+    };
 
-    _down(index):void {
+    protected _down = (index):void => {
         if (index >= this._editStore['persons'].length - 1) return;
         this._editStore['persons'].splice(index, 2, this._editStore['persons'][index + 1], this._editStore['persons'][index]);
-    }
+    };
 
-    _remove(index):void {
+    protected _remove = (index):void => {
         this._editStore['persons'].splice(index, 1);
-    }
+    };
 
-    _add():void {
+    protected _add = ():void => {
         if (!this._editStore['persons'])
             this._editStore['persons'] = [];
         this._editStore['persons'].push({name: `Person ${this._editStore['persons'].length + 1}`});
-    }
+    };
 
-    _submit():void {
+    protected _submit = ():void => {
         this.progress.open(1);
         var count = 0;
         var reParse = false;
@@ -97,13 +97,13 @@ class SettingsController {
                         callback();
                 }]);
         });
-    }
+    };
 
-    _onWatchSetting(key):any {
+    protected _onWatchSetting = (key:string):any => {
         return () => {
-            this._editStore[key] = angular.copy(this.dataStore.settings || [key]);
+            this._editStore[key] = angular.copy(this.dataStore.settings[key]);
         }
-    }
+    };
 
 }
 

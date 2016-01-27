@@ -4,10 +4,10 @@ class DataStoreService {
 
     user:Object = null;
     persons:Array<Object> = [];
-    notebooks:any = {};
+    notebooks:Object = {};
     stacks:Array<string> = [];
-    notes:any = {};
-    timeLogs:any = {};
+    notes:Object = {};
+    timeLogs:Object = {};
     profitLogs:Object = {};
     settings:Object = {};
 

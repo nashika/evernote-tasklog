@@ -16,7 +16,7 @@ export default class MultiModel extends Model {
         options = this.__parseFindOptions(options);
         core.loggers.system.debug(`Find local ${(<typeof MultiModel>this.constructor).PLURAL_NAME} was started. query=${JSON.stringify(options['query'])}, sort=${JSON.stringify(options['sort'])}, limit=${options['limit']}`);
         this._datastore.find(options['query']).sort(options['sort']).limit(options['limit']).exec((err, docs) => {
-            core.loggers.system.debug(`Find local ${(<typeof MultiModel>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. docs.length=${docs.length}`);
+            core.loggers.system.debug(`Find local ${(<typeof MultiModel>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. ${err ? 'err=' + err : 'docs.length=' + docs.length}`);
             callback(err, docs);
         });
     }

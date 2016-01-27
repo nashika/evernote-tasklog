@@ -1,8 +1,60 @@
 var core_1 = require('../core');
 var NotesController = (function () {
     function NotesController($scope, dataStore) {
+        var _this = this;
         this.$scope = $scope;
         this.dataStore = dataStore;
+        this._onWatchTimeLogs = function (timeLogs) {
+            _this.$scope['notesSpentTimes'] = {};
+            var personsHash = {};
+            for (var _i = 0; _i < timeLogs.length; _i++) {
+                var noteGuid = timeLogs[_i];
+                var noteTimeLog = timeLogs[noteGuid];
+                for (var timeLogId in noteTimeLog) {
+                    var timeLog = noteTimeLog[timeLogId];
+                    if (!_this.$scope['notesSpentTimes'][timeLog.noteGuid])
+                        _this.$scope['notesSpentTimes'][timeLog.noteGuid] = { $total: 0 };
+                    _this.$scope['notesSpentTimes'][timeLog.noteGuid]['$total'] += timeLog.spentTime;
+                    if (!_this.$scope['notesSpentTimes'][timeLog.noteGuid][timeLog.person])
+                        _this.$scope['notesSpentTimes'][timeLog.noteGuid][timeLog.person] = 0;
+                    _this.$scope['notesSpentTimes'][timeLog.noteGuid][timeLog.person] += timeLog.spentTime;
+                    if (!_this.$scope['notesSpentTimes']['$total'])
+                        _this.$scope['notesSpentTimes']['$total'] = { $total: 0 };
+                    _this.$scope['notesSpentTimes']['$total']['$total'] += timeLog.spentTime;
+                    if (!_this.$scope['notesSpentTimes']['$total'][timeLog.person])
+                        _this.$scope['notesSpentTimes']['$total'][timeLog.person] = 0;
+                    _this.$scope['notesSpentTimes']['$total'][timeLog.person] += timeLog.spentTime;
+                    if (timeLog.spentTime > 0)
+                        personsHash[timeLog.person] = true;
+                }
+            }
+            _this.$scope['existPersons'] = Object.keys(personsHash);
+        };
+        this._onWatchProfitLogs = function (profitLogs) {
+            _this.$scope['notesProfits'] = {};
+            for (var noteGuid in profitLogs) {
+                var noteProfitLog = profitLogs[noteGuid];
+                for (var profitLogId in noteProfitLog) {
+                    var profitLog = noteProfitLog[profitLogId];
+                    if (!_this.$scope['notesProfits'][profitLog.noteGuid])
+                        _this.$scope['notesProfits'][profitLog.noteGuid] = { $total: 0 };
+                    _this.$scope['notesProfits'][profitLog.noteGuid]['$total'] += profitLog.profit;
+                    if (!_this.$scope['notesProfits']['$total'])
+                        _this.$scope['notesProfits']['$total'] = { $total: 0 };
+                    _this.$scope['notesProfits']['$total']['$total'] += profitLog.profit;
+                    for (var _i = 0, _a = _this.$scope['existPersons']; _i < _a.length; _i++) {
+                        var person = _a[_i];
+                        if (!_this.$scope['notesSpentTimes'][noteGuid] || !_this.$scope['notesSpentTimes'][noteGuid][person] || !_this.$scope['notesSpentTimes'][noteGuid]['$total'])
+                            _this.$scope['notesProfits'][noteGuid][person] = null;
+                        else
+                            _this.$scope['notesProfits'][noteGuid][person] = Math.round(_this.$scope['notesProfits'][noteGuid]['$total'] * _this.$scope['notesSpentTimes'][noteGuid][person] / _this.$scope['notesSpentTimes'][noteGuid]['$total']);
+                    }
+                    if (!_this.$scope['notesProfits']['$total'][person])
+                        _this.$scope['notesProfits']['$total'][person] = 0;
+                    _this.$scope['notesProfits']['$total'][person] += _this.$scope['notesProfits'][noteGuid][person];
+                }
+            }
+        };
         this.$scope['dataStore'] = this.dataStore;
         this.$scope['notesSpentTimes'] = {};
         this.$scope['notesProfits'] = {};
@@ -10,56 +62,6 @@ var NotesController = (function () {
         this.$scope.$watchCollection('dataStore.timeLogs', this._onWatchTimeLogs);
         this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
     }
-    NotesController.prototype._onWatchTimeLogs = function (timeLogs) {
-        this.$scope['notesSpentTimes'] = {};
-        var personsHash = {};
-        for (var _i = 0; _i < timeLogs.length; _i++) {
-            var noteTimeLog = timeLogs[_i];
-            for (var _a = 0; _a < noteTimeLog.length; _a++) {
-                var timeLog = noteTimeLog[_a];
-                if (!this.$scope['notesSpentTimes'][timeLog.noteGuid])
-                    this.$scope['notesSpentTimes'][timeLog.noteGuid] = { $total: 0 };
-                this.$scope['notesSpentTimes'][timeLog.noteGuid]['$total'] += timeLog.spentTime;
-                if (!this.$scope['notesSpentTimes'][timeLog.noteGuid][timeLog.person])
-                    this.$scope['notesSpentTimes'][timeLog.noteGuid][timeLog.person] = 0;
-                this.$scope['notesSpentTimes'][timeLog.noteGuid][timeLog.person] += timeLog.spentTime;
-                if (!this.$scope['notesSpentTimes']['$total'])
-                    this.$scope['notesSpentTimes']['$total'] = { $total: 0 };
-                this.$scope['notesSpentTimes']['$total']['$total'] += timeLog.spentTime;
-                if (!this.$scope['notesSpentTimes']['$total'][timeLog.person])
-                    this.$scope['notesSpentTimes']['$total'][timeLog.person] = 0;
-                this.$scope['notesSpentTimes']['$total'][timeLog.person] += timeLog.spentTime;
-                if (timeLog.spentTime > 0)
-                    personsHash[timeLog.person] = true;
-            }
-        }
-        this.$scope['existPersons'] = Object.keys(personsHash);
-    };
-    NotesController.prototype._onWatchProfitLogs = function (profitLogs) {
-        this.$scope['notesProfits'] = {};
-        for (var noteGuid in profitLogs) {
-            var noteProfitLog = profitLogs[noteGuid];
-            for (var _i = 0; _i < noteProfitLog.length; _i++) {
-                var profitLog = noteProfitLog[_i];
-                if (!this.$scope['notesProfits'][profitLog.noteGuid])
-                    this.$scope['notesProfits'][profitLog.noteGuid] = { $total: 0 };
-                this.$scope['notesProfits'][profitLog.noteGuid]['$total'] += profitLog.profit;
-                if (!this.$scope['notesProfits']['$total'])
-                    this.$scope['notesProfits']['$total'] = { $total: 0 };
-                this.$scope['notesProfits']['$total']['$total'] += profitLog.profit;
-                for (var _a = 0, _b = this.$scope['existPersons']; _a < _b.length; _a++) {
-                    var person = _b[_a];
-                    if (!this.$scope['notesSpentTimes'][noteGuid] || !this.$scope['notesSpentTimes'][noteGuid][person] || !this.$scope['notesSpentTimes'][noteGuid]['$total'])
-                        this.$scope['notesProfits'][noteGuid][person] = null;
-                    else
-                        this.$scope['notesProfits'][noteGuid][person] = Math.round(this.$scope['notesProfits'][noteGuid]['$total'] * this.$scope['notesSpentTimes'][noteGuid][person] / this.$scope['notesSpentTimes'][noteGuid]['$total']);
-                }
-                if (!this.$scope['notesProfits']['$total'][person])
-                    this.$scope['notesProfits']['$total'][person] = 0;
-                this.$scope['notesProfits']['$total'][person] += this.$scope['notesProfits'][noteGuid][person];
-            }
-        }
-    };
     return NotesController;
 })();
 core_1["default"].app.controller('NotesController', ['$scope', 'dataStore', NotesController]);
