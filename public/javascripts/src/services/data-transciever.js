@@ -1,6 +1,5 @@
 var async = require('async');
 var merge = require('merge');
-var core_1 = require('../core');
 var DataTranscieverService = (function () {
     function DataTranscieverService($http, dataStore, progress) {
         var _this = this;
@@ -292,7 +291,7 @@ var DataTranscieverService = (function () {
     }
     return DataTranscieverService;
 })();
-core_1["default"].app.service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
+angular.module('App').service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
 exports.__esModule = true;
 exports["default"] = DataTranscieverService;
 //# sourceMappingURL=data-transciever.js.map

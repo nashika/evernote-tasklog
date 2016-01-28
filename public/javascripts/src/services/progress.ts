@@ -1,5 +1,3 @@
-import core from '../core';
-
 class ProgressService {
 
     modalInstance = null;
@@ -43,6 +41,6 @@ class ProgressService {
 
 }
 
-core.app.service('progress', ['$modal', ProgressService]);
+angular.module('App').service('progress', ['$modal', ProgressService]);
 
 export default ProgressService;

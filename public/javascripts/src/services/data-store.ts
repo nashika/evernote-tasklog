@@ -1,5 +1,3 @@
-import core from '../core';
-
 class DataStoreService {
 
     user:Object = null;
@@ -16,6 +14,6 @@ class DataStoreService {
 
 }
 
-core.app.service('dataStore', [DataStoreService]);
+angular.module('App').service('dataStore', [DataStoreService]);
 
 export default DataStoreService;

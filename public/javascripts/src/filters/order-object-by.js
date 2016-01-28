@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var orderObjectBy = function () {
     return function (items, field, reverse) {
         if (field === void 0) { field = '$value'; }
@@ -31,7 +30,7 @@ var orderObjectBy = function () {
         return results;
     };
 };
-core_1["default"].app.filter('orderObjectBy', orderObjectBy);
+angular.module('App').filter('orderObjectBy', orderObjectBy);
 exports.__esModule = true;
 exports["default"] = orderObjectBy;
 //# sourceMappingURL=order-object-by.js.map

@@ -1,5 +1,3 @@
-import core from '../core';
-
 var abbreviate = () => {
     return (text, len = 10, truncation = '...') => {
         var count = 0;
@@ -14,6 +12,6 @@ var abbreviate = () => {
     }
 };
 
-core.app.filter('abbreviate', abbreviate);
+angular.module('App').filter('abbreviate', abbreviate);
 
 export default abbreviate;

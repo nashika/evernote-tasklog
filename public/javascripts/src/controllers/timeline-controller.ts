@@ -1,6 +1,5 @@
 import * as async from 'async';
 
-import core from "../core";
 import DataStoreService from "../services/data-store";
 import DataTranscieverService from "../services/data-transciever";
 
@@ -115,6 +114,6 @@ class TimelineController {
 
 }
 
-core.app.controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
+angular.module('App').controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
 
 export default TimelineController;

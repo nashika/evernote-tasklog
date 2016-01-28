@@ -1,6 +1,4 @@
-import core from '../core';
-
-core.app.directive('resize', ($timeout, $rootScope, $window) => {
+angular.module('App').directive('resize', ($timeout, $rootScope, $window) => {
     return {
         link: () => {
             var timer = false;

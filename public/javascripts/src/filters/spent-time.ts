@@ -1,5 +1,3 @@
-import core from '../core';
-
 var spentTime = () => {
     return (input) => {
         if (input === undefined) return '';
@@ -11,6 +9,6 @@ var spentTime = () => {
     };
 };
 
-core.app.filter('spentTime', spentTime);
+angular.module('App').filter('spentTime', spentTime);
 
 export default spentTime;

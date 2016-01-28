@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var MenuController = (function () {
     function MenuController($scope, $http, dataStore, dataTransciever) {
         var _this = this;
@@ -26,7 +25,7 @@ var MenuController = (function () {
     }
     return MenuController;
 })();
-core_1["default"].app.controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
+angular.module('App').controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
 exports.__esModule = true;
 exports["default"] = MenuController;
 //# sourceMappingURL=menu-controller.js.map

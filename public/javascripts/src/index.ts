@@ -1,9 +1,7 @@
-import core from './core';
-
 // angular.js setting
-core.app = angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
+angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
 
-core.app.config(['$compileProvider', ($compileProvider) => {
+angular.module('App').config(['$compileProvider', ($compileProvider) => {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|mailto|evernote):/);
 }]);
 

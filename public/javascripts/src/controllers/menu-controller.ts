@@ -1,4 +1,3 @@
-import core from '../core';
 import DataTranscieverService from "../services/data-transciever";
 import DataStoreService from "../services/data-store";
 
@@ -31,6 +30,6 @@ class MenuController {
 
 }
 
-core.app.controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
+angular.module('App').controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
 
 export default MenuController;

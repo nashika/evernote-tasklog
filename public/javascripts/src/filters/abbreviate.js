@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var abbreviate = function () {
     return function (text, len, truncation) {
         if (len === void 0) { len = 10; }
@@ -18,7 +17,7 @@ var abbreviate = function () {
         return text;
     };
 };
-core_1["default"].app.filter('abbreviate', abbreviate);
+angular.module('App').filter('abbreviate', abbreviate);
 exports.__esModule = true;
 exports["default"] = abbreviate;
 //# sourceMappingURL=abbreviate.js.map

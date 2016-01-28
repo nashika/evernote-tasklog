@@ -1,6 +1,5 @@
 import * as async from 'async';
 
-import core from '../core';
 import DataStoreService from "../services/data-store";
 import DataTranscieverService from "../services/data-transciever";
 import ProgressService from "../services/progress";
@@ -107,6 +106,6 @@ class SettingsController {
 
 }
 
-core.app.controller('SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]);
+angular.module('App').controller('SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]);
 
 export default SettingsController;

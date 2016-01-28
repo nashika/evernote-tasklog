@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var DataStoreService = (function () {
     function DataStoreService() {
         this.user = null;
@@ -12,7 +11,7 @@ var DataStoreService = (function () {
     }
     return DataStoreService;
 })();
-core_1["default"].app.service('dataStore', [DataStoreService]);
+angular.module('App').service('dataStore', [DataStoreService]);
 exports.__esModule = true;
 exports["default"] = DataStoreService;
 //# sourceMappingURL=data-store.js.map

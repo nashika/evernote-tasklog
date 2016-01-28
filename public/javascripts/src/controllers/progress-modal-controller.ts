@@ -1,4 +1,3 @@
-import core from '../core';
 import ModalController from './modal-controller';
 import ProgressService from "../services/progress";
 
@@ -12,6 +11,6 @@ class ProgressModalController extends ModalController {
 
 }
 
-core.app.controller('ProgressModalController', ['$scope', 'progress', ProgressModalController]);
+angular.module('App').controller('ProgressModalController', ['$scope', 'progress', ProgressModalController]);
 
 export default ProgressModalController;

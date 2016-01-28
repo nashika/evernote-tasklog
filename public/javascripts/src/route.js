@@ -1,5 +1,4 @@
-var core_1 = require('./core');
-core_1["default"].app.config(['$routeProvider', function ($routeProvider) {
+angular.module('App').config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {
             templateUrl: 'menu'

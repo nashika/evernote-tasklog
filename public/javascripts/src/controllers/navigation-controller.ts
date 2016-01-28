@@ -1,5 +1,3 @@
-import core from '../core';
-
 class NavigationController {
 
     constructor(protected $scope:angular.IScope,
@@ -16,6 +14,6 @@ class NavigationController {
 
 }
 
-core.app.controller('NavigationController', ['$scope', '$rootScope', '$route', NavigationController]);
+angular.module('App').controller('NavigationController', ['$scope', '$rootScope', '$route', NavigationController]);
 
 export default NavigationController;

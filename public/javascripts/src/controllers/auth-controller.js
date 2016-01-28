@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var AuthController = (function () {
     function AuthController($scope, $http) {
         var _this = this;
@@ -46,7 +45,7 @@ var AuthController = (function () {
     }
     return AuthController;
 })();
-core_1["default"].app.controller('AuthController', ['$scope', '$http', AuthController]);
+angular.module('App').controller('AuthController', ['$scope', '$http', AuthController]);
 exports.__esModule = true;
 exports["default"] = AuthController;
 //# sourceMappingURL=auth-controller.js.map

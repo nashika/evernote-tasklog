@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var ProgressService = (function () {
     function ProgressService($modal) {
         var _this = this;
@@ -38,7 +37,7 @@ var ProgressService = (function () {
     }
     return ProgressService;
 })();
-core_1["default"].app.service('progress', ['$modal', ProgressService]);
+angular.module('App').service('progress', ['$modal', ProgressService]);
 exports.__esModule = true;
 exports["default"] = ProgressService;
 //# sourceMappingURL=progress.js.map

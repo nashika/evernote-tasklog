@@ -1,7 +1,6 @@
 import * as async from 'async';
 var merge = require('merge');
 
-import core from '../core';
 import DataStoreService from "./data-store";
 import ProgressService from "./progress";
 
@@ -274,6 +273,6 @@ class DataTranscieverService {
 
 }
 
-core.app.service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
+angular.module('App').service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
 
 export default DataTranscieverService;

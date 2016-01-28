@@ -1,4 +1,3 @@
-import core from '../core';
 import DataStoreService from "../services/data-store";
 
 class NotesController {
@@ -67,6 +66,6 @@ class NotesController {
 
 }
 
-core.app.controller('NotesController', ['$scope', 'dataStore', NotesController]);
+angular.module('App').controller('NotesController', ['$scope', 'dataStore', NotesController]);
 
 export default NotesController;

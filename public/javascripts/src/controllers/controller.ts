@@ -1,5 +1,3 @@
-import core from '../core';
-
 class Controller {
 
     constructor(protected $scope) {
@@ -7,6 +5,6 @@ class Controller {
 
 }
 
-core.app.controller('Controller', ['$scope', Controller]);
+angular.module('App').controller('Controller', ['$scope', Controller]);
 
 export default Controller;

@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var objectLength = function () {
     var _objectLength = function (input, depth) {
         if (depth === void 0) { depth = 0; }
@@ -17,7 +16,7 @@ var objectLength = function () {
     };
     return _objectLength;
 };
-core_1["default"].app.filter('objectLength', objectLength);
+angular.module('App').filter('objectLength', objectLength);
 exports.__esModule = true;
 exports["default"] = objectLength;
 //# sourceMappingURL=object-length.js.map

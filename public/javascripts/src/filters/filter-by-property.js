@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var checkItemMatches = function (item, props) {
     var itemMatches = false;
     for (var prop in props) {
@@ -32,7 +31,7 @@ var filterByProperty = function () {
             }
     };
 };
-core_1["default"].app.filter('filterByProperty', filterByProperty);
+angular.module('App').filter('filterByProperty', filterByProperty);
 exports.__esModule = true;
 exports["default"] = filterByProperty;
 //# sourceMappingURL=filter-by-property.js.map

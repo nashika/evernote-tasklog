@@ -1,4 +1,3 @@
-var core_1 = require("../core");
 var TimelineController = (function () {
     function TimelineController($scope, $filter, $http, dataStore, dataTransciever) {
         var _this = this;
@@ -109,7 +108,7 @@ var TimelineController = (function () {
     }
     return TimelineController;
 })();
-core_1["default"].app.controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
+angular.module('App').controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
 exports.__esModule = true;
 exports["default"] = TimelineController;
 //# sourceMappingURL=timeline-controller.js.map

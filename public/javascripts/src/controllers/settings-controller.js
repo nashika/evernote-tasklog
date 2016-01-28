@@ -1,5 +1,4 @@
 var async = require('async');
-var core_1 = require('../core');
 var SettingsController = (function () {
     function SettingsController($scope, $http, dataStore, dataTransciever, progress) {
         var _this = this;
@@ -99,7 +98,7 @@ var SettingsController = (function () {
     };
     return SettingsController;
 })();
-core_1["default"].app.controller('SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]);
+angular.module('App').controller('SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]);
 exports.__esModule = true;
 exports["default"] = SettingsController;
 //# sourceMappingURL=settings-controller.js.map

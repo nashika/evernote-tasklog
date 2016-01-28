@@ -1,6 +1,4 @@
-import core from './core';
-
-core.app.config(['$routeProvider', ($routeProvider:angular.route.IRouteProvider) => {
+angular.module('App').config(['$routeProvider', ($routeProvider:angular.route.IRouteProvider) => {
     $routeProvider
         .when('/', {
             templateUrl: 'menu',

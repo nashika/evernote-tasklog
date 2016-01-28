@@ -1,5 +1,3 @@
-import core from '../core';
-
 class AuthController {
 
     constructor(protected $scope:angular.IScope, protected $http:angular.IHttpService) {
@@ -46,6 +44,6 @@ class AuthController {
 
 }
 
-core.app.controller('AuthController', ['$scope', '$http', AuthController]);
+angular.module('App').controller('AuthController', ['$scope', '$http', AuthController]);
 
 export default AuthController;

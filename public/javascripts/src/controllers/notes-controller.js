@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var NotesController = (function () {
     function NotesController($scope, dataStore) {
         var _this = this;
@@ -64,7 +63,7 @@ var NotesController = (function () {
     }
     return NotesController;
 })();
-core_1["default"].app.controller('NotesController', ['$scope', 'dataStore', NotesController]);
+angular.module('App').controller('NotesController', ['$scope', 'dataStore', NotesController]);
 exports.__esModule = true;
 exports["default"] = NotesController;
 //# sourceMappingURL=notes-controller.js.map

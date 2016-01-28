@@ -1,4 +1,3 @@
-var core_1 = require('../core');
 var spentTime = function () {
     return function (input) {
         if (input === undefined)
@@ -12,7 +11,7 @@ var spentTime = function () {
         return minute + 'm';
     };
 };
-core_1["default"].app.filter('spentTime', spentTime);
+angular.module('App').filter('spentTime', spentTime);
 exports.__esModule = true;
 exports["default"] = spentTime;
 //# sourceMappingURL=spent-time.js.map

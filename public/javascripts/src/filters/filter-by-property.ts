@@ -1,5 +1,3 @@
-import core from '../core';
-
 var checkItemMatches = (item, props) => {
     var itemMatches = false;
     for (var prop in props) {
@@ -33,6 +31,6 @@ var filterByProperty = () => {
     }
 };
 
-core.app.filter('filterByProperty', filterByProperty);
+angular.module('App').filter('filterByProperty', filterByProperty);
 
 export default filterByProperty;

@@ -1,5 +1,3 @@
-import core from '../core';
-
 var orderObjectBy = () => {
     return (items, field:any = '$value', reverse = true) => {
         var filtered = [];
@@ -31,6 +29,6 @@ var orderObjectBy = () => {
     };
 };
 
-core.app.filter('orderObjectBy', orderObjectBy);
+angular.module('App').filter('orderObjectBy', orderObjectBy);
 
 export default orderObjectBy;

@@ -1,5 +1,3 @@
-import core from '../core';
-
 var objectLength = () => {
     var _objectLength = (input, depth = 0) => {
         if (!angular.isObject(input))
@@ -16,6 +14,6 @@ var objectLength = () => {
     return _objectLength;
 };
 
-core.app.filter('objectLength', objectLength);
+angular.module('App').filter('objectLength', objectLength);
 
 export default objectLength;

@@ -1,5 +1,4 @@
-var core_1 = require('../core');
-core_1["default"].app.directive('resize', function ($timeout, $rootScope, $window) {
+angular.module('App').directive('resize', function ($timeout, $rootScope, $window) {
     return {
         link: function () {
             var timer = false;
