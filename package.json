@@ -38,10 +38,10 @@
     "morgan": "~1.6.1",
     "nedb": "^1.1.2",
     "serve-favicon": "~2.3.0",
-    "source-map-support": "^0.3.2"
+    "source-map-support": "^0.4.0"
   },
   "devDependencies": {
-    "browserify": "^11.0.0",
+    "browserify": "^13.0.0",
     "express-generator": "^4.13.1",
     "tsd": "^0.6.5",
     "typescript": "^1.7.5"
