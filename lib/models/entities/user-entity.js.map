@@ -1,0 +1,1 @@
+{"version":3,"file":"user-entity.js","sourceRoot":"","sources":["user-entity.ts"],"names":["UserEntity","UserEntity.constructor"],"mappings":";;;;;AAAA,IAAY,QAAQ,WAAM,UAAU,CAAC,CAAA;AAIrC;IAAwCA,8BAAsBA;IAA9DA;QAAwCC,8BAAsBA;IAC9DA,CAACA;IAADD,iBAACA;AAADA,CAACA,AADD,EAAwC,QAAQ,CAAC,QAAQ,CAAC,IAAI,EAC7D;AADD;+BACC,CAAA"}

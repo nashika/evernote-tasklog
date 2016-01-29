@@ -4,16 +4,16 @@ import * as log4js from 'log4js';
 import {Evernote} from 'evernote';
 
 import core from './core';
-import LinkedNotebookModel from './models/linked-notebook-model';
-import NoteModel from './models/note-model';
-import NotebookModel from './models/notebook-model';
-import ProfitLogsModel from './models/profit-log-model';
-import SearchModel from './models/search-model';
-import SettingModel from './models/setting-model';
-import SyncStateModel from './models/sync-state-model';
-import TagModel from './models/tag-model';
-import TimeLogsModel from './models/time-log-model';
-import UserModel from './models/user-model';
+import LinkedNotebookModel from './models/tables/linked-notebook-table';
+import NoteModel from './models/tables/note-table';
+import NotebookModel from './models/tables/notebook-table';
+import ProfitLogsModel from './models/tables/profit-log-table';
+import SearchModel from './models/tables/search-table';
+import SettingModel from './models/tables/setting-table';
+import SyncStateModel from './models/tables/sync-state-table';
+import TagModel from './models/tables/tag-table';
+import TimeLogsModel from './models/tables/time-log-table';
+import UserModel from './models/tables/user-table';
 
 class Www {
 
