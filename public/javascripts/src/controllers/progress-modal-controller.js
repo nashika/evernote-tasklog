@@ -10,7 +10,7 @@ var ProgressModalController = (function (_super) {
         _super.call(this, $scope);
         this.$scope = $scope;
         this.progress = progress;
-        this.$scope['progress'] = this.progress;
+        this.$scope.progress = this.progress;
     }
     return ProgressModalController;
 })(modal_controller_1["default"]);

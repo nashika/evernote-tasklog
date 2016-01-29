@@ -14,12 +14,12 @@ var MenuController = (function () {
                     alert(err);
                     return;
                 }
-                _this.$scope['noteCount'] = count;
+                _this.$scope.noteCount = count;
             });
         };
-        this.$scope['dataStore'] = this.dataStore;
-        this.$scope['dataTransciever'] = this.dataTransciever;
-        this.$scope['noteCount'] = null;
+        this.$scope.dataStore = this.dataStore;
+        this.$scope.dataTransciever = this.dataTransciever;
+        this.$scope.noteCount = null;
         this.$scope.$watchGroup(['dataTransciever.filterParams.notebookGuids', 'dataTransciever.filterParams.stacks'], this._onWatchFilterParams);
         this.$scope.$on('event::reload', this._onReload);
     }

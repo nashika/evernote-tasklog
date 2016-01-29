@@ -11,6 +11,7 @@ var DataStoreService = (function () {
     }
     return DataStoreService;
 })();
+exports.DataStoreService = DataStoreService;
 angular.module('App').service('dataStore', [DataStoreService]);
 exports.__esModule = true;
 exports["default"] = DataStoreService;

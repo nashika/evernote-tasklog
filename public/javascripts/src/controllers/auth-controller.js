@@ -9,13 +9,13 @@ var AuthController = (function () {
                 throw new Error(data);
             })
                 .success(function (data) {
-                _this.$scope['production'] = data;
+                _this.$scope.production = data;
                 _this.$http.post('/auth/token', { sandbox: true })
                     .error(function (data) {
                     throw new Error(data);
                 })
                     .success(function (data) {
-                    _this.$scope['sandbox'] = data;
+                    _this.$scope.sandbox = data;
                 });
             });
         };
@@ -26,9 +26,9 @@ var AuthController = (function () {
             _this.$http.post('/auth/token', { sandbox: sandbox, token: token })
                 .success(function (data) {
                 if (sandbox)
-                    _this.$scope['sandbox'] = data;
+                    _this.$scope.sandbox = data;
                 else
-                    _this.$scope['production'] = data;
+                    _this.$scope.production = data;
                 if (!data)
                     alert('Token is invalid.');
             })
@@ -36,11 +36,11 @@ var AuthController = (function () {
                 alert('Set token failed.');
             });
         };
-        this.$scope['message'] = null;
-        this.$scope['isDeveloper'] = false;
-        this.$scope['sandbox'] = { token: null, username: null };
-        this.$scope['production'] = { token: null, username: null };
-        this.$scope['setToken'] = this._setToken;
+        this.$scope.message = null;
+        this.$scope.isDeveloper = false;
+        this.$scope.sandbox = { token: null, username: null };
+        this.$scope.production = { token: null, username: null };
+        this.$scope.setToken = this._setToken;
         this._init();
     }
     return AuthController;

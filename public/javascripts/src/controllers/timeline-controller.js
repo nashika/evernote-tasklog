@@ -9,24 +9,24 @@ var TimelineController = (function () {
         this._onRangeChanged = function (properties) {
             var currentStart = moment(properties.start).startOf('day');
             var currentEnd = moment(properties.end).endOf('day');
-            if (currentStart.isSameOrAfter(_this.$scope['start']) && currentEnd.isSameOrBefore(_this.$scope['end']))
+            if (currentStart.isSameOrAfter(_this.$scope.start) && currentEnd.isSameOrBefore(_this.$scope.end))
                 return;
-            if (!_this.$scope['start'] || currentStart.isBefore(_this.$scope['start']))
-                _this.$scope['start'] = currentStart;
-            if (!_this.$scope['end'] || currentEnd.isAfter(_this.$scope['end']))
-                _this.$scope['end'] = currentEnd;
+            if (!_this.$scope.start || currentStart.isBefore(_this.$scope.start))
+                _this.$scope.start = currentStart;
+            if (!_this.$scope.end || currentEnd.isAfter(_this.$scope.end))
+                _this.$scope.end = currentEnd;
             _this._onReload();
         };
         this._onReload = function () {
-            _this.dataTransciever.reload({ start: _this.$scope['start'], end: _this.$scope['end'] }, _this._onReloadEnd);
+            _this.dataTransciever.reload({ start: _this.$scope.start, end: _this.$scope.end }, _this._onReloadEnd);
         };
         this._onReloadEnd = function () {
-            _this.$scope['timelineItems'].clear();
+            _this.$scope.timelineItems.clear();
             var notes = {};
             for (var noteGuid in _this.dataStore.notes) {
                 var note = _this.dataStore.notes[noteGuid];
                 notes[note.guid] = note;
-                _this.$scope['timelineItems'].add({
+                _this.$scope.timelineItems.add({
                     id: note.guid,
                     group: 'updated',
                     content: "<a href=\"evernote:///view/" + _this.dataStore.user['id'] + "/" + _this.dataStore.user['shardId'] + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + _this.$filter('abbreviate')(note.title, 40) + "</a>",
@@ -39,7 +39,7 @@ var TimelineController = (function () {
                 for (var timeLogId in noteTimeLogs) {
                     var timeLog = noteTimeLogs[timeLogId];
                     var noteTitle = notes[timeLog.noteGuid].title;
-                    _this.$scope['timelineItems'].add({
+                    _this.$scope.timelineItems.add({
                         id: timeLog._id,
                         group: timeLog.person,
                         content: "<a href=\"evernote:///view/" + _this.dataStore.user['id'] + "/" + _this.dataStore.user['shardId'] + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\" title=\"" + noteTitle + " " + timeLog.comment + "\">" + _this.$filter('abbreviate')(noteTitle, 20) + " " + _this.$filter('abbreviate')(timeLog.comment, 20) + "</a>",
@@ -55,12 +55,12 @@ var TimelineController = (function () {
                 height: window.innerHeight - 90
             });
         };
-        this.$scope['dataStore'] = this.dataStore;
-        this.$scope['timelineItems'] = new vis.DataSet();
-        this.$scope['timelineGroups'] = new vis.DataSet();
-        this.$scope['start'] = moment().startOf('day');
-        this.$scope['end'] = moment().endOf('day');
-        this.dataTransciever.reload({ start: this.$scope['start'], end: this.$scope['end'] }, function () {
+        this.$scope.dataStore = this.dataStore;
+        this.$scope.timelineItems = new vis.DataSet();
+        this.$scope.timelineGroups = new vis.DataSet();
+        this.$scope.start = moment().startOf('day');
+        this.$scope.end = moment().endOf('day');
+        this.dataTransciever.reload({ start: this.$scope.start, end: this.$scope.end }, function () {
             var container = document.getElementById('timeline');
             // set working time
             var hiddenDates;
@@ -73,12 +73,12 @@ var TimelineController = (function () {
             else
                 hiddenDates = {};
             // generate timeline object
-            _this.$scope['timeline'] = new vis.Timeline(container, _this.$scope['timelineItems'], _this.$scope['timelineGroups'], {
+            _this.$scope['timeline'] = new vis.Timeline(container, _this.$scope.timelineItems, _this.$scope.timelineGroups, {
                 margin: { item: 5 },
                 height: window.innerHeight - 80,
                 orientation: { axis: 'both', item: 'top' },
-                start: _this.$scope['start'],
-                end: _this.$scope['end'],
+                start: _this.$scope.start,
+                end: _this.$scope.end,
                 order: function (a, b) {
                     return a.start - b.start;
                 },
@@ -89,12 +89,12 @@ var TimelineController = (function () {
                 return;
             for (var _i = 0, _a = _this.dataStore.settings['persons']; _i < _a.length; _i++) {
                 var person = _a[_i];
-                _this.$scope['timelineGroups'].add({
+                _this.$scope.timelineGroups.add({
                     id: person.name,
                     content: person.name
                 });
             }
-            _this.$scope['timelineGroups'].add({
+            _this.$scope.timelineGroups.add({
                 id: 'updated',
                 content: 'Update'
             });

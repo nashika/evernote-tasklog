@@ -1,4 +1,4 @@
-class DataStoreService {
+export class DataStoreService {
 
     user:Object = null;
     persons:Array<Object> = [];
