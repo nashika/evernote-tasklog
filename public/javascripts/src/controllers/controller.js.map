@@ -1,10 +1,1 @@
-{
-  "version": 3,
-  "file": "controller.js",
-  "sourceRoot": "",
-  "sources": [
-    "controller.coffee"
-  ],
-  "names": [],
-  "mappings": ";AAAA;AAAA,MAAA;;EAAM;IAES,oBAAC,MAAD;MAAC,IAAC,CAAA,SAAD;IAAD;;;;;;EAEf,GAAG,CAAC,UAAJ,CAAe,YAAf,EAA6B,CAAC,QAAD,EAAW,UAAX,CAA7B;;EACA,MAAM,CAAC,OAAP,GAAiB;AALjB"
-}
+{"version":3,"file":"controller.js","sourceRoot":"","sources":["controller.ts"],"names":["Controller","Controller.constructor"],"mappings":"AAAA;IAEIA,oBAAsBA,MAAqBA;QAArBC,WAAMA,GAANA,MAAMA,CAAeA;IAC3CA,CAACA;IAELD,iBAACA;AAADA,CAACA,AALD,IAKC;AAED,OAAO,CAAC,MAAM,CAAC,KAAK,CAAC,CAAC,UAAU,CAAC,YAAY,EAAE,CAAC,QAAQ,EAAE,UAAU,CAAC,CAAC,CAAC;AAEvE;qBAAe,UAAU,CAAC"}

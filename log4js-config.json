@@ -23,6 +23,6 @@
     }
   ],
   "levels": {
-    "system": "INFO"
+    "system": "TRACE"
   }
 }

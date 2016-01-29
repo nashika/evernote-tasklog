@@ -1,0 +1,1 @@
+{"version":3,"file":"notebook-entity.js","sourceRoot":"","sources":["notebook-entity.ts"],"names":["NotebookEntity","NotebookEntity.constructor"],"mappings":";;;;;AAAA,IAAY,QAAQ,WAAM,UAAU,CAAC,CAAA;AAIrC;IAA4CA,kCAA0BA;IAAtEA;QAA4CC,8BAA0BA;IACtEA,CAACA;IAADD,qBAACA;AAADA,CAACA,AADD,EAA4C,QAAQ,CAAC,QAAQ,CAAC,QAAQ,EACrE;AADD;mCACC,CAAA"}
