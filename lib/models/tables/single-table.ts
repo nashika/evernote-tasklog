@@ -2,10 +2,11 @@ var merge = require('merge');
 
 import core from '../../core';
 import Table from './table';
+import Entity from "../entities/entity";
 
 export default class SingleTable extends Table {
 
-    static DEFAULT_DOC:Object = {};
+    static DEFAULT_DOC:Entity = {};
 
     loadLocal(callback:(err?:Error, results?:any) => void):void {
         var query = {_id: 1};

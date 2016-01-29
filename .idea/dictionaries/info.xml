@@ -6,6 +6,7 @@
       <w>dirname</w>
       <w>nedb</w>
       <w>typings</w>
+      <w>upsert</w>
     </words>
   </dictionary>
 </component>

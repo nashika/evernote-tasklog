@@ -3,6 +3,7 @@ var merge = require('merge');
 
 import core from '../../core';
 import MultiTable from './multi-table';
+import NoteEntity from "../entities/note-entity";
 
 export default class NoteTable extends MultiTable {
 
@@ -10,14 +11,14 @@ export default class NoteTable extends MultiTable {
     static TITLE_FIELD:string = 'title';
     static APPEND_QUERY:Object = {deleted: null};
 
-    findLocal(options:Object, callback:(err?:Error, results?:any) => void):void {
-        super.findLocal(options, (err, notes) => {
+    findLocal(options:Object, callback:(err?:Error, results?:Array<NoteEntity>) => void):void {
+        super.findLocal(options, (err:Error, notes:Array<NoteEntity>) => {
             if (options['content']) {
                 callback(null, notes);
             } else {
-                var results:Array<Object> = [];
+                var results:Array<NoteEntity> = [];
                 for (var note of notes) {
-                    var result = merge(true, note);
+                    var result:NoteEntity = merge(true, note);
                     result.hasContent = result.content != null;
                     result.content = null;
                     results.push(result);
