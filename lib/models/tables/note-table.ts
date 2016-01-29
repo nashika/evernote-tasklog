@@ -1,19 +1,24 @@
 import * as async from 'async';
+import * as evernote from "evernote";
 var merge = require('merge');
 
 import core from '../../core';
-import MultiTable from './multi-table';
+import {MultiTable, MultiTableOptions} from './multi-table';
 import NoteEntity from "../entities/note-entity";
 
-export default class NoteTable extends MultiTable {
+export interface NoteTableOptions extends MultiTableOptions {
+    content?:boolean;
+}
+
+export class NoteTable extends MultiTable<NoteEntity, NoteTableOptions> {
 
     static PLURAL_NAME:string = 'notes';
     static TITLE_FIELD:string = 'title';
     static APPEND_QUERY:Object = {deleted: null};
 
-    findLocal(options:Object, callback:(err?:Error, results?:Array<NoteEntity>) => void):void {
+    findLocal(options:NoteTableOptions, callback:(err?:Error, results?:Array<NoteEntity>) => void):void {
         super.findLocal(options, (err:Error, notes:Array<NoteEntity>) => {
-            if (options['content']) {
+            if (options.content) {
                 callback(null, notes);
             } else {
                 var results:Array<NoteEntity> = [];
@@ -28,90 +33,92 @@ export default class NoteTable extends MultiTable {
         });
     }
 
-    getRemoteContent(options:Object, callback:(err?:Error, results?:any) => void):void {
-        this.findLocal(options, (err?:Error, notes?:Array<Object>) => {
+    getRemoteContent(options:NoteTableOptions, callback:(err?:Error, results?:Array<NoteEntity>) => void):void {
+        this.findLocal(options, (err?:Error, notes?:Array<NoteEntity>) => {
             if (err) return callback(err);
-            var result:Array<Object> = [];
-            async.eachSeries(notes, (note, callback) => {
-                if (note['content'] || note['hasContent']) {
-                    result.push(note);
+            var results:Array<NoteEntity> = [];
+            async.eachSeries(notes, (note:NoteEntity, callback:(err?:Error, results?:Array<NoteEntity>) => void) => {
+                if (note.content || note.hasContent) {
+                    results.push(note);
                     callback();
                 } else {
-                    this.loadRemote(note['guid'], (err, loadedNote) => {
+                    this.loadRemote(note.guid, (err?:Error, loadedNote?:NoteEntity) => {
                         if (err) return callback(err);
-                        result.push(loadedNote);
+                        results.push(loadedNote);
                         // TODO: set hasContentProperty
                         callback();
                     });
                 }
-            }, (err) => {
+            }, (err:Error) => {
                 if (err) return callback(err);
-                callback(null, result);
+                callback(null, results);
             });
         });
     }
 
-    loadRemote(guid:string, callback:(err?:Error, results?:any) => void):void {
+    loadRemote(guid:string, callback:(err?:Error, results?:NoteEntity) => void):void {
         core.loggers.system.debug(`Loading note from remote was started. guid=${guid}`);
-        var noteStore = core.users[this._username].client.getNoteStore();
-        var lastNote = null;
+        var noteStore:evernote.Evernote.NoteStoreClient = core.users[this._username].client.getNoteStore();
+        var lastNote:NoteEntity = null;
         async.waterfall([
-            (callback) => {
+            (callback:(err:Error, note:NoteEntity) => void) => {
                 noteStore.getNote(guid, true, false, false, false, callback);
             },
-            (note, callback) => {
+            (note:NoteEntity, callback:(err:Error, numReplaced:number) => void) => {
                 core.loggers.system.debug(`Loading note was succeed. guid=${note.guid} title=${note[(<typeof NoteTable>this.constructor).TITLE_FIELD]}`);
                 lastNote = note;
                 core.loggers.system.debug(`Saving note to local. guid=${note.guid}`);
                 this._datastore.update({guid: note.guid}, note, {upsert: true}, callback);
             },
-            (numReplaced, ...restArgs) => {
-                var callback = restArgs.pop();
+            (numReplaced:number, ...restArgs) => {
+                var callback:(err?:Error) => void = restArgs.pop();
                 core.loggers.system.debug(`Saving note was succeed. guid=${lastNote.guid} numReplaced=${numReplaced}`);
                 callback();
             },
-            (callback) => {
+            (callback:(err:Error) => void) => {
                 this._parseNote(lastNote, callback);
             },
-        ], (err) => {
+        ], (err:Error) => {
             if (err) return callback(err);
             core.loggers.system.debug(`Loading note from remote was finished. note is loaded. guid=${lastNote.guid} title=${lastNote.title}`);
             callback(null, lastNote);
         });
     }
 
-    reParseNotes(options:Object, callback:(err?:Error, results?:any) => void):void {
+    reParseNotes(options:NoteTableOptions, callback:(err?:Error) => void):void {
         if (!options) options = {};
-        options['limit'] = 0;
-        options['content'] = true;
-        this.findLocal(options, (err, notes) => {
+        options.limit = 0;
+        options.content = true;
+        this.findLocal(options, (err:Error, notes:Array<NoteEntity>) => {
             if (err) return callback(err);
-            async.eachSeries(notes, (note, callback) => {
+            async.eachSeries(notes, (note:NoteEntity, callback:(err:Error) => void) => {
                 this._parseNote(note, callback);
             }, callback);
         });
     }
 
-    _parseNote(note:Object, callback:(err?:Error, results?:any) => void):void {
-        if (!note['content']) return callback();
-        core.loggers.system.debug(`Parsing note was started. guid=${note['guid']}, title=${note['title']}`);
-        var content:string = note['content'];
+    protected _parseNote(note:NoteEntity, callback:(err?:Error) => void):void {
+        if (!note.content) return callback();
+        core.loggers.system.debug(`Parsing note was started. guid=${note.guid}, title=${note.title}`);
+        var content:string = note.content;
         content = content.replace(/\r\n|\r|\n|<br\/>|<\/div>|<\/ul>|<\/li>/g, '<>');
         var lines:Array<string> = [];
         for (var line of content.split('<>')) {
             lines.push(line.replace(/<[^>]*>/g, ''));
         }
         async.waterfall([
-            (callback) => {
+            (callback:(err:Error) => void) => {
                 core.users[this._username].models.timeLogs.parse(note, lines, callback);
             },
-            (callback) => {
+            (callback:(err:Error) => void) => {
                 core.users[this._username].models.profitLogs.parse(note, lines, callback);
             },
-        ], (err) => {
-            core.loggers.system.debug(`Parsing note was ${err ? 'failed' : 'succeed'}. guid=${note['guid']}`);
+        ], (err:Error) => {
+            core.loggers.system.debug(`Parsing note was ${err ? 'failed' : 'succeed'}. guid=${note.guid}`);
             callback(err);
         });
     }
 
 }
+
+export default NoteTable;

@@ -6,9 +6,6 @@
     "rootDir": ".",
     "sourceMap": true
   },
-  "filesGlob": [
-    "./typings/tsd.d.ts"
-  ],
   "exclude": [
     "node_modules",
     "bower_components"

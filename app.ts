@@ -16,7 +16,6 @@ import syncRoute from './routes/sync';
 import timeLogsRoute from './routes/time-logs';
 import profitLogsRoute from './routes/profit-logs';
 import userRoute from './routes/user';
-import {settings} from "cluster";
 
 var NedbStore = connectNedbSession(session);
 var app = express();

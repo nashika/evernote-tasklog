@@ -11,7 +11,7 @@ export interface MultiTableOptions {
     limit?:number;
 }
 
-export class MultiTable extends Model {
+export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> extends Model {
 
     static DEFAULT_QUERY:Object = {};
     static APPEND_QUERY:Object = {};
@@ -19,16 +19,16 @@ export class MultiTable extends Model {
     static APPEND_SORT:Object = {};
     static DEFAULT_LIMIT:number = 500;
 
-    findLocal(options:MultiTableOptions, callback:(err:Error, results?:Array<MultiEntity>) => void):void {
+    findLocal(options:T2, callback:(err:Error, results?:Array<T1>) => void):void {
         options = this.__parseFindOptions(options);
         core.loggers.system.debug(`Find local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. query=${JSON.stringify(options.query)}, sort=${JSON.stringify(options.sort)}, limit=${options.limit}`);
-        this._datastore.find(options.query).sort(options.sort).limit(options.limit).exec((err:Error, docs:Array<MultiEntity>) => {
+        this._datastore.find(options.query).sort(options.sort).limit(options.limit).exec((err:Error, docs:Array<T1>) => {
             core.loggers.system.debug(`Find local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. ${err ? 'err=' + err : 'docs.length=' + docs.length}`);
             callback(err, docs);
         });
     }
 
-    countLocal(options:MultiTableOptions, callback:(err:Error, results?:number) => void):void {
+    countLocal(options:T2, callback:(err:Error, results?:number) => void):void {
         options = this.__parseFindOptions(options);
         core.loggers.system.debug(`Count local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. query=${JSON.stringify(options.query)}`);
         this._datastore.count(options.query, (err:Error, count:number) => {
@@ -37,7 +37,7 @@ export class MultiTable extends Model {
         });
     }
 
-    private __parseFindOptions(options:MultiTableOptions):MultiTableOptions {
+    private __parseFindOptions(options:MultiTableOptions):T2 {
         var result:MultiTableOptions = {};
         // Detect options has query only or has some parameters.
         result.query = options.query || merge(true, (<typeof MultiTable>this.constructor).DEFAULT_QUERY);
@@ -60,12 +60,12 @@ export class MultiTable extends Model {
         return result;
     }
 
-    saveLocal(docs:Array<MultiEntity>|MultiEntity, callback:(err?:Error) => void):void {
+    saveLocal(docs:Array<T1>|T1, callback:(err?:Error) => void):void {
         if (!docs) return callback();
-        var arrDocs:Array<MultiEntity> = (Array.isArray(docs)) ? docs : [docs];
+        var arrDocs:Array<T1> = (Array.isArray(docs)) ? docs : [docs];
         if (arrDocs.length == 0) return callback();
         core.loggers.system.debug(`Save local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. docs.count=${arrDocs.length}`);
-        async.eachSeries(arrDocs, (doc:MultiEntity, callback:(err?:Error) => void) => {
+        async.eachSeries(arrDocs, (doc:T1, callback:(err?:Error) => void) => {
             core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. guid=${doc.guid}, title=${doc[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
             this._datastore.update({guid: doc.guid}, doc, {upsert: true}, (err:Error, numReplaced:number, ...restArgs) => {
                 core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. guid=${doc.guid}, numReplaced=${numReplaced}`);
@@ -77,18 +77,18 @@ export class MultiTable extends Model {
         });
     }
 
-    saveLocalUpdateOnly(docs:Array<MultiEntity>|MultiEntity, callback:(err?:Error) => void):void {
-        var arrDocs:Array<MultiEntity>;
+    saveLocalUpdateOnly(docs:Array<T1>|T1, callback:(err?:Error) => void):void {
+        var arrDocs:Array<T1>;
         if (!docs || docs['length'] == 0) return callback();
         if (!Array.isArray(docs)) arrDocs = [docs];
         core.loggers.system.debug(`Save local update only ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. docs.count=${arrDocs.length}`);
-        async.eachSeries(arrDocs, (doc:MultiEntity, callback:(err?:Error) => void) => {
+        async.eachSeries(arrDocs, (doc:T1, callback:(err?:Error) => void) => {
             async.waterfall([
-                (callback:(err?:Error, results?:Array<MultiEntity>) => void) => {
+                (callback:(err?:Error, results?:Array<T1>) => void) => {
                     this._datastore.find({guid: doc.guid}, callback);
                 },
-                (docs:Array<MultiEntity>, callback:(err?:Error) => void) => {
-                    var localDoc:MultiEntity = (docs.length == 0) ? null : docs[0];
+                (docs:Array<T1>, callback:(err?:Error) => void) => {
+                    var localDoc:T1 = (docs.length == 0) ? null : docs[0];
                     if (localDoc && localDoc.updateSequenceNum >= doc.updateSequenceNum) {
                         core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was skipped. guid=${doc.guid}, title=${doc[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
                         callback();
@@ -124,7 +124,7 @@ export class MultiTable extends Model {
             objQuery = {guid: query};
         }
         core.loggers.system.debug(`Remove local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. query=${JSON.stringify(objQuery)}`);
-        this._datastore.remove(objQuery, {multi: true}, (err, numRemoved) => {
+        this._datastore.remove(objQuery, {multi: true}, (err:Error, numRemoved:number) => {
             core.loggers.system.debug(`Remove local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. numRemoved=${numRemoved}`);
             callback(err);
         });

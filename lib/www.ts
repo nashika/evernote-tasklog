@@ -1,19 +1,19 @@
 import * as path from 'path';
 import * as async from 'async';
 import * as log4js from 'log4js';
-import {Evernote} from 'evernote';
+import * as evernote from 'evernote';
 
 import core from './core';
-import LinkedNotebookModel from './models/tables/linked-notebook-table';
-import NoteModel from './models/tables/note-table';
-import NotebookModel from './models/tables/notebook-table';
-import ProfitLogsModel from './models/tables/profit-log-table';
-import SearchModel from './models/tables/search-table';
-import SettingModel from './models/tables/setting-table';
-import SyncStateModel from './models/tables/sync-state-table';
-import TagModel from './models/tables/tag-table';
-import TimeLogsModel from './models/tables/time-log-table';
-import UserModel from './models/tables/user-table';
+import LinkedNotebookTable from './models/tables/linked-notebook-table';
+import NoteTable from './models/tables/note-table';
+import NotebookTable from './models/tables/notebook-table';
+import ProfitLogsTable from './models/tables/profit-log-table';
+import SearchTable from './models/tables/search-table';
+import SettingTable from './models/tables/setting-table';
+import SyncStateTable from './models/tables/sync-state-table';
+import TagTable from './models/tables/tag-table';
+import TimeLogsTable from './models/tables/time-log-table';
+import UserTable from './models/tables/user-table';
 
 class Www {
 
@@ -31,7 +31,7 @@ class Www {
         core.server = server; // TODO: Set password to web server
         core.www = this;
         core.app.locals.core = core;
-        core.models.settings = new SettingModel();
+        core.models.settings = new SettingTable();
         // Initialize global settings
         async.waterfall([
             (callback) => {
@@ -54,7 +54,7 @@ class Www {
         }
         core.users[username] = {};
         // Initialize evernote client
-        core.users[username].client = new Evernote.Client({
+        core.users[username].client = new evernote.Evernote.Client({
             token: token,
             sandbox: sandbox,
         });
@@ -71,16 +71,16 @@ class Www {
             // Initialize database
             (callback) => {
                 core.users[username].models = {
-                    linkedNotebooks: new LinkedNotebookModel(username),
-                    notes: new NoteModel(username),
-                    notebooks: new NotebookModel(username),
-                    profitLogs: new ProfitLogsModel(username),
-                    searches: new SearchModel(username),
-                    settings: new SettingModel(username),
-                    syncStates: new SyncStateModel(username),
-                    tags: new TagModel(username),
-                    timeLogs: new TimeLogsModel(username),
-                    users: new UserModel(username),
+                    linkedNotebooks: new LinkedNotebookTable(username),
+                    notes: new NoteTable(username),
+                    notebooks: new NotebookTable(username),
+                    profitLogs: new ProfitLogsTable(username),
+                    searches: new SearchTable(username),
+                    settings: new SettingTable(username),
+                    syncStates: new SyncStateTable(username),
+                    tags: new TagTable(username),
+                    timeLogs: new TimeLogsTable(username),
+                    users: new UserTable(username),
                 };
                 callback();
             },
@@ -143,7 +143,7 @@ class Www {
                     return localSyncState.updateCount < remoteSyncState.updateCount
                 }, (callback) => {
                     core.loggers.system.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
-                    var syncChunkFilter = new Evernote.SyncChunkFilter();
+                    var syncChunkFilter = new evernote.Evernote.SyncChunkFilter();
                     syncChunkFilter.includeNotes = true;
                     syncChunkFilter.includeNotebooks = true;
                     syncChunkFilter.includeTags = true;
