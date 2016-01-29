@@ -1,5 +1,6 @@
 import core from '../../core';
 import Table from './table';
+import SettingEntity from "../entities/setting-entity";
 
 export default class SettingTable extends Table {
 
@@ -16,10 +17,10 @@ export default class SettingTable extends Table {
             query = {};
             limit = 0;
         }
-        this._datastore.find(query).sort({}).limit(limit).exec((err, docs) => {
+        this._datastore.find(query).sort({}).limit(limit).exec((err:Error, docs:Array<SettingEntity>) => {
             core.loggers.system.debug(`Load local ${(<typeof SettingTable>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. docs.length=${docs.length}`);
             if (err) return callback(err);
-            var result;
+            var result:any;
             if (key) {
                 result = docs.length == 0 ? null : docs[0].value;
             } else {
@@ -33,8 +34,8 @@ export default class SettingTable extends Table {
     }
 
     saveLocal(key:string, value:Object, callback:(err?:Error, results?:any) => void):void {
-        var doc = {_id: key, value: value};
-        this._datastore.update({_id: key}, doc, {upsert: true}, (err, numReplaced, newDoc) => {
+        var doc:SettingEntity = {_id: key, value: value};
+        this._datastore.update({_id: key}, doc, {upsert: true}, (err:Error, numReplaced:number, newDoc:SettingEntity) => {
             if (err) return callback(err);
             if (this._username)
                 core.users[this._username].settings[key] = value;

@@ -1,0 +1,1 @@
+{"version":3,"file":"sync-state-entity.js","sourceRoot":"","sources":["sync-state-entity.ts"],"names":["SyncStateEntity","SyncStateEntity.constructor"],"mappings":";;;;;AAAA,IAAY,QAAQ,WAAM,UAAU,CAAC,CAAA;AAIrC;IAA6CA,mCAA2BA;IAAxEA;QAA6CC,8BAA2BA;IACxEA,CAACA;IAADD,sBAACA;AAADA,CAACA,AADD,EAA6C,QAAQ,CAAC,QAAQ,CAAC,SAAS,EACvE;AADD;oCACC,CAAA"}

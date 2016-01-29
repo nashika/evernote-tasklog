@@ -1,20 +1,22 @@
 import * as async from 'async';
 
 import core from '../../core';
-import MultiTable from './multi-table';
+import {MultiTable, MultiTableOptions} from './multi-table';
+import TimeLogEntity from "../entities/time-log-entity";
+import NoteEntity from "../entities/note-entity";
 
-export default class TimeLogTable extends MultiTable {
+export default class TimeLogTable extends MultiTable<TimeLogEntity, MultiTableOptions> {
 
     static PLURAL_NAME:string = 'timeLogs';
     static TITLE_FIELD:string = 'comment';
     static DEFAULT_LIMIT:number = 2000;
 
-    parse(note, lines, callback):void {
-        var timeLogs:Array<Object> = [];
+    parse(note:NoteEntity, lines:Array<string>, callback:(err:Error) => void):void {
+        var timeLogs:Array<TimeLogEntity> = [];
         for (var line of lines) {
             var matches:Array<string>;
             if (matches = line.match(/(.*)[@＠](\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}.+)/)) {
-                var timeLog = {
+                var timeLog:TimeLogEntity = {
                     noteGuid: note.guid,
                     comment: matches[1],
                     allDay: true,
@@ -45,10 +47,10 @@ export default class TimeLogTable extends MultiTable {
             }
         }
         async.waterfall([
-            (callback) => {
+            (callback:(err:Error) => void) => {
                 core.users[this._username].models.timeLogs.removeLocal({noteGuid: note.guid}, callback);
             },
-            (callback) => {
+            (callback:(err:Error) => void) => {
                 core.users[this._username].models.timeLogs.saveLocal(timeLogs, callback);
             }
         ], callback);

@@ -37,8 +37,8 @@ export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> ex
         });
     }
 
-    private __parseFindOptions(options:MultiTableOptions):T2 {
-        var result:MultiTableOptions = {};
+    private __parseFindOptions(options:T2):T2 {
+        var result:T2 = <T2>{};
         // Detect options has query only or has some parameters.
         result.query = options.query || merge(true, (<typeof MultiTable>this.constructor).DEFAULT_QUERY);
         result.sort = options.sort || merge(true, (<typeof MultiTable>this.constructor).DEFAULT_SORT);
@@ -119,9 +119,10 @@ export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> ex
         if (Array.isArray(query)) {
             if (query['length'] == 0) return callback();
             objQuery = {guid: {$in: query}};
-        }
-        if (typeof query == 'string') {
+        } else if (typeof query == 'string') {
             objQuery = {guid: query};
+        } else {
+            objQuery = query;
         }
         core.loggers.system.debug(`Remove local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. query=${JSON.stringify(objQuery)}`);
         this._datastore.remove(objQuery, {multi: true}, (err:Error, numRemoved:number) => {

@@ -4,7 +4,7 @@ import core from '../../core';
 import SingleTable from './single-table';
 import UserEntity from "../entities/user-entity";
 
-export default class UserTable extends SingleTable {
+export default class UserTable extends SingleTable<UserEntity> {
 
     static PLURAL_NAME:string = 'users';
     static DEFAULT_DOC:Object = new UserEntity();

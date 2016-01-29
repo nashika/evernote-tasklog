@@ -1,6 +1,8 @@
 import * as evernote from "evernote";
 
-import Entity from "./entity";
+import SingleEntity from "./single-entity";
 
-export default class UserEntity extends evernote.Evernote.User implements Entity {
+export class UserEntity extends evernote.Evernote.User implements SingleEntity {
 }
+
+export default UserEntity;
