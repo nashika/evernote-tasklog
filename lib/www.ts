@@ -15,7 +15,7 @@ import TagTable from './models/tables/tag-table';
 import TimeLogsTable from './models/tables/time-log-table';
 import UserTable from './models/tables/user-table';
 
-class Www {
+export class Www {
 
     SYNC_CHUNK_COUNT = 100;
 
@@ -27,10 +27,8 @@ class Www {
         core.loggers.error = log4js.getLogger('error');
 
         // Initialize core object
-        core.app = app;
-        core.server = server; // TODO: Set password to web server
         core.www = this;
-        core.app.locals.core = core;
+        app.locals.core = core; // TODO: Set password to web server
         core.models.settings = new SettingTable();
         // Initialize global settings
         async.waterfall([
@@ -41,8 +39,8 @@ class Www {
                 core.settings = settings;
                 callback()
             },
-        ], (err) => {
-            if (err) return core.loggers.error.error(err);
+        ], (err:Error) => {
+            if (err) return core.loggers.error.error(`Main process failed. err=${err}`);
             core.loggers.system.info('Initialize web server finished.');
         });
     }
@@ -89,7 +87,7 @@ class Www {
                 this.sync(username, callback);
             },
         ], (err) => {
-            if (err) return core.loggers.error.error(err);
+            if (err) return core.loggers.error.error(`Initialize user failed. err=${err}`);
             core.loggers.system.info(`Init user finished. user:${username} data was initialized.`);
             callback();
         });
@@ -209,4 +207,4 @@ class Www {
     }
 }
 
-export default new Www();
+export default Www;

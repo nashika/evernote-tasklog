@@ -1,8 +1,8 @@
 var express = require('express');
-var www_1 = require('../lib/www');
+var core_1 = require('../lib/core');
 var router = express.Router();
 router.get('/', function (req, res, next) {
-    www_1["default"].sync(req.session['evernote'].user.username, function (err) {
+    core_1["default"].www.sync(req.session['evernote'].user.username, function (err) {
         if (err)
             return res.status(500).send(err);
         res.json('OK');

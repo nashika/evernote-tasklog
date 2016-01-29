@@ -59,7 +59,8 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 // main logic
-import www from './www';
+import Www from './www';
+var www:Www = new Www();
 www.main(expressApp, server);
 
 // app executed from electron then call electron window
