@@ -1,7 +1,7 @@
-var checkItemMatches = (item, props) => {
+var checkItemMatches = (item:{[key:string]:string}, props:{[key:string]:string}) => {
     var itemMatches = false;
     for (var prop in props) {
-        var text = props[prop];
+        var text:string = props[prop];
         text = text.toLowerCase();
         if (item[prop].toString().toLowerCase().indexOf(text) != -1) {
             itemMatches = true;
@@ -12,8 +12,8 @@ var checkItemMatches = (item, props) => {
 };
 
 var filterByProperty = () => {
-    return (items, props) => {
-        var out = [];
+    return (items:Array<{[key:string]:string}>, props:{[key:string]:string}) => {
+        var out:Array<{[key:string]:string}> = [];
         if (angular.isArray(items))
             for (var item in items) {
                 var itemMatches = checkItemMatches(item, props);

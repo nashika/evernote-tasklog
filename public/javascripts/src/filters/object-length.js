@@ -7,10 +7,9 @@ var objectLength = function () {
             return Object.keys(input).length;
         else {
             var result = 0;
-            for (var _i = 0; _i < input.length; _i++) {
-                var value = input[_i];
-                result += _objectLength(value, depth - 1);
-            }
+            for (var key in input)
+                var value = input[key];
+            result += _objectLength(value, depth - 1);
             return result;
         }
     };

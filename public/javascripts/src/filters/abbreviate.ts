@@ -1,5 +1,5 @@
 var abbreviate = () => {
-    return (text, len = 10, truncation = '...') => {
+    return (text:string, len = 10, truncation = '...') => {
         var count = 0;
         var str = '';
         for (var i = 0; i < text.length; i++) {

@@ -1,8 +1,9 @@
 import * as express from 'express';
-import {Evernote} from 'evernote';
+import * as evernote from 'evernote';
 
 import core from '../lib/core';
 import config from '../lib/config';
+import {UserEntity} from "../lib/models/entities/user-entity";
 
 var router = express.Router();
 
@@ -10,10 +11,10 @@ router.get('/', (req, res, next) => {
     res.render('auth', {title: 'Login'});
 });
 
-router.get('/login', (req, res, next) => {
+router.get('/login', (req:express.Request, res:express.Response) => {
     var sandbox:boolean = (req.query.sandbox) ? true : false;
     var token:boolean = (req.query.token) ? true : false;
-    var envConfig = (sandbox) ? config.env.sandbox : config.env['production'];
+    var envConfig = (sandbox) ? config.env.sandbox : config.env.production;
     if (token) {
         var key = (sandbox) ? 'token.sandbox' : 'token.production';
         core.models.settings.loadLocal(key, (err, token) => {
@@ -29,12 +30,12 @@ router.get('/login', (req, res, next) => {
             }
         });
     } else {
-        var client:any = new Evernote.Client({
+        var client:any = new evernote.Evernote.Client({
             consumerKey: envConfig.consumerKey,
             consumerSecret: envConfig.consumerSecret,
             sandbox: sandbox,
         });
-        client.getRequestToken(`${req.protocol}://${req.get('host')}/auth/callback`, (error, oauthToken, oauthTokenSecret, results) => {
+        client.getRequestToken(`${req.protocol}://${req.get('host')}/auth/callback`, (error:Error, oauthToken:string, oauthTokenSecret:string, results:any) => {
             if (error) return res.status(500).send(`Error getting OAuth request token : ${JSON.stringify(error)}`);
             req.session['evernote'] = {
                 sandbox: sandbox,
@@ -58,12 +59,12 @@ router.get('/callback', (req, res, next) => {
         return;
     }
     var envConfig = (sandbox) ? config.env.sandbox : config.env['production'];
-    var client:any = new Evernote.Client({
+    var client:any = new evernote.Evernote.Client({
         consumerKey: envConfig.consumerKey,
         consumerSecret: envConfig.consumerSecret,
         sandbox: sandbox,
     });
-    client.getAccessToken(oauthToken, oauthTokenSecret, oauthVerifier, (error, oauthAccessToken, oauthAccessTokenSecret, results) => {
+    client.getAccessToken(oauthToken, oauthTokenSecret, oauthVerifier, (error:Error, oauthAccessToken:string, oauthAccessTokenSecret:string, results:any) => {
         req.session['evernote'].token = oauthAccessToken;
         req.session.save(() => {
             res.redirect('/');
@@ -81,14 +82,14 @@ router.get('/logout', (req, res, next) => {
 router.all('/token', (req, res, next) => {
     var sandbox:boolean = (req.body.sandbox || req.query.token) ? true : false;
     var token:string = req.body.token || req.query.token;
-    var checkToken = (sandbox, token) => {
+    var checkToken = (sandbox:boolean, token:string) => {
         if (!token) return res.json(null);
-        var _client = new Evernote.Client({
+        var _client = new evernote.Evernote.Client({
             token: token,
             sandbox: sandbox,
         });
-        var _userStore = _client.getUserStore();
-        _userStore.getUser((err, user) => {
+        var _userStore:evernote.Evernote.UserStoreClient = _client.getUserStore();
+        _userStore.getUser((err:Error, user:UserEntity) => {
             if (err) return res.json(null);
             res.json({token: token, username: user.username});
         });

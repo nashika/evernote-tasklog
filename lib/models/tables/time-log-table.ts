@@ -18,6 +18,7 @@ export class TimeLogTable extends MultiTable<TimeLogEntity, MultiTableOptions> {
             var matches:Array<string>;
             if (matches = line.match(/(.*)[@＠](\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}.+)/)) {
                 var timeLog:TimeLogEntity = {
+                    _id: undefined,
                     noteGuid: note.guid,
                     comment: matches[1],
                     allDay: true,

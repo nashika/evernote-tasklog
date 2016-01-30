@@ -26,31 +26,33 @@ var TimelineController = (function () {
             for (var noteGuid in _this.dataStore.notes) {
                 var note = _this.dataStore.notes[noteGuid];
                 notes[note.guid] = note;
-                _this.$scope.timelineItems.add({
+                var timelineItem = {
                     id: note.guid,
                     group: 'updated',
-                    content: "<a href=\"evernote:///view/" + _this.dataStore.user['id'] + "/" + _this.dataStore.user['shardId'] + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + _this.$filter('abbreviate')(note.title, 40) + "</a>",
-                    start: new Date(note.updated),
+                    content: "<a href=\"evernote:///view/" + _this.dataStore.user.id + "/" + _this.dataStore.user.shardId + "/" + note.guid + "/" + note.guid + "/\" title=\"" + note.title + "\">" + _this.$filter('abbreviate')(note.title, 40) + "</a>",
+                    start: moment(note.updated).toDate(),
                     type: 'point'
-                });
+                };
+                _this.$scope.timelineItems.add(timelineItem);
             }
             for (var noteGuid in _this.dataStore.timeLogs) {
                 var noteTimeLogs = _this.dataStore.timeLogs[noteGuid];
                 for (var timeLogId in noteTimeLogs) {
                     var timeLog = noteTimeLogs[timeLogId];
                     var noteTitle = notes[timeLog.noteGuid].title;
-                    _this.$scope.timelineItems.add({
+                    var timelineItem = {
                         id: timeLog._id,
                         group: timeLog.person,
                         content: "<a href=\"evernote:///view/" + _this.dataStore.user['id'] + "/" + _this.dataStore.user['shardId'] + "/" + timeLog.noteGuid + "/" + timeLog.noteGuid + "/\" title=\"" + noteTitle + " " + timeLog.comment + "\">" + _this.$filter('abbreviate')(noteTitle, 20) + " " + _this.$filter('abbreviate')(timeLog.comment, 20) + "</a>",
-                        start: moment(timeLog.date),
-                        end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes') : null,
+                        start: moment(timeLog.date).toDate(),
+                        end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
                         type: timeLog.spentTime ? 'range' : 'point'
-                    });
+                    };
+                    _this.$scope.timelineItems.add(timelineItem);
                 }
             }
         };
-        this._onResize = function (event) {
+        this._onResize = function () {
             _this.$scope['timeline'].setOptions({
                 height: window.innerHeight - 90
             });
@@ -71,7 +73,7 @@ var TimelineController = (function () {
                         repeat: 'daily'
                     }];
             else
-                hiddenDates = {};
+                hiddenDates = [];
             // generate timeline object
             _this.$scope['timeline'] = new vis.Timeline(container, _this.$scope.timelineItems, _this.$scope.timelineGroups, {
                 margin: { item: 5 },
@@ -80,7 +82,7 @@ var TimelineController = (function () {
                 start: _this.$scope.start,
                 end: _this.$scope.end,
                 order: function (a, b) {
-                    return a.start - b.start;
+                    return a.start.getTime() - b.start.getTime();
                 },
                 hiddenDates: hiddenDates
             });

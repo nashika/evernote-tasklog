@@ -92,13 +92,13 @@ class SettingsController {
             if (err) alert(err);
             this.progress.close();
             async.waterfall([
-                (callback) => {
+                (callback:(err?:Error) => void) => {
                     if (reParse)
                         this.dataTransciever.reParse(callback);
                     else
                         callback();
                 },
-                (callback) => {
+                (callback:(err?:Error) => void) => {
                     if (reload)
                         this.dataTransciever.reload(callback);
                     else

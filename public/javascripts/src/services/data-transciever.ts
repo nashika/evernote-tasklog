@@ -3,6 +3,7 @@ var merge = require('merge');
 
 import {DataStoreService} from "./data-store";
 import {ProgressService} from "./progress";
+import {UserEntity} from "../../../../lib/models/entities/user-entity";
 
 export class DataTranscieverService {
 
@@ -15,7 +16,7 @@ export class DataTranscieverService {
         };
     }
 
-    reload = (params = {}, callback?):void => {
+    reload = (params = {}, callback?:(err?:Error) => void):void => {
         if (!callback) callback = () => {
         };
         var noteQuery = this._makeNoteQuery(params || {});
@@ -27,7 +28,7 @@ export class DataTranscieverService {
                 if (this.dataStore.user) return callback();
                 this.progress.next('Getting user data.');
                 this.$http.get('/user')
-                    .success((data) => {
+                    .success((data:UserEntity) => {
                         this.dataStore.user = data;
                         callback();
                     })
@@ -70,7 +71,7 @@ export class DataTranscieverService {
                 this.$http.get('/notebooks')
                     .success((data:any) => {
                         this.dataStore.notebooks = {};
-                        var stackHash = {};
+                        var stackHash:{[stack:string]:boolean} = {};
                         for (var notebook of data) {
                             this.dataStore.notebooks[notebook.guid] = notebook;
                             if (notebook.stack) stackHash[notebook.stack] = true;
@@ -190,19 +191,19 @@ export class DataTranscieverService {
         });
     }
 
-    reParse = (callback):void => {
+    reParse = (callback:(err?:Error) => void):void => {
         if (!callback) callback = () => {
         };
         this.progress.open(2);
         this.progress.next('Re Parse notes...');
         async.waterfall([
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.$http.get('/notes/re-parse')
                     .success((data) => {
                         callback();
                     })
                     .error((data) => {
-                        callback('Error $http request');
+                        callback(new Error('Error $http request'));
                     });
             }], (err) => {
             this.progress.next('Done.');
@@ -211,27 +212,27 @@ export class DataTranscieverService {
         });
     };
 
-    countNotes = (callback):void => {
+    countNotes = (callback:(err?:Error, count?:number) => void):void => {
         var query = this._makeNoteQuery();
         this.$http.get('/notes/count', {params: {query: query}})
-            .success((data) => {
+            .success((data:number) => {
                 callback(null, data);
             })
             .error(() => {
-                callback('Error $http request');
+                callback(new Error('Error $http request'));
             });
     };
 
-    countTimeLogs = (callback):void => {
+    countTimeLogs = (callback:(err?:Error, count?:number) => void):void => {
         var query = this._makeTimeLogQuery();
         this.$http.get('/time-logs/count', {params: {query: query}})
-            .success((data) => {
+            .success((data:number) => {
                 callback(null, data);
             })
             .error(() => {
-                callback('Error $http request');
+                callback(new Error('Error $http request'));
             });
-    }
+    };
 
     protected _makeNoteQuery = (params:{start?:Date} = {}):Object => {
         var result = {};
@@ -239,7 +240,7 @@ export class DataTranscieverService {
         if (params.start)
             merge(result, {updated: {$gte: params.start.valueOf()}});
         // check notebooks
-        var notebooksHash = {};
+        var notebooksHash:{[notebookGuid:string]:boolean} = {};
         if (this.filterParams.notebookGuids && this.filterParams.notebookGuids.length > 0)
             for (var notebookGuid of this.filterParams.notebookGuids)
                 notebooksHash[notebookGuid] = true;

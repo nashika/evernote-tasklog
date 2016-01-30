@@ -1,5 +1,5 @@
 var spentTime = () => {
-    return (input) => {
+    return (input:any) => {
         if (input === undefined) return '';
         if (!input) return '0m';
         var hour = Math.floor(input / 60);

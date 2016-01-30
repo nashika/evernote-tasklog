@@ -1,12 +1,12 @@
 export class ProgressService {
 
-    modalInstance = null;
+    modalInstance:any = null;
     value:number = 0;
     completeCount:number = 0;
     allCount:number = 0;
     message:string = '';
 
-    constructor(public $modal) {
+    constructor(public $modal:any) {
     }
 
     open = (allCount:number):void => {

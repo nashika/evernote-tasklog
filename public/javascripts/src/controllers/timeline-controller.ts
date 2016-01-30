@@ -1,7 +1,9 @@
 import * as async from 'async';
 
-import DataStoreService from "../services/data-store";
-import DataTranscieverService from "../services/data-transciever";
+import {DataStoreService} from "../services/data-store";
+import {DataTranscieverService} from "../services/data-transciever";
+import {NoteEntity} from "../../../../lib/models/entities/note-entity";
+import {TimeLogEntity} from "../../../../lib/models/entities/time-log-entity";
 
 declare var vis:any;
 
@@ -11,6 +13,15 @@ interface ITimelineControllerScope extends angular.IScope {
     timelineGroups:any;
     start:moment.Moment;
     end:moment.Moment;
+}
+
+interface TimelineItem {
+    id:string,
+    group:string,
+    content:string,
+    start:Date,
+    end?:Date,
+    type:string,
 }
 
 class TimelineController {
@@ -28,7 +39,7 @@ class TimelineController {
         this.dataTransciever.reload({start: this.$scope.start, end: this.$scope.end}, () => {
             var container = document.getElementById('timeline');
             // set working time
-            var hiddenDates;
+            var hiddenDates:Array<{start:moment.Moment, end:moment.Moment, repeat:string}>;
             if (this.dataStore.settings && this.dataStore.settings['startWorkingTime'] && this.dataStore.settings['endWorkingTime'])
                 hiddenDates = [{
                     start: moment().subtract(1, 'days').startOf('day').hour(this.dataStore.settings['endWorkingTime']),
@@ -36,7 +47,7 @@ class TimelineController {
                     repeat: 'daily',
                 }];
             else
-                hiddenDates = {};
+                hiddenDates = [];
             // generate timeline object
             this.$scope['timeline'] = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, {
                 margin: {item: 5},
@@ -44,8 +55,8 @@ class TimelineController {
                 orientation: {axis: 'both', item: 'top'},
                 start: this.$scope.start,
                 end: this.$scope.end,
-                order: (a, b) => {
-                    return a.start - b.start
+                order:(a:TimelineItem, b:TimelineItem) => {
+                    return a.start.getTime() - b.start.getTime();
                 },
                 hiddenDates: hiddenDates,
             });
@@ -69,7 +80,7 @@ class TimelineController {
         });
     }
 
-    protected _onRangeChanged = (properties):void => {
+    protected _onRangeChanged = (properties:{start:Date, end:Date}):void => {
         var currentStart = moment(properties.start).startOf('day');
         var currentEnd = moment(properties.end).endOf('day');
         if (currentStart.isSameOrAfter(this.$scope.start) && currentEnd.isSameOrBefore(this.$scope.end))
@@ -85,36 +96,38 @@ class TimelineController {
 
     protected _onReloadEnd = ():void => {
         this.$scope.timelineItems.clear();
-        var notes = {};
+        var notes:{[noteGuid:string]:NoteEntity} = {};
         for (var noteGuid in this.dataStore.notes) {
-            var note = this.dataStore.notes[noteGuid];
+            var note:NoteEntity = this.dataStore.notes[noteGuid];
             notes[note.guid] = note;
-            this.$scope.timelineItems.add({
+            var timelineItem:TimelineItem = {
                 id: note.guid,
                 group: 'updated',
-                content: `<a href="evernote:///view/${this.dataStore.user['id']}/${this.dataStore.user['shardId']}/${note.guid}/${note.guid}/" title="${note.title}">${(<any>this.$filter('abbreviate'))(note.title, 40)}</a>`,
-                start: new Date(note.updated),
+                content: `<a href="evernote:///view/${this.dataStore.user.id}/${this.dataStore.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${(<any>this.$filter('abbreviate'))(note.title, 40)}</a>`,
+                start: moment(note.updated).toDate(),
                 type: 'point',
-            });
+            }
+            this.$scope.timelineItems.add(timelineItem);
         }
         for (var noteGuid in this.dataStore.timeLogs) {
             var noteTimeLogs = this.dataStore.timeLogs[noteGuid];
             for (var timeLogId in noteTimeLogs) {
-                var timeLog = noteTimeLogs[timeLogId];
-                var noteTitle = notes[timeLog.noteGuid].title;
-                this.$scope.timelineItems.add({
+                var timeLog:TimeLogEntity = noteTimeLogs[timeLogId];
+                var noteTitle:string = notes[timeLog.noteGuid].title;
+                var timelineItem:TimelineItem = {
                     id: timeLog._id,
                     group: timeLog.person,
                     content: `<a href="evernote:///view/${this.dataStore.user['id']}/${this.dataStore.user['shardId']}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${noteTitle} ${timeLog.comment}">${(<any>this.$filter('abbreviate'))(noteTitle, 20)} ${(<any>this.$filter('abbreviate'))(timeLog.comment, 20)}</a>`,
-                    start: moment(timeLog.date),
-                    end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes') : null,
+                    start: moment(timeLog.date).toDate(),
+                    end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
                     type: timeLog.spentTime ? 'range' : 'point',
-                });
+                }
+                this.$scope.timelineItems.add(timelineItem);
             }
         }
     };
 
-    protected _onResize = (event):void => {
+    protected _onResize = ():void => {
         this.$scope['timeline'].setOptions({
             height: window.innerHeight - 90,
         });

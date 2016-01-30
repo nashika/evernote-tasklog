@@ -1,15 +1,15 @@
 var express = require('express');
-var evernote_1 = require('evernote');
+var evernote = require('evernote');
 var core_1 = require('../lib/core');
 var config_1 = require('../lib/config');
 var router = express.Router();
 router.get('/', function (req, res, next) {
     res.render('auth', { title: 'Login' });
 });
-router.get('/login', function (req, res, next) {
+router.get('/login', function (req, res) {
     var sandbox = (req.query.sandbox) ? true : false;
     var token = (req.query.token) ? true : false;
-    var envConfig = (sandbox) ? config_1["default"].env.sandbox : config_1["default"].env['production'];
+    var envConfig = (sandbox) ? config_1["default"].env.sandbox : config_1["default"].env.production;
     if (token) {
         var key = (sandbox) ? 'token.sandbox' : 'token.production';
         core_1["default"].models.settings.loadLocal(key, function (err, token) {
@@ -26,7 +26,7 @@ router.get('/login', function (req, res, next) {
         });
     }
     else {
-        var client = new evernote_1.Evernote.Client({
+        var client = new evernote.Evernote.Client({
             consumerKey: envConfig.consumerKey,
             consumerSecret: envConfig.consumerSecret,
             sandbox: sandbox
@@ -55,7 +55,7 @@ router.get('/callback', function (req, res, next) {
         return;
     }
     var envConfig = (sandbox) ? config_1["default"].env.sandbox : config_1["default"].env['production'];
-    var client = new evernote_1.Evernote.Client({
+    var client = new evernote.Evernote.Client({
         consumerKey: envConfig.consumerKey,
         consumerSecret: envConfig.consumerSecret,
         sandbox: sandbox
@@ -79,7 +79,7 @@ router.all('/token', function (req, res, next) {
     var checkToken = function (sandbox, token) {
         if (!token)
             return res.json(null);
-        var _client = new evernote_1.Evernote.Client({
+        var _client = new evernote.Evernote.Client({
             token: token,
             sandbox: sandbox
         });

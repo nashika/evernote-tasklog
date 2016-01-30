@@ -214,7 +214,7 @@ var DataTranscieverService = (function () {
                         callback();
                     })
                         .error(function (data) {
-                        callback('Error $http request');
+                        callback(new Error('Error $http request'));
                     });
                 }], function (err) {
                 _this.progress.next('Done.');
@@ -229,7 +229,7 @@ var DataTranscieverService = (function () {
                 callback(null, data);
             })
                 .error(function () {
-                callback('Error $http request');
+                callback(new Error('Error $http request'));
             });
         };
         this.countTimeLogs = function (callback) {
@@ -239,7 +239,7 @@ var DataTranscieverService = (function () {
                 callback(null, data);
             })
                 .error(function () {
-                callback('Error $http request');
+                callback(new Error('Error $http request'));
             });
         };
         this._makeNoteQuery = function (params) {

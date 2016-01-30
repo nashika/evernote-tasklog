@@ -1,13 +1,13 @@
 var orderObjectBy = () => {
-    return (items, field:any = '$value', reverse = true) => {
-        var filtered = [];
+    return (items:{[key:string]:any}, field:any = '$value', reverse = true) => {
+        var filtered:Array<{key:string, item:any}> = [];
         angular.forEach(items, (item, key) => {
             filtered.push({
                 key: key,
                 item: item,
             });
         });
-        filtered.sort((a, b) => {
+        filtered.sort((a:any, b:any) => {
             if (field == '$key')
                 return (a.key > b.key) ? -1 : 1;
             if (field == '$value')
@@ -19,8 +19,8 @@ var orderObjectBy = () => {
         });
         if (reverse)
             filtered.reverse();
-        var results = [];
-        angular.forEach(filtered, (item) => {
+        var results:Array<any> = [];
+        angular.forEach(filtered, (item:{key:string, item:any}) => {
             var result = item.item;
             result['$key'] = item.key;
             results.push(result);

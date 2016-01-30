@@ -4,9 +4,9 @@ export default {
             consumerKey: '',
             consumerSecret: '',
         },
-    },
-    production: {
-        consumerKey: '',
-        consumerSecret: '',
+        production: {
+            consumerKey: '',
+            consumerSecret: '',
+        },
     },
 }

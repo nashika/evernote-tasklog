@@ -5,7 +5,7 @@ interface IProgressModalControllerScope extends angular.IScope {
     progress:ProgressService;
 }
 
-class ProgressModalController extends ModalController {
+export class ProgressModalController extends ModalController {
 
     constructor(protected $scope:IProgressModalControllerScope,
                 protected progress:ProgressService) {

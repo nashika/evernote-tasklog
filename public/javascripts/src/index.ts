@@ -1,7 +1,7 @@
 // angular.js setting
 angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
 
-angular.module('App').config(['$compileProvider', ($compileProvider) => {
+angular.module('App').config(['$compileProvider', ($compileProvider:angular.ICompileProvider) => {
     $compileProvider.aHrefSanitizationWhitelist(/^\s*(http|https|mailto|evernote):/);
 }]);
 

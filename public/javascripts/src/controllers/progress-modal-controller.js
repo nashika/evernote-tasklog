@@ -14,5 +14,6 @@ var ProgressModalController = (function (_super) {
     }
     return ProgressModalController;
 })(modal_controller_1.ModalController);
+exports.ProgressModalController = ProgressModalController;
 angular.module('App').controller('ProgressModalController', ['$scope', 'progress', ProgressModalController]);
 //# sourceMappingURL=progress-modal-controller.js.map
