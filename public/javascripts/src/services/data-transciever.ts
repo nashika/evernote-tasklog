@@ -5,6 +5,12 @@ import {DataStoreService} from "./data-store";
 import {ProgressService} from "./progress";
 import {UserEntity} from "../../../../lib/models/entities/user-entity";
 
+interface DataTranscieverServiceParams {
+    start?:moment.Moment,
+    end?:moment.Moment,
+    getContent:boolean,
+}
+
 export class DataTranscieverService {
 
     filterParams:{notebookGuids:Array<string>, stacks:Array<string>} = null;
@@ -16,15 +22,14 @@ export class DataTranscieverService {
         };
     }
 
-    reload = (params = {}, callback?:(err?:Error) => void):void => {
+    reload = (params:DataTranscieverServiceParams, callback?:(err?:Error) => void):void => {
         if (!callback) callback = () => {
         };
-        var noteQuery = this._makeNoteQuery(params || {});
+        var noteQuery = this._makeNoteQuery(params);
         var noteCount = 0;
-        this.progress.open(10);
-        async.series([
+        var funcs1:Array<Function> =[
             // get user
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 if (this.dataStore.user) return callback();
                 this.progress.next('Getting user data.');
                 this.$http.get('/user')
@@ -37,7 +42,7 @@ export class DataTranscieverService {
                     });
             },
             // get settings
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Getting settings data.');
                 this.$http.get('/settings')
                     .success((data) => {
@@ -49,13 +54,13 @@ export class DataTranscieverService {
                     });
             },
             // check settings
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 if (!this.dataStore.settings['persons'] || this.dataStore.settings['persons'].length == 0)
                     return callback(new Error('This app need persons setting. Please switch "Settings Page" and set your persons data.'));
                 callback();
             },
             // sync
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Syncing remote server.');
                 this.$http.get('/sync')
                     .success(() => {
@@ -66,7 +71,7 @@ export class DataTranscieverService {
                     });
             },
             // get notebooks
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Getting notebooks data.');
                 this.$http.get('/notebooks')
                     .success((data:any) => {
@@ -83,7 +88,10 @@ export class DataTranscieverService {
                         callback(new Error('Error $http request'));
                     })
             },
-            (callback) => {
+        ];
+        var funcs2:Array<Function> = [
+            // get note count
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Getting notes count.');
                 this.$http.get('/notes/count', {params: {query: noteQuery}})
                     .success((data:number) => {
@@ -101,7 +109,7 @@ export class DataTranscieverService {
                     });
             },
             // get notes
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Getting notes.');
                 this.$http.get('/notes', {params: {query: noteQuery}})
                     .success((data:any) => {
@@ -115,7 +123,7 @@ export class DataTranscieverService {
                     });
             },
             // get content from remote
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Request remote contents.');
                 var count = 0;
                 async.forEachOfSeries(this.dataStore.notes, (note, noteGuid, callback) => {
@@ -137,7 +145,7 @@ export class DataTranscieverService {
                 });
             },
             // get time logs
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Getting time logs.');
                 var guids:Array<string> = [];
                 for (var noteGuid in this.dataStore.notes) {
@@ -160,7 +168,7 @@ export class DataTranscieverService {
                     });
             },
             // get profit logs
-            (callback) => {
+            (callback:(err?:Error) => void) => {
                 this.progress.next('Getting profit logs.');
                 var guids:Array<string> = [];
                 for (var noteGuid in this.dataStore.notes) {
@@ -181,7 +189,14 @@ export class DataTranscieverService {
                         callback(new Error('Error $http request'));
                     });
             },
-        ], (err) => {
+        ];
+        var funcs:Array<Function>;
+        if (params.getContent)
+            funcs = funcs1.concat(funcs2);
+        else
+            funcs = funcs1;
+        this.progress.open(funcs.length + 1);
+        async.waterfall(funcs, (err:Error) => {
             if (err)
                 alert(err);
             else
@@ -234,7 +249,7 @@ export class DataTranscieverService {
             });
     };
 
-    protected _makeNoteQuery = (params:{start?:Date} = {}):Object => {
+    protected _makeNoteQuery = (params:DataTranscieverServiceParams = {getContent:false}):Object => {
         var result = {};
         // set updated query
         if (params.start)

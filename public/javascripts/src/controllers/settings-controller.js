@@ -59,7 +59,7 @@ var SettingsController = (function () {
                     },
                     function (callback) {
                         if (reload)
-                            _this.dataTransciever.reload(callback);
+                            _this.dataTransciever.reload({ getContent: false }, callback);
                         else
                             callback();
                     }]);
@@ -69,6 +69,9 @@ var SettingsController = (function () {
             return function () {
                 _this.$scope.editStore[key] = angular.copy(_this.dataStore.settings[key]);
             };
+        };
+        this._onReload = function () {
+            _this.dataTransciever.reload({ getContent: false });
         };
         this.$scope.dataStore = this.dataStore;
         this.$scope.editStore = {};
@@ -80,6 +83,8 @@ var SettingsController = (function () {
         this.$scope.submit = this._submit;
         for (var fieldName in this.constructor.FIELDS)
             this.$scope.$watch("dataStore.settings." + fieldName, this._onWatchSetting(fieldName));
+        this.$scope.$on('event::reload', this._onReload);
+        this._onReload();
     }
     SettingsController.FIELDS = {
         persons: {

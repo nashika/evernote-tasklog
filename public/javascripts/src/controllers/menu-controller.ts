@@ -5,6 +5,7 @@ interface IMenuControllerScope extends angular.IScope {
     dataStore:DataStoreService;
     dataTransciever:DataTranscieverService;
     noteCount:number;
+    reload:() => void;
 }
 
 class MenuController {
@@ -16,13 +17,15 @@ class MenuController {
         this.$scope.dataStore = this.dataStore;
         this.$scope.dataTransciever = this.dataTransciever;
         this.$scope.noteCount = null;
+        this.$scope.reload = this._onReload;
         this.$scope.$watchGroup(['dataTransciever.filterParams.notebookGuids', 'dataTransciever.filterParams.stacks'], this._onWatchFilterParams);
         this.$scope.$on('event::reload', this._onReload);
+        this._onReload();
     }
 
     protected _onReload = ():void => {
-        this.dataTransciever.reload();
-    }
+        this.dataTransciever.reload({getContent: false});
+    };
 
     protected _onWatchFilterParams = ():void => {
         this.dataTransciever.countNotes((err:Error, count:number) => {

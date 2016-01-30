@@ -23,7 +23,7 @@ script(type='text/ng-template' id='menu')
                 ui-select-match(placeholder='Select stacks...') {{$item}}
                 ui-select-choices(repeat='stack in dataStore.stacks | filter: $select.search')
                   div(ng-bind-html='stack | highlight: $select.search')
-        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='dataTransciever.reload()') #[span.fa.fa-refresh] Reload
+        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='reload()') #[span.fa.fa-refresh] Reload
       .col-md-4
         h2 #[span.fa.fa-user] User Info
         dl.dl-horizontal

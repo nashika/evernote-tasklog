@@ -18,7 +18,7 @@ var TimelineController = (function () {
             _this._onReload();
         };
         this._onReload = function () {
-            _this.dataTransciever.reload({ start: _this.$scope.start, end: _this.$scope.end }, _this._onReloadEnd);
+            _this.dataTransciever.reload({ start: _this.$scope.start, end: _this.$scope.end, getContent: true }, _this._onReloadEnd);
         };
         this._onReloadEnd = function () {
             _this.$scope.timelineItems.clear();
@@ -62,7 +62,7 @@ var TimelineController = (function () {
         this.$scope.timelineGroups = new vis.DataSet();
         this.$scope.start = moment().startOf('day');
         this.$scope.end = moment().endOf('day');
-        this.dataTransciever.reload({ start: this.$scope.start, end: this.$scope.end }, function () {
+        this.dataTransciever.reload({ start: this.$scope.start, end: this.$scope.end, getContent: true }, function () {
             var container = document.getElementById('timeline');
             // set working time
             var hiddenDates;

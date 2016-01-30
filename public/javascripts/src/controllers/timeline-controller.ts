@@ -36,7 +36,7 @@ class TimelineController {
         this.$scope.timelineGroups = new vis.DataSet();
         this.$scope.start = moment().startOf('day');
         this.$scope.end = moment().endOf('day');
-        this.dataTransciever.reload({start: this.$scope.start, end: this.$scope.end}, () => {
+        this.dataTransciever.reload({start: this.$scope.start, end: this.$scope.end, getContent:true}, () => {
             var container = document.getElementById('timeline');
             // set working time
             var hiddenDates:Array<{start:moment.Moment, end:moment.Moment, repeat:string}>;
@@ -91,7 +91,7 @@ class TimelineController {
     };
 
     protected _onReload = ():void => {
-        this.dataTransciever.reload({start: this.$scope.start, end: this.$scope.end}, this._onReloadEnd);
+        this.dataTransciever.reload({start: this.$scope.start, end: this.$scope.end, getContent:true}, this._onReloadEnd);
     }
 
     protected _onReloadEnd = ():void => {

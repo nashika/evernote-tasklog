@@ -47,6 +47,8 @@ class SettingsController {
         this.$scope.submit = this._submit;
         for (var fieldName in (<typeof SettingsController>this.constructor).FIELDS)
             this.$scope.$watch(`dataStore.settings.${fieldName}`, this._onWatchSetting(fieldName));
+        this.$scope.$on('event::reload', this._onReload);
+        this._onReload();
     }
 
     protected _up = (index:number):void => {
@@ -100,7 +102,7 @@ class SettingsController {
                 },
                 (callback:(err?:Error) => void) => {
                     if (reload)
-                        this.dataTransciever.reload(callback);
+                        this.dataTransciever.reload({getContent:false}, callback);
                     else
                         callback();
                 }]);
@@ -111,6 +113,10 @@ class SettingsController {
         return () => {
             this.$scope.editStore[key] = angular.copy(this.dataStore.settings[key]);
         }
+    };
+
+    protected _onReload = ():void => {
+        this.dataTransciever.reload({getContent: false});
     };
 
 }

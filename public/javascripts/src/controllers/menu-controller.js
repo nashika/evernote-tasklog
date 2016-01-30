@@ -6,7 +6,7 @@ var MenuController = (function () {
         this.dataStore = dataStore;
         this.dataTransciever = dataTransciever;
         this._onReload = function () {
-            _this.dataTransciever.reload();
+            _this.dataTransciever.reload({ getContent: false });
         };
         this._onWatchFilterParams = function () {
             _this.dataTransciever.countNotes(function (err, count) {
@@ -20,8 +20,10 @@ var MenuController = (function () {
         this.$scope.dataStore = this.dataStore;
         this.$scope.dataTransciever = this.dataTransciever;
         this.$scope.noteCount = null;
+        this.$scope.reload = this._onReload;
         this.$scope.$watchGroup(['dataTransciever.filterParams.notebookGuids', 'dataTransciever.filterParams.stacks'], this._onWatchFilterParams);
         this.$scope.$on('event::reload', this._onReload);
+        this._onReload();
     }
     return MenuController;
 })();

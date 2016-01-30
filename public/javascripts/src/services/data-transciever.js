@@ -8,14 +8,12 @@ var DataTranscieverService = (function () {
         this.progress = progress;
         this.filterParams = null;
         this.reload = function (params, callback) {
-            if (params === void 0) { params = {}; }
             if (!callback)
                 callback = function () {
                 };
-            var noteQuery = _this._makeNoteQuery(params || {});
+            var noteQuery = _this._makeNoteQuery(params);
             var noteCount = 0;
-            _this.progress.open(10);
-            async.series([
+            var funcs1 = [
                 // get user
                 // get user
                 function (callback) {
@@ -84,6 +82,10 @@ var DataTranscieverService = (function () {
                         callback(new Error('Error $http request'));
                     });
                 },
+            ];
+            var funcs2 = [
+                // get note count
+                // get note count
                 function (callback) {
                     _this.progress.next('Getting notes count.');
                     _this.$http.get('/notes/count', { params: { query: noteQuery } })
@@ -192,7 +194,14 @@ var DataTranscieverService = (function () {
                         callback(new Error('Error $http request'));
                     });
                 },
-            ], function (err) {
+            ];
+            var funcs;
+            if (params.getContent)
+                funcs = funcs1.concat(funcs2);
+            else
+                funcs = funcs1;
+            _this.progress.open(funcs.length + 1);
+            async.waterfall(funcs, function (err) {
                 if (err)
                     alert(err);
                 else
@@ -243,7 +252,7 @@ var DataTranscieverService = (function () {
             });
         };
         this._makeNoteQuery = function (params) {
-            if (params === void 0) { params = {}; }
+            if (params === void 0) { params = { getContent: false }; }
             var result = {};
             // set updated query
             if (params.start)
