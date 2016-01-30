@@ -21,5 +21,3 @@ class NavigationController {
 }
 
 angular.module('App').controller('NavigationController', ['$scope', '$rootScope', '$route', NavigationController]);
-
-export default NavigationController;

@@ -63,6 +63,4 @@ var NotesController = (function () {
     return NotesController;
 })();
 angular.module('App').controller('NotesController', ['$scope', 'dataStore', NotesController]);
-exports.__esModule = true;
-exports["default"] = NotesController;
 //# sourceMappingURL=notes-controller.js.map

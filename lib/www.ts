@@ -4,16 +4,16 @@ import * as log4js from 'log4js';
 import * as evernote from 'evernote';
 
 import core from './core';
-import LinkedNotebookTable from './models/tables/linked-notebook-table';
-import NoteTable from './models/tables/note-table';
-import NotebookTable from './models/tables/notebook-table';
-import ProfitLogsTable from './models/tables/profit-log-table';
-import SearchTable from './models/tables/search-table';
-import SettingTable from './models/tables/setting-table';
-import SyncStateTable from './models/tables/sync-state-table';
-import TagTable from './models/tables/tag-table';
-import TimeLogsTable from './models/tables/time-log-table';
-import UserTable from './models/tables/user-table';
+import {LinkedNotebookTable} from "./models/tables/linked-notebook-table";
+import {NoteTable} from "./models/tables/note-table";
+import {NotebookTable} from "./models/tables/notebook-table";
+import {ProfitLogTable} from "./models/tables/profit-log-table";
+import {SearchTable} from "./models/tables/search-table";
+import {SettingTable} from "./models/tables/setting-table";
+import {SyncStateTable} from "./models/tables/sync-state-table";
+import {TagTable} from "./models/tables/tag-table";
+import {TimeLogTable} from "./models/tables/time-log-table";
+import {UserTable} from "./models/tables/user-table";
 
 export class Www {
 
@@ -72,12 +72,12 @@ export class Www {
                     linkedNotebooks: new LinkedNotebookTable(username),
                     notes: new NoteTable(username),
                     notebooks: new NotebookTable(username),
-                    profitLogs: new ProfitLogsTable(username),
+                    profitLogs: new ProfitLogTable(username),
                     searches: new SearchTable(username),
                     settings: new SettingTable(username),
                     syncStates: new SyncStateTable(username),
                     tags: new TagTable(username),
-                    timeLogs: new TimeLogsTable(username),
+                    timeLogs: new TimeLogTable(username),
                     users: new UserTable(username),
                 };
                 callback();
@@ -206,5 +206,3 @@ export class Www {
         ], callback);
     }
 }
-
-export default Www;

@@ -3,8 +3,9 @@ import * as evernote from "evernote";
 var merge = require('merge');
 
 import core from '../../core';
-import {MultiTable, MultiTableOptions} from './multi-table';
-import NoteEntity from "../entities/note-entity";
+import {MultiTableOptions} from "./multi-table";
+import {MultiTable} from "./multi-table";
+import {NoteEntity} from "../entities/note-entity";
 
 export interface NoteTableOptions extends MultiTableOptions {
     content?:boolean;
@@ -120,5 +121,3 @@ export class NoteTable extends MultiTable<NoteEntity, NoteTableOptions> {
     }
 
 }
-
-export default NoteTable;

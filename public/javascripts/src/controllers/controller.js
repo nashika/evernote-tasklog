@@ -5,6 +5,4 @@ var Controller = (function () {
     return Controller;
 })();
 angular.module('App').controller('Controller', ['$scope', Controller]);
-exports.__esModule = true;
-exports["default"] = Controller;
 //# sourceMappingURL=controller.js.map

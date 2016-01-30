@@ -14,6 +14,4 @@ var NavigationController = (function () {
     return NavigationController;
 })();
 angular.module('App').controller('NavigationController', ['$scope', '$rootScope', '$route', NavigationController]);
-exports.__esModule = true;
-exports["default"] = NavigationController;
 //# sourceMappingURL=navigation-controller.js.map

@@ -1,11 +1,12 @@
 import * as async from 'async';
 
 import core from '../../core';
-import {MultiTable, MultiTableOptions} from './multi-table';
-import NoteEntity from "../entities/note-entity";
-import ProfitLogEntity from "../entities/profit-log-entity";
+import {MultiTable} from "./multi-table";
+import {MultiTableOptions} from "./multi-table";
+import {NoteEntity} from "../entities/note-entity";
+import {ProfitLogEntity} from "../entities/profit-log-entity";
 
-export default class ProfitLogTable extends MultiTable<ProfitLogEntity, MultiTableOptions> {
+export class ProfitLogTable extends MultiTable<ProfitLogEntity, MultiTableOptions> {
 
     static PLURAL_NAME:string = 'profitLogs';
     static TITLE_FIELD:string = 'comment';

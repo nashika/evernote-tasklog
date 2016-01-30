@@ -53,5 +53,3 @@ class AuthController {
 }
 
 angular.module('App').controller('AuthController', ['$scope', '$http', AuthController]);
-
-export default AuthController;

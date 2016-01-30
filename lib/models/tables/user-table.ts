@@ -1,10 +1,10 @@
 import * as evernote from "evernote";
 
 import core from '../../core';
-import SingleTable from './single-table';
-import UserEntity from "../entities/user-entity";
+import {SingleTable} from "./single-table";
+import {UserEntity} from "../entities/user-entity";
 
-export default class UserTable extends SingleTable<UserEntity> {
+export class UserTable extends SingleTable<UserEntity> {
 
     static PLURAL_NAME:string = 'users';
     static DEFAULT_DOC:Object = new UserEntity();

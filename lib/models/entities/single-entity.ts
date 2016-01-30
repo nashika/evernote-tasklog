@@ -1,4 +1,4 @@
-export interface SingleEntity {
-}
+import {Entity} from "./entity";
 
-export default SingleEntity;
+export interface SingleEntity extends Entity {
+}

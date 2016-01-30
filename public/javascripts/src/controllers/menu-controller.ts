@@ -37,5 +37,3 @@ class MenuController {
 }
 
 angular.module('App').controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
-
-export default MenuController;

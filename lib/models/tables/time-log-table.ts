@@ -1,11 +1,12 @@
 import * as async from 'async';
 
 import core from '../../core';
-import {MultiTable, MultiTableOptions} from './multi-table';
-import TimeLogEntity from "../entities/time-log-entity";
-import NoteEntity from "../entities/note-entity";
+import {MultiTable} from "./multi-table";
+import {MultiTableOptions} from "./multi-table";
+import {TimeLogEntity} from "../entities/time-log-entity";
+import {NoteEntity} from "../entities/note-entity";
 
-export default class TimeLogTable extends MultiTable<TimeLogEntity, MultiTableOptions> {
+export class TimeLogTable extends MultiTable<TimeLogEntity, MultiTableOptions> {
 
     static PLURAL_NAME:string = 'timeLogs';
     static TITLE_FIELD:string = 'comment';

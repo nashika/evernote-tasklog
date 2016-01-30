@@ -46,6 +46,4 @@ var AuthController = (function () {
     return AuthController;
 })();
 angular.module('App').controller('AuthController', ['$scope', '$http', AuthController]);
-exports.__esModule = true;
-exports["default"] = AuthController;
 //# sourceMappingURL=auth-controller.js.map

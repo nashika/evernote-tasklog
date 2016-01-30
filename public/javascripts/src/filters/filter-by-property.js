@@ -32,6 +32,4 @@ var filterByProperty = function () {
     };
 };
 angular.module('App').filter('filterByProperty', filterByProperty);
-exports.__esModule = true;
-exports["default"] = filterByProperty;
 //# sourceMappingURL=filter-by-property.js.map

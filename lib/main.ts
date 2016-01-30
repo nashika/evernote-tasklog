@@ -59,7 +59,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 // main logic
-import Www from './www';
+import {Www} from './www';
 var www:Www = new Www();
 www.main(expressApp, server);
 

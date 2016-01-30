@@ -98,6 +98,4 @@ var SettingsController = (function () {
     return SettingsController;
 })();
 angular.module('App').controller('SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]);
-exports.__esModule = true;
-exports["default"] = SettingsController;
 //# sourceMappingURL=settings-controller.js.map

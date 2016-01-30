@@ -6,5 +6,3 @@ class Controller {
 }
 
 angular.module('App').controller('Controller', ['$scope', Controller]);
-
-export default Controller;

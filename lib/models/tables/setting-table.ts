@@ -1,8 +1,8 @@
 import core from '../../core';
-import Table from './table';
-import SettingEntity from "../entities/setting-entity";
+import {Table} from "./table";
+import {SettingEntity} from "../entities/setting-entity";
 
-export default class SettingTable extends Table {
+export class SettingTable extends Table {
 
     static PLURAL_NAME:string = 'settings';
     static REQUIRE_USER:boolean = false;

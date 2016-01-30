@@ -15,5 +15,3 @@ export class DataStoreService {
 }
 
 angular.module('App').service('dataStore', [DataStoreService]);
-
-export default DataStoreService;

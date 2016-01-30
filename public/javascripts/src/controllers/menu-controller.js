@@ -26,6 +26,4 @@ var MenuController = (function () {
     return MenuController;
 })();
 angular.module('App').controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
-exports.__esModule = true;
-exports["default"] = MenuController;
 //# sourceMappingURL=menu-controller.js.map

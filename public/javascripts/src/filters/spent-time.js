@@ -12,6 +12,4 @@ var spentTime = function () {
     };
 };
 angular.module('App').filter('spentTime', spentTime);
-exports.__esModule = true;
-exports["default"] = spentTime;
 //# sourceMappingURL=spent-time.js.map

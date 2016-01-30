@@ -1,5 +1,5 @@
-import ModalController from './modal-controller';
-import ProgressService from "../services/progress";
+import {ProgressService} from "../services/progress";
+import {ModalController} from "./modal-controller";
 
 interface IProgressModalControllerScope extends angular.IScope {
     progress:ProgressService;
@@ -16,5 +16,3 @@ class ProgressModalController extends ModalController {
 }
 
 angular.module('App').controller('ProgressModalController', ['$scope', 'progress', ProgressModalController]);
-
-export default ProgressModalController;

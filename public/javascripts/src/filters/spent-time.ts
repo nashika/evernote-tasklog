@@ -10,5 +10,3 @@ var spentTime = () => {
 };
 
 angular.module('App').filter('spentTime', spentTime);
-
-export default spentTime;

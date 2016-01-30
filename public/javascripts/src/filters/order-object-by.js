@@ -31,6 +31,4 @@ var orderObjectBy = function () {
     };
 };
 angular.module('App').filter('orderObjectBy', orderObjectBy);
-exports.__esModule = true;
-exports["default"] = orderObjectBy;
 //# sourceMappingURL=order-object-by.js.map

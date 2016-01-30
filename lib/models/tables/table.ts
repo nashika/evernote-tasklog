@@ -1,9 +1,9 @@
-var Datastore:any = require('nedb');
+import Datastore = require("nedb");
 import * as inflection from 'inflection';
 
 import core from '../../core';
 
-export default class Table {
+export class Table {
 
     static PLURAL_NAME:string = '';
 

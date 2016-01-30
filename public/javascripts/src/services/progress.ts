@@ -1,4 +1,4 @@
-class ProgressService {
+export class ProgressService {
 
     modalInstance = null;
     value:number = 0;
@@ -35,12 +35,10 @@ class ProgressService {
     };
 
     next = (message:string):void => {
-        this.completeCount++
+        this.completeCount++;
         this.set(message, this.completeCount / this.allCount * 100);
     };
 
 }
 
 angular.module('App').service('progress', ['$modal', ProgressService]);
-
-export default ProgressService;

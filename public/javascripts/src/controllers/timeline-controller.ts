@@ -123,5 +123,3 @@ class TimelineController {
 }
 
 angular.module('App').controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
-
-export default TimelineController;

@@ -72,5 +72,3 @@ class NotesController {
 }
 
 angular.module('App').controller('NotesController', ['$scope', 'dataStore', NotesController]);
-
-export default NotesController;

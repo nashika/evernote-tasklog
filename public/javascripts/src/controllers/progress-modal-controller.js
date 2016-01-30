@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var modal_controller_1 = require('./modal-controller');
+var modal_controller_1 = require("./modal-controller");
 var ProgressModalController = (function (_super) {
     __extends(ProgressModalController, _super);
     function ProgressModalController($scope, progress) {
@@ -13,8 +13,6 @@ var ProgressModalController = (function (_super) {
         this.$scope.progress = this.progress;
     }
     return ProgressModalController;
-})(modal_controller_1["default"]);
+})(modal_controller_1.ModalController);
 angular.module('App').controller('ProgressModalController', ['$scope', 'progress', ProgressModalController]);
-exports.__esModule = true;
-exports["default"] = ProgressModalController;
 //# sourceMappingURL=progress-modal-controller.js.map

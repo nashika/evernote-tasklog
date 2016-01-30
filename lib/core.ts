@@ -1,22 +1,22 @@
 import * as log4js from "log4js";
 import * as evernote from "evernote";
 
-import Www from "./www";
-import SettingEntity from "./models/entities/setting-entity";
-import UserEntity from "./models/entities/user-entity";
-import LinkedNotebookTable from "./models/tables/linked-notebook-table";
-import SettingTable from "./models/tables/setting-table";
-import NoteTable from "./models/tables/note-table";
-import NotebookTable from "./models/tables/notebook-table";
-import ProfitLogTable from "./models/tables/profit-log-table";
-import SearchTable from "./models/tables/search-table";
-import SyncStateTable from "./models/tables/sync-state-table";
-import TagTable from "./models/tables/tag-table";
-import TimeLogTable from "./models/tables/time-log-table";
-import UserTable from "./models/tables/user-table";
+import {Www} from "./www";
+import {NotebookTable} from "./models/tables/notebook-table";
+import {UserEntity} from "./models/entities/user-entity";
+import {LinkedNotebookTable} from "./models/tables/linked-notebook-table";
+import {NoteTable} from "./models/tables/note-table";
+import {ProfitLogTable} from "./models/tables/profit-log-table";
+import {SearchTable} from "./models/tables/search-table";
+import {SettingTable} from "./models/tables/setting-table";
+import {SyncStateTable} from "./models/tables/sync-state-table";
+import {TagTable} from "./models/tables/tag-table";
+import {TimeLogTable} from "./models/tables/time-log-table";
+import {UserTable} from "./models/tables/user-table";
 
 interface UserSetting {
     persons:Array<{name:string}>;
+    no:NotebookTable
 }
 
 interface UserCore {

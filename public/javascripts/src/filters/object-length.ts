@@ -15,5 +15,3 @@ var objectLength = () => {
 };
 
 angular.module('App').filter('objectLength', objectLength);
-
-export default objectLength;

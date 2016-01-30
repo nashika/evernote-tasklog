@@ -116,5 +116,3 @@ class SettingsController {
 }
 
 angular.module('App').controller('SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]);
-
-export default SettingsController;

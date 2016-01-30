@@ -13,5 +13,3 @@ var abbreviate = () => {
 };
 
 angular.module('App').filter('abbreviate', abbreviate);
-
-export default abbreviate;

@@ -2,8 +2,8 @@ import * as async from 'async';
 var merge = require('merge');
 
 import core from '../../core';
-import Model from './table';
-import MultiEntity from "../entities/multi-entity";
+import {Table} from "./table";
+import {MultiEntity} from "../entities/multi-entity";
 
 export interface MultiTableOptions {
     query?:{[key:string]:Object}|string;
@@ -11,7 +11,7 @@ export interface MultiTableOptions {
     limit?:number;
 }
 
-export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> extends Model {
+export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> extends Table {
 
     static DEFAULT_QUERY:Object = {};
     static APPEND_QUERY:Object = {};
@@ -132,5 +132,3 @@ export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> ex
     }
 
 }
-
-export default MultiTable;

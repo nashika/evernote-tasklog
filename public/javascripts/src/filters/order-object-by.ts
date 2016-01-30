@@ -30,5 +30,3 @@ var orderObjectBy = () => {
 };
 
 angular.module('App').filter('orderObjectBy', orderObjectBy);
-
-export default orderObjectBy;

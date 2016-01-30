@@ -1,10 +1,10 @@
 import * as async from 'async';
 var merge = require('merge');
 
-import DataStoreService from "./data-store";
-import ProgressService from "./progress";
+import {DataStoreService} from "./data-store";
+import {ProgressService} from "./progress";
 
-class DataTranscieverService {
+export class DataTranscieverService {
 
     filterParams:{notebookGuids:Array<string>, stacks:Array<string>} = null;
 
@@ -274,5 +274,3 @@ class DataTranscieverService {
 }
 
 angular.module('App').service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
-
-export default DataTranscieverService;

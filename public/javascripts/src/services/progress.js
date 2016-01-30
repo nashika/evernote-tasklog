@@ -37,7 +37,6 @@ var ProgressService = (function () {
     }
     return ProgressService;
 })();
+exports.ProgressService = ProgressService;
 angular.module('App').service('progress', ['$modal', ProgressService]);
-exports.__esModule = true;
-exports["default"] = ProgressService;
 //# sourceMappingURL=progress.js.map

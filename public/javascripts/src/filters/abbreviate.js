@@ -18,6 +18,4 @@ var abbreviate = function () {
     };
 };
 angular.module('App').filter('abbreviate', abbreviate);
-exports.__esModule = true;
-exports["default"] = abbreviate;
 //# sourceMappingURL=abbreviate.js.map

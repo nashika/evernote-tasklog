@@ -13,6 +13,4 @@ var DataStoreService = (function () {
 })();
 exports.DataStoreService = DataStoreService;
 angular.module('App').service('dataStore', [DataStoreService]);
-exports.__esModule = true;
-exports["default"] = DataStoreService;
 //# sourceMappingURL=data-store.js.map

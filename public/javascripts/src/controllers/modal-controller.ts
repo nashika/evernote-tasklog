@@ -1,4 +1,4 @@
-class ModalController {
+export class ModalController {
 
   constructor(protected $scope:angular.IScope) {
   }
@@ -6,5 +6,3 @@ class ModalController {
 }
 
 angular.module('App').controller('ModalController', ['$scope', ModalController]);
-
-export default ModalController;

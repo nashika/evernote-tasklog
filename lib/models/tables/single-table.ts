@@ -1,10 +1,10 @@
 var merge = require('merge');
 
 import core from '../../core';
-import Table from './table';
-import Entity from "../entities/entity";
+import {Table} from "./table";
+import {Entity} from "../entities/entity";
 
-export default class SingleTable<T extends Entity> extends Table {
+export class SingleTable<T extends Entity> extends Table {
 
     static DEFAULT_DOC:Entity = {};
 

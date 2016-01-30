@@ -17,6 +17,4 @@ var objectLength = function () {
     return _objectLength;
 };
 angular.module('App').filter('objectLength', objectLength);
-exports.__esModule = true;
-exports["default"] = objectLength;
 //# sourceMappingURL=object-length.js.map

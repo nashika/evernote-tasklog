@@ -291,7 +291,6 @@ var DataTranscieverService = (function () {
     }
     return DataTranscieverService;
 })();
+exports.DataTranscieverService = DataTranscieverService;
 angular.module('App').service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
-exports.__esModule = true;
-exports["default"] = DataTranscieverService;
 //# sourceMappingURL=data-transciever.js.map

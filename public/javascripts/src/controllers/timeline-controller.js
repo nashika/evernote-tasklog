@@ -109,6 +109,4 @@ var TimelineController = (function () {
     return TimelineController;
 })();
 angular.module('App').controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
-exports.__esModule = true;
-exports["default"] = TimelineController;
 //# sourceMappingURL=timeline-controller.js.map

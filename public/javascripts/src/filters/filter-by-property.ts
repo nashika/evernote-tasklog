@@ -32,5 +32,3 @@ var filterByProperty = () => {
 };
 
 angular.module('App').filter('filterByProperty', filterByProperty);
-
-export default filterByProperty;
