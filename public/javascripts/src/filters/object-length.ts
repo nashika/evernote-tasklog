@@ -1,7 +1,7 @@
 var objectLength = () => {
     var _objectLength = (input:{[key:string]:any}, depth:number = 0) => {
         if (!angular.isObject(input))
-            throw new Error("Usage of non-objects with objectLength filter.");
+            return 0;
         if (depth == 0)
             return Object.keys(input).length;
         else {

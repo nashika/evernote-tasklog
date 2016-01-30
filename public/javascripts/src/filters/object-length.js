@@ -2,7 +2,7 @@ var objectLength = function () {
     var _objectLength = function (input, depth) {
         if (depth === void 0) { depth = 0; }
         if (!angular.isObject(input))
-            throw new Error("Usage of non-objects with objectLength filter.");
+            return 0;
         if (depth == 0)
             return Object.keys(input).length;
         else {
