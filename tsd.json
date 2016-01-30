@@ -1,6 +1,6 @@
 {
   "version": "v4",
-  "repo": "borisyankov/DefinitelyTyped",
+  "repo": "nashika/DefinitelyTyped",
   "ref": "master",
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
@@ -42,10 +42,10 @@
       "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
     },
     "thrift/thrift.d.ts": {
-      "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
+      "commit": "7ef045d3040331e1e1eb1ed2ca01f0da1a1a2945"
     },
     "evernote/evernote.d.ts": {
-      "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
+      "commit": "7ef045d3040331e1e1eb1ed2ca01f0da1a1a2945"
     },
     "inflection/inflection.d.ts": {
       "commit": "7fffbd3e040a93c244777e3be04cd6223ac69301"
@@ -60,10 +60,10 @@
       "commit": "46719185c564694c5583c4b7ad94dbb786ecad46"
     },
     "moment/moment.d.ts": {
-      "commit": "7ce80dafc0df189d61950e80e04548d8304d1538"
+      "commit": "7ef045d3040331e1e1eb1ed2ca01f0da1a1a2945"
     },
     "moment/moment-node.d.ts": {
-      "commit": "7ce80dafc0df189d61950e80e04548d8304d1538"
+      "commit": "7ef045d3040331e1e1eb1ed2ca01f0da1a1a2945"
     }
   }
 }
