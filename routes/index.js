@@ -1,5 +1,5 @@
 var express = require('express');
-var evernote_1 = require('evernote');
+var evernote = require('evernote');
 var core_1 = require('../lib/core');
 var router = express.Router();
 // GET home page.
@@ -10,7 +10,7 @@ router.get('/', function (req, res, next) {
     else {
         var sandbox = req.session['evernote'].sandbox;
         var token = req.session['evernote'].token;
-        var client = new evernote_1.Evernote.Client({
+        var client = new evernote.Evernote.Client({
             token: token,
             sandbox: sandbox
         });

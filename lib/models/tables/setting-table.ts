@@ -7,7 +7,7 @@ export class SettingTable extends Table {
     static PLURAL_NAME:string = 'settings';
     static REQUIRE_USER:boolean = false;
 
-    loadLocal(key:string, callback:(err?:Error, result?:any) => void):void {
+    loadLocal(key:string, callback:(err?:Error, result?:{[_id:string]:any}|any) => void):void {
         core.loggers.system.debug(`Load local ${(<typeof SettingTable>this.constructor).PLURAL_NAME} was started. key=${key}`);
         var query:Object, limit:number;
         if (key) {

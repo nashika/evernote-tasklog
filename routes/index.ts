@@ -1,5 +1,5 @@
 import * as express from 'express';
-import {Evernote} from 'evernote';
+import * as evernote from 'evernote';
 
 import core from '../lib/core';
 
@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
     } else {
         var sandbox:boolean = req.session['evernote'].sandbox;
         var token:string = req.session['evernote'].token;
-        var client = new Evernote.Client({
+        var client:evernote.Evernote.Client = new evernote.Evernote.Client({
             token: token,
             sandbox: sandbox,
         });

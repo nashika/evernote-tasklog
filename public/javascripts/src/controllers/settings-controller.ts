@@ -1,8 +1,8 @@
 import * as async from 'async';
 
-import DataStoreService from "../services/data-store";
-import DataTranscieverService from "../services/data-transciever";
-import ProgressService from "../services/progress";
+import {DataStoreService} from "../services/data-store";
+import {DataTranscieverService} from "../services/data-transciever";
+import {ProgressService} from "../services/progress";
 
 interface ISettingsControllerScope extends angular.IScope {
     dataStore:DataStoreService;

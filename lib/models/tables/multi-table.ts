@@ -38,7 +38,7 @@ export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> ex
     }
 
     private __parseFindOptions(options:T2):T2 {
-        var result:T2 = <T2>{};
+        var result:any = {};
         // Detect options has query only or has some parameters.
         result.query = options.query || merge(true, (<typeof MultiTable>this.constructor).DEFAULT_QUERY);
         result.sort = options.sort || merge(true, (<typeof MultiTable>this.constructor).DEFAULT_SORT);
@@ -66,8 +66,8 @@ export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> ex
         if (arrDocs.length == 0) return callback();
         core.loggers.system.debug(`Save local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. docs.count=${arrDocs.length}`);
         async.eachSeries(arrDocs, (doc:T1, callback:(err?:Error) => void) => {
-            core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. guid=${doc.guid}, title=${doc[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
-            this._datastore.update({guid: doc.guid}, doc, {upsert: true}, (err:Error, numReplaced:number, ...restArgs) => {
+            core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. guid=${doc.guid}, title=${(<any>doc)[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
+            this._datastore.update({guid: doc.guid}, doc, {upsert: true}, (err:Error, numReplaced:number) => {
                 core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was ${err ? 'failed' : 'succeed'}. guid=${doc.guid}, numReplaced=${numReplaced}`);
                 callback(err);
             });
@@ -79,8 +79,12 @@ export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> ex
 
     saveLocalUpdateOnly(docs:Array<T1>|T1, callback:(err?:Error) => void):void {
         var arrDocs:Array<T1>;
-        if (!docs || docs['length'] == 0) return callback();
-        if (!Array.isArray(docs)) arrDocs = [docs];
+        if (!docs) return callback();
+        if (!Array.isArray(docs))
+            arrDocs = [docs];
+        else
+            arrDocs = docs;
+        if (arrDocs.length == 0) return callback();
         core.loggers.system.debug(`Save local update only ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. docs.count=${arrDocs.length}`);
         async.eachSeries(arrDocs, (doc:T1, callback:(err?:Error) => void) => {
             async.waterfall([
@@ -90,15 +94,15 @@ export class MultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions> ex
                 (docs:Array<T1>, callback:(err?:Error) => void) => {
                     var localDoc:T1 = (docs.length == 0) ? null : docs[0];
                     if (localDoc && localDoc.updateSequenceNum >= doc.updateSequenceNum) {
-                        core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was skipped. guid=${doc.guid}, title=${doc[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
+                        core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was skipped. guid=${doc.guid}, title=${(<any>doc)[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
                         callback();
                     } else {
-                        core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. guid=${doc.guid}, title=${doc[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
+                        core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was started. guid=${doc.guid}, title=${(<any>doc)[(<typeof MultiTable>this.constructor).TITLE_FIELD]}`);
                         async.waterfall([
-                            (callback:(err?:Error, numReplaced?:number, ...restArgs) => void) => {
+                            (callback:(err?:Error, numReplaced?:number) => void) => {
                                 this._datastore.db[(<typeof MultiTable>this.constructor).PLURAL_NAME].update({guid: doc.guid}, doc, {upsert: true}, callback);
                             },
-                            (numReplaced:number, ...restArgs) => {
+                            (numReplaced:number, ...restArgs:any[]) => {
                                 var callback:(err?:Error) => void = restArgs.pop();
                                 core.loggers.system.trace(`Upsert local ${(<typeof MultiTable>this.constructor).PLURAL_NAME} was succeed. guid=${doc.guid}, numReplaced=${numReplaced}`);
                                 callback();

@@ -18,7 +18,7 @@ import profitLogsRoute from './routes/profit-logs';
 import userRoute from './routes/user';
 
 var NedbStore = connectNedbSession(session);
-var app = express();
+var app:express.Express = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -50,8 +50,8 @@ app.use('/user', userRoute);
 app.use('/bower_components', express.static(path.join(__dirname, '/bower_components')));
 
 // catch 404 and forward to error handler
-app.use((req, res, next) => {
-    var err = new Error('Not Found');
+app.use((req:express.Request, res:express.Response, next:Function) => {
+    var err:any = new Error('Not Found');
     err['status'] = 404;
     next(err);
 });
@@ -61,7 +61,7 @@ app.use((req, res, next) => {
 // development error handler
 // will print stacktrace
 if (app.get('env') == 'development') {
-    app.use((err: any, req, res, next) => {
+    app.use((err:any, req:express.Request, res:express.Response, next:Function) => {
         res.status(err['status'] || 500);
         res.render('error', {
             message: err.message,
@@ -72,7 +72,7 @@ if (app.get('env') == 'development') {
 
 // production error handler
 // no stacktraces leaked to user
-app.use((err: any, req, res, next) => {
+app.use((err:any, req:express.Request, res:express.Response, next:Function) => {
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,

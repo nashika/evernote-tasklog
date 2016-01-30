@@ -1,9 +1,11 @@
-import DataStoreService from "../services/data-store";
+import {DataStoreService} from "../services/data-store";
+import {TimeLogEntity} from "../../../../lib/models/entities/time-log-entity";
+import {ProfitLogEntity} from "../../../../lib/models/entities/profit-log-entity";
 
 interface INotesControllerScope extends angular.IScope {
     dataStore:DataStoreService;
-    notesSpentTimes:{[key:string]:{[key:string]:number}};
-    notesProfits:{[key:string]:{[key:string]:number}};
+    notesSpentTimes:{[noteGuid:string]:{[person:string]:number}};
+    notesProfits:{[noteGuid:string]:{[person:string]:number}};
     existPersons:Array<string>;
 }
 
@@ -19,9 +21,9 @@ class NotesController {
         this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
     }
 
-    protected _onWatchTimeLogs = (timeLogs):void => {
+    protected _onWatchTimeLogs = (timeLogs:{[noteGuid:string]:{[_id:string]:TimeLogEntity}}):void => {
         this.$scope.notesSpentTimes = {};
-        var personsHash = {};
+        var personsHash:{[person:string]:boolean} = {};
         for (var noteGuid in timeLogs) {
             var noteTimeLog = timeLogs[noteGuid];
             for (var timeLogId in noteTimeLog) {
@@ -45,7 +47,7 @@ class NotesController {
         this.$scope.existPersons = Object.keys(personsHash);
     }
 
-    protected _onWatchProfitLogs = (profitLogs):void => {
+    protected _onWatchProfitLogs = (profitLogs:{[noteGuid:string]:{[person:string]:ProfitLogEntity}}):void => {
         this.$scope.notesProfits = {};
         for (var noteGuid in profitLogs) {
             var noteProfitLog = profitLogs[noteGuid];

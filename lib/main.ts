@@ -1,24 +1,25 @@
-try {
-    var electronApp = require('app');
-    var BrouserWindow = require('browser-window');
-} catch (e) {
-    var electronApp = null;
-    var BrowserWindow = null;
-}
+/*try {
+ var electronApp = require('app');
+ var BrouserWindow = require('browser-window');
+ } catch (e) {
+ var electronApp = null;
+ var BrowserWindow = null;
+ }*/
 
 // Enable Source Map Support
+import {Server} from "http";
 require('source-map-support').install();
 
 // Normalize a port into a number, string, or false.
-var normalizePort = (val) => {
-    var port = parseInt(val, 10);
+var normalizePort:(val:string)=>any = (val) => {
+    let port:number = parseInt(val, 10);
     if (isNaN(port)) return val;
     if (port >= 0) return port;
     return false;
 };
 
 // Event listener for HTTP server "error" event.
-var onError = (error) => {
+var onError = (error:any) => {
     if (error.syscall != 'listen') throw error;
     var bind = (typeof port == 'string') ? 'Pipe ' + port : 'Port ' + port;
     switch (error.code) {
@@ -47,11 +48,11 @@ var debug = require('debug')('evernote-tasklog:server');
 import * as http from 'http';
 
 // Get port from environment and store in Express.
-var port = normalizePort(process.env.PORT || '3000');
+var port:string = normalizePort(process.env.PORT || '3000');
 expressApp.set('port', port);
 
 // Create HTTP server.
-var server = http.createServer(expressApp);
+var server:Server = http.createServer(expressApp);
 
 // Listen on provided port, on all network interfaces.
 server.listen(port);
@@ -64,20 +65,21 @@ var www:Www = new Www();
 www.main(expressApp, server);
 
 // app executed from electron then call electron window
-if (electronApp) {
-    require('crash-reporter').start();
+/*if (electronApp) {
+ require('crash-reporter').start();
 
-    var mainWindow = null;
+ var mainWindow = null;
 
-    electronApp.on('window-all-closed', () => {
-        if (process.platform != 'darwin') electronApp.quit();
-    });
+ electronApp.on('window-all-closed', () => {
+ if (process.platform != 'darwin') electronApp.quit();
+ });
 
-    electronApp.on('ready', () => {
-        mainWindow = new BrowserWindow({width: 800, height: 600});
-        mainWindow.loadUrl("http://localhost:#{port}");
-        mainWindow.on('closed', () => {
-            mainWindow = null;
-        });
-    });
-}
+ electronApp.on('ready', () => {
+ mainWindow = new BrowserWindow({width: 800, height: 600});
+ mainWindow.loadUrl("http://localhost:#{port}");
+ mainWindow.on('closed', () => {
+ mainWindow = null;
+ });
+ });
+ }
+ */

@@ -66,12 +66,12 @@ export class NoteTable extends MultiTable<NoteEntity, NoteTableOptions> {
                 noteStore.getNote(guid, true, false, false, false, callback);
             },
             (note:NoteEntity, callback:(err:Error, numReplaced:number) => void) => {
-                core.loggers.system.debug(`Loading note was succeed. guid=${note.guid} title=${note[(<typeof NoteTable>this.constructor).TITLE_FIELD]}`);
+                core.loggers.system.debug(`Loading note was succeed. guid=${note.guid} title=${note.title}`);
                 lastNote = note;
                 core.loggers.system.debug(`Saving note to local. guid=${note.guid}`);
                 this._datastore.update({guid: note.guid}, note, {upsert: true}, callback);
             },
-            (numReplaced:number, ...restArgs) => {
+            (numReplaced:number, ...restArgs:any[]) => {
                 var callback:(err?:Error) => void = restArgs.pop();
                 core.loggers.system.debug(`Saving note was succeed. guid=${lastNote.guid} numReplaced=${numReplaced}`);
                 callback();

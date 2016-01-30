@@ -14,9 +14,9 @@ import {TagTable} from "./models/tables/tag-table";
 import {TimeLogTable} from "./models/tables/time-log-table";
 import {UserTable} from "./models/tables/user-table";
 
-interface UserSetting {
+export interface UserSetting {
     persons:Array<{name:string}>;
-    no:NotebookTable
+    [key:string]:any;
 }
 
 interface UserCore {
@@ -39,7 +39,7 @@ interface UserCore {
 
 export class Core {
     www:Www;
-    settings:Object;
+    settings:{[key:string]:Object};
     loggers:{
         system?:log4js.Logger,
         access?:log4js.Logger,

@@ -1,5 +1,5 @@
-import DataTranscieverService from "../services/data-transciever";
-import DataStoreService from "../services/data-store";
+import {DataTranscieverService} from "../services/data-transciever";
+import {DataStoreService} from "../services/data-store";
 
 interface IMenuControllerScope extends angular.IScope {
     dataStore:DataStoreService;
