@@ -1,8 +1,9 @@
 var NotesController = (function () {
-    function NotesController($scope, dataStore) {
+    function NotesController($scope, dataStore, dataTransciever) {
         var _this = this;
         this.$scope = $scope;
         this.dataStore = dataStore;
+        this.dataTransciever = dataTransciever;
         this._onWatchTimeLogs = function (timeLogs) {
             _this.$scope.notesSpentTimes = {};
             var personsHash = {};
@@ -40,18 +41,21 @@ var NotesController = (function () {
                     if (!_this.$scope.notesProfits['$total'])
                         _this.$scope.notesProfits['$total'] = { $total: 0 };
                     _this.$scope.notesProfits['$total']['$total'] += profitLog.profit;
-                    for (var _i = 0, _a = _this.$scope.existPersons; _i < _a.length; _i++) {
-                        var person = _a[_i];
-                        if (!_this.$scope.notesSpentTimes[noteGuid] || !_this.$scope.notesSpentTimes[noteGuid][person] || !_this.$scope.notesSpentTimes[noteGuid]['$total'])
-                            _this.$scope.notesProfits[noteGuid][person] = null;
-                        else
-                            _this.$scope.notesProfits[noteGuid][person] = Math.round(_this.$scope.notesProfits[noteGuid]['$total'] * _this.$scope.notesSpentTimes[noteGuid][person] / _this.$scope.notesSpentTimes[noteGuid]['$total']);
-                    }
+                }
+                for (var _i = 0, _a = _this.$scope.existPersons; _i < _a.length; _i++) {
+                    var person = _a[_i];
+                    if (!_this.$scope.notesSpentTimes[noteGuid] || !_this.$scope.notesSpentTimes[noteGuid][person] || !_this.$scope.notesSpentTimes[noteGuid]['$total'])
+                        _this.$scope.notesProfits[noteGuid][person] = null;
+                    else
+                        _this.$scope.notesProfits[noteGuid][person] = Math.round(_this.$scope.notesProfits[noteGuid]['$total'] * _this.$scope.notesSpentTimes[noteGuid][person] / _this.$scope.notesSpentTimes[noteGuid]['$total']);
                     if (!_this.$scope.notesProfits['$total'][person])
                         _this.$scope.notesProfits['$total'][person] = 0;
                     _this.$scope.notesProfits['$total'][person] += _this.$scope.notesProfits[noteGuid][person];
                 }
             }
+        };
+        this._onReload = function () {
+            _this.dataTransciever.reload({ getContent: true });
         };
         this.$scope.dataStore = this.dataStore;
         this.$scope.notesSpentTimes = {};
@@ -59,8 +63,9 @@ var NotesController = (function () {
         this.$scope.existPersons = [];
         this.$scope.$watchCollection('dataStore.timeLogs', this._onWatchTimeLogs);
         this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
+        this._onReload();
     }
     return NotesController;
 })();
-angular.module('App').controller('NotesController', ['$scope', 'dataStore', NotesController]);
+angular.module('App').controller('NotesController', ['$scope', 'dataStore', 'dataTransciever', NotesController]);
 //# sourceMappingURL=notes-controller.js.map

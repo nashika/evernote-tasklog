@@ -1,6 +1,7 @@
 import {DataStoreService} from "../services/data-store";
 import {TimeLogEntity} from "../../../../lib/models/entities/time-log-entity";
 import {ProfitLogEntity} from "../../../../lib/models/entities/profit-log-entity";
+import {DataTranscieverService} from "../services/data-transciever";
 
 interface INotesControllerScope extends angular.IScope {
     dataStore:DataStoreService;
@@ -12,13 +13,16 @@ interface INotesControllerScope extends angular.IScope {
 class NotesController {
 
     constructor(protected $scope:INotesControllerScope,
-                protected dataStore:DataStoreService) {
+                protected dataStore:DataStoreService,
+                protected dataTransciever:DataTranscieverService
+    ) {
         this.$scope.dataStore = this.dataStore;
         this.$scope.notesSpentTimes = {};
         this.$scope.notesProfits = {};
         this.$scope.existPersons = [];
         this.$scope.$watchCollection('dataStore.timeLogs', this._onWatchTimeLogs);
         this.$scope.$watchCollection('dataStore.profitLogs', this._onWatchProfitLogs);
+        this._onReload();
     }
 
     protected _onWatchTimeLogs = (timeLogs:{[noteGuid:string]:{[_id:string]:TimeLogEntity}}):void => {
@@ -45,7 +49,7 @@ class NotesController {
             }
         }
         this.$scope.existPersons = Object.keys(personsHash);
-    }
+    };
 
     protected _onWatchProfitLogs = (profitLogs:{[noteGuid:string]:{[person:string]:ProfitLogEntity}}):void => {
         this.$scope.notesProfits = {};
@@ -59,18 +63,23 @@ class NotesController {
                 if (!this.$scope.notesProfits['$total'])
                     this.$scope.notesProfits['$total'] = {$total: 0};
                 this.$scope.notesProfits['$total']['$total'] += profitLog.profit;
-                for (var person of this.$scope.existPersons)
-                    if (!this.$scope.notesSpentTimes[noteGuid] || !this.$scope.notesSpentTimes[noteGuid][person] || !this.$scope.notesSpentTimes[noteGuid]['$total'])
-                        this.$scope.notesProfits[noteGuid][person] = null;
-                    else
-                        this.$scope.notesProfits[noteGuid][person] = Math.round(this.$scope.notesProfits[noteGuid]['$total'] * this.$scope.notesSpentTimes[noteGuid][person] / this.$scope.notesSpentTimes[noteGuid]['$total']);
+            }
+            for (var person of this.$scope.existPersons) {
+                if (!this.$scope.notesSpentTimes[noteGuid] || !this.$scope.notesSpentTimes[noteGuid][person] || !this.$scope.notesSpentTimes[noteGuid]['$total'])
+                    this.$scope.notesProfits[noteGuid][person] = null;
+                else
+                    this.$scope.notesProfits[noteGuid][person] = Math.round(this.$scope.notesProfits[noteGuid]['$total'] * this.$scope.notesSpentTimes[noteGuid][person] / this.$scope.notesSpentTimes[noteGuid]['$total']);
                 if (!this.$scope.notesProfits['$total'][person])
                     this.$scope.notesProfits['$total'][person] = 0;
                 this.$scope.notesProfits['$total'][person] += this.$scope.notesProfits[noteGuid][person];
             }
         }
-    }
+    };
+
+    protected _onReload = ():void => {
+        this.dataTransciever.reload({getContent: true});
+    };
 
 }
 
-angular.module('App').controller('NotesController', ['$scope', 'dataStore', NotesController]);
+angular.module('App').controller('NotesController', ['$scope', 'dataStore', 'dataTransciever', NotesController]);
