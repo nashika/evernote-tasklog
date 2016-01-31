@@ -11,7 +11,9 @@ import {NotebookEntity} from "../../../../lib/models/entities/notebook-entity";
 interface DataTranscieverServiceParams {
     start?:moment.Moment,
     end?:moment.Moment,
-    getContent:boolean,
+    hasContent?:boolean,
+    noFilter?:boolean,
+    getContent?:boolean,
 }
 
 export class DataTranscieverService {
@@ -217,8 +219,8 @@ export class DataTranscieverService {
         });
     };
 
-    countNotes = (callback:(err?:Error, count?:number) => void):void => {
-        var query = this._makeNoteQuery();
+    countNotes = (params:DataTranscieverServiceParams, callback:(err?:Error, count?:number) => void):void => {
+        var query = this._makeNoteQuery(params);
         this.$http.get('/notes/count', {params: {query: query}})
             .success((data:number) => {
                 callback(null, data);
@@ -239,28 +241,34 @@ export class DataTranscieverService {
             });
     };
 
-    protected _makeNoteQuery = (params:DataTranscieverServiceParams = {getContent: false}):Object => {
+    protected _makeNoteQuery = (params:DataTranscieverServiceParams):Object => {
         var result = {};
         // set updated query
         if (params.start)
             merge(result, {updated: {$gte: params.start.valueOf()}});
-        // check notebooks
-        var notebooksHash:{[notebookGuid:string]:boolean} = {};
-        if (this.filterParams.notebookGuids && this.filterParams.notebookGuids.length > 0)
-            for (var notebookGuid of this.filterParams.notebookGuids)
-                notebooksHash[notebookGuid] = true;
-        // check stacks
-        if (this.filterParams.stacks && this.filterParams.stacks.length > 0)
-            for (var stack of this.filterParams.stacks)
-                for (let notebookGuid in this.dataStore.notebooks) {
-                    var notebook = this.dataStore.notebooks[notebookGuid];
-                    if (stack == notebook.stack)
-                        notebooksHash[notebook.guid] = true;
-                }
-        // set notebooks query checked before
-        var notebooksArray = Object.keys(notebooksHash);
-        if (notebooksArray.length > 0)
-            merge(result, {notebookGuid: {$in: notebooksArray}});
+        // set hasContent query
+        if (params.hasContent)
+            merge(result, {content: {$ne: null}});
+        // set noFilter
+        if (!params.noFilter) {
+            // check notebooks
+            var notebooksHash:{[notebookGuid:string]:boolean} = {};
+            if (this.filterParams.notebookGuids && this.filterParams.notebookGuids.length > 0)
+                for (var notebookGuid of this.filterParams.notebookGuids)
+                    notebooksHash[notebookGuid] = true;
+            // check stacks
+            if (this.filterParams.stacks && this.filterParams.stacks.length > 0)
+                for (var stack of this.filterParams.stacks)
+                    for (let notebookGuid in this.dataStore.notebooks) {
+                        var notebook = this.dataStore.notebooks[notebookGuid];
+                        if (stack == notebook.stack)
+                            notebooksHash[notebook.guid] = true;
+                    }
+            // set notebooks query checked before
+            var notebooksArray = Object.keys(notebooksHash);
+            if (notebooksArray.length > 0)
+                merge(result, {notebookGuid: {$in: notebooksArray}});
+        }
         return result;
     }
 

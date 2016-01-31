@@ -42,21 +42,21 @@ script(type='text/ng-template' id='menu')
           tr
             th
             th Target
-            th Loaded
             th All
           tr
             th Notes
-            td {{dataStore.notes | objectLength }}
-            td
-            td
+            td.text-right {{noteCount}}
+            td.text-right {{allNoteCount}}
+          tr
+            th Loaded Notes
+            td.text-right {{loadedNoteCount}}
+            td.text-right {{allLoadedNoteCount}}
           tr
             th Time Logs
-            td {{dataStore.timeLogs | objectLength : 1}}
-            td
-            td
+            td.text-right {{timeLogCount}}
+            td.text-right {{allTimeLogCount}}
           tr
             th Profit Logs
-            td {{dataStore.profitLogs | objectLength: 1}}
-            td
-            td
+            td.text-right {{profitLogCount}}
+            td.text-right {{allProfitLogCount}}
         button.btn.btn-primary.btn-block(type='button', ng-click='dataTransciever.reParse()') #[span.fa.fa-industry] Re Parse Notes

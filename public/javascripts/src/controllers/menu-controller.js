@@ -1,3 +1,4 @@
+var async = require('async');
 var MenuController = (function () {
     function MenuController($scope, $http, dataStore, dataTransciever) {
         var _this = this;
@@ -9,17 +10,50 @@ var MenuController = (function () {
             _this.dataTransciever.reload({ getContent: false });
         };
         this._onWatchFilterParams = function () {
-            _this.dataTransciever.countNotes(function (err, count) {
-                if (err) {
+            async.waterfall([
+                function (callback) {
+                    _this.dataTransciever.countNotes({}, function (err, count) {
+                        if (!err)
+                            _this.$scope.noteCount = count;
+                        callback(err);
+                    });
+                },
+                function (callback) {
+                    _this.dataTransciever.countNotes({ noFilter: true }, function (err, count) {
+                        if (!err)
+                            _this.$scope.allNoteCount = count;
+                        callback(err);
+                    });
+                },
+                function (callback) {
+                    _this.dataTransciever.countNotes({ hasContent: true }, function (err, count) {
+                        if (!err)
+                            _this.$scope.loadedNoteCount = count;
+                        callback(err);
+                    });
+                },
+                function (callback) {
+                    _this.dataTransciever.countNotes({ hasContent: true, noFilter: true }, function (err, count) {
+                        if (!err)
+                            _this.$scope.allLoadedNoteCount = count;
+                        callback(err);
+                    });
+                },
+            ], function (err) {
+                if (err)
                     alert(err);
-                    return;
-                }
-                _this.$scope.noteCount = count;
             });
         };
         this.$scope.dataStore = this.dataStore;
         this.$scope.dataTransciever = this.dataTransciever;
-        this.$scope.noteCount = null;
+        this.$scope.noteCount = 0;
+        this.$scope.allNoteCount = 0;
+        this.$scope.loadedNoteCount = 0;
+        this.$scope.allLoadedNoteCount = 0;
+        this.$scope.timeLogCount = 0;
+        this.$scope.allTimeLogCount = 0;
+        this.$scope.profitLogCount = 0;
+        this.$scope.allProfitLogCount = 0;
         this.$scope.reload = this._onReload;
         this.$scope.$watchGroup(['dataTransciever.filterParams.notebookGuids', 'dataTransciever.filterParams.stacks'], this._onWatchFilterParams);
         this.$scope.$on('event::reload', this._onReload);

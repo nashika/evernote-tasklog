@@ -217,8 +217,8 @@ var DataTranscieverService = (function () {
                 callback(err);
             });
         };
-        this.countNotes = function (callback) {
-            var query = _this._makeNoteQuery();
+        this.countNotes = function (params, callback) {
+            var query = _this._makeNoteQuery(params);
             _this.$http.get('/notes/count', { params: { query: query } })
                 .success(function (data) {
                 callback(null, data);
@@ -238,32 +238,37 @@ var DataTranscieverService = (function () {
             });
         };
         this._makeNoteQuery = function (params) {
-            if (params === void 0) { params = { getContent: false }; }
             var result = {};
             // set updated query
             if (params.start)
                 merge(result, { updated: { $gte: params.start.valueOf() } });
-            // check notebooks
-            var notebooksHash = {};
-            if (_this.filterParams.notebookGuids && _this.filterParams.notebookGuids.length > 0)
-                for (var _i = 0, _a = _this.filterParams.notebookGuids; _i < _a.length; _i++) {
-                    var notebookGuid = _a[_i];
-                    notebooksHash[notebookGuid] = true;
-                }
-            // check stacks
-            if (_this.filterParams.stacks && _this.filterParams.stacks.length > 0)
-                for (var _b = 0, _c = _this.filterParams.stacks; _b < _c.length; _b++) {
-                    var stack = _c[_b];
-                    for (var notebookGuid_1 in _this.dataStore.notebooks) {
-                        var notebook = _this.dataStore.notebooks[notebookGuid_1];
-                        if (stack == notebook.stack)
-                            notebooksHash[notebook.guid] = true;
+            // set hasContent query
+            if (params.hasContent)
+                merge(result, { content: { $ne: null } });
+            // set noFilter
+            if (!params.noFilter) {
+                // check notebooks
+                var notebooksHash = {};
+                if (_this.filterParams.notebookGuids && _this.filterParams.notebookGuids.length > 0)
+                    for (var _i = 0, _a = _this.filterParams.notebookGuids; _i < _a.length; _i++) {
+                        var notebookGuid = _a[_i];
+                        notebooksHash[notebookGuid] = true;
                     }
-                }
-            // set notebooks query checked before
-            var notebooksArray = Object.keys(notebooksHash);
-            if (notebooksArray.length > 0)
-                merge(result, { notebookGuid: { $in: notebooksArray } });
+                // check stacks
+                if (_this.filterParams.stacks && _this.filterParams.stacks.length > 0)
+                    for (var _b = 0, _c = _this.filterParams.stacks; _b < _c.length; _b++) {
+                        var stack = _c[_b];
+                        for (var notebookGuid_1 in _this.dataStore.notebooks) {
+                            var notebook = _this.dataStore.notebooks[notebookGuid_1];
+                            if (stack == notebook.stack)
+                                notebooksHash[notebook.guid] = true;
+                        }
+                    }
+                // set notebooks query checked before
+                var notebooksArray = Object.keys(notebooksHash);
+                if (notebooksArray.length > 0)
+                    merge(result, { notebookGuid: { $in: notebooksArray } });
+            }
             return result;
         };
         this._makeTimeLogQuery = function (params) {
