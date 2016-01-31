@@ -1,34 +1,31 @@
-var checkItemMatches = (item:{[key:string]:string}, props:{[key:string]:string}) => {
-    var itemMatches = false;
+var checkItemMatches = (item:{[key:string]:any}, props:{[key:string]:string}):boolean => {
     for (var prop in props) {
         var text:string = props[prop];
         text = text.toLowerCase();
         if (item[prop].toString().toLowerCase().indexOf(text) != -1) {
-            itemMatches = true;
-            break;
+            return true
         }
     }
-    return itemMatches;
+    return false;
 };
 
 var filterByProperty = () => {
-    return (items:Array<{[key:string]:string}>, props:{[key:string]:string}) => {
-        var out:Array<{[key:string]:string}> = [];
+    return (items:Array<{[property:string]:any}>|{[key:string]:{[property:string]:any}}, props:{[property:string]:string}) => {
+        var arrItems:Array<{[property:string]:any}> = [];
         if (angular.isArray(items))
-            for (var item in items) {
-                var itemMatches = checkItemMatches(item, props);
-                if (itemMatches)
-                    out.push(item);
-                else if (angular.isObject(items))
-                    for (item of items) {
-                        itemMatches = checkItemMatches(item, props);
-                        if (itemMatches) out.push(item);
-                    }
-                else
-                    out = items;
-                return out;
-            }
-    }
+            arrItems = <Array<{[property:string]:any}>>items;
+        else if (angular.isObject(items))
+            angular.forEach(items, (item:any, property:string):void => {
+                arrItems.push(item);
+            });
+        else
+            return [];
+        var results:Array<{[key:string]:string}> = [];
+        for (var item of arrItems)
+            if (checkItemMatches(item, props))
+                results.push(item);
+        return results;
+    };
 };
 
 angular.module('App').filter('filterByProperty', filterByProperty);

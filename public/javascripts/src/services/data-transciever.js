@@ -25,9 +25,7 @@ var DataTranscieverService = (function () {
                         _this.dataStore.user = data;
                         callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
                 // get settings
                 // get settings
@@ -38,9 +36,7 @@ var DataTranscieverService = (function () {
                         _this.dataStore.settings = data;
                         callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
                 // check settings
                 // check settings
@@ -57,9 +53,7 @@ var DataTranscieverService = (function () {
                         .success(function () {
                         callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
                 // get notebooks
                 // get notebooks
@@ -78,9 +72,7 @@ var DataTranscieverService = (function () {
                         _this.dataStore.stacks = Object.keys(stackHash);
                         callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
             ];
             var funcs2 = [
@@ -99,9 +91,7 @@ var DataTranscieverService = (function () {
                         else
                             callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
                 // get notes
                 // get notes
@@ -116,9 +106,7 @@ var DataTranscieverService = (function () {
                         }
                         callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
                 // get content from remote
                 // get content from remote
@@ -136,14 +124,10 @@ var DataTranscieverService = (function () {
                                 }
                                 callback();
                             })
-                                .error(function () {
-                                callback(new Error('Error $http request'));
-                            });
+                                .error(_this._reloadError(callback));
                         else
                             callback();
-                    }, function (err) {
-                        callback(err);
-                    });
+                    }, callback);
                 },
                 // get time logs
                 // get time logs
@@ -166,9 +150,7 @@ var DataTranscieverService = (function () {
                         }
                         callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
                 // get profit logs
                 // get profit logs
@@ -190,9 +172,7 @@ var DataTranscieverService = (function () {
                         }
                         callback();
                     })
-                        .error(function () {
-                        callback(new Error('Error $http request'));
-                    });
+                        .error(_this._reloadError(callback));
                 },
             ];
             var funcs;
@@ -209,6 +189,12 @@ var DataTranscieverService = (function () {
                 _this.progress.close();
                 callback(err);
             });
+        };
+        this._reloadError = function (callback) {
+            return function (data, status, headers, config) {
+                callback(new Error("HTTP request error. data=" + data + ", status=" + status + ", config=" + JSON.stringify(config)));
+                return null;
+            };
         };
         this.reParse = function (callback) {
             if (!callback)

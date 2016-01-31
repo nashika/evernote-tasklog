@@ -4,6 +4,9 @@ var merge = require('merge');
 import {DataStoreService} from "./data-store";
 import {ProgressService} from "./progress";
 import {UserEntity} from "../../../../lib/models/entities/user-entity";
+import IHttpResponseTransformer = angular.IHttpResponseTransformer;
+import {NoteEntity} from "../../../../lib/models/entities/note-entity";
+import {NotebookEntity} from "../../../../lib/models/entities/notebook-entity";
 
 interface DataTranscieverServiceParams {
     start?:moment.Moment,
@@ -27,19 +30,17 @@ export class DataTranscieverService {
         };
         var noteQuery = this._makeNoteQuery(params);
         var noteCount = 0;
-        var funcs1:Array<Function> =[
+        var funcs1:Array<Function> = [
             // get user
             (callback:(err?:Error) => void) => {
                 if (this.dataStore.user) return callback();
                 this.progress.next('Getting user data.');
-                this.$http.get('/user')
+                this.$http.get<UserEntity>('/user')
                     .success((data:UserEntity) => {
                         this.dataStore.user = data;
                         callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    });
+                    .error(this._reloadError(callback));
             },
             // get settings
             (callback:(err?:Error) => void) => {
@@ -49,9 +50,7 @@ export class DataTranscieverService {
                         this.dataStore.settings = data;
                         callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    });
+                    .error(this._reloadError(callback));
             },
             // check settings
             (callback:(err?:Error) => void) => {
@@ -66,15 +65,13 @@ export class DataTranscieverService {
                     .success(() => {
                         callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    });
+                    .error(this._reloadError(callback));
             },
             // get notebooks
             (callback:(err?:Error) => void) => {
                 this.progress.next('Getting notebooks data.');
-                this.$http.get('/notebooks')
-                    .success((data:any) => {
+                this.$http.get<Array<NotebookEntity>>('/notebooks')
+                    .success((data:Array<NotebookEntity>) => {
                         this.dataStore.notebooks = {};
                         var stackHash:{[stack:string]:boolean} = {};
                         for (var notebook of data) {
@@ -84,9 +81,7 @@ export class DataTranscieverService {
                         this.dataStore.stacks = Object.keys(stackHash);
                         callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    })
+                    .error(this._reloadError(callback))
             },
         ];
         var funcs2:Array<Function> = [
@@ -104,9 +99,7 @@ export class DataTranscieverService {
                         else
                             callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    });
+                    .error(this._reloadError(callback));
             },
             // get notes
             (callback:(err?:Error) => void) => {
@@ -118,9 +111,7 @@ export class DataTranscieverService {
                             this.dataStore.notes[note.guid] = note;
                         callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    });
+                    .error(this._reloadError(callback));
             },
             // get content from remote
             (callback:(err?:Error) => void) => {
@@ -135,14 +126,10 @@ export class DataTranscieverService {
                                     this.dataStore.notes[note.guid] = note;
                                 callback();
                             })
-                            .error(() => {
-                                callback(new Error('Error $http request'));
-                            });
+                            .error(this._reloadError(callback));
                     else
                         callback();
-                }, (err) => {
-                    callback(err);
-                });
+                }, callback);
             },
             // get time logs
             (callback:(err?:Error) => void) => {
@@ -163,9 +150,7 @@ export class DataTranscieverService {
                         }
                         callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    });
+                    .error(this._reloadError(callback));
             },
             // get profit logs
             (callback:(err?:Error) => void) => {
@@ -176,7 +161,7 @@ export class DataTranscieverService {
                     guids.push(note.guid);
                 }
                 this.$http.post('/profit-logs', {query: {noteGuid: {$in: guids}}})
-                    .success((data:any) => {
+                    .success((data:any):void => {
                         this.dataStore.profitLogs = {};
                         for (var profitLog of data) {
                             if (!this.dataStore.profitLogs[profitLog.noteGuid])
@@ -185,9 +170,7 @@ export class DataTranscieverService {
                         }
                         callback();
                     })
-                    .error(() => {
-                        callback(new Error('Error $http request'));
-                    });
+                    .error(this._reloadError(callback));
             },
         ];
         var funcs:Array<Function>;
@@ -204,7 +187,14 @@ export class DataTranscieverService {
             this.progress.close();
             callback(err);
         });
-    }
+    };
+
+    _reloadError = (callback:(err?:Error) => void):(data:any, status:number, headers:angular.IHttpHeadersGetter, config:angular.IRequestConfig) => angular.IHttpPromise<any> => {
+        return (data:any, status:number, headers:angular.IHttpHeadersGetter, config:angular.IRequestConfig):angular.IHttpPromise<any> => {
+            callback(new Error(`HTTP request error. data=${data}, status=${status}, config=${JSON.stringify(config)}`));
+            return null;
+        };
+    };
 
     reParse = (callback:(err?:Error) => void):void => {
         if (!callback) callback = () => {
@@ -249,7 +239,7 @@ export class DataTranscieverService {
             });
     };
 
-    protected _makeNoteQuery = (params:DataTranscieverServiceParams = {getContent:false}):Object => {
+    protected _makeNoteQuery = (params:DataTranscieverServiceParams = {getContent: false}):Object => {
         var result = {};
         // set updated query
         if (params.start)
