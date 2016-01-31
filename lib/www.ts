@@ -21,6 +21,10 @@ import {SyncStateEntity} from "./models/entities/sync-state-entity";
 import {UserSetting} from "./core";
 import {NoteEntity} from "./models/entities/note-entity";
 
+class MySyncChunk extends evernote.Evernote.SyncChunk {
+    notes:Array<NoteEntity>;
+}
+
 export class Www {
 
     SYNC_CHUNK_COUNT = 100;
@@ -104,7 +108,7 @@ export class Www {
         var user:UserEntity = null;
         var localSyncState:SyncStateEntity = null;
         var remoteSyncState:SyncStateEntity = null;
-        var lastSyncChunk:evernote.Evernote.SyncChunk = null;
+        var lastSyncChunk:MySyncChunk = null;
         async.waterfall([
             // Reload settings
             (callback:(err:Error, settings:UserSetting) => void) => {
@@ -154,10 +158,10 @@ export class Www {
                     syncChunkFilter.includeSearches = true;
                     syncChunkFilter.includeExpunged = true;
                     async.waterfall([
-                        (callback:(err:Error, syncChunk:evernote.Evernote.SyncChunk) => void) => {
+                        (callback:(err:Error, syncChunk:MySyncChunk) => void) => {
                             noteStore.getFilteredSyncChunk(localSyncState.updateCount, this.SYNC_CHUNK_COUNT, syncChunkFilter, callback)
                         },
-                        (syncChunk:evernote.Evernote.SyncChunk, callback:(err?:Error) => void) => {
+                        (syncChunk:MySyncChunk, callback:(err?:Error) => void) => {
                             lastSyncChunk = syncChunk;
                             callback();
                         },
