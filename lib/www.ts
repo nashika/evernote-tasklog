@@ -58,7 +58,7 @@ export class Www {
     initUser(username:string, token:string, sandbox:boolean, callback:(err?:Error) => void):void {
         if (core.users[username]) {
             core.loggers.system.info('Init user finished. already initialized.');
-            callback();
+            return callback();
         }
         core.users[username] = {};
         // Initialize evernote client
