@@ -230,8 +230,8 @@ export class DataTranscieverService {
             });
     };
 
-    countTimeLogs = (callback:(err?:Error, count?:number) => void):void => {
-        var query = this._makeTimeLogQuery();
+    countTimeLogs = (params:DataTranscieverServiceParams, callback:(err?:Error, count?:number) => void):void => {
+        var query = this._makeTimeLogQuery(params);
         this.$http.get('/time-logs/count', {params: {query: query}})
             .success((data:number) => {
                 callback(null, data);
@@ -272,16 +272,20 @@ export class DataTranscieverService {
         return result;
     }
 
-    protected _makeTimeLogQuery = (params:{start?:Date, end?:Date, noteGuids?:Array<string>} = {}):Object => {
+    protected _makeTimeLogQuery = (params:DataTranscieverServiceParams):Object => {
         var result = {};
         // set date query
         if (params.start)
             merge.recursive(result, {date: {$gte: params.start.valueOf()}});
         if (params.end)
             merge.recursive(result, {date: {$lte: params.end.valueOf()}});
+        // set noFilter query
+        if (params.noFilter) {
+
+        }
         // set note guids query
-        if (params.noteGuids)
-            merge(result, {noteGuid: {$in: params.noteGuids}});
+        /*if (params.noteGuids)
+            merge(result, {noteGuid: {$in: params.noteGuids}});*/
         return result;
     }
 

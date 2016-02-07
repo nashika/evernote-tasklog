@@ -69,6 +69,18 @@ class MenuController {
                     callback(err);
                 });
             },
+            (callback:(err?:Error) => void) => {
+                this.dataTransciever.countTimeLogs({}, (err:Error, count:number) => {
+                    if (!err) this.$scope.timeLogCount = count;
+                    callback(err);
+                });
+            },
+            (callback:(err?:Error) => void) => {
+                this.dataTransciever.countTimeLogs({noFilter:true}, (err:Error, count:number) => {
+                    if (!err) this.$scope.allTimeLogCount = count;
+                    callback(err);
+                });
+            },
         ], (err?:Error):void => {
             if (err) alert(err);
         });

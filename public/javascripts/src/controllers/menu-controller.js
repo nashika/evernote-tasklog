@@ -39,6 +39,20 @@ var MenuController = (function () {
                         callback(err);
                     });
                 },
+                function (callback) {
+                    _this.dataTransciever.countTimeLogs({}, function (err, count) {
+                        if (!err)
+                            _this.$scope.timeLogCount = count;
+                        callback(err);
+                    });
+                },
+                function (callback) {
+                    _this.dataTransciever.countTimeLogs({ noFilter: true }, function (err, count) {
+                        if (!err)
+                            _this.$scope.allTimeLogCount = count;
+                        callback(err);
+                    });
+                },
             ], function (err) {
                 if (err)
                     alert(err);

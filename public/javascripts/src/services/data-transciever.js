@@ -227,8 +227,8 @@ var DataTranscieverService = (function () {
                 callback(new Error('Error $http request'));
             });
         };
-        this.countTimeLogs = function (callback) {
-            var query = _this._makeTimeLogQuery();
+        this.countTimeLogs = function (params, callback) {
+            var query = _this._makeTimeLogQuery(params);
             _this.$http.get('/time-logs/count', { params: { query: query } })
                 .success(function (data) {
                 callback(null, data);
@@ -272,16 +272,18 @@ var DataTranscieverService = (function () {
             return result;
         };
         this._makeTimeLogQuery = function (params) {
-            if (params === void 0) { params = {}; }
             var result = {};
             // set date query
             if (params.start)
                 merge.recursive(result, { date: { $gte: params.start.valueOf() } });
             if (params.end)
                 merge.recursive(result, { date: { $lte: params.end.valueOf() } });
+            // set noFilter query
+            if (params.noFilter) {
+            }
             // set note guids query
-            if (params.noteGuids)
-                merge(result, { noteGuid: { $in: params.noteGuids } });
+            /*if (params.noteGuids)
+                merge(result, {noteGuid: {$in: params.noteGuids}});*/
             return result;
         };
         this.filterParams = {
