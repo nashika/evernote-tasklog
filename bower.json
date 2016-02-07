@@ -21,6 +21,6 @@
     "select2": "~3.5.2",
     "angular-sanitize": "~1.4.3",
     "select2-bootstrap-css": "~1.4.6",
-    "moment": "~2.10.6"
+    "moment": "2.11.0"
   }
 }

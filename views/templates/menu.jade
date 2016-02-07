@@ -6,19 +6,12 @@ script(type='text/ng-template' id='menu')
       .col-md-4
         h2 #[span.fa.fa-search] Note Filter
         .well.h3
-          p #[span.fa.fa-2x.fa-files-o] {{noteQuery.count}} notes.
+          p #[span.fa.fa-2x.fa-files-o] {{noteCount}} notes.
         form.form-horizontal
-          .form-group
-            label.col-sm-3.control-label Updated
-            .col-sm-9
-              ui-select.form-control(ng-model='noteQuery.updated', theme='select2', search-enabled='false')
-                ui-select-match(placeholder='Select update days.') Recent {{$select.selected}} day
-                ui-select-choices(repeat='n in [undefined, 1, 2, 3, 5, 7, 10, 15, 20, 30]')
-                  div(ng-bind-html="n ? 'Recent ' + n + ' day' : '-- None --'")
           .form-group
             label.col-sm-3.control-label Notebook
             .col-sm-9
-              ui-select.form-control(multiple, ng-model='noteQuery.notebooks', theme='select2')
+              ui-select.form-control(multiple, ng-model='dataTransciever.filterParams.notebookGuids', theme='select2')
                 ui-select-match(placeholder='Select notebooks...') {{$item.name}}
                 ui-select-choices(group-by='"stack"', repeat='notebook.guid as notebook in dataStore.notebooks | filterByProperty: {name: $select.search}')
                   div(ng-bind-html='notebook.name | highlight: $select.search')
@@ -26,24 +19,11 @@ script(type='text/ng-template' id='menu')
           .form-group
             label.col-sm-3.control-label Stack
             .col-sm-9
-              ui-select.form-control(multiple, ng-model='noteQuery.stacks', theme='select2')
+              ui-select.form-control(multiple, ng-model='dataTransciever.filterParams.stacks', theme='select2')
                 ui-select-match(placeholder='Select stacks...') {{$item}}
                 ui-select-choices(repeat='stack in dataStore.stacks | filter: $select.search')
                   div(ng-bind-html='stack | highlight: $select.search')
-        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='dataTransciever.reload()') #[span.fa.fa-refresh] Reload
-      .col-md-4
-        h2 #[span.fa.fa-search] Time Log Filter
-        .well.h3
-          p #[span.fa.fa-2x.fa-files-o] {{timeLogQuery.count}} time logs.
-        form.form-horizontal
-          .form-group
-            label.col-sm-3.control-label Worked
-            .col-sm-9
-              ui-select.form-control(ng-model='timeLogQuery.worked', theme='select2', search-enabled='false')
-                ui-select-match(placeholder='Select time log days.') Recent {{$select.selected}} day
-                ui-select-choices(repeat='n in [undefined, 1, 2, 3, 5, 7, 10, 15, 20, 30]')
-                  div(ng-bind-html="n ? 'Recent ' + n + ' day' : '-- None --'")
-        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='dataTransciever.reload()') #[span.fa.fa-refresh] Reload
+        button.btn.btn-primary.btn-lg.btn-block(type='button', ng-click='reload()') #[span.fa.fa-refresh] Reload
       .col-md-4
         h2 #[span.fa.fa-user] User Info
         dl.dl-horizontal
@@ -58,11 +38,25 @@ script(type='text/ng-template' id='menu')
         a.btn.btn-danger.btn-block(href='/auth/logout') #[span.fa.fa-sign-out] Logout
       .col-md-4
         h2 #[span.fa.fa-database] Data Info
-        dl.dl-horizontal
-          dt Notes
-          dd {{dataStore.notes | objectLength }}
-          dt Time Logs
-          dd {{dataStore.timeLogs | objectLength : 1}}
-          dt Profit Logs
-          dd {{dataStore.profitLogs | objectLength: 1}}
+        table.table.table-bordered.table-condensed.table-striped
+          tr
+            th
+            th Target
+            th All
+          tr
+            th Notes
+            td.text-right {{noteCount}}
+            td.text-right {{allNoteCount}}
+          tr
+            th Loaded Notes
+            td.text-right {{loadedNoteCount}}
+            td.text-right {{allLoadedNoteCount}}
+          //tr
+            th Time Logs
+            td.text-right {{timeLogCount}}
+            td.text-right {{allTimeLogCount}}
+          //tr
+            th Profit Logs
+            td.text-right {{profitLogCount}}
+            td.text-right {{allProfitLogCount}}
         button.btn.btn-primary.btn-block(type='button', ng-click='dataTransciever.reParse()') #[span.fa.fa-industry] Re Parse Notes

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "outDir": ".",
+    "rootDir": ".",
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules",
+    "bower_components"
+  ]
+}

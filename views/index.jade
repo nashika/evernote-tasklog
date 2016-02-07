@@ -24,7 +24,7 @@ block content
             li(ng-class='{active: $route.current.templateUrl == "settings"}')
               a(href='#/settings') #[span.fa.fa-gear] Settings
           form.navbar-form.navbar-right
-            button.btn.btn-primary(type='button', ng-click='navCollapse = true; dataTransciever.reload()') Reload
+            button.btn.btn-primary(type='button', ng-click='navCollapse = true; reload()') Reload
     div(ng-view)
     include templates/menu
     include templates/timeline
