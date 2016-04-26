@@ -1,3 +1,4 @@
+"use strict";
 var merge = require('merge');
 exports.__esModule = true;
 exports["default"] = {

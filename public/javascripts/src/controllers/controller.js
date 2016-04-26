@@ -3,6 +3,6 @@ var Controller = (function () {
         this.$scope = $scope;
     }
     return Controller;
-})();
+}());
 angular.module('App').controller('Controller', ['$scope', Controller]);
 //# sourceMappingURL=controller.js.map

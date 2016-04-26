@@ -1,3 +1,4 @@
+"use strict";
 var ProgressService = (function () {
     function ProgressService($modal) {
         var _this = this;
@@ -36,7 +37,7 @@ var ProgressService = (function () {
         };
     }
     return ProgressService;
-})();
+}());
 exports.ProgressService = ProgressService;
 angular.module('App').service('progress', ['$modal', ProgressService]);
 //# sourceMappingURL=progress.js.map

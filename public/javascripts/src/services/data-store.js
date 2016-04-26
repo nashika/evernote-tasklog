@@ -1,3 +1,4 @@
+"use strict";
 var DataStoreService = (function () {
     function DataStoreService() {
         this.user = null;
@@ -10,7 +11,7 @@ var DataStoreService = (function () {
         this.settings = {};
     }
     return DataStoreService;
-})();
+}());
 exports.DataStoreService = DataStoreService;
 angular.module('App').service('dataStore', [DataStoreService]);
 //# sourceMappingURL=data-store.js.map

@@ -1,3 +1,4 @@
+"use strict";
 var async = require('async');
 var merge = require('merge');
 var DataTranscieverService = (function () {
@@ -15,7 +16,6 @@ var DataTranscieverService = (function () {
             var noteCount = 0;
             var funcs1 = [
                 // get user
-                // get user
                 function (callback) {
                     if (_this.dataStore.user)
                         return callback();
@@ -28,7 +28,6 @@ var DataTranscieverService = (function () {
                         .error(_this._reloadError(callback));
                 },
                 // get settings
-                // get settings
                 function (callback) {
                     _this.progress.next('Getting settings data.');
                     _this.$http.get('/settings')
@@ -39,13 +38,11 @@ var DataTranscieverService = (function () {
                         .error(_this._reloadError(callback));
                 },
                 // check settings
-                // check settings
                 function (callback) {
                     if (!_this.dataStore.settings['persons'] || _this.dataStore.settings['persons'].length == 0)
                         return callback(new Error('This app need persons setting. Please switch "Settings Page" and set your persons data.'));
                     callback();
                 },
-                // sync
                 // sync
                 function (callback) {
                     _this.progress.next('Syncing remote server.');
@@ -56,15 +53,14 @@ var DataTranscieverService = (function () {
                         .error(_this._reloadError(callback));
                 },
                 // get notebooks
-                // get notebooks
                 function (callback) {
                     _this.progress.next('Getting notebooks data.');
                     _this.$http.get('/notebooks')
                         .success(function (data) {
                         _this.dataStore.notebooks = {};
                         var stackHash = {};
-                        for (var _i = 0; _i < data.length; _i++) {
-                            var notebook = data[_i];
+                        for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+                            var notebook = data_1[_i];
                             _this.dataStore.notebooks[notebook.guid] = notebook;
                             if (notebook.stack)
                                 stackHash[notebook.stack] = true;
@@ -76,7 +72,6 @@ var DataTranscieverService = (function () {
                 },
             ];
             var funcs2 = [
-                // get note count
                 // get note count
                 function (callback) {
                     _this.progress.next('Getting notes count.');
@@ -94,21 +89,19 @@ var DataTranscieverService = (function () {
                         .error(_this._reloadError(callback));
                 },
                 // get notes
-                // get notes
                 function (callback) {
                     _this.progress.next('Getting notes.');
                     _this.$http.get('/notes', { params: { query: noteQuery } })
                         .success(function (data) {
                         _this.dataStore.notes = {};
-                        for (var _i = 0; _i < data.length; _i++) {
-                            var note = data[_i];
+                        for (var _i = 0, data_2 = data; _i < data_2.length; _i++) {
+                            var note = data_2[_i];
                             _this.dataStore.notes[note.guid] = note;
                         }
                         callback();
                     })
                         .error(_this._reloadError(callback));
                 },
-                // get content from remote
                 // get content from remote
                 function (callback) {
                     _this.progress.next('Request remote contents.');
@@ -118,8 +111,8 @@ var DataTranscieverService = (function () {
                         if (!note.hasContent)
                             _this.$http.get('/notes/get-content', { params: { query: { guid: noteGuid } } })
                                 .success(function (data) {
-                                for (var _i = 0; _i < data.length; _i++) {
-                                    note = data[_i];
+                                for (var _i = 0, data_3 = data; _i < data_3.length; _i++) {
+                                    note = data_3[_i];
                                     _this.dataStore.notes[note.guid] = note;
                                 }
                                 callback();
@@ -129,7 +122,6 @@ var DataTranscieverService = (function () {
                             callback();
                     }, callback);
                 },
-                // get time logs
                 // get time logs
                 function (callback) {
                     _this.progress.next('Getting time logs.');
@@ -142,8 +134,8 @@ var DataTranscieverService = (function () {
                     _this.$http.post('/time-logs', { query: timeLogQuery })
                         .success(function (data) {
                         _this.dataStore.timeLogs = {};
-                        for (var _i = 0; _i < data.length; _i++) {
-                            var timeLog = data[_i];
+                        for (var _i = 0, data_4 = data; _i < data_4.length; _i++) {
+                            var timeLog = data_4[_i];
                             if (!_this.dataStore.timeLogs[timeLog.noteGuid])
                                 _this.dataStore.timeLogs[timeLog.noteGuid] = {};
                             _this.dataStore.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
@@ -152,7 +144,6 @@ var DataTranscieverService = (function () {
                     })
                         .error(_this._reloadError(callback));
                 },
-                // get profit logs
                 // get profit logs
                 function (callback) {
                     _this.progress.next('Getting profit logs.');
@@ -164,8 +155,8 @@ var DataTranscieverService = (function () {
                     _this.$http.post('/profit-logs', { query: { noteGuid: { $in: guids } } })
                         .success(function (data) {
                         _this.dataStore.profitLogs = {};
-                        for (var _i = 0; _i < data.length; _i++) {
-                            var profitLog = data[_i];
+                        for (var _i = 0, data_5 = data; _i < data_5.length; _i++) {
+                            var profitLog = data_5[_i];
                             if (!_this.dataStore.profitLogs[profitLog.noteGuid])
                                 _this.dataStore.profitLogs[profitLog.noteGuid] = {};
                             _this.dataStore.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog;
@@ -282,8 +273,8 @@ var DataTranscieverService = (function () {
             if (params.noFilter) {
             }
             // set note guids query
-            /*if (params.noteGuids)
-                merge(result, {noteGuid: {$in: params.noteGuids}});*/
+            if (params.noteGuids)
+                merge(result, { noteGuid: { $in: params.noteGuids } });
             return result;
         };
         this.filterParams = {
@@ -292,7 +283,7 @@ var DataTranscieverService = (function () {
         };
     }
     return DataTranscieverService;
-})();
+}());
 exports.DataTranscieverService = DataTranscieverService;
 angular.module('App').service('dataTransciever', ['$http', 'dataStore', 'progress', DataTranscieverService]);
 //# sourceMappingURL=data-transciever.js.map

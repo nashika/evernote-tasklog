@@ -1,3 +1,4 @@
+"use strict";
 var NotesController = (function () {
     function NotesController($scope, dataStore, dataTransciever) {
         var _this = this;
@@ -66,6 +67,6 @@ var NotesController = (function () {
         this._onReload();
     }
     return NotesController;
-})();
+}());
 angular.module('App').controller('NotesController', ['$scope', 'dataStore', 'dataTransciever', NotesController]);
 //# sourceMappingURL=notes-controller.js.map

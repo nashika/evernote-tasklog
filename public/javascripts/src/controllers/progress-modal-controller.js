@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -13,7 +14,7 @@ var ProgressModalController = (function (_super) {
         this.$scope.progress = this.progress;
     }
     return ProgressModalController;
-})(modal_controller_1.ModalController);
+}(modal_controller_1.ModalController));
 exports.ProgressModalController = ProgressModalController;
 angular.module('App').controller('ProgressModalController', ['$scope', 'progress', ProgressModalController]);
 //# sourceMappingURL=progress-modal-controller.js.map

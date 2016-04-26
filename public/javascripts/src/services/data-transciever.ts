@@ -11,6 +11,7 @@ import {NotebookEntity} from "../../../../lib/models/entities/notebook-entity";
 interface DataTranscieverServiceParams {
     start?:moment.Moment,
     end?:moment.Moment,
+    noteGuids?:string[],
     hasContent?:boolean,
     noFilter?:boolean,
     getContent?:boolean,
@@ -270,7 +271,7 @@ export class DataTranscieverService {
                 merge(result, {notebookGuid: {$in: notebooksArray}});
         }
         return result;
-    }
+    };
 
     protected _makeTimeLogQuery = (params:DataTranscieverServiceParams):Object => {
         var result = {};
@@ -281,13 +282,12 @@ export class DataTranscieverService {
             merge.recursive(result, {date: {$lte: params.end.valueOf()}});
         // set noFilter query
         if (params.noFilter) {
-
         }
         // set note guids query
-        /*if (params.noteGuids)
-            merge(result, {noteGuid: {$in: params.noteGuids}});*/
+        if (params.noteGuids)
+            merge(result, {noteGuid: {$in: params.noteGuids}});
         return result;
-    }
+    };
 
 }
 

@@ -1,3 +1,4 @@
+"use strict";
 var TimelineController = (function () {
     function TimelineController($scope, $filter, $http, dataStore, dataTransciever) {
         var _this = this;
@@ -109,6 +110,6 @@ var TimelineController = (function () {
         });
     }
     return TimelineController;
-})();
+}());
 angular.module('App').controller('TimelineController', ['$scope', '$filter', '$http', 'dataStore', 'dataTransciever', TimelineController]);
 //# sourceMappingURL=timeline-controller.js.map

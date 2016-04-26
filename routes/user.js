@@ -1,3 +1,4 @@
+"use strict";
 var express = require('express');
 var core_1 = require('../lib/core');
 var router = express.Router();

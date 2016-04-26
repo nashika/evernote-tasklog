@@ -1,3 +1,4 @@
+"use strict";
 // angular.js setting
 angular.module('App', ['ngRoute', 'ui.bootstrap', 'ngSanitize', 'ui.select']);
 angular.module('App').config(['$compileProvider', function ($compileProvider) {

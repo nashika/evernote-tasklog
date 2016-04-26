@@ -1,3 +1,4 @@
+"use strict";
 var async = require('async');
 var MenuController = (function () {
     function MenuController($scope, $http, dataStore, dataTransciever) {
@@ -74,6 +75,6 @@ var MenuController = (function () {
         this._onReload();
     }
     return MenuController;
-})();
+}());
 angular.module('App').controller('MenuController', ['$scope', '$http', 'dataStore', 'dataTransciever', MenuController]);
 //# sourceMappingURL=menu-controller.js.map

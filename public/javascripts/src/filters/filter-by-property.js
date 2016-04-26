@@ -20,8 +20,8 @@ var filterByProperty = function () {
         else
             return [];
         var results = [];
-        for (var _i = 0; _i < arrItems.length; _i++) {
-            var item = arrItems[_i];
+        for (var _i = 0, arrItems_1 = arrItems; _i < arrItems_1.length; _i++) {
+            var item = arrItems_1[_i];
             if (checkItemMatches(item, props))
                 results.push(item);
         }

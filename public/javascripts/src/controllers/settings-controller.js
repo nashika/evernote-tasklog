@@ -1,3 +1,4 @@
+"use strict";
 var async = require('async');
 var SettingsController = (function () {
     function SettingsController($scope, $http, dataStore, dataTransciever, progress) {
@@ -101,6 +102,6 @@ var SettingsController = (function () {
         }
     };
     return SettingsController;
-})();
+}());
 angular.module('App').controller('SettingsController', ['$scope', '$http', 'dataStore', 'dataTransciever', 'progress', SettingsController]);
 //# sourceMappingURL=settings-controller.js.map

@@ -12,6 +12,6 @@ var NavigationController = (function () {
         this.$scope.reload = this._reload;
     }
     return NavigationController;
-})();
+}());
 angular.module('App').controller('NavigationController', ['$scope', '$rootScope', '$route', NavigationController]);
 //# sourceMappingURL=navigation-controller.js.map

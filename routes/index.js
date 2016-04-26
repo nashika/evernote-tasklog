@@ -1,3 +1,4 @@
+"use strict";
 var express = require('express');
 var evernote = require('evernote');
 var core_1 = require('../lib/core');
