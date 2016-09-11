@@ -5,17 +5,10 @@ import express = require("express");
 import cookieParser = require("cookie-parser");
 import session = require("express-session");
 import * as bodyParser from "body-parser";
-var connectNedbSession = require("connect-nedb-session");
 
-import indexRoute from "./routes/index";
-import authRoute from "./routes/auth";
-import notesRoute from "./routes/notes";
-import notebooksRoute from "./routes/notebooks";
-import settingsRoute from "./routes/settings";
-import syncRoute from "./routes/sync";
-import timeLogsRoute from "./routes/time-logs";
-import profitLogsRoute from "./routes/profit-logs";
-import userRoute from "./routes/user";
+import {routes} from "./routes/index";
+
+var connectNedbSession = require("connect-nedb-session");
 
 var NedbStore = connectNedbSession(session);
 var app:express.Express = express();
@@ -38,15 +31,7 @@ app.use(session({
     saveUninitialized: false
 }));
 app.use(express.static(path.join(__dirname, "./public")));
-app.use("/", indexRoute);
-app.use("/auth", authRoute);
-app.use("/notes", notesRoute);
-app.use("/notebooks", notebooksRoute);
-app.use("/settings", settingsRoute);
-app.use("/sync", syncRoute);
-app.use("/time-logs", timeLogsRoute);
-app.use("/profit-logs", profitLogsRoute);
-app.use("/user", userRoute);
+routes(app);
 
 // catch 404 and forward to error handler
 app.use((req:express.Request, res:express.Response, next:Function) => {
