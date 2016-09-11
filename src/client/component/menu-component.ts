@@ -5,6 +5,7 @@ import {BaseComponent} from "./base-component";
 import {serviceRegistry} from "../service/service-registry";
 import {DataTranscieverService} from "../service/data-transciever-service";
 import {DataStoreService} from "../service/data-store-service";
+import {AppComponent} from "./app-component";
 
 let template = require("./menu-component.jade");
 
@@ -16,6 +17,8 @@ let template = require("./menu-component.jade");
   //this.$scope.$on('event::reload', this._onReload);
 })
 export class MenuComponent extends BaseComponent {
+
+  $parent: AppComponent;
 
   dataStoreService: DataStoreService;
   dataTranscieverService: DataTranscieverService;
@@ -93,5 +96,11 @@ export class MenuComponent extends BaseComponent {
       if (err) alert(err);
     });
   }*/
+
+  logout() {
+    serviceRegistry.auth.logout().then(() => {
+      this.$parent.mode = "auth";
+    });
+  }
 
 }

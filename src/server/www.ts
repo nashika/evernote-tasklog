@@ -91,8 +91,6 @@ export class Www {
       return this.sync(username);
     }).then(() => {
       core.loggers.system.info(`Init user finished. user:${username} data was initialized.`);
-    }).catch(err => {
-      core.loggers.error.error(`Initialize user failed. err=${err}`);
     });
   }
 
@@ -137,7 +135,7 @@ export class Www {
               resolve(syncChunk);
             });
           });
-        }).then(() => (syncChunk: MySyncChunk) => {
+        }).then((syncChunk: MySyncChunk) => {
           lastSyncChunk = syncChunk;
           return core.users[username].models.notes.saveLocal(lastSyncChunk.notes);
         }).then(() => {

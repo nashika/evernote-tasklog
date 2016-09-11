@@ -1,7 +1,8 @@
-auth-component("v-if"="mode == 'auth'")
-menu-component("v-if"="mode == 'menu'")
-timeline-component("v-if"="mode == 'timeline'")
-notes-component("v-if"="mode == 'notes'")
-settings-component("v-if"="mode == 'settings'")
-navigation-component("v-if"="mode != 'auth'", :mode.sync="mode")
-progress-modal-component
+section.app
+  auth-component("v-if"="mode == 'auth'")
+  menu-component("v-if"="mode == 'menu'")
+  timeline-component("v-if"="mode == 'timeline'")
+  notes-component("v-if"="mode == 'notes'")
+  settings-component("v-if"="mode == 'settings'")
+  navigation-component("v-if"="mode != 'auth'", :mode.sync="mode")
+  progress-modal-component

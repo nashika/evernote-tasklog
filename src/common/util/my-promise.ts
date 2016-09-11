@@ -48,7 +48,7 @@ export class MyPromise {
 
   public static whilePromiseSeries(condFunc: () => boolean, eachFunc: () => Promise<void>): Promise<void> {
     let loop:(() => Promise<void>) = () => {
-      if (condFunc) {
+      if (condFunc()) {
         return eachFunc().then(loop);
       } else {
         return Promise.resolve();

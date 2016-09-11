@@ -18,15 +18,34 @@ export class AuthService extends BaseService {
     this.production = {token: null, username: null};
   }
 
+  public check(): Promise<boolean> {
+    return request.get("/auth").then(req => {
+      let data: boolean = req.body;
+      return data;
+    });
+  }
+
   public initialize(): Promise<void> {
     return Promise.resolve().then(() => {
-      return request.get("/auth/token").then(req => {
+      return request.post("/auth/token").then(req => {
         this.production = req.body;
       });
     }).then(() => {
       return request.post("/auth/token").send({sandbox: true}).then(req => {
         this.sandbox = req.body;
       });
+    });
+  }
+
+  public login(sandbox: boolean, useToken: boolean): Promise<void> {
+    return request.post("/auth/login").send({sandbox: sandbox, token: useToken}).then(req => {
+      return;
+    });
+  }
+
+  public logout(): Promise<void> {
+    return request.post("/auth/logout").then(req => {
+      return;
     });
   }
 

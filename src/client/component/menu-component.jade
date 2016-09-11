@@ -34,7 +34,7 @@
         dd {{dataStore.user.email}}
         dt Name
         dd {{dataStore.user.name}}
-      a.btn.btn-danger.btn-block(href='/auth/logout') #[span.fa.fa-sign-out] Logout
+      button.btn.btn-danger.btn-block(type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
     .col-md-4
       h2 #[span.fa.fa-database] Data Info
       table.table.table-bordered.table-condensed.table-striped
