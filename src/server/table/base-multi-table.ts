@@ -92,52 +92,45 @@ export class BaseMultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions
     let arrDocs: T1[] = _.castArray(docs);
     if (arrDocs.length == 0) return Promise.resolve();
     core.loggers.system.debug(`Save local update only ${this.Class.PLURAL_NAME} was started. docs.count=${arrDocs.length}`);
-    async.eachSeries(arrDocs, (doc: T1, callback: (err?: Error) => void) => {
-      async.waterfall([
-        (callback: (err?: Error, results?: Array<T1>) => void) => {
-          this._datastore.find({guid: doc.guid}, callback);
-        },
-        (docs: Array<T1>, callback: (err?: Error) => void) => {
-          var localDoc: T1 = (docs.length == 0) ? null : docs[0];
-          if (localDoc && localDoc.updateSequenceNum >= doc.updateSequenceNum) {
-            core.loggers.system.trace(`Upsert local ${(<typeof BaseMultiTable>this.constructor).PLURAL_NAME} was skipped. guid=${doc.guid}, title=${(<any>doc)[(<typeof BaseMultiTable>this.constructor).TITLE_FIELD]}`);
-            callback();
-          } else {
-            core.loggers.system.trace(`Upsert local ${(<typeof BaseMultiTable>this.constructor).PLURAL_NAME} was started. guid=${doc.guid}, title=${(<any>doc)[(<typeof BaseMultiTable>this.constructor).TITLE_FIELD]}`);
-            async.waterfall([
-              (callback: (err?: Error, numReplaced?: number) => void) => {
-                this._datastore.db[(<typeof BaseMultiTable>this.constructor).PLURAL_NAME].update({guid: doc.guid}, doc, {upsert: true}, callback);
-              },
-              (numReplaced: number, ...restArgs: any[]) => {
-                var callback: (err?: Error) => void = restArgs.pop();
-                core.loggers.system.trace(`Upsert local ${(<typeof BaseMultiTable>this.constructor).PLURAL_NAME} was succeed. guid=${doc.guid}, numReplaced=${numReplaced}`);
-                callback();
-              },
-            ], callback);
-          }
-        },
-      ], callback);
-    }, (err: Error) => {
-      core.loggers.system.debug(`Save local update only ${(<typeof BaseMultiTable>this.constructor).PLURAL_NAME} was ${err ? "failed" : "succeed"}. docs.count=${arrDocs.length}`);
-      callback(err);
+    return MyPromise.eachFunctionSeries(arrDocs, (resolve, reject, doc) => {
+      this._datastore.find({guid: doc.guid}, (err: any, docs?: T1[]) => {
+        if (err) return reject(err);
+        var localDoc: T1 = (docs.length == 0) ? null : docs[0];
+        if (localDoc && localDoc.updateSequenceNum >= doc.updateSequenceNum) {
+          core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was skipped. guid=${doc.guid}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
+          resolve();
+        } else {
+          core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. guid=${doc.guid}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
+          this._datastore.db[this.Class.PLURAL_NAME].update({guid: doc.guid}, doc, {upsert: true}, (err: any, numReplaced?: number) => {
+            if (err) return reject(err);
+            core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was succeed. guid=${doc.guid}, numReplaced=${numReplaced}`);
+            resolve();
+          });
+        }
+      });
+    }).then(() => {
+      core.loggers.system.debug(`Save local update only ${this.Class.PLURAL_NAME} was succeed. docs.count=${arrDocs.length}`);
     });
   }
 
-  removeLocal(query: Array<string>|string|Object, callback: (err?: Error) => void): void {
-    if (!query) return callback();
+  removeLocal(query: string|string[]|Object): Promise<void> {
+    if (!query) return Promise.resolve();
     var objQuery: Object;
     if (Array.isArray(query)) {
-      if (query["length"] == 0) return callback();
+      if (query["length"] == 0) return Promise.resolve();
       objQuery = {guid: {$in: query}};
     } else if (typeof query == "string") {
       objQuery = {guid: query};
     } else {
       objQuery = query;
     }
-    core.loggers.system.debug(`Remove local ${(<typeof BaseMultiTable>this.constructor).PLURAL_NAME} was started. query=${JSON.stringify(objQuery)}`);
-    this._datastore.remove(objQuery, {multi: true}, (err: Error, numRemoved: number) => {
-      core.loggers.system.debug(`Remove local ${(<typeof BaseMultiTable>this.constructor).PLURAL_NAME} was ${err ? "failed" : "succeed"}. numRemoved=${numRemoved}`);
-      callback(err);
+    core.loggers.system.debug(`Remove local ${this.Class.PLURAL_NAME} was started. query=${JSON.stringify(objQuery)}`);
+    return new Promise<void>((resolve, reject) => {
+      this._datastore.remove(objQuery, {multi: true}, (err: Error, numRemoved: number) => {
+        core.loggers.system.debug(`Remove local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}. numRemoved=${numRemoved}`);
+        if (err) return reject(err);
+        resolve();
+      });
     });
   }
 

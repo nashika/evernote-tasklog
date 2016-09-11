@@ -21,6 +21,7 @@
     "pluralize": "registry:dt/pluralize#0.0.0+20160316155526",
     "serve-static": "registry:dt/serve-static#0.0.0+20160606155157",
     "superagent": "registry:dt/superagent#2.0.0+20160811085415",
+    "thrift": "registry:dt/thrift#0.9.2+20160316155526",
     "vue": "registry:dt/vue#1.0.21+20160720100422"
   }
 }

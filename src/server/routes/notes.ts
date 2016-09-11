@@ -5,31 +5,35 @@ import core from "../core";
 var router = express.Router();
 
 router.get('/', (req, res, next) => {
-    core.users[req.session['evernote'].user.username].models.notes.findLocal(req.query, (err, notes) => {
-        if (err) return res.status(500).send(err);
-        res.json(notes)
-    });
+  core.users[req.session['evernote'].user.username].models.notes.findLocal(req.query).then(notes => {
+    res.json(notes);
+  }).catch(err => {
+    res.status(500).send(err);
+  });
 });
 
 router.get('/get-content', (req, res, next) => {
-    core.users[req.session['evernote'].user.username].models.notes.getRemoteContent(req.query, (err, result) => {
-        if (err) return res.status(500).send(err);
-        res.json(result);
-    });
+  core.users[req.session['evernote'].user.username].models.notes.getRemoteContent(req.query).then(result => {
+    res.json(result);
+  }).catch(err => {
+    return res.status(500).send(err);
+  });
 });
 
 router.get('/count', (req, res, next) => {
-    core.users[req.session['evernote'].user.username].models.notes.countLocal(req.query, (err, count) => {
-        if (err) return res.status(500).send(err);
-        res.json(count);
-    });
+  core.users[req.session['evernote'].user.username].models.notes.countLocal(req.query).then(count => {
+    res.json(count);
+  }).catch(err => {
+    return res.status(500).send(err);
+  });
 });
 
 router.get('/re-parse', (req, res, next) => {
-    core.users[req.session['evernote'].user.username].models.notes.reParseNotes(req.query, (err) => {
-        if (err) return res.status(500).send(err);
-        res.json(true);
-    });
+  core.users[req.session['evernote'].user.username].models.notes.reParseNotes(req.query).then(() => {
+    res.json(true);
+  }).catch(err => {
+    res.status(500).send(err);
+  });
 });
 
 export default router;

@@ -2,6 +2,7 @@ import Datastore = require("nedb");
 
 import core from "../core";
 import _ = require("lodash");
+import pluralize = require("pluralize");
 
 export abstract class BaseTable {
 

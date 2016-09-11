@@ -43,7 +43,7 @@ var onListening = () => {
 };
 
 // Module dependencies.
-var expressApp = require('app');
+var expressApp = require("./app");
 var debug = require('debug')('evernote-tasklog:server');
 import * as http from 'http';
 

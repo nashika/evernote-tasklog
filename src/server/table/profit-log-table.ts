@@ -6,30 +6,27 @@ import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 
 export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, MultiTableOptions> {
 
-    static PLURAL_NAME:string = 'profitLogs';
-    static TITLE_FIELD:string = 'comment';
-    static DEFAULT_LIMIT:number = 2000;
+  static PLURAL_NAME: string = 'profitLogs';
+  static TITLE_FIELD: string = 'comment';
+  static DEFAULT_LIMIT: number = 2000;
 
-    parse(note:NoteEntity, lines:Array<string>, callback:(err:Error) => void):void {
-        var profitLogs:Array<ProfitLogEntity> = [];
-        for (var line of lines) {
-            var matches: Array<string>;
-            if (matches = line.match(/(.*)[@＠][\\￥$＄](.+)/i)) {
-                profitLogs.push({
-                    noteGuid: note.guid,
-                    comment: matches[1],
-                    profit: parseInt(matches[2].replace(/,/g, '')),
-                });
-            }
-        }
-        async.waterfall([
-            (callback:(err:Error) => void) => {
-                core.users[this._username].models.profitLogs.removeLocal({noteGuid: note.guid}, callback);
-            },
-            (callback:(err:Error) => void) => {
-                core.users[this._username].models.profitLogs.saveLocal(profitLogs, callback);
-            }
-        ], callback);
+  parse(note: NoteEntity, lines: string[]): Promise<void> {
+    let profitLogs: ProfitLogEntity[] = [];
+    for (var line of lines) {
+      let matches: string[];
+      if (matches = line.match(/(.*)[@＠][\\￥$＄](.+)/i)) {
+        profitLogs.push({
+          noteGuid: note.guid,
+          comment: matches[1],
+          profit: parseInt(matches[2].replace(/,/g, '')),
+        });
+      }
     }
+    return Promise.resolve().then(() => {
+      return core.users[this._username].models.profitLogs.removeLocal({noteGuid: note.guid});
+    }).then(() => {
+      return core.users[this._username].models.profitLogs.saveLocal(profitLogs);
+    });
+  }
 
 }

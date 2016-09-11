@@ -39,4 +39,22 @@ export class MyPromise {
     });
   }
 
+  public static whileFunctionSeries(condFunc: () => boolean, eachFunc: (resolve: () => void, reject: (err: any) => void) => void): Promise<void> {
+    let whilePromiseFunc = () => {
+      return new Promise<void>((resolve, reject) => eachFunc(resolve, reject));
+    };
+    return MyPromise.whilePromiseSeries(condFunc, whilePromiseFunc);
+  }
+
+  public static whilePromiseSeries(condFunc: () => boolean, eachFunc: () => Promise<void>): Promise<void> {
+    let loop:(() => Promise<void>) = () => {
+      if (condFunc) {
+        return eachFunc().then(loop);
+      } else {
+        return Promise.resolve();
+      }
+    };
+    return loop();
+  }
+
 }
