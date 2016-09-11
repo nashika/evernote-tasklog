@@ -1,33 +1,11 @@
-extends layout
-
-block script
-
-block content
-  div(ng-app='App', ng-controller='Controller', resize='resize')
-    nav.navbar.navbar-inverse.navbar-fixed-bottom(ng-controller='NavigationController')
-      .container-fluid
-        .navbar-header
-          button.navbar-toggle.collapsed(type='button', ng-click='navCollapse = !navCollapse')
-            span.sr-only Toggle Navigation
-            span.icon-bar
-            span.icon-bar
-            span.icon-bar
-          a.navbar-brand(href='/#/') #[span.fa.fa-tasks] Evernote Tasklog
-        .collapse.navbar-collapse(collapse='navCollapse')
-          ul.nav.navbar-nav(ng-click='navCollapse = true')
-            li(ng-class='{active: $route.current.templateUrl == "menu"}')
-              a(href='#/') #[span.fa.fa-th-large] Menu
-            li(ng-class='{active: $route.current.templateUrl == "timeline"}')
-              a(href='#/timeline') #[span.fa.fa-clock-o] Timeline
-            li(ng-class='{active: $route.current.templateUrl == "notes"}')
-              a(href='#/notes') #[span.fa.fa-files-o] Notes
-            li(ng-class='{active: $route.current.templateUrl == "settings"}')
-              a(href='#/settings') #[span.fa.fa-gear] Settings
-          form.navbar-form.navbar-right
-            button.btn.btn-primary(type='button', ng-click='navCollapse = true; reload()') Reload
-    div(ng-view)
-    include templates/menu
-    include templates/timeline
-    include templates/notes
-    include templates/settings
-    include templates/progress-modal
+doctype html
+html
+  head
+    base(href="/")
+    meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title blynk-bridge-watcher
+  body
+    div#app
+      div(style="text-align:center; margin:25%; font-size:300%; color:#666666;") Loading...
+    script(src="/dist/app.bundle.js", type="text/javascript")

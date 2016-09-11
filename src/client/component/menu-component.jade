@@ -1,0 +1,61 @@
+.container
+  .page-header
+    h1 #[span.fa.fa-tasks] Evernote Tasklog
+  .row
+    .col-md-4
+      h2 #[span.fa.fa-search] Note Filter
+      .well.h3
+        p #[span.fa.fa-2x.fa-files-o] {{noteCount}} notes.
+      form.form-horizontal
+        .form-group
+          label.col-sm-3.control-label Notebook
+          .col-sm-9
+            ui-select.form-control(multiple, v-model='dataTranscieverService.filterParams.notebookGuids', theme='select2')
+              ui-select-match(placeholder='Select notebooks...') {{$item.name}}
+              ui-select-choices(group-by='"stack"', repeat='notebook.guid as notebook in dataStoreService.notebooks | filterByProperty: {name: $select.search}')
+                div(ng-bind-html='notebook.name | highlight: $select.search')
+                small stack: {{notebook.stack ? notebook.stack : 'None'}}
+        .form-group
+          label.col-sm-3.control-label Stack
+          .col-sm-9
+            ui-select.form-control(multiple, ng-model='dataTranscieverService.filterParams.stacks', theme='select2')
+              ui-select-match(placeholder='Select stacks...') {{$item}}
+              ui-select-choices(repeat='stack in dataStoreService.stacks | filter: $select.search')
+                div(ng-bind-html='stack | highlight: $select.search')
+      button.btn.btn-primary.btn-lg.btn-block(type='button', @click='reload()') #[span.fa.fa-refresh] Reload
+    .col-md-4
+      h2 #[span.fa.fa-user] User Info
+      dl.dl-horizontal
+        dt Id
+        dd {{dataStore.user.id}}
+        dt Username
+        dd {{dataStore.user.username}}
+        dt Email
+        dd {{dataStore.user.email}}
+        dt Name
+        dd {{dataStore.user.name}}
+      a.btn.btn-danger.btn-block(href='/auth/logout') #[span.fa.fa-sign-out] Logout
+    .col-md-4
+      h2 #[span.fa.fa-database] Data Info
+      table.table.table-bordered.table-condensed.table-striped
+        tr
+          th
+          th Target
+          th All
+        tr
+          th Notes
+          td.text-right {{noteCount}}
+          td.text-right {{allNoteCount}}
+        tr
+          th Loaded Notes
+          td.text-right {{loadedNoteCount}}
+          td.text-right {{allLoadedNoteCount}}
+        //tr
+          th Time Logs
+          td.text-right {{timeLogCount}}
+          td.text-right {{allTimeLogCount}}
+        //tr
+          th Profit Logs
+          td.text-right {{profitLogCount}}
+          td.text-right {{allProfitLogCount}}
+      button.btn.btn-primary.btn-block(type='button', ng-click='dataTranscieverService.reParse()') #[span.fa.fa-industry] Re Parse Notes

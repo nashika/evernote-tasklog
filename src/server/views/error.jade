@@ -1,8 +1,9 @@
-extends layout
-
-block content
-  .container
-    .page-header
-      h1= message
-    h2= error.status
-    pre #{error.stack}
+doctype html
+html
+  base(href="/")
+  meta(charset="utf-8")
+  meta(name="viewport", content="width=device-width, initial-scale=1.0")
+  title Error. blynk-bridhe-watcher
+body
+  h1 #{error.status} #{error.message}
+  pre #{error.stack && error.stack.stack}

@@ -1,0 +1,19 @@
+table.table.table-bordered.table-striped.table-hover.table-condensed
+  tr
+    th Title
+    th(v-for="person in existPersons") {{person}}
+    th Total
+  tr(v-for="note in dataStoreService.notes")
+    td: a(href='evernote:///view/{{dataStoreService.user.id}}/{{dataStoreService.user.shardId}}/{{note.guid}}/{{note.guid}}/') {{note.title}}
+    td.text-right(v-for="person in existPersons.concat(['$total'])")
+      small(v-if="notesSpentTimes[note.guid][person]") ({{notesSpentTimes[note.guid][person] / notesSpentTimes[note.guid]['$total'] * 100 | number: 0}}%)&nbsp;
+      | {{notesSpentTimes[note.guid][person] | spentTime}}
+      br
+      | {{notesProfits[note.guid][person] | number: 0}}
+  tr
+    th Total
+    td.text-right(v-for="person in existPersons.concat('$total')")
+      small(v-if="notesSpentTimes['$total'][person]") ({{notesSpentTimes['$total'][person] / notesSpentTimes['$total']['$total'] * 100 | number: 0}}%)&nbsp;
+      | {{notesSpentTimes['$total'][person] | spentTime}}
+      br
+      | {{notesProfits['$total'][person] | number: 0}}

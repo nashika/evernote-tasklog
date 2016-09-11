@@ -1,0 +1,6 @@
+modal(title="Progress", :show.sync="show", effect="fade")
+  .modal-body(slot="modal-body")
+    progressbar(:now="progressService.value", type="primary", label, striped, animated)
+    .text-left {{progressService.message}}
+  .modal-footer(slot="modal-footer")
+    button.btn.btn-default(type="button", @click="show = false") Close

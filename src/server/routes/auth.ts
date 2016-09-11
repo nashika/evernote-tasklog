@@ -8,7 +8,25 @@ import {UserEntity} from "../../common/entity/user-entity";
 var router = express.Router();
 
 router.get('/', (req, res, next) => {
-  res.render('auth', {title: 'Login'});
+  if (!(req.session['evernote'] && req.session['evernote'].token)) {
+  } else {
+    var sandbox: boolean = req.session['evernote'].sandbox;
+    var token: string = req.session['evernote'].token;
+    var client: evernote.Evernote.Client = new evernote.Evernote.Client({
+      token: token,
+      sandbox: sandbox,
+    });
+    var userStore = client.getUserStore();
+    userStore.getUser((err, user) => {
+      if (err) return res.redirect('/auth');
+      req.session['evernote'].user = user;
+      req.session.save(() => {
+        core.www.initUser(user.username, token, sandbox).then(() => {
+          res.render('index', {title: 'Evernote Tasklog'});
+        });
+      });
+    });
+  }
 });
 
 router.get('/login', (req: express.Request, res: express.Response) => {
@@ -80,8 +98,8 @@ router.get('/logout', (req, res, next) => {
 });
 
 router.all('/token', (req, res, next) => {
-  var sandbox: boolean = (req.body.sandbox || req.query.token) ? true : false;
-  var token: string = req.body.token || req.query.token;
+  var sandbox: boolean = req.body.sandbox ? true : false;
+  var token: string = req.body.token;
   var checkToken = (sandbox: boolean, token: string) => {
     if (!token) return res.json(null);
     var _client = new evernote.Evernote.Client({

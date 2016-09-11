@@ -1,7 +1,7 @@
-body {
-  margin: 20px 20px 70px 20px;
-}
+@import "~font-awesome/css/font-awesome.css";
 
-.vis-item .vis-item-overflow {
-  overflow: visible;
-}
+@import "functions";
+@import "variables";
+@import "bootstrap";
+@import "mixins";
+@import "global";

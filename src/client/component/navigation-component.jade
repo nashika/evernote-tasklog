@@ -1,0 +1,21 @@
+mixin item(name, icon, label)
+  li(:class="{active: mode == '#{name}'}")
+    a #[span.fa(class="fa-#{icon}")] #{label}
+
+nav.navbar.navbar-inverse.navbar-fixed-bottom
+  .container-fluid
+    .navbar-header
+      button.navbar-toggle.collapsed(type="button", @click="navCollapse = !navCollapse")
+        span.sr-only Toggle Navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(href="/#/") #[span.fa.fa-tasks] Evernote Tasklog
+    .collapse.navbar-collapse(collapse="navCollapse")
+      ul.nav.navbar-nav(@click="navCollapse = true")
+        +item("menu", "th-large", "Menu")
+        +item("timeline", "fa-clock-o", "Timeline")
+        +item("notes", "files-o", "Notes")
+        +item("settings", "gear", "Settings")
+      form.navbar-form.navbar-right
+        button.btn.btn-primary(type="button", @click="navCollapse = true; reload()") Reload
