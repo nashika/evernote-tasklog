@@ -6,7 +6,7 @@ import {NotebookEntity} from "../../common/entity/notebook-entity";
 import {BaseService} from "./base-service";
 import {serviceRegistry} from "./service-registry";
 import {NoteEntity} from "../../common/entity/note-entity";
-import {MyPromise} from "../../common/util/my-promise";
+import {MyPromise, MyPromiseTerminateResult} from "../../common/util/my-promise";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 
@@ -53,7 +53,7 @@ export class DataTranscieverService extends BaseService {
     }).then(() => {
       // check settings
       if (!serviceRegistry.dataStore.settings["persons"] || serviceRegistry.dataStore.settings["persons"].length == 0)
-        return Promise.reject(new Error(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
+        return Promise.reject(new MyPromiseTerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
       // sync
       serviceRegistry.progress.next("Syncing remote server.");
       return request.get("/sync").then(() => {});
@@ -78,7 +78,7 @@ export class DataTranscieverService extends BaseService {
           let noteCount: number = res.body;
           if (noteCount > 100)
             if (!window.confirm(`Current query find ${noteCount} notes. It is too many. Continue anyway?`))
-              return Promise.reject("User Canceled");
+              return Promise.reject(new MyPromiseTerminateResult(`User Canceled`));
         });
       }).then(() => {
         // get notes
@@ -144,7 +144,8 @@ export class DataTranscieverService extends BaseService {
     }).catch(err => {
       alert(err);
       serviceRegistry.progress.close();
-      throw new Error(`HTTP request error. err=${err}`);
+      if (!(err instanceof MyPromiseTerminateResult))
+        throw new Error(`HTTP request error. err=${err}`);
     });
   }
 

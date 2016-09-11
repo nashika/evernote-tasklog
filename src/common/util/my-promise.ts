@@ -1,5 +1,16 @@
 import _ = require("lodash");
 
+export class MyPromiseTerminateResult {
+
+  constructor(public data: any) {
+  }
+
+  toString(): string {
+    return this.data;
+  }
+
+}
+
 export class MyPromise {
 
   public static eachFunctionSeries<T1>(collection: T1[], eachFunc: (resolve: () => void, reject: (err: any) => void, item: T1, key?: number) => void): Promise<void>;
@@ -47,7 +58,7 @@ export class MyPromise {
   }
 
   public static whilePromiseSeries(condFunc: () => boolean, eachFunc: () => Promise<void>): Promise<void> {
-    let loop:(() => Promise<void>) = () => {
+    let loop: (() => Promise<void>) = () => {
       if (condFunc()) {
         return eachFunc().then(loop);
       } else {

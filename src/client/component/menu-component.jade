@@ -10,30 +10,25 @@
         .form-group
           label.col-sm-3.control-label Notebook
           .col-sm-9
-            ui-select.form-control(multiple, v-model='dataTranscieverService.filterParams.notebookGuids', theme='select2')
-              ui-select-match(placeholder='Select notebooks...') {{$item.name}}
-              ui-select-choices(group-by='"stack"', repeat='notebook.guid as notebook in dataStoreService.notebooks | filterByProperty: {name: $select.search}')
-                div(ng-bind-html='notebook.name | highlight: $select.search')
-                small stack: {{notebook.stack ? notebook.stack : 'None'}}
+            v-select(:options="getNotebookOptions(dataStoreService.notebooks)", multiple,
+            :value.sync="dataTranscieverService.filterParams.notebookGuids", search, clear-button)
         .form-group
           label.col-sm-3.control-label Stack
           .col-sm-9
-            ui-select.form-control(multiple, ng-model='dataTranscieverService.filterParams.stacks', theme='select2')
-              ui-select-match(placeholder='Select stacks...') {{$item}}
-              ui-select-choices(repeat='stack in dataStoreService.stacks | filter: $select.search')
-                div(ng-bind-html='stack | highlight: $select.search')
-      button.btn.btn-primary.btn-lg.btn-block(type='button', @click='reload()') #[span.fa.fa-refresh] Reload
+            v-select(:options="getStackOptions(dataStoreService.stacks)", multiple,
+            :value.sync="dataTranscieverService.filterParams.stacks", search, clear-button)
+      button.btn.btn-primary.btn-lg.btn-block(type="button", @click="reload()") #[span.fa.fa-refresh] Reload
     .col-md-4
       h2 #[span.fa.fa-user] User Info
       dl.dl-horizontal
         dt Id
-        dd {{dataStore.user.id}}
+        dd {{dataStoreService.user && dataStoreService.user.id}}
         dt Username
-        dd {{dataStore.user.username}}
+        dd {{dataStoreService.user && dataStoreService.user.username}}
         dt Email
-        dd {{dataStore.user.email}}
+        dd {{dataStoreService.user && dataStoreService.user.email}}
         dt Name
-        dd {{dataStore.user.name}}
+        dd {{dataStoreService.user && dataStoreService.user.name}}
       button.btn.btn-danger.btn-block(type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
     .col-md-4
       h2 #[span.fa.fa-database] Data Info
@@ -58,4 +53,4 @@
           th Profit Logs
           td.text-right {{profitLogCount}}
           td.text-right {{allProfitLogCount}}
-      button.btn.btn-primary.btn-block(type='button', ng-click='dataTranscieverService.reParse()') #[span.fa.fa-industry] Re Parse Notes
+      button.btn.btn-primary.btn-block(type="button", @click="dataTranscieverService.reParse()") #[span.fa.fa-industry] Re Parse Notes

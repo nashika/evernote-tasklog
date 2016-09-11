@@ -19,10 +19,17 @@ export class ProgressModalComponent extends BaseComponent {
 
   progressService: ProgressService;
 
+  show: boolean;
+
   data(): any {
     return _.assign(super.data(), {
       progressService: serviceRegistry.progress,
+      show: false,
     });
+  }
+
+  ready() {
+    serviceRegistry.progress.register(this);
   }
 
 }

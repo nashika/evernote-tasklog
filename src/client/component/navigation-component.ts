@@ -29,7 +29,7 @@ export class NavigationComponent extends BaseComponent {
   }
 
   reload() {
-    this.$parent.$broadcast('event::reload');
+    this.$parent.$broadcast("reload");
   }
 
 }

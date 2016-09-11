@@ -1,34 +1,27 @@
 import {BaseService} from "./base-service";
+import {ProgressModalComponent} from "../component/progress-modal-component";
 
 export class ProgressService extends BaseService {
 
-  modalInstance: any = null;
-  value: number = 0;
-  completeCount: number = 0;
-  allCount: number = 0;
-  message: string = '';
+  private $component: ProgressModalComponent;
+  private value: number = 0;
+  private completeCount: number = 0;
+  private allCount: number = 0;
+  private message: string = "";
 
-  constructor() {
-    super();
+  register($component: ProgressModalComponent) {
+    this.$component = $component;
   }
 
   open(allCount: number): void {
-    this.message = 'processing...';
-    this.value = 0;
-    this.completeCount = 0;
     this.allCount = allCount;
-/*    this.modalInstance = this.$modal.open({
-      templateUrl: 'progress-modal',
-      controller: 'ProgressModalController',
-      backdrop: 'static',
-      keyboard: false,
-      size: 'sm',
-      animation: false,
-    });*/
-  };
+    this.completeCount = 0;
+    this.set("processing...", 0);
+    this.$component.show = true;
+  }
 
   close(): void {
-    this.modalInstance.close();
+    this.$component.show = false;
   }
 
   set(message: string, value: number = null): void {
@@ -37,7 +30,7 @@ export class ProgressService extends BaseService {
       this.value = value;
   }
 
-  next = (message: string): void => {
+  next(message: string): void {
     this.completeCount++;
     this.set(message, this.completeCount / this.allCount * 100);
   }

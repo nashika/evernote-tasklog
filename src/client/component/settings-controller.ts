@@ -33,15 +33,11 @@ export class SettingsComponent extends BaseComponent {
   editStore: {[key: string]: any};
   fields: {[field: string]: {[key: string]: any}};
 
-  get Class(): typeof SettingsComponent {
-    return <typeof SettingsComponent>this.constructor;
-  }
-
   data(): any {
     return _.assign(super.data(), {
       dataStoreService: serviceRegistry.dataStore,
       editStore: {},
-      fields: this.Class.FIELDS,
+      fields: (<typeof SettingsComponent>this.constructor).FIELDS,
     });
 
 /*    for (var fieldName in (<typeof SettingsController>this.constructor).FIELDS)

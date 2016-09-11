@@ -1,20 +1,28 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
+var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
 import {serviceRegistry} from "../service/service-registry";
 import {DataTranscieverService} from "../service/data-transciever-service";
 import {DataStoreService} from "../service/data-store-service";
 import {AppComponent} from "./app-component";
+import {NotebookEntity} from "../../common/entity/notebook-entity";
 
 let template = require("./menu-component.jade");
 
 @Component({
   template: template,
-  components: {},
-  ready: MenuComponent.prototype.onReady,
-  //this.$scope.$watchGroup(['dataTransciever.filterParams.notebookGuids', 'dataTransciever.filterParams.stacks'], this._onWatchFilterParams);
-  //this.$scope.$on('event::reload', this._onReload);
+  components: {
+    vSelect: VueStrap.select,
+  },
+  watch: {
+    "dataTranscieverService.filterParams.notebookGuids": "onWatchFilterParams",
+    "dataTranscieverService.filterParams.stacks": "onWatchFilterParams",
+  },
+  events: {
+    "reload": "reload",
+  },
 })
 export class MenuComponent extends BaseComponent {
 
@@ -46,56 +54,53 @@ export class MenuComponent extends BaseComponent {
     });
   }
 
-  onReady() {
+  ready() {
     this.reload();
   }
 
   reload() {
     this.dataTranscieverService.reload({getContent: false});
-  };
-/*
-  protected _onWatchFilterParams = (): void => {
-    async.waterfall([
-      (callback: (err?: Error) => void) => {
-        this.dataTransciever.countNotes({}, (err: Error, count: number) => {
-          if (!err) this.$scope.noteCount = count;
-          callback(err);
-        });
-      },
-      (callback: (err?: Error) => void) => {
-        this.dataTransciever.countNotes({noFilter: true}, (err: Error, count: number) => {
-          if (!err) this.$scope.allNoteCount = count;
-          callback(err);
-        });
-      },
-      (callback: (err?: Error) => void) => {
-        this.dataTransciever.countNotes({hasContent: true}, (err: Error, count: number) => {
-          if (!err) this.$scope.loadedNoteCount = count;
-          callback(err);
-        });
-      },
-      (callback: (err?: Error) => void) => {
-        this.dataTransciever.countNotes({hasContent: true, noFilter: true}, (err: Error, count: number) => {
-          if (!err) this.$scope.allLoadedNoteCount = count;
-          callback(err);
-        });
-      },
-      (callback: (err?: Error) => void) => {
-        this.dataTransciever.countTimeLogs({}, (err: Error, count: number) => {
-          if (!err) this.$scope.timeLogCount = count;
-          callback(err);
-        });
-      },
-      (callback: (err?: Error) => void) => {
-        this.dataTransciever.countTimeLogs({noFilter: true}, (err: Error, count: number) => {
-          if (!err) this.$scope.allTimeLogCount = count;
-          callback(err);
-        });
-      },
-    ], (err?: Error): void => {
-      if (err) alert(err);
+  }
+
+  onWatchFilterParams() {
+    Promise.resolve().then(() => {
+      return this.dataTranscieverService.countNotes({}).then(count => {
+        this.noteCount = count;
+      });
+    }).then(() => {
+      return this.dataTranscieverService.countNotes({noFilter: true}).then(count => {
+        this.allNoteCount = count;
+      });
+    }).then(() => {
+      return this.dataTranscieverService.countNotes({hasContent: true}).then(count => {
+        this.loadedNoteCount = count;
+      });
+    }).then(() => {
+      return this.dataTranscieverService.countNotes({hasContent: true, noFilter: true}).then(count => {
+        this.allLoadedNoteCount = count;
+      });
+    }).then(() => {
+      return this.dataTranscieverService.countTimeLogs({}).then(count => {
+        this.timeLogCount = count;
+      });
+    }).then(() => {
+      return this.dataTranscieverService.countTimeLogs({noFilter: true}).then(count => {
+        this.allTimeLogCount = count;
+      });
+    }).catch(err => alert(err));
+  }
+
+  getNotebookOptions(notebooks: {[guid: string]: NotebookEntity}): {value:string, label:string}[] {
+    return _.map(notebooks, (notebook: NotebookEntity) => {
+      return {value: notebook.guid, label: notebook.name};
     });
-  }*/
+  }
+
+  getStackOptions(stacks: string[]): {value: string, label: string}[] {
+    return _.map(stacks, (stack:string) => {
+      return {value: stack, label: stack};
+    });
+  }
 
   logout() {
     serviceRegistry.auth.logout().then(() => {

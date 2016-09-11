@@ -8,9 +8,9 @@ import {BaseService} from "./base-service";
 export class DataStoreService extends BaseService {
 
   user: UserEntity;
-  persons: Array<Object>;
+  persons: Object[];
   notebooks: {[guid: string]: NotebookEntity};
-  stacks: Array<string>;
+  stacks: string[];
   notes: {[guid: string]: NoteEntity};
   timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}};
   profitLogs: {[noteGuid: string]: {[_id: string]: ProfitLogEntity}};

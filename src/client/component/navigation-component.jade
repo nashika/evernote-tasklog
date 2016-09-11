@@ -1,6 +1,6 @@
 mixin item(name, icon, label)
   li(:class="{active: mode == '#{name}'}")
-    a #[span.fa(class="fa-#{icon}")] #{label}
+    a(@click="mode = '#{name}'") #[span.fa(class="fa-#{icon}")] #{label}
 
 nav.navbar.navbar-inverse.navbar-fixed-bottom
   .container-fluid
@@ -14,7 +14,7 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom
     .collapse.navbar-collapse(collapse="navCollapse")
       ul.nav.navbar-nav(@click="navCollapse = true")
         +item("menu", "th-large", "Menu")
-        +item("timeline", "fa-clock-o", "Timeline")
+        +item("timeline", "clock-o", "Timeline")
         +item("notes", "files-o", "Notes")
         +item("settings", "gear", "Settings")
       form.navbar-form.navbar-right
