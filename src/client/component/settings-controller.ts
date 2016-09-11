@@ -1,5 +1,6 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
+var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
 import {DataStoreService} from "../service/data-store-service";
@@ -7,27 +8,31 @@ import {serviceRegistry} from "../service/service-registry";
 
 let template = require("./settings-component.jade");
 
+let fields: {[fieldName: string]: {[key: string]: any}} = {
+  persons: {
+    reParse: true,
+    reload: true,
+  },
+  startWorkingTime: {
+    heading: 'Start Working Time',
+    type: 'number',
+  },
+  endWorkingTime: {
+    heading: 'End Working Time',
+    type: 'number',
+  },
+};
+
 @Component({
   template: template,
-  components: {},
+  components: {
+    tabs: VueStrap.tabset,
+    tabGroup: VueStrap.tabGroup,
+    tab: VueStrap.tab,
+  },
   ready: SettingsComponent.prototype.onReload,
 })
 export class SettingsComponent extends BaseComponent {
-
-  static FIELDS: {[fieldName: string]: {[key: string]: any}} = {
-    persons: {
-      reParse: true,
-      reload: true,
-    },
-    startWorkingTime: {
-      heading: 'Start Working Time',
-      type: 'number',
-    },
-    endWorkingTime: {
-      heading: 'End Working Time',
-      type: 'number',
-    },
-  };
 
   dataStoreService: DataStoreService;
   editStore: {[key: string]: any};
@@ -36,8 +41,10 @@ export class SettingsComponent extends BaseComponent {
   data(): any {
     return _.assign(super.data(), {
       dataStoreService: serviceRegistry.dataStore,
-      editStore: {},
-      fields: (<typeof SettingsComponent>this.constructor).FIELDS,
+      editStore: {
+        persons: [],
+      },
+      fields: fields,
     });
 
 /*    for (var fieldName in (<typeof SettingsController>this.constructor).FIELDS)
@@ -60,8 +67,6 @@ export class SettingsComponent extends BaseComponent {
   }
 
   add() {
-    if (!this.editStore["persons"])
-      this.editStore["persons"] = [];
     this.editStore["persons"].push({name: `Person ${this.editStore["persons"].length + 1}`});
   }
 
