@@ -7,7 +7,7 @@ import {UserEntity} from "../../common/entity/user-entity";
 
 var router = express.Router();
 
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
   if (!(req.session['evernote'] && req.session['evernote'].token)) {
   } else {
     var sandbox: boolean = req.session['evernote'].sandbox;
