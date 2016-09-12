@@ -8,13 +8,13 @@ export class SettingsRoute extends BaseRoute {
 
   getRouter(): Router {
     let _router = Router();
-    _router.get("/", this.onIndex);
-    _router.put("/save", this.onSave);
+    _router.post("/", this.onIndex);
+    _router.post("/save", this.onSave);
     return _router;
   }
 
   onIndex = (req: Request, res: Response) => {
-    let key = req.query.key || null;
+    let key = req.body.key || null;
     core.users[req.session["evernote"].user.username].models.settings.loadLocal(key).then(settings => {
       res.json(settings);
     }).catch(err => this.responseErrorJson(res, err));

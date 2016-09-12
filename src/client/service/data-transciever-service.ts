@@ -39,14 +39,14 @@ export class DataTranscieverService extends BaseService {
       // get user
       if (serviceRegistry.dataStore.user) return;
       serviceRegistry.progress.next("Getting user data.");
-      return request.get("/user").then(res => {
+      return request.post("/user").then(res => {
         let data: UserEntity = res.body;
         serviceRegistry.dataStore.user = data;
       });
     }).then(() => {
       // get settings
       serviceRegistry.progress.next("Getting settings data.");
-      return request.get("/settings").then(res => {
+      return request.post("/settings").then(res => {
         let data: {[key: string]: any} = res.body;
         serviceRegistry.dataStore.settings = res.body;
       });
@@ -56,11 +56,11 @@ export class DataTranscieverService extends BaseService {
         return Promise.reject(new MyPromiseTerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
       // sync
       serviceRegistry.progress.next("Syncing remote server.");
-      return request.get("/sync").then(() => {});
+      return request.post("/sync").then(() => {});
     }).then(() => {
       // get notebooks
       serviceRegistry.progress.next("Getting notebooks data.");
-      return request.get("/notebooks").then(res => {
+      return request.post("/notebooks").then(res => {
         let data: NotebookEntity[] = res.body;
         serviceRegistry.dataStore.notebooks = {};
         let stackHash: {[stack: string]: boolean} = {};
@@ -74,7 +74,7 @@ export class DataTranscieverService extends BaseService {
       if (params.getContent) return Promise.resolve().then(() => {
         // get note count
         serviceRegistry.progress.next("Getting notes count.");
-        return request.get("/notes/count").query({query: noteQuery}).then(res => {
+        return request.post("/notes/count").send({query: noteQuery}).then(res => {
           let noteCount: number = res.body;
           if (noteCount > 100)
             if (!window.confirm(`Current query find ${noteCount} notes. It is too many. Continue anyway?`))
@@ -83,7 +83,7 @@ export class DataTranscieverService extends BaseService {
       }).then(() => {
         // get notes
         serviceRegistry.progress.next("Getting notes.");
-        return request.get("/notes").query({query: noteQuery}).then(res => {
+        return request.post("/notes").send({query: noteQuery}).then(res => {
           let data: NoteEntity[] = res.body;
           serviceRegistry.dataStore.notes = {};
           for (var note of data)
@@ -93,10 +93,10 @@ export class DataTranscieverService extends BaseService {
         // get content from remote
         serviceRegistry.progress.next("Request remote contents.");
         let count = 0;
-        return MyPromise.eachFunctionSeries(serviceRegistry.dataStore.notes, (resolve, reject, note, noteGuid) => {
+        return MyPromise.eachPromiseSeries(serviceRegistry.dataStore.notes, (note, noteGuid) => {
           serviceRegistry.progress.set(`Request remote contents. ${++count} / ${Object.keys(serviceRegistry.dataStore.notes).length}`);
           if (!note.hasContent)
-            return request.get("/notes/get-content").query({query: {guid: noteGuid}}).then(res => {
+            return request.post("/notes/get-content").send({query: {guid: noteGuid}}).then(res => {
               let data: NoteEntity[] = res.body;
               for (note of data)
                 serviceRegistry.dataStore.notes[note.guid] = note;
@@ -153,7 +153,7 @@ export class DataTranscieverService extends BaseService {
     serviceRegistry.progress.open(2);
     serviceRegistry.progress.next("Re Parse notes...");
     return Promise.resolve().then(() => {
-      request.get("/notes/re-parse").then(req => {
+      request.post("/notes/re-parse").then(req => {
         serviceRegistry.progress.next("Done.");
         serviceRegistry.progress.close();
       }).catch(err => {
@@ -165,7 +165,7 @@ export class DataTranscieverService extends BaseService {
 
   countNotes(params: DataTranscieverServiceParams): Promise<number> {
     let query = this._makeNoteQuery(params);
-    return request.get("/notes/count").query({query: query}).then(req => {
+    return request.post("/notes/count").send({query: query}).then(req => {
       let data: number = req.body;
       return data;
     });
@@ -173,7 +173,7 @@ export class DataTranscieverService extends BaseService {
 
   countTimeLogs(params: DataTranscieverServiceParams): Promise<number> {
     let query = this._makeTimeLogQuery(params);
-    return request.get("/time-logs/count").query({query: query}).then(req => {
+    return request.post("/time-logs/count").send({query: query}).then(req => {
       let data: number = req.body;
       return data;
     });
@@ -202,12 +202,9 @@ export class DataTranscieverService extends BaseService {
             if (stack == notebook.stack)
               notebooksHash[notebook.guid] = true;
           }
-      // set notebooks query checked before
-      var notebooksArray = Object.keys(notebooksHash);
-      if (notebooksArray.length == 1)
-        _.merge(result, {notebookGuid: notebooksArray});
-      else if (notebooksArray.length > 1)
-        _.merge(result, {notebookGuid: {$in: notebooksArray}});
+      // set notebooks query
+      if (_.size(notebooksHash) > 0)
+        _.merge(result, {notebookGuid: {$in: _.keys(notebooksHash)}});
     }
     return result;
   };
@@ -224,9 +221,7 @@ export class DataTranscieverService extends BaseService {
     }
     // set note guids query
     if (params.noteGuids)
-      if (params.noteGuids.length == 1)
-        _.merge(result, {noteGuid: params.noteGuids});
-      else if (params.noteGuids.length > 1)
+      if (params.noteGuids.length > 0)
         _.merge(result, {noteGuid: {$in: params.noteGuids}});
     return result;
   };

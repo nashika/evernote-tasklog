@@ -8,12 +8,12 @@ export class NotebooksRoute extends BaseRoute {
 
   getRouter(): Router {
     let _router = Router();
-    _router.get("/", this.onIndex);
+    _router.post("/", this.onIndex);
     return _router;
   }
 
   onIndex = (req: Request, res: Response) => {
-    core.users[req.session['evernote'].user.username].models.notebooks.findLocal(req.query).then(notebooks => {
+    core.users[req.session['evernote'].user.username].models.notebooks.findLocal(req.body).then(notebooks => {
       res.json(notebooks);
     }).catch(err => this.responseErrorJson(res, err));
   }

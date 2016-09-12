@@ -16,7 +16,7 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, MultiTableOp
       let matches: string[];
       if (matches = line.match(/(.*)[@＠][\\￥$＄](.+)/i)) {
         profitLogs.push({
-          _id: null,
+          _id: undefined,
           noteGuid: note.guid,
           comment: matches[1],
           profit: parseInt(matches[2].replace(/,/g, '')),

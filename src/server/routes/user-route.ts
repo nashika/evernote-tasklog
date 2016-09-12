@@ -8,7 +8,7 @@ export class UserRoute extends BaseRoute {
 
   getRouter(): Router {
     let _router = Router();
-    _router.get("/", this.onIndex);
+    _router.post("/", this.onIndex);
     return _router;
   }
 

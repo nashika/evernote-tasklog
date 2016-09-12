@@ -8,12 +8,12 @@ export class SyncRoute extends BaseRoute {
 
   getRouter(): Router {
     let _router = Router();
-    _router.get("/", this.onIndex);
+    _router.post("/", this.onIndex);
     return _router;
   }
 
   onIndex = (req: Request, res: Response) => {
-    core.www.sync(req.session['evernote'].user.username).then(() => {
+    core.www.sync(req.session["evernote"].user.username).then(() => {
       res.json('OK');
     }).catch(err => this.responseErrorJson(res, err));
   };

@@ -1,10 +1,14 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
+import moment = require("moment");
+let vis = require("vis");
+
 import {BaseComponent} from "./base-component";
 import {DataStoreService} from "../service/data-store-service";
 import {serviceRegistry} from "../service/service-registry";
-
-declare var vis: any;
+import {NoteEntity} from "../../common/entity/note-entity";
+import {abbreviateFilter} from "../filter/abbreviate";
+import {TimeLogEntity} from "../../common/entity/time-log-entity";
 
 let template = require("./timeline-component.jade");
 
@@ -20,11 +24,11 @@ interface TimelineItem {
 @Component({
   template: template,
   components: {},
-  ready: TimelineComponent.prototype.onReload,
 })
 export class TimelineComponent extends BaseComponent {
 
   dataStoreService: DataStoreService;
+  timeline: any;
   timelineItems: any;
   timelineGroups: any;
   start: moment.Moment;
@@ -33,6 +37,7 @@ export class TimelineComponent extends BaseComponent {
   data(): any {
     return _.assign(super.data(), {
       dataStoreService: serviceRegistry.dataStore,
+      timeline: null,
       timelineItems: new vis.DataSet(),
       timelineGroups: new vis.DataSet(),
       start: moment().startOf("day"),
@@ -40,102 +45,108 @@ export class TimelineComponent extends BaseComponent {
     });
   }
 
-  onReload() {
-/*    this.dataTransciever.reload({start: this.$scope.start, end: this.$scope.end, getContent: true}, () => {
-      var container = document.getElementById('timeline');
+  ready() {
+    this.reload();
+  }
+
+  reload() {
+    serviceRegistry.dataTransciever.reload({start: this.start, end: this.end, getContent: true}).then(() => {
+      let container:HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
       // set working time
-      var hiddenDates: Array<{start: moment.Moment, end: moment.Moment, repeat: string}>;
-      if (this.dataStore.settings && this.dataStore.settings['startWorkingTime'] && this.dataStore.settings['endWorkingTime'])
+      let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
+      if (serviceRegistry.dataStore.settings && serviceRegistry.dataStore.settings["startWorkingTime"] && serviceRegistry.dataStore.settings["endWorkingTime"])
         hiddenDates = [{
-          start: moment().subtract(1, 'days').startOf('day').hour(this.dataStore.settings['endWorkingTime']),
-          end: moment().startOf('day').hour(this.dataStore.settings['startWorkingTime']),
-          repeat: 'daily',
+          start: moment().subtract(1, "days").startOf("day").hour(serviceRegistry.dataStore.settings["endWorkingTime"]),
+          end: moment().startOf("day").hour(serviceRegistry.dataStore.settings["startWorkingTime"]),
+          repeat: "daily",
         }];
       else
         hiddenDates = [];
       // generate timeline object
-      this.$scope['timeline'] = new vis.Timeline(container, this.$scope.timelineItems, this.$scope.timelineGroups, {
+      this.timeline = new vis.Timeline(container, this.timelineItems, this.timelineGroups, {
         margin: {item: 5},
         height: window.innerHeight - 80,
-        orientation: {axis: 'both', item: 'top'},
-        start: this.$scope.start,
-        end: this.$scope.end,
+        orientation: {axis: "both", item: "top"},
+        start: this.start,
+        end: this.end,
         order: (a: TimelineItem, b: TimelineItem) => {
           return a.start.getTime() - b.start.getTime();
         },
         hiddenDates: hiddenDates,
       });
       // set person data
-      if (!this.dataStore.settings || !this.dataStore.settings['persons']) return;
-      for (var person of this.dataStore.settings['persons'])
-        this.$scope.timelineGroups.add({
+      if (!serviceRegistry.dataStore.settings || !serviceRegistry.dataStore.settings["persons"]) return;
+      for (let person of serviceRegistry.dataStore.settings["persons"])
+        this.timelineGroups.add({
           id: person.name,
           content: person.name,
         });
-      this.$scope.timelineGroups.add({
-        id: 'updated',
-        content: 'Update',
+      this.timelineGroups.add({
+        id: "updated",
+        content: "Update",
       });
       // add events
-      this.$scope['timeline'].on('rangechanged', this._onRangeChanged);
-      this.$scope.$on('resize::resize', this._onResize);
-      this.$scope.$on('event::reload', this._onReload);
+      this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
+      this.$on("resize", this.onResize);
+      this.$on("reload", this.onReload);
       // reload
-      this._onReloadEnd();
-    });*/
+      this.onReloadEnd();
+    });
   }
-/*
-  protected _onRangeChanged = (properties: {start: Date, end: Date}): void => {
-    var currentStart = moment(properties.start).startOf('day');
-    var currentEnd = moment(properties.end).endOf('day');
-    if (currentStart.isSameOrAfter(this.$scope.start) && currentEnd.isSameOrBefore(this.$scope.end))
+
+  onRangeChanged(properties: {start: Date, end: Date}) {
+    let currentStart = moment(properties.start).startOf("day");
+    let currentEnd = moment(properties.end).endOf("day");
+    if (currentStart.isSameOrAfter(this.start) && currentEnd.isSameOrBefore(this.end))
       return;
-    if (!this.$scope.start || currentStart.isBefore(this.$scope.start)) this.$scope.start = currentStart;
-    if (!this.$scope.end || currentEnd.isAfter(this.$scope.end)) this.$scope.end = currentEnd;
-    this._onReload();
+    if (!this.start || currentStart.isBefore(this.start)) this.start = currentStart;
+    if (!this.end || currentEnd.isAfter(this.end)) this.end = currentEnd;
+    this.onReload();
   };
 
-  protected _onReload = (): void => {
-    this.dataTransciever.reload({start: this.$scope.start, end: this.$scope.end, getContent: true}, this._onReloadEnd);
-  }
+  onReload() {
+    serviceRegistry.dataTransciever.reload({start: this.start, end: this.end, getContent: true}).then(() => {
+      this.onReloadEnd();
+    });
+  };
 
-  protected _onReloadEnd = (): void => {
-    this.$scope.timelineItems.clear();
-    var notes: {[noteGuid: string]: NoteEntity} = {};
-    for (var noteGuid in this.dataStore.notes) {
-      var note: NoteEntity = this.dataStore.notes[noteGuid];
+  onReloadEnd() {
+    this.timelineItems.clear();
+    let notes: {[noteGuid: string]: NoteEntity} = {};
+    for (var noteGuid in serviceRegistry.dataStore.notes) {
+      let note: NoteEntity = serviceRegistry.dataStore.notes[noteGuid];
       notes[note.guid] = note;
-      var timelineItem: TimelineItem = {
+      let timelineItem: TimelineItem = {
         id: note.guid,
-        group: 'updated',
-        content: `<a href="evernote:///view/${this.dataStore.user.id}/${this.dataStore.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${(<any>this.$filter('abbreviate'))(note.title, 40)}</a>`,
+        group: "updated",
+        content: `<a href="evernote:///view/${serviceRegistry.dataStore.user.id}/${serviceRegistry.dataStore.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${abbreviateFilter(note.title, 40)}</a>`,
         start: moment(note.updated).toDate(),
-        type: 'point',
-      }
-      this.$scope.timelineItems.add(timelineItem);
+        type: "point",
+      };
+      this.timelineItems.add(timelineItem);
     }
-    for (var noteGuid in this.dataStore.timeLogs) {
-      var noteTimeLogs = this.dataStore.timeLogs[noteGuid];
+    for (let noteGuid in serviceRegistry.dataStore.timeLogs) {
+      let noteTimeLogs = serviceRegistry.dataStore.timeLogs[noteGuid];
       for (var timeLogId in noteTimeLogs) {
-        var timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
-        var noteTitle: string = notes[timeLog.noteGuid].title;
-        var timelineItem: TimelineItem = {
+        let timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
+        let noteTitle: string = notes[timeLog.noteGuid].title;
+        let timelineItem: TimelineItem = {
           id: timeLog._id,
           group: timeLog.person,
-          content: `<a href="evernote:///view/${this.dataStore.user['id']}/${this.dataStore.user['shardId']}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${noteTitle} ${timeLog.comment}">${(<any>this.$filter('abbreviate'))(noteTitle, 20)} ${(<any>this.$filter('abbreviate'))(timeLog.comment, 20)}</a>`,
+          content: `<a href="evernote:///view/${serviceRegistry.dataStore.user["id"]}/${serviceRegistry.dataStore.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${noteTitle} ${timeLog.comment}">${abbreviateFilter(noteTitle, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
           start: moment(timeLog.date).toDate(),
           end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
           type: timeLog.spentTime ? 'range' : 'point',
-        }
-        this.$scope.timelineItems.add(timelineItem);
+        };
+        this.timelineItems.add(timelineItem);
       }
     }
   };
 
-  protected _onResize = (): void => {
-    this.$scope['timeline'].setOptions({
+  onResize() {
+    this.timeline.setOptions({
       height: window.innerHeight - 90,
     });
-  }
-*/
+  };
+
 }

@@ -8,13 +8,12 @@ export class ProfitLogsRoute extends BaseRoute {
 
   getRouter(): Router {
     let _router = Router();
-    _router.get("/", this.onIndex);
+    _router.post("/", this.onIndex);
     return _router;
   }
 
   onIndex = (req: Request, res: Response) => {
-    let params = req.query || {};
-    core.users[req.session["evernote"].user.username].models.profitLogs.findLocal(params).then(profitLogs => {
+    core.users[req.session["evernote"].user.username].models.profitLogs.findLocal(req.body).then(profitLogs => {
       res.json(profitLogs);
     }).catch(err => this.responseErrorJson(res, err));
   };

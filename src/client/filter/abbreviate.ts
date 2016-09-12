@@ -1,6 +1,6 @@
 import Vue = require("vue");
 
-Vue.filter("abbreviate", function (text: string, len: number = 10, truncation: string = '...') {
+export function abbreviateFilter(text: string, len: number = 10, truncation: string = '...') {
   let count = 0;
   let str = "";
   for (var i = 0; i < text.length; i++) {
@@ -10,4 +10,6 @@ Vue.filter("abbreviate", function (text: string, len: number = 10, truncation: s
     str += text.charAt(i);
   }
   return text;
-});
+}
+
+Vue.filter("abbreviate", abbreviateFilter);

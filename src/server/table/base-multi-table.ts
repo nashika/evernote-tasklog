@@ -76,9 +76,9 @@ export class BaseMultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions
     if (arrDocs.length == 0) return Promise.resolve();
     core.loggers.system.debug(`Save local ${this.Class.PLURAL_NAME} was started. docs.count=${arrDocs.length}`);
     return MyPromise.eachFunctionSeries<T1>(arrDocs, (resolve, reject, doc) => {
-      core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. guid=${doc.guid}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
-      this._datastore.update({guid: doc.guid}, doc, {upsert: true}, (err: Error, numReplaced: number) => {
-        core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}. guid=${doc.guid}, numReplaced=${numReplaced}`);
+      core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. _id=${doc._id}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
+      this._datastore.update({_id: doc._id}, doc, {upsert: true}, (err: Error, numReplaced: number) => {
+        core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}. _id=${doc._id}, numReplaced=${numReplaced}`);
         if (err) return reject(err);
         resolve();
       });
@@ -97,11 +97,11 @@ export class BaseMultiTable<T1 extends MultiEntity, T2 extends MultiTableOptions
         if (err) return reject(err);
         var localDoc: T1 = (docs.length == 0) ? null : docs[0];
         if (localDoc && localDoc.updateSequenceNum >= doc.updateSequenceNum) {
-          core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was skipped. guid=${doc.guid}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
+          core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was skipped. _id=${doc._id}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
           resolve();
         } else {
-          core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. guid=${doc.guid}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
-          this._datastore.db[this.Class.PLURAL_NAME].update({guid: doc.guid}, doc, {upsert: true}, (err: any, numReplaced?: number) => {
+          core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. guid=${doc._id}, title=${(<any>doc)[this.Class.TITLE_FIELD]}`);
+          this._datastore.db[this.Class.PLURAL_NAME].update({_id: doc._id}, doc, {upsert: true}, (err: any, numReplaced?: number) => {
             if (err) return reject(err);
             core.loggers.system.trace(`Upsert local ${this.Class.PLURAL_NAME} was succeed. guid=${doc.guid}, numReplaced=${numReplaced}`);
             resolve();

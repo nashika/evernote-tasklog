@@ -11,7 +11,7 @@ export class AuthRoute extends BaseRoute {
 
   getRouter(): Router {
     let _router = Router();
-    _router.get("/", this.onIndex);
+    _router.post("/", this.onIndex);
     _router.post("/login", this.onLogin);
     _router.post("/callback", this.onCallback);
     _router.post("/logout", this.onLogout);

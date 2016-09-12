@@ -20,6 +20,7 @@ let webpackConfig:webpack.Configuration = {
       {test: /\.jade$/, loaders: ["raw", "jade-html"], },
       {test: /\.css$/, loaders: ["style", "css"], },
       {test: /\.scss$/, loaders: ["style", "css", "sass"], },
+      {test: /\.(jpg|jpeg|png|gif)$/, loader: "url"},
       {test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/, loader: "url", query: {prefix: "dist/fonts/", name:"fonts/[name].[ext]", limit: 10000, mimetype: "application/font-woff"}},
       {test: /\.(ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/, loader: "file", query: {name: "fonts/[name].[ext]"}},
     ],

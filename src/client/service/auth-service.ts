@@ -19,7 +19,7 @@ export class AuthService extends BaseService {
   }
 
   public check(): Promise<boolean> {
-    return request.get("/auth").then(req => {
+    return request.post("/auth").then(req => {
       let data: boolean = req.body;
       return data;
     });

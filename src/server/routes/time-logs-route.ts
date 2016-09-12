@@ -8,20 +8,19 @@ export class TimeLogsRoute extends BaseRoute {
 
   getRouter(): Router {
     let _router = Router();
-    _router.all("/", this.onIndex);
-    _router.get("/count", this.onCount);
+    _router.post("/", this.onIndex);
+    _router.post("/count", this.onCount);
     return _router;
   }
 
   onIndex = (req: Request, res: Response) => {
-    let params = this.mergeParams(req);
-    core.users[req.session["evernote"].user.username].models.timeLogs.findLocal(params).then(timeLogs => {
+    core.users[req.session["evernote"].user.username].models.timeLogs.findLocal(req.body).then(timeLogs => {
       res.json(timeLogs);
     }).catch(err => this.responseErrorJson(res, err));
   };
 
   onCount = (req: Request, res: Response) => {
-    core.users[req.session["evernote"].user.username].models.timeLogs.countLocal(req.query).then(count => {
+    core.users[req.session["evernote"].user.username].models.timeLogs.countLocal(req.body).then(count => {
       res.json(count);
     }).catch(err => this.responseErrorJson(res, err));
   };
