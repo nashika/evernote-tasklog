@@ -1,5 +1,6 @@
 modal(title="Progress", :show.sync="show", small, :backdrop="false")
   .modal-body(slot="modal-body")
-    progressbar(:now="progressService.value", type="primary", label, striped, animated)
+    .progress
+      progressbar(:now="value", type="primary", striped)
   .modal-footer(slot="modal-footer")
-    .text-left {{progressService.message}}
+    .text-left {{message}}

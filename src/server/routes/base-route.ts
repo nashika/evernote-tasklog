@@ -66,10 +66,4 @@ export abstract class BaseRoute {
     return {code: code, message: message, stack: stack};
   }
 
-  protected mergeParams(req: {body: any, query: any}): Object {
-    var body = req['body'] || {};
-    var query = req['query'] || {};
-    return _.merge({}, body, query);
-  }
-
 }

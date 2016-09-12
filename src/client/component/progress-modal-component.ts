@@ -2,7 +2,6 @@ import Component from "vue-class-component";
 import _ = require("lodash");
 var VueStrap = require("vue-strap");
 
-import {ProgressService} from "../service/progress-service";
 import {BaseComponent} from "./base-component";
 import {serviceRegistry} from "../service/service-registry";
 
@@ -17,14 +16,19 @@ let template = require("./progress-modal-component.jade");
 })
 export class ProgressModalComponent extends BaseComponent {
 
-  progressService: ProgressService;
-
   show: boolean;
+  value: number;
+  completeCount: number;
+  allCount: number;
+  message: string;
 
   data(): any {
     return _.assign(super.data(), {
-      progressService: serviceRegistry.progress,
       show: false,
+      value: 0,
+      completeCount: 0,
+      allCount: 0,
+      message: "",
     });
   }
 

@@ -11,7 +11,6 @@ let template = require("./auth-component.jade");
 @Component({
   template: template,
   components: {},
-  ready: AuthComponent.prototype.onReady,
 })
 export class AuthComponent extends BaseComponent {
 
@@ -29,7 +28,8 @@ export class AuthComponent extends BaseComponent {
     });
   }
 
-  onReady() {
+  ready() {
+    super.ready();
     serviceRegistry.auth.check().then(result => {
       if (result) {
         this.$parent.mode = "menu";

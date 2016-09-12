@@ -55,11 +55,14 @@ export class MenuComponent extends BaseComponent {
   }
 
   ready() {
-    this.reload();
+    super.ready();
+    this.reload().then(() => {
+      this.onWatchFilterParams();
+    });
   }
 
-  reload() {
-    this.dataTranscieverService.reload({getContent: false});
+  reload(): Promise<void> {
+    return this.dataTranscieverService.reload({getContent: false});
   }
 
   onWatchFilterParams() {
@@ -87,7 +90,7 @@ export class MenuComponent extends BaseComponent {
       return this.dataTranscieverService.countTimeLogs({noFilter: true}).then(count => {
         this.allTimeLogCount = count;
       });
-    }).catch(err => alert(err));
+    });
   }
 
   getNotebookOptions(notebooks: {[guid: string]: NotebookEntity}): {value:string, label:string}[] {
@@ -106,6 +109,10 @@ export class MenuComponent extends BaseComponent {
     serviceRegistry.auth.logout().then(() => {
       this.$parent.mode = "auth";
     });
+  }
+
+  reParse() {
+    serviceRegistry.dataTransciever.reParse();
   }
 
 }

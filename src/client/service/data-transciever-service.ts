@@ -204,7 +204,9 @@ export class DataTranscieverService extends BaseService {
           }
       // set notebooks query checked before
       var notebooksArray = Object.keys(notebooksHash);
-      if (notebooksArray.length > 0)
+      if (notebooksArray.length == 1)
+        _.merge(result, {notebookGuid: notebooksArray});
+      else if (notebooksArray.length > 1)
         _.merge(result, {notebookGuid: {$in: notebooksArray}});
     }
     return result;
@@ -222,7 +224,10 @@ export class DataTranscieverService extends BaseService {
     }
     // set note guids query
     if (params.noteGuids)
-      _.merge(result, {noteGuid: {$in: params.noteGuids}});
+      if (params.noteGuids.length == 1)
+        _.merge(result, {noteGuid: params.noteGuids});
+      else if (params.noteGuids.length > 1)
+        _.merge(result, {noteGuid: {$in: params.noteGuids}});
     return result;
   };
 

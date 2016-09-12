@@ -12,4 +12,7 @@ export class BaseComponent extends Vue {
     };
   }
 
+  ready(): void {
+  }
+
 }

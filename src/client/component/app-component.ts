@@ -4,7 +4,7 @@ import {BaseComponent} from "./base-component";
 import {AuthComponent} from "./auth-component";
 import {NavigationComponent} from "./navigation-component";
 import {MenuComponent} from "./menu-component";
-import {SettingsComponent} from "./settings-controller";
+import {SettingsComponent} from "./settings-component";
 import {ProgressModalComponent} from "./progress-modal-component";
 import {NotesComponent} from "./notes-component";
 import {TimelineComponent} from "./timeline-component";
@@ -22,7 +22,6 @@ let template = require("./app-component.jade");
     "settings-component": SettingsComponent,
     "timeline-component": TimelineComponent,
   },
-  ready: AppComponent.prototype.onReady,
 })
 export class AppComponent extends BaseComponent {
 
@@ -32,9 +31,6 @@ export class AppComponent extends BaseComponent {
     return {
       mode: "auth",
     }
-  }
-
-  onReady() {
   }
 
 }
