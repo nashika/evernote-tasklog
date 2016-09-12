@@ -6,6 +6,7 @@ import {BaseSingleEvernoteTable} from "./base-single-evernote-table";
 
 export class UserTable extends BaseSingleEvernoteTable<UserEntity> {
 
+  static EntityClass = UserEntity;
   static PLURAL_NAME = "users";
   static DEFAULT_DOC = {};
 

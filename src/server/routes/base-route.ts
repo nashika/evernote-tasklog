@@ -1,6 +1,8 @@
 import _ = require("lodash");
 import log4js = require("log4js");
-import {Express, Response, Router} from "express";
+import {Express, Request, Response, Router} from "express";
+
+import {BaseEntity} from "../../common/entity/base-entity";
 
 let logger = log4js.getLogger("system");
 
@@ -31,10 +33,6 @@ export abstract class BaseRoute {
     this.app = app;
   }
 
-  get Class(): typeof BaseRoute {
-    return <typeof BaseRoute>this.constructor;
-  }
-
   abstract getRouter(): Router;
 
   protected responseErrorJson(res: Response, err: any) {
@@ -46,7 +44,8 @@ export abstract class BaseRoute {
       error: err,
       stack: parse.stack && _.split(parse.stack, "\n"),
     };
-    logger.error(JSON.stringify(result));
+    logger.error(`Error ${result.code}. ${result.message}`);
+    if (parse.stack) logger.debug(parse.stack);
     res.status(parse.code).json(result);
   }
 

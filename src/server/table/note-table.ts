@@ -2,25 +2,27 @@ import _ = require("lodash");
 import evernote = require("evernote");
 import {getLogger} from "log4js";
 
-import core from '../core';
-import {MultiTableOptions} from "./base-multi-table";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {MyPromise} from "../../common/util/my-promise";
 import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
+import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
+import {TimeLogTable} from "./time-log-table";
+import {ProfitLogTable} from "./profit-log-table";
 
 let logger = getLogger("system");
 
-export interface NoteTableOptions extends MultiTableOptions {
+export interface NoteTableOptions extends IMultiEntityFindOptions {
   content?: boolean;
 }
 
 export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptions> {
 
+  static EntityClass = NoteEntity;
   static PLURAL_NAME: string = 'notes';
   static TITLE_FIELD: string = 'title';
   static APPEND_QUERY: Object = {deleted: null};
 
-  findLocal(options: NoteTableOptions): Promise<NoteEntity[]> {
+  find(options: NoteTableOptions): Promise<NoteEntity[]> {
     return super.find(options).then(notes => {
       if (options.content) {
         return notes;
@@ -34,7 +36,10 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
     });
   }
 
-  getRemoteContent(options: NoteTableOptions): Promise<NoteEntity[]> {
+  getRemoteContent(query: Object): Promise<NoteEntity[]> {
+    let options:NoteTableOptions = {};
+    options.query = query;
+    options.limit = 0;
     return this.find(options).then(notes => {
       let results: NoteEntity[] = [];
       return MyPromise.eachPromiseSeries(notes, (note) => {
@@ -55,7 +60,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
 
   loadRemote(guid: string): Promise<NoteEntity> {
     logger.debug(`Loading note from remote was started. guid=${guid}`);
-    let noteStore: evernote.Evernote.NoteStoreClient = core.users[this.username].client.getNoteStore();
+    let noteStore: evernote.Evernote.NoteStoreClient = this.getClient().getNoteStore();
     let lastNote: NoteEntity = null;
     return Promise.resolve().then(() => {
       return new Promise((resolve, reject) => {
@@ -83,8 +88,9 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
     });
   }
 
-  reParseNotes(options: NoteTableOptions): Promise<void> {
-    if (!options) options = {};
+  reParseNotes(query: Object = {}): Promise<void> {
+    let options:NoteTableOptions = {};
+    options.query = query;
     options.limit = 0;
     options.content = true;
     return this.find(options).then(notes => {
@@ -104,9 +110,9 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
       lines.push(line.replace(/<[^>]*>/g, ''));
     }
     return Promise.resolve().then(() => {
-      return core.users[this.username].models.timeLogs.parse(note, lines);
+      return this.getOtherTable<TimeLogTable>("timeLog").parse(note, lines);
     }).then(() => {
-      return core.users[this.username].models.profitLogs.parse(note, lines);
+      return this.getOtherTable<ProfitLogTable>("profitLog").parse(note, lines);
     }).then(() => {
       logger.debug(`Parsing note was succeed. guid=${note.guid}`);
     });

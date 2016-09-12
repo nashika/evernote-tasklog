@@ -1,21 +1,11 @@
 import express = require("express");
-import {Request, Response, Router} from "express";
 
-import core from "../core";
-import {BaseRoute} from "./base-route";
+import {UserEntity} from "../../common/entity/user-entity";
+import {UserTable} from "../table/user-table";
+import {BaseSingleRoute} from "./base-single-route";
 
-export class UserRoute extends BaseRoute {
+export class UserRoute extends BaseSingleRoute<UserEntity, UserTable> {
 
-  getRouter(): Router {
-    let _router = Router();
-    _router.post("/", this.onIndex);
-    return _router;
-  }
-
-  onIndex = (req: Request, res: Response) => {
-    core.users[req.session["evernote"].user.username].models.users.loadLocal().then((user) => {
-      res.json(user);
-    }).catch(err => this.responseErrorJson(res, err));
-  };
+  static EntityClass = UserEntity;
 
 }

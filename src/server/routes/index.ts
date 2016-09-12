@@ -3,34 +3,34 @@ import {Express} from "express";
 
 import {AuthRoute} from "./auth-route";
 import {IndexRoute} from "./index-route";
-import {NotebooksRoute} from "./notebooks-route";
-import {NotesRoute} from "./notes-route";
-import {ProfitLogsRoute} from "./profit-logs-route";
-import {SettingsRoute} from "./settings-route";
+import {NotebookRoute} from "./notebook-route";
+import {NoteRoute} from "./note-route";
+import {ProfitLogRoute} from "./profit-log-route";
+import {SettingRoute} from "./setting-route";
 import {UserRoute} from "./user-route";
-import {TimeLogsRoute} from "./time-logs-route";
+import {TimeLogRoute} from "./time-log-route";
 import {SyncRoute} from "./sync-route";
 
 export function routes(app:Express) {
 
   let indexRoute = new IndexRoute(app);
   let authRoute = new AuthRoute(app);
-  let notesRoute = new NotesRoute(app);
-  let notebooksRoute = new NotebooksRoute(app);
-  let settingsRoute = new SettingsRoute(app);
+  let noteRoute = new NoteRoute(app);
+  let notebookRoute = new NotebookRoute(app);
+  let settingRoute = new SettingRoute(app);
   let syncRoute = new SyncRoute(app);
-  let timeLogsRoute = new TimeLogsRoute(app);
-  let profitLogsRoute = new ProfitLogsRoute(app);
+  let timeLogRoute = new TimeLogRoute(app);
+  let profitLogRoute = new ProfitLogRoute(app);
   let userRoute = new UserRoute(app);
 
   app.use("/", indexRoute.getRouter());
   app.use("/auth", authRoute.getRouter());
-  app.use("/notes", notesRoute.getRouter());
-  app.use("/notebooks", notebooksRoute.getRouter());
-  app.use("/settings", settingsRoute.getRouter());
+  app.use("/note", noteRoute.getRouter());
+  app.use("/notebook", notebookRoute.getRouter());
+  app.use("/setting", settingRoute.getRouter());
   app.use("/sync", syncRoute.getRouter());
-  app.use("/time-logs", timeLogsRoute.getRouter());
-  app.use("/profit-logs", profitLogsRoute.getRouter());
+  app.use("/time-log", timeLogRoute.getRouter());
+  app.use("/profit-log", profitLogRoute.getRouter());
   app.use("/user", userRoute.getRouter());
 
 }

@@ -1,9 +1,10 @@
-import {BaseMultiTable} from "./base-multi-table";
 import {LinkedNotebookEntity} from "../../common/entity/linked-notebook-entity";
-import {MultiTableOptions} from "./base-multi-table";
+import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
+import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
 
-export class LinkedNotebookTable extends BaseMultiTable<LinkedNotebookEntity, MultiTableOptions> {
+export class LinkedNotebookTable extends BaseMultiEvernoteTable<LinkedNotebookEntity, IMultiEntityFindOptions> {
 
-    static PLURAL_NAME:string = 'linkedNotebooks';
+  static EntityClass = LinkedNotebookEntity;
+  static PLURAL_NAME: string = 'linkedNotebooks';
 
 }

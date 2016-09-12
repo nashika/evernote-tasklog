@@ -4,6 +4,7 @@ import {DataTranscieverService} from "./data-transciever-service";
 import {ProgressService} from "./progress-service";
 import {DataStoreService} from "./data-store-service";
 import {AuthService} from "./auth-service";
+import {EntityService} from "./entity-service";
 
 export class ServiceRegistry extends SingletonRegistry<BaseService> {
 
@@ -11,6 +12,7 @@ export class ServiceRegistry extends SingletonRegistry<BaseService> {
     auth: AuthService,
     dataStore: DataStoreService,
     dataTransciever: DataTranscieverService,
+    entity: EntityService,
     progress: ProgressService,
   };
 
@@ -24,6 +26,10 @@ export class ServiceRegistry extends SingletonRegistry<BaseService> {
 
   get dataTransciever(): DataTranscieverService {
     return <DataTranscieverService>this.getInstance("dataTransciever");
+  }
+
+  get entity(): EntityService {
+    return <EntityService>this.getInstance("entity");
   }
 
   get progress(): ProgressService {

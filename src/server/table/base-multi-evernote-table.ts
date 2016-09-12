@@ -1,13 +1,14 @@
 import _ = require("lodash");
 import {getLogger} from "log4js";
 
-import {BaseMultiTable, MultiTableOptions} from "./base-multi-table";
+import {BaseMultiTable} from "./base-multi-table";
 import {BaseMultiEvernoteEntity} from "../../common/entity/base-multi-evernote-entity";
 import {MyPromise} from "../../common/util/my-promise";
+import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 
 let logger = getLogger("system");
 
-export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity<any>, T2 extends MultiTableOptions> extends BaseMultiTable<T1, T2> {
+export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity<any>, T2 extends IMultiEntityFindOptions> extends BaseMultiTable<T1, T2> {
 
   saveLocalUpdateOnly(entities: T1|T1[]): Promise<void> {
     if (!entities) return Promise.resolve();
@@ -44,7 +45,7 @@ export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity<any>, T2 
     } else if (_.isString(query)) {
       objQuery = {guid: query};
     }
-    return this.removeLocal(objQuery);
+    return this.remove(objQuery);
   }
 
 }

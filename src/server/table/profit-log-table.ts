@@ -1,11 +1,11 @@
-import core from "../core";
 import {BaseMultiTable} from "./base-multi-table";
-import {MultiTableOptions} from "./base-multi-table";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
+import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 
-export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, MultiTableOptions> {
+export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, IMultiEntityFindOptions> {
 
+  static EntityClass = ProfitLogEntity;
   static PLURAL_NAME: string = 'profitLogs';
   static TITLE_FIELD: string = 'comment';
   static DEFAULT_LIMIT: number = 2000;
@@ -24,9 +24,9 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, MultiTableOp
       }
     }
     return Promise.resolve().then(() => {
-      return core.users[this.username].models.profitLogs.removeLocal({noteGuid: note.guid});
+      return this.remove({noteGuid: note.guid});
     }).then(() => {
-      return core.users[this.username].models.profitLogs.saveLocal(profitLogs);
+      return this.save(profitLogs);
     });
   }
 

@@ -4,6 +4,8 @@ import log4js = require("log4js");
 import evernote = require("evernote");
 import express = require("express");
 import http = require("http");
+import {getLogger, Logger} from "log4js";
+import _ = require("lodash");
 
 import core from "./core";
 import {LinkedNotebookTable} from "./table/linked-notebook-table";
@@ -18,14 +20,17 @@ import {TimeLogTable} from "./table/time-log-table";
 import {UserTable} from "./table/user-table";
 import {UserEntity} from "../common/entity/user-entity";
 import {SyncStateEntity} from "../common/entity/sync-state-entity";
-import {UserSetting} from "./core";
 import {NoteEntity} from "../common/entity/note-entity";
 import {MyPromise} from "../common/util/my-promise";
 import {SettingEntity} from "../common/entity/setting-entity";
+import {BaseTable} from "./table/base-table";
+import {BaseEntity} from "../common/entity/base-entity";
+import {NotebookEntity} from "../common/entity/notebook-entity";
+import {TagEntity} from "../common/entity/tag-entity";
+import {SearchEntity} from "../common/entity/serch-entity";
+import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
 
-class MySyncChunk extends evernote.Evernote.SyncChunk {
-  notes: Array<NoteEntity>;
-}
+let logger:Logger;
 
 export class Www {
 
@@ -34,28 +39,26 @@ export class Www {
   main(app: express.Application, server: http.Server): Promise<void> {
     // Initialize logger
     log4js.configure(path.join(__dirname, "/log4js-config.json"), {cwd: path.join(__dirname, "../../")});
-    core.loggers.system = log4js.getLogger("system");
-    core.loggers.access = log4js.getLogger("access");
-    core.loggers.error = log4js.getLogger("error");
+    logger = getLogger("system");
 
     // Initialize core object
     core.www = this;
     app.locals.core = core; // TODO: Set password to web server
     core.models.settings = new SettingTable();
     // Initialize global settings
-    return core.models.settings.find({query: {}}).then(settings => {
+    return core.models.settings.find().then(settings => {
       let results:{[_id:string]: SettingEntity} = {};
       for (let setting of settings) results[setting._id] = setting;
       core.settings = results;
-      core.loggers.system.info("Initialize web server finished.");
+      logger.info("Initialize web server finished.");
     }).catch((err) => {
-      core.loggers.error.error(`Main process failed. err=${err}`);
+      logger.error(`Main process failed. err=${err}`);
     });
   }
 
   initUser(username: string, token: string, sandbox: boolean): Promise<void> {
     if (core.users[username]) {
-      core.loggers.system.info("Init user finished. already initialized.");
+      logger.info("Init user finished. already initialized.");
       return Promise.resolve();
     }
     core.users[username] = {};
@@ -68,61 +71,62 @@ export class Www {
       // Initialize evernote user
       return new Promise((resolve, reject) => {
         var userStore: evernote.Evernote.UserStoreClient = core.users[username].client.getUserStore();
-        userStore.getUser((err: Error, user: UserEntity) => {
+        userStore.getUser((err, user) => {
           if (err) return reject(err);
-          resolve(user);
+          resolve(new UserEntity(user));
         });
       })
     }).then((user: UserEntity) => {
       core.users[username].user = user;
       // Initialize database
       core.users[username].models = {
-        linkedNotebooks: new LinkedNotebookTable(username),
-        notes: new NoteTable(username),
-        notebooks: new NotebookTable(username),
-        profitLogs: new ProfitLogTable(username),
-        searches: new SearchTable(username),
-        settings: new SettingTable(username),
-        syncStates: new SyncStateTable(username),
-        tags: new TagTable(username),
-        timeLogs: new TimeLogTable(username),
-        users: new UserTable(username),
+        linkedNotebook: new LinkedNotebookTable(username),
+        note: new NoteTable(username),
+        notebook: new NotebookTable(username),
+        profitLog: new ProfitLogTable(username),
+        searche: new SearchTable(username),
+        setting: new SettingTable(username),
+        syncState: new SyncStateTable(username),
+        tag: new TagTable(username),
+        timeLog: new TimeLogTable(username),
+        user: new UserTable(username),
       };
       // Initialize datas
       return this.sync(username);
     }).then(() => {
-      core.loggers.system.info(`Init user finished. user:${username} data was initialized.`);
+      logger.info(`Init user finished. user:${username} data was initialized.`);
     });
   }
 
   sync(username: string): Promise<void> {
     var noteStore: evernote.Evernote.NoteStoreClient = core.users[username].client.getNoteStore();
-    var user: UserEntity = null;
     var localSyncState: SyncStateEntity = null;
     var remoteSyncState: SyncStateEntity = null;
-    var lastSyncChunk: MySyncChunk = null;
+    var lastSyncChunk: evernote.Evernote.SyncChunk = null;
     return Promise.resolve().then(() => {
       // Reload settings
-      return core.users[username].models.settings.loadLocal(null);
-    }).then((settings: UserSetting) => {
-      core.users[username].settings = settings;
+      return this.getTable<SettingTable>(username, SettingEntity).find().then((settings: SettingEntity[]) => {
+        for (let setting of settings) {
+          core.users[username].settings[setting._id] = setting.value;
+        }
+      });
+    }).then(() => {
       // Reload userStore
-      return core.users[username].models.users.loadRemote();
+      return this.getTable<UserTable>(username, UserEntity).loadRemote()
     }).then((remoteUser: UserEntity) => {
-      user = remoteUser;
-      return core.users[username].models.users.saveLocal(user);
+      return this.getTable<UserTable>(username, UserEntity).save(remoteUser);
     }).then(() => {
       // Get syncState
-      return core.users[username].models.syncStates.loadLocal();
+      return this.getTable<SyncStateTable>(username, SyncStateEntity).findOne();
     }).then((syncState: SyncStateEntity) => {
       localSyncState = syncState;
-      return core.users[username].models.syncStates.loadRemote();
+      return this.getTable<SyncStateTable>(username, SyncStateEntity).loadRemote();
     }).then((syncState: SyncStateEntity) => {
       remoteSyncState = syncState;
       // Sync process
-      core.loggers.system.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
+      logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       return MyPromise.whilePromiseSeries(() => localSyncState.updateCount < remoteSyncState.updateCount, () => {
-        core.loggers.system.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
+        logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
         let syncChunkFilter: evernote.Evernote.SyncChunkFilter = new evernote.Evernote.SyncChunkFilter();
         syncChunkFilter.includeNotes = true;
         syncChunkFilter.includeNotebooks = true;
@@ -133,40 +137,44 @@ export class Www {
           return new Promise((resolve, reject) => {
             noteStore.getFilteredSyncChunk(localSyncState.updateCount, this.SYNC_CHUNK_COUNT, syncChunkFilter, (err, syncChunk) => {
               if (err) return reject(err);
-              resolve(syncChunk);
+              lastSyncChunk = <any>syncChunk;
+              resolve();
             });
           });
-        }).then((syncChunk: MySyncChunk) => {
-          lastSyncChunk = syncChunk;
-          return core.users[username].models.notes.saveLocal(lastSyncChunk.notes);
         }).then(() => {
-          return core.users[username].models.notes.removeLocalByGuid(lastSyncChunk.expungedNotes);
+          return this.getTable<NoteTable>(username, NoteEntity).save(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
         }).then(() => {
-          return core.users[username].models.notebooks.saveLocal(lastSyncChunk.notebooks);
+          return this.getTable<NoteTable>(username, NoteEntity).removeLocalByGuid(lastSyncChunk.expungedNotes);
         }).then(() => {
-          return core.users[username].models.notebooks.removeLocalByGuid(lastSyncChunk.expungedNotebooks);
+          return this.getTable<NotebookTable>(username, NotebookEntity).save(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
         }).then(() => {
-          return core.users[username].models.tags.saveLocal(lastSyncChunk.tags);
+          return this.getTable<NotebookTable>(username, NotebookEntity).removeLocalByGuid(lastSyncChunk.expungedNotebooks);
         }).then(() => {
-          return core.users[username].models.tags.removeLocalByGuid(lastSyncChunk.expungedTags);
+          return this.getTable<TagTable>(username, TagEntity).save(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
         }).then(() => {
-          return core.users[username].models.searches.saveLocal(lastSyncChunk.searches);
+          return this.getTable<TagTable>(username, TagEntity).removeLocalByGuid(lastSyncChunk.expungedTags);
         }).then(() => {
-          return core.users[username].models.searches.removeLocalByGuid(lastSyncChunk.expungedSearches);
+          return this.getTable<SearchTable>(username, SearchEntity).save(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
         }).then(() => {
-          return core.users[username].models.linkedNotebooks.saveLocal(lastSyncChunk.linkedNotebooks);
+          return this.getTable<SearchTable>(username, SearchEntity).removeLocalByGuid(lastSyncChunk.expungedSearches);
         }).then(() => {
-          return core.users[username].models.linkedNotebooks.removeLocalByGuid(lastSyncChunk.expungedLinkedNotebooks);
+          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).save(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
+        }).then(() => {
+          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).removeLocalByGuid(lastSyncChunk.expungedLinkedNotebooks);
         }).then(() => {
           localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
-          return core.users[username].models.syncStates.saveLocal(localSyncState);
+          return this.getTable<SyncStateTable>(username, SyncStateEntity).save(localSyncState);
         }).then(() => {
-          core.loggers.system.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
+          logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
         });
       }).then(() => {
-        core.loggers.system.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
+        logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       });
     });
+  }
+
+  getTable<T extends BaseTable>(username: string, EntityClass: typeof BaseEntity): T {
+    return <T>core.users[username].models[EntityClass.params.name];
   }
 
 }

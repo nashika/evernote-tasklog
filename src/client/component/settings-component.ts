@@ -1,12 +1,12 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
-import request = require("superagent");
 var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
 import {DataStoreService} from "../service/data-store-service";
 import {serviceRegistry} from "../service/service-registry";
 import {MyPromise} from "../../common/util/my-promise";
+import {SettingEntity} from "../../common/entity/setting-entity";
 
 let template = require("./settings-component.jade");
 
@@ -91,7 +91,7 @@ export class SettingsComponent extends BaseComponent {
       if (field.reParse) reParse = true;
       if (field.reload) reload = true;
       serviceRegistry.progress.next(`Saving ${key}...`);
-      return request.post("/settings/save").send({key: key, value: this.editStore[key]}).then(() => {
+      return serviceRegistry.entity.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]})).then(() => {
         serviceRegistry.dataStore.settings[key] = this.editStore[key];
       });
     }).then(() => {

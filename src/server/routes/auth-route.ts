@@ -3,7 +3,6 @@ import evernote = require("evernote");
 
 import core from "../core";
 import config from "../config";
-import {UserEntity} from "../../common/entity/user-entity";
 import {BaseRoute, Code403Error} from "./base-route";
 import {Request, Response, Router} from "express";
 import {UserTable} from "../table/user-table";
@@ -32,7 +31,7 @@ export class AuthRoute extends BaseRoute {
           req.session["evernote"].user = user;
           req.session.save((err) => {
             if (err) throw err;
-            core.www.initUser(user.username, token, sandbox).then(() => {
+            return core.www.initUser(user.username, token, sandbox).then(() => {
               res.json(true);
             });
           });
@@ -44,41 +43,43 @@ export class AuthRoute extends BaseRoute {
   };
 
   onLogin = (req: Request, res: Response) => {
-    let sandbox: boolean = req.body.sandbox ? true : false;
-    let token: boolean = req.body.token ? true : false;
-    let envConfig = sandbox ? config.env.sandbox : config.env.production;
-    if (token) {
-      let key = sandbox ? "token.sandbox" : "token.production";
-      core.models.settings.findOne({key: key}).then(entity => {
-        let resToken: string = entity.value;
-        if (resToken) {
-          let developerToken = resToken;
+    Promise.resolve().then(() => {
+      let sandbox: boolean = req.body.sandbox ? true : false;
+      let token: boolean = req.body.token ? true : false;
+      let envConfig = sandbox ? config.env.sandbox : config.env.production;
+      if (token) {
+        let key = sandbox ? "token.sandbox" : "token.production";
+        core.models.settings.findOne({_id: key}).then(entity => {
+          let resToken: string = entity.value;
+          if (resToken) {
+            let developerToken = resToken;
+            req.session["evernote"] = {
+              sandbox: sandbox,
+              token: developerToken,
+            };
+            req.session.save(() => {
+              res.json(true);
+            });
+          }
+        });
+      } else {
+        var client: any = new evernote.Evernote.Client({
+          consumerKey: envConfig.consumerKey,
+          consumerSecret: envConfig.consumerSecret,
+          sandbox: sandbox,
+        });
+        client.getRequestToken(`${req.protocol}://${req.get("host")}/auth/callback`, (error: Error, oauthToken: string, oauthTokenSecret: string, results: any) => {
+          if (error) return res.status(500).send(`Error getting OAuth request token : ${JSON.stringify(error)}`);
           req.session["evernote"] = {
             sandbox: sandbox,
-            token: developerToken,
+            authTokenSecret: oauthTokenSecret,
           };
           req.session.save(() => {
-            res.json(true);
+            res.redirect(client.getAuthorizeUrl(oauthToken));
           });
-        }
-      });
-    } else {
-      var client: any = new evernote.Evernote.Client({
-        consumerKey: envConfig.consumerKey,
-        consumerSecret: envConfig.consumerSecret,
-        sandbox: sandbox,
-      });
-      client.getRequestToken(`${req.protocol}://${req.get("host")}/auth/callback`, (error: Error, oauthToken: string, oauthTokenSecret: string, results: any) => {
-        if (error) return res.status(500).send(`Error getting OAuth request token : ${JSON.stringify(error)}`);
-        req.session["evernote"] = {
-          sandbox: sandbox,
-          authTokenSecret: oauthTokenSecret,
-        };
-        req.session.save(() => {
-          res.redirect(client.getAuthorizeUrl(oauthToken));
         });
-      });
-    }
+      }
+    }).catch(err => this.responseErrorJson(res, err));
   };
 
   onCallback = (req: Request, res: Response) => {
@@ -115,28 +116,38 @@ export class AuthRoute extends BaseRoute {
   };
 
   onToken = (req: Request, res: Response) => {
-    let sandbox: boolean = req.body.sandbox ? true : false;
-    let token: string = req.body.token;
-    let checkToken = (sandbox: boolean, token: string) => {
-      if (!token) return res.json(null);
-      UserTable.loadRemoteFromToken(token, sandbox).then(user => {
-        res.json({token: token, username: user.username});
-      });
-    };
-    let key = sandbox ? "token.sandbox" : "token.production";
-    if (token) {
-      let setting = new SettingEntity();
-      setting.key = key;
-      setting.value = token;
-      core.models.settings.saveLocal(setting, {key: key}).then(() => {
-        checkToken(sandbox, token);
-      }).catch(err => this.responseErrorJson(res, err));
-    } else {
-      core.models.settings.findOne({key: key}).then(setting => {
-        let resToken: string = setting.value;
-        checkToken(sandbox, resToken);
-      }).catch(err => this.responseErrorJson(res, err));
-    }
-  }
+    Promise.resolve().then(() => {
+      let sandbox: boolean = req.body.sandbox ? true : false;
+      let token: string = req.body.token;
+      let key = sandbox ? "token.sandbox" : "token.production";
+      if (token) {
+        let result:any;
+        return this.checkToken(sandbox, token).then(user => {
+          result = user;
+          let setting = new SettingEntity();
+          setting._id = key;
+          setting.value = token;
+          return core.models.settings.save(setting);
+        }).then(() => {
+          return result;
+        });
+      } else {
+        return core.models.settings.findOne({_id: key}).then(setting => {
+          let resToken: string = setting.value;
+          if (!resToken) return null;
+          return this.checkToken(sandbox, resToken);
+        });
+      }
+    }).then(user => {
+      res.json(user);
+    }).catch(err => this.responseErrorJson(res, err));
+  };
+
+  private checkToken(sandbox: boolean, token: string): Promise<{token: string, username: string}> {
+    return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
+      return {token: token, username: user.username};
+    }).catch(err => Promise.reject(new Code403Error(err)));
+  };
+
 
 }

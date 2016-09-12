@@ -1,11 +1,12 @@
 import core from "../core";
 import {BaseMultiTable} from "./base-multi-table";
-import {MultiTableOptions} from "./base-multi-table";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
 import {NoteEntity} from "../../common/entity/note-entity";
+import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 
-export class TimeLogTable extends BaseMultiTable<TimeLogEntity, MultiTableOptions> {
+export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFindOptions> {
 
+  static EntityClass = TimeLogEntity;
   static PLURAL_NAME: string = "timeLogs";
   static TITLE_FIELD: string = "comment";
   static DEFAULT_LIMIT: number = 2000;
@@ -47,9 +48,9 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity, MultiTableOption
       }
     }
     return Promise.resolve().then(() => {
-      return core.users[this.username].models.timeLogs.removeLocal({noteGuid: note.guid});
+      return this.remove({noteGuid: note.guid});
     }).then(() => {
-      return core.users[this.username].models.timeLogs.saveLocal(timeLogs);
+      return this.save(timeLogs);
     });
   }
 

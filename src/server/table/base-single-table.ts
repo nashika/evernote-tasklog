@@ -15,7 +15,7 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
     return <typeof BaseSingleTable>this.constructor;
   }
 
-  loadLocal(): Promise<T> {
+  findOne(): Promise<T> {
     logger.debug(`Load local ${this.Class.PLURAL_NAME} was started.`);
     return new Promise<T>((resolve, reject) => {
       this.datastore.findOne({_id: "1"}, (err, doc) => {
@@ -29,7 +29,7 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
     });
   }
 
-  saveLocal(doc: T): Promise<void> {
+  save(doc: T): Promise<void> {
     doc._id = "1";
     return new Promise<void>((resolve, reject) => {
       this.datastore.update({_id: "1"}, doc, {upsert: true}, (err, numReplaced, newDoc) => {

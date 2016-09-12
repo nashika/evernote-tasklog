@@ -1,9 +1,10 @@
-import {BaseMultiTable} from "./base-multi-table";
-import {MultiTableOptions} from "./base-multi-table";
 import {TagEntity} from "../../common/entity/tag-entity";
+import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
+import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
 
-export class TagTable extends BaseMultiTable<TagEntity, MultiTableOptions> {
+export class TagTable extends BaseMultiEvernoteTable<TagEntity, IMultiEntityFindOptions> {
 
-    static PLURAL_NAME:string = 'tags';
+  static EntityClass = TagEntity;
+  static PLURAL_NAME: string = 'tags';
 
 }

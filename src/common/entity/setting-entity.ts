@@ -1,8 +1,12 @@
 import {BaseMultiEntity} from "./base-multi-entity";
+import {IEntityParams} from "./base-entity";
 
 export class SettingEntity extends BaseMultiEntity {
 
-  key: string;
+  static params:IEntityParams = {
+    name: "setting",
+  };
+
   value: any;
 
 }

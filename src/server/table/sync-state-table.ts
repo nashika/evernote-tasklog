@@ -6,6 +6,7 @@ import {BaseSingleEvernoteTable} from "./base-single-evernote-table";
 
 export class SyncStateTable extends BaseSingleEvernoteTable<SyncStateEntity> {
 
+  static EntityClass = SyncStateEntity;
   static PLURAL_NAME: string = 'syncStates';
   static DEFAULT_DOC: Object = {updateCount: 0};
 
