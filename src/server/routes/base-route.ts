@@ -46,6 +46,7 @@ export abstract class BaseRoute {
       error: err,
       stack: parse.stack && _.split(parse.stack, "\n"),
     };
+    logger.error(JSON.stringify(result));
     res.status(parse.code).json(result);
   }
 
@@ -64,12 +65,6 @@ export abstract class BaseRoute {
     if (code == 500)
       logger.error(message);
     return {code: code, message: message, stack: stack};
-  }
-
-  protected mergeParams(req: {body: any, query: any}): Object {
-    var body = req['body'] || {};
-    var query = req['query'] || {};
-    return _.merge({}, body, query);
   }
 
 }

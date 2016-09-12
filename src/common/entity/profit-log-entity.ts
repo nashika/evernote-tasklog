@@ -1,8 +1,9 @@
-import {MultiEntity} from "./multi-entity";
+import {BaseMultiEntity} from "./base-multi-entity";
 
-export class ProfitLogEntity implements MultiEntity {
-  _id: string;
+export class ProfitLogEntity extends BaseMultiEntity {
+
   noteGuid: string;
   comment: string;
   profit: number;
+
 }

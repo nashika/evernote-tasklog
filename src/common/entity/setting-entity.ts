@@ -1,6 +1,8 @@
-import {Entity} from "./entity";
+import {BaseMultiEntity} from "./base-multi-entity";
 
-export class SettingEntity implements Entity {
-    _id:string;
-    value:any;
+export class SettingEntity extends BaseMultiEntity {
+
+  key: string;
+  value: any;
+
 }

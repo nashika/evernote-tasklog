@@ -13,7 +13,7 @@ export class NotebooksRoute extends BaseRoute {
   }
 
   onIndex = (req: Request, res: Response) => {
-    core.users[req.session['evernote'].user.username].models.notebooks.findLocal(req.body).then(notebooks => {
+    core.users[req.session['evernote'].user.username].models.notebooks.find(req.body).then(notebooks => {
       res.json(notebooks);
     }).catch(err => this.responseErrorJson(res, err));
   }

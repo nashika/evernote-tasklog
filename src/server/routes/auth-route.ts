@@ -6,6 +6,8 @@ import config from "../config";
 import {UserEntity} from "../../common/entity/user-entity";
 import {BaseRoute, Code403Error} from "./base-route";
 import {Request, Response, Router} from "express";
+import {UserTable} from "../table/user-table";
+import {SettingEntity} from "../../common/entity/setting-entity";
 
 export class AuthRoute extends BaseRoute {
 
@@ -26,13 +28,7 @@ export class AuthRoute extends BaseRoute {
       } else {
         let sandbox: boolean = req.session["evernote"].sandbox;
         let token: string = req.session["evernote"].token;
-        let client: evernote.Evernote.Client = new evernote.Evernote.Client({
-          token: token,
-          sandbox: sandbox,
-        });
-        var userStore = client.getUserStore();
-        userStore.getUser((err, user) => {
-          if (err) throw new Code403Error(`Evernote user auth failed.`);
+        UserTable.loadRemoteFromToken(token, sandbox).then(user => {
           req.session["evernote"].user = user;
           req.session.save((err) => {
             if (err) throw err;
@@ -40,6 +36,8 @@ export class AuthRoute extends BaseRoute {
               res.json(true);
             });
           });
+        }).catch(err => {
+          throw new Code403Error(`Evernote user auth failed. err=${err}`);
         });
       }
     }).catch(err => this.responseErrorJson(res, err));
@@ -51,9 +49,10 @@ export class AuthRoute extends BaseRoute {
     let envConfig = sandbox ? config.env.sandbox : config.env.production;
     if (token) {
       let key = sandbox ? "token.sandbox" : "token.production";
-      core.models.settings.loadLocal(key).then(token => {
-        if (token) {
-          var developerToken = token;
+      core.models.settings.findOne({key: key}).then(entity => {
+        let resToken: string = entity.value;
+        if (resToken) {
+          let developerToken = resToken;
           req.session["evernote"] = {
             sandbox: sandbox,
             token: developerToken,
@@ -116,28 +115,26 @@ export class AuthRoute extends BaseRoute {
   };
 
   onToken = (req: Request, res: Response) => {
-    var sandbox: boolean = req.body.sandbox ? true : false;
-    var token: string = req.body.token;
-    var checkToken = (sandbox: boolean, token: string) => {
+    let sandbox: boolean = req.body.sandbox ? true : false;
+    let token: string = req.body.token;
+    let checkToken = (sandbox: boolean, token: string) => {
       if (!token) return res.json(null);
-      var _client = new evernote.Evernote.Client({
-        token: token,
-        sandbox: sandbox,
-      });
-      var _userStore: evernote.Evernote.UserStoreClient = _client.getUserStore();
-      _userStore.getUser((err: Error, user: UserEntity) => {
-        if (err) return res.json(null);
+      UserTable.loadRemoteFromToken(token, sandbox).then(user => {
         res.json({token: token, username: user.username});
       });
     };
-    var key = (sandbox) ? "token.sandbox" : "token.production";
+    let key = sandbox ? "token.sandbox" : "token.production";
     if (token) {
-      core.models.settings.saveLocal(key, token).then(() => {
+      let setting = new SettingEntity();
+      setting.key = key;
+      setting.value = token;
+      core.models.settings.saveLocal(setting, {key: key}).then(() => {
         checkToken(sandbox, token);
       }).catch(err => this.responseErrorJson(res, err));
     } else {
-      core.models.settings.loadLocal(key).then(token => {
-        checkToken(sandbox, token);
+      core.models.settings.findOne({key: key}).then(setting => {
+        let resToken: string = setting.value;
+        checkToken(sandbox, resToken);
       }).catch(err => this.responseErrorJson(res, err));
     }
   }

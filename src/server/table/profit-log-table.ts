@@ -15,18 +15,18 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, MultiTableOp
     for (var line of lines) {
       let matches: string[];
       if (matches = line.match(/(.*)[@＠][\\￥$＄](.+)/i)) {
-        profitLogs.push({
+        profitLogs.push(new ProfitLogEntity({
           _id: undefined,
           noteGuid: note.guid,
           comment: matches[1],
           profit: parseInt(matches[2].replace(/,/g, '')),
-        });
+        }));
       }
     }
     return Promise.resolve().then(() => {
-      return core.users[this._username].models.profitLogs.removeLocal({noteGuid: note.guid});
+      return core.users[this.username].models.profitLogs.removeLocal({noteGuid: note.guid});
     }).then(() => {
-      return core.users[this._username].models.profitLogs.saveLocal(profitLogs);
+      return core.users[this.username].models.profitLogs.saveLocal(profitLogs);
     });
   }
 

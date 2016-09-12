@@ -1,6 +1,6 @@
-import * as evernote from "evernote";
+import evernote = require("evernote");
 
-import {MultiEntity} from "./multi-entity";
+import {BaseMultiEvernoteEntity} from "./base-multi-evernote-entity";
 
-export class SearchEntity extends evernote.Evernote.SavedSearch implements MultiEntity {
+export class SearchEntity extends BaseMultiEvernoteEntity<evernote.Evernote.SavedSearch> {
 }

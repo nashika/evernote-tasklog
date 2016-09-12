@@ -13,7 +13,7 @@ export class ProfitLogsRoute extends BaseRoute {
   }
 
   onIndex = (req: Request, res: Response) => {
-    core.users[req.session["evernote"].user.username].models.profitLogs.findLocal(req.body).then(profitLogs => {
+    core.users[req.session["evernote"].user.username].models.profitLogs.find(req.body).then(profitLogs => {
       res.json(profitLogs);
     }).catch(err => this.responseErrorJson(res, err));
   };

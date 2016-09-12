@@ -15,7 +15,7 @@ export class SettingsRoute extends BaseRoute {
 
   onIndex = (req: Request, res: Response) => {
     let key = req.body.key || null;
-    core.users[req.session["evernote"].user.username].models.settings.loadLocal(key).then(settings => {
+    core.users[req.session["evernote"].user.username].models.settings.find({query: key ? {key: key} : {}}).then(settings => {
       res.json(settings);
     }).catch(err => this.responseErrorJson(res, err));
   };

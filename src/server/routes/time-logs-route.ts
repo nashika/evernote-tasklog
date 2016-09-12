@@ -14,13 +14,13 @@ export class TimeLogsRoute extends BaseRoute {
   }
 
   onIndex = (req: Request, res: Response) => {
-    core.users[req.session["evernote"].user.username].models.timeLogs.findLocal(req.body).then(timeLogs => {
+    core.users[req.session["evernote"].user.username].models.timeLogs.find(req.body).then(timeLogs => {
       res.json(timeLogs);
     }).catch(err => this.responseErrorJson(res, err));
   };
 
   onCount = (req: Request, res: Response) => {
-    core.users[req.session["evernote"].user.username].models.timeLogs.countLocal(req.body).then(count => {
+    core.users[req.session["evernote"].user.username].models.timeLogs.count(req.body).then(count => {
       res.json(count);
     }).catch(err => this.responseErrorJson(res, err));
   };

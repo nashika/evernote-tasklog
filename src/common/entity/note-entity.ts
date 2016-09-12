@@ -1,7 +1,13 @@
-import * as evernote from "evernote";
+import evernote = require("evernote");
 
-import {MultiEntity} from "./multi-entity";
+import {BaseMultiEvernoteEntity} from "./base-multi-evernote-entity";
 
-export class NoteEntity extends evernote.Evernote.Note implements MultiEntity {
-    hasContent:boolean;
+export class NoteEntity extends BaseMultiEvernoteEntity<evernote.Evernote.Note> {
+
+  title: string;
+  updated: number;
+  content: string;
+
+  hasContent: boolean;
+
 }

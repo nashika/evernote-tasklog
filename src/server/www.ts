@@ -21,6 +21,7 @@ import {SyncStateEntity} from "../common/entity/sync-state-entity";
 import {UserSetting} from "./core";
 import {NoteEntity} from "../common/entity/note-entity";
 import {MyPromise} from "../common/util/my-promise";
+import {SettingEntity} from "../common/entity/setting-entity";
 
 class MySyncChunk extends evernote.Evernote.SyncChunk {
   notes: Array<NoteEntity>;
@@ -42,10 +43,10 @@ export class Www {
     app.locals.core = core; // TODO: Set password to web server
     core.models.settings = new SettingTable();
     // Initialize global settings
-    return Promise.resolve().then(() => {
-      return core.models.settings.loadLocal(null);
-    }).then((settings: {[_id: string]: any}) => {
-      core.settings = settings;
+    return core.models.settings.find({query: {}}).then(settings => {
+      let results:{[_id:string]: SettingEntity} = {};
+      for (let setting of settings) results[setting._id] = setting;
+      core.settings = results;
       core.loggers.system.info("Initialize web server finished.");
     }).catch((err) => {
       core.loggers.error.error(`Main process failed. err=${err}`);
@@ -139,23 +140,23 @@ export class Www {
           lastSyncChunk = syncChunk;
           return core.users[username].models.notes.saveLocal(lastSyncChunk.notes);
         }).then(() => {
-          return core.users[username].models.notes.removeLocal(lastSyncChunk.expungedNotes);
+          return core.users[username].models.notes.removeLocalByGuid(lastSyncChunk.expungedNotes);
         }).then(() => {
           return core.users[username].models.notebooks.saveLocal(lastSyncChunk.notebooks);
         }).then(() => {
-          return core.users[username].models.notebooks.removeLocal(lastSyncChunk.expungedNotebooks);
+          return core.users[username].models.notebooks.removeLocalByGuid(lastSyncChunk.expungedNotebooks);
         }).then(() => {
           return core.users[username].models.tags.saveLocal(lastSyncChunk.tags);
         }).then(() => {
-          return core.users[username].models.tags.removeLocal(lastSyncChunk.expungedTags);
+          return core.users[username].models.tags.removeLocalByGuid(lastSyncChunk.expungedTags);
         }).then(() => {
           return core.users[username].models.searches.saveLocal(lastSyncChunk.searches);
         }).then(() => {
-          return core.users[username].models.searches.removeLocal(lastSyncChunk.expungedSearches);
+          return core.users[username].models.searches.removeLocalByGuid(lastSyncChunk.expungedSearches);
         }).then(() => {
           return core.users[username].models.linkedNotebooks.saveLocal(lastSyncChunk.linkedNotebooks);
         }).then(() => {
-          return core.users[username].models.linkedNotebooks.removeLocal(lastSyncChunk.expungedLinkedNotebooks);
+          return core.users[username].models.linkedNotebooks.removeLocalByGuid(lastSyncChunk.expungedLinkedNotebooks);
         }).then(() => {
           localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
           return core.users[username].models.syncStates.saveLocal(localSyncState);

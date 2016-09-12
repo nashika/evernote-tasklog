@@ -1,6 +1,6 @@
-import * as evernote from "evernote";
+import evernote = require("evernote");
 
-import {MultiEntity} from "./multi-entity";
+import {BaseMultiEvernoteEntity} from "./base-multi-evernote-entity";
 
-export class TagEntity extends evernote.Evernote.Tag implements MultiEntity {
+export class TagEntity extends BaseMultiEvernoteEntity<evernote.Evernote.Tag> {
 }

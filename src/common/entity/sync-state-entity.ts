@@ -1,6 +1,9 @@
-import * as evernote from "evernote";
+import evernote = require("evernote");
 
-import {SingleEntity} from "./single-entity";
+import {BaseSingleEvernoteEntity} from "./base-single-evernote-entity";
 
-export class SyncStateEntity extends evernote.Evernote.SyncState implements SingleEntity {
+export class SyncStateEntity extends BaseSingleEvernoteEntity<evernote.Evernote.SyncState> {
+
+  updateCount: number;
+
 }

@@ -16,7 +16,7 @@ export class NotesRoute extends BaseRoute {
   }
 
   onIndex = (req: Request, res: Response) => {
-    core.users[req.session["evernote"].user.username].models.notes.findLocal(req.body).then(notes => {
+    core.users[req.session["evernote"].user.username].models.notes.find(req.body).then(notes => {
       res.json(notes);
     }).catch(err => this.responseErrorJson(res, err));
   };
@@ -28,7 +28,7 @@ export class NotesRoute extends BaseRoute {
   };
 
   onCount = (req: Request, res: Response) => {
-    core.users[req.session["evernote"].user.username].models.notes.countLocal(req.body).then(count => {
+    core.users[req.session["evernote"].user.username].models.notes.count(req.body).then(count => {
       res.json(count);
     }).catch(err => this.responseErrorJson(res, err));
   };
