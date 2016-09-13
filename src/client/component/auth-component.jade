@@ -10,8 +10,8 @@ section.auth
     hr
     .row
       .col-md-4
-        button.btn.btn-default.btn-lg.btn-block(type="button", @click="login(false, true)", :disabled="!(authService.production && authService.production.token)") #[span.fa.fa-4x.fa-key] #[br] Token Login
-        button.btn.btn-primary.btn-block(type="button", @click="setToken(false)") Set token #[br] (User: {{authService.production ? authService.production.username : 'none'}})
+        button.btn.btn-default.btn-lg.btn-block(type="button", @click="login(false, true)", :disabled="!(production && production.token)") #[span.fa.fa-4x.fa-key] #[br] Token Login
+        button.btn.btn-primary.btn-block(type="button", @click="setToken(false)") Set token #[br] (User: {{production ? production.username : 'none'}})
       .col-md-8
         p: .well Login to system using the Evernote developer token. Get token from&nbsp;
           a(href='https://www.evernote.com/api/DeveloperToken.action') Evernote developer token API
@@ -29,8 +29,8 @@ section.auth
       hr
       .row
         .col-md-4
-          button.btn.btn-default.btn-lg.btn-block(type="button", @click="login(true, true)", :disabled="!(authService.sandbox && authService.sandbox.token)") #[span.fa.fa-4x.fa-key] #[br] Sandbox Token Login
-          button.btn.btn-primary.btn-block(type="button", @click="setToken(true)") Set token #[br] (User: {{authService.sandbox ? authService.sandbox.username : "none"}})
+          button.btn.btn-default.btn-lg.btn-block(type="button", @click="login(true, true)", :disabled="!(sandbox && sandbox.token)") #[span.fa.fa-4x.fa-key] #[br] Sandbox Token Login
+          button.btn.btn-primary.btn-block(type="button", @click="setToken(true)") Set token #[br] (User: {{sandbox ? sandbox.username : "none"}})
         .col-md-8
           p: .well Login to sandbox system using the Evernote sandbox developer token. Get token from&nbsp;
             a(href="https://sandbox.evernote.com/api/DeveloperToken.action") Evernote sandbox developer token API

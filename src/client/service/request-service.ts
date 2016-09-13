@@ -5,6 +5,7 @@ import {BaseService} from "./base-service";
 import {BaseEntity} from "../../common/entity/base-entity";
 import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 import {NoteEntity} from "../../common/entity/note-entity";
+import {AuthEntity} from "../../common/entity/auth-entity";
 
 export class RequestService extends BaseService {
 
@@ -41,7 +42,7 @@ export class RequestService extends BaseService {
     });
   }
 
-  public getNoteContent(guid: string): Promise<NoteEntity[]> {
+  public getContentNote(guid: string): Promise<NoteEntity[]> {
     return request.post(`/note/get-content`).send({guid: guid}).then(res => {
       return _.map(res.body, doc => new NoteEntity(doc));
     });
@@ -51,4 +52,25 @@ export class RequestService extends BaseService {
     return request.post(`/note/re-parse`).then(req => {
     });
   }
+
+  public loadAuth(): Promise<AuthEntity> {
+    return request.post(`/auth`).then(req => {
+      return req.body ? new AuthEntity(req.body) : null;
+    });
+  }
+
+  public tokenAuth(sandbox: boolean, token?: string): Promise<AuthEntity> {
+    return request.post(`/auth/token`).send({sandbox: sandbox, token: token}).then(req => {
+      return new AuthEntity(req.body);
+    });
+  }
+
+  public loginAuth(sandbox: boolean, useToken: boolean): Promise<void> {
+    return request.post(`/auth/login`).send({sandbox: sandbox, token: useToken}).then(req => null);
+  }
+
+  public logoutAuth(): Promise<void> {
+    return request.post(`/auth/logout`).then(req => null);
+  }
+
 }

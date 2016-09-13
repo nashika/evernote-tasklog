@@ -3,22 +3,16 @@ import {BaseService} from "./base-service";
 import {DataTranscieverService} from "./data-transciever-service";
 import {ProgressService} from "./progress-service";
 import {DataStoreService} from "./data-store-service";
-import {AuthService} from "./auth-service";
 import {RequestService} from "./request-service";
 
 export class ServiceRegistry extends SingletonRegistry<BaseService> {
 
   Classes: {[key: string]: typeof BaseService} = {
-    auth: AuthService,
     dataStore: DataStoreService,
     dataTransciever: DataTranscieverService,
     progress: ProgressService,
     request: RequestService,
   };
-
-  get auth(): AuthService {
-    return <AuthService>this.getInstance("auth");
-  }
 
   get dataStore(): DataStoreService {
     return <DataStoreService>this.getInstance("dataStore");

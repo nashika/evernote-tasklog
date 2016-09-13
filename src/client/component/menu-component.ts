@@ -106,7 +106,7 @@ export class MenuComponent extends BaseComponent {
   }
 
   logout() {
-    serviceRegistry.auth.logout().then(() => {
+    serviceRegistry.request.logoutAuth().then(() => {
       this.$parent.mode = "auth";
     });
   }

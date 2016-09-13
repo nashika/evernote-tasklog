@@ -3,8 +3,8 @@ import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
 import {serviceRegistry} from "../service/service-registry";
-import {AuthService} from "../service/auth-service";
 import {AppComponent} from "./app-component";
+import {AuthEntity} from "../../common/entity/auth-entity";
 
 let template = require("./auth-component.jade");
 
@@ -16,32 +16,46 @@ export class AuthComponent extends BaseComponent {
 
   $parent: AppComponent;
 
-  authService: AuthService;
   message: string;
   isDeveloper: boolean;
+  sandbox: AuthEntity;
+  production: AuthEntity;
 
   data(): any {
     return _.assign(super.data(), {
-      authService: serviceRegistry.auth,
       message: null,
       isDeveloper: false,
+      sandbox: null,
+      production: null,
     });
   }
 
   ready() {
     super.ready();
-    serviceRegistry.auth.check().then(result => {
-      if (result) {
+    this.load();
+  }
+
+  load() {
+    serviceRegistry.request.loadAuth().then(auth => {
+      if (auth) {
         this.$parent.mode = "menu";
       } else {
-        return serviceRegistry.auth.initialize();
+        this.initialize();
       }
     });
   }
 
+  initialize() {
+    return Promise.resolve().then(() => {
+      return serviceRegistry.request.tokenAuth(false).then(auth => this.production = auth);
+    }).then(() => {
+      return serviceRegistry.request.tokenAuth(true).then(auth => this.sandbox = auth);
+    }).then(() => null);
+  }
+
   login(sandbox: boolean, useToken: boolean) {
-    serviceRegistry.auth.login(sandbox, useToken).then(() => {
-      this.$parent.mode = "menu";
+    serviceRegistry.request.loginAuth(sandbox, useToken).then(() => {
+      this.load();
     }).catch(err => {
       alert(`Login failed. err="${err}"`);
     });
@@ -50,7 +64,13 @@ export class AuthComponent extends BaseComponent {
   setToken(sandbox: boolean) {
     var token = prompt(`Input developer token (${sandbox ? "sandbox" : "production"})`);
     if (!token) return;
-    serviceRegistry.auth.setToken(sandbox, token).catch(err => {
+    return serviceRegistry.request.tokenAuth(sandbox, token).then(auth => {
+      if (sandbox)
+        this.sandbox = auth;
+      else
+        this.production = auth;
+      if (!auth) alert('Token is invalid.');
+    }).catch(err => {
       alert(`Set token failed. err="${err}"`);
     });
   }

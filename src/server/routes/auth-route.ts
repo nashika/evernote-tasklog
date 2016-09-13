@@ -7,6 +7,7 @@ import {BaseRoute, Code403Error} from "./base-route";
 import {Request, Response, Router} from "express";
 import {UserTable} from "../table/user-table";
 import {SettingEntity} from "../../common/entity/setting-entity";
+import {AuthEntity} from "../../common/entity/auth-entity";
 
 export class AuthRoute extends BaseRoute {
 
@@ -20,9 +21,9 @@ export class AuthRoute extends BaseRoute {
     return _router;
   }
 
-  index(req: Request, res: Response): Promise<boolean> {
+  index(req: Request, res: Response): Promise<AuthEntity> {
     if (!(req.session["evernote"] && req.session["evernote"].token)) {
-      return Promise.resolve(false);
+      return Promise.resolve(null);
     } else {
       let sandbox: boolean = req.session["evernote"].sandbox;
       let token: string = req.session["evernote"].token;
@@ -37,7 +38,10 @@ export class AuthRoute extends BaseRoute {
       }).then(() => {
         return core.www.initUser(req.session["evernote"].user.username, token, sandbox);
       }).then(() => {
-        return true;
+        let auth = new AuthEntity();
+        auth.token = token;
+        auth.username = req.session["evernote"].user.username;
+        return auth;
       }).catch(err => {
         throw new Code403Error(`Evernote user auth failed. err=${err}`);
       });
@@ -120,7 +124,7 @@ export class AuthRoute extends BaseRoute {
     });
   }
 
-  token(req: Request, res: Response): Promise<{token: string, username: string}> {
+  token(req: Request, res: Response): Promise<AuthEntity> {
     return Promise.resolve().then(() => {
       let sandbox: boolean = req.body.sandbox ? true : false;
       let token: string = req.body.token;
@@ -154,11 +158,13 @@ export class AuthRoute extends BaseRoute {
     });
   }
 
-  private checkToken(sandbox: boolean, token: string): Promise<{token: string, username: string}> {
+  private checkToken(sandbox: boolean, token: string): Promise<AuthEntity> {
     return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
-      return {token: token, username: user.username};
+      let auth = new AuthEntity();
+      auth.token = token;
+      auth.username = user.username;
+      return auth;
     }).catch(err => Promise.reject(new Code403Error(err)));
-  };
-
+  }
 
 }

@@ -1,12 +1,12 @@
 import path = require("path");
 
-import log4js = require("log4js");
 import evernote = require("evernote");
 import express = require("express");
 import http = require("http");
-import {getLogger, Logger} from "log4js";
+import {getLogger} from "log4js";
 import _ = require("lodash");
 
+import "./log4js";
 import core from "./core";
 import {LinkedNotebookTable} from "./table/linked-notebook-table";
 import {NoteTable} from "./table/note-table";
@@ -30,17 +30,13 @@ import {TagEntity} from "../common/entity/tag-entity";
 import {SearchEntity} from "../common/entity/serch-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
 
-let logger:Logger;
+let logger = getLogger("system");
 
 export class Www {
 
   SYNC_CHUNK_COUNT = 100;
 
   main(app: express.Application, server: http.Server): Promise<void> {
-    // Initialize logger
-    log4js.configure(path.join(__dirname, "/log4js-config.json"), {cwd: path.join(__dirname, "../../")});
-    logger = getLogger("system");
-
     // Initialize core object
     core.www = this;
     app.locals.core = core; // TODO: Set password to web server
