@@ -10,33 +10,24 @@ let logger = getLogger("system");
 
 export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity<any>, T2 extends IMultiEntityFindOptions> extends BaseMultiTable<T1, T2> {
 
-  saveLocalUpdateOnly(entities: T1|T1[]): Promise<void> {
+  saveByGuid(entities: T1|T1[]): Promise<void> {
     if (!entities) return Promise.resolve();
     let arrEntities: T1[] = _.castArray(entities);
     if (arrEntities.length == 0) return Promise.resolve();
-    logger.debug(`Save local update only ${this.Class.PLURAL_NAME} was started. docs.count=${arrEntities.length}`);
-    return MyPromise.eachFunctionSeries(arrEntities, (resolve, reject, entity) => {
-      this.datastore.find({guid: entity.guid}, (err: any, docs?: T1[]) => {
+    logger.debug(`Save local ${this.Class.PLURAL_NAME} was started. docs.count=${arrEntities.length}`);
+    return MyPromise.eachFunctionSeries<T1>(arrEntities, (resolve, reject, entity) => {
+      logger.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. guid=${entity.guid}, title=${_.get(entity, this.Class.TITLE_FIELD)}`);
+      this.datastore.update({guid: entity.guid}, entity, {upsert: true}, (err, numReplaced) => {
+        logger.trace(`Upsert local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}. guid=${entity.guid}, numReplaced=${numReplaced}`);
         if (err) return reject(err);
-        var localDoc: T1 = (docs.length == 0) ? null : docs[0];
-        if (localDoc && localDoc.updateSequenceNum >= entity.updateSequenceNum) {
-          logger.trace(`Upsert local ${this.Class.PLURAL_NAME} was skipped. _id=${entity._id}, title=${(<any>entity)[this.Class.TITLE_FIELD]}`);
-          resolve();
-        } else {
-          logger.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. guid=${entity._id}, title=${(<any>entity)[this.Class.TITLE_FIELD]}`);
-          this.datastore.update({_id: entity._id}, entity, {upsert: true}, (err, numReplaced) => {
-            if (err) return reject(err);
-            logger.trace(`Upsert local ${this.Class.PLURAL_NAME} was succeed. guid=${entity.guid}, numReplaced=${numReplaced}`);
-            resolve();
-          });
-        }
+        resolve();
       });
     }).then(() => {
-      logger.debug(`Save local update only ${this.Class.PLURAL_NAME} was succeed. docs.count=${arrEntities.length}`);
+      logger.debug(`Save local ${this.Class.PLURAL_NAME} was succeed. docs.count=${arrEntities.length}`);
     });
   }
 
-  removeLocalByGuid(query: string|string[]): Promise<void> {
+  removeByGuid(query: string|string[]): Promise<void> {
     if (!query) return Promise.resolve();
     let objQuery: Object;
     if (_.isArray(query)) {

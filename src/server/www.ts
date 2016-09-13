@@ -142,25 +142,25 @@ export class Www {
             });
           });
         }).then(() => {
-          return this.getTable<NoteTable>(username, NoteEntity).save(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
+          return this.getTable<NoteTable>(username, NoteEntity).saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
         }).then(() => {
-          return this.getTable<NoteTable>(username, NoteEntity).removeLocalByGuid(lastSyncChunk.expungedNotes);
+          return this.getTable<NoteTable>(username, NoteEntity).removeByGuid(lastSyncChunk.expungedNotes);
         }).then(() => {
-          return this.getTable<NotebookTable>(username, NotebookEntity).save(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
+          return this.getTable<NotebookTable>(username, NotebookEntity).saveByGuid(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
         }).then(() => {
-          return this.getTable<NotebookTable>(username, NotebookEntity).removeLocalByGuid(lastSyncChunk.expungedNotebooks);
+          return this.getTable<NotebookTable>(username, NotebookEntity).removeByGuid(lastSyncChunk.expungedNotebooks);
         }).then(() => {
-          return this.getTable<TagTable>(username, TagEntity).save(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
+          return this.getTable<TagTable>(username, TagEntity).saveByGuid(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
         }).then(() => {
-          return this.getTable<TagTable>(username, TagEntity).removeLocalByGuid(lastSyncChunk.expungedTags);
+          return this.getTable<TagTable>(username, TagEntity).removeByGuid(lastSyncChunk.expungedTags);
         }).then(() => {
-          return this.getTable<SearchTable>(username, SearchEntity).save(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
+          return this.getTable<SearchTable>(username, SearchEntity).saveByGuid(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
         }).then(() => {
-          return this.getTable<SearchTable>(username, SearchEntity).removeLocalByGuid(lastSyncChunk.expungedSearches);
+          return this.getTable<SearchTable>(username, SearchEntity).removeByGuid(lastSyncChunk.expungedSearches);
         }).then(() => {
-          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).save(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
+          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).saveByGuid(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
         }).then(() => {
-          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).removeLocalByGuid(lastSyncChunk.expungedLinkedNotebooks);
+          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
         }).then(() => {
           localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
           return this.getTable<SyncStateTable>(username, SyncStateEntity).save(localSyncState);

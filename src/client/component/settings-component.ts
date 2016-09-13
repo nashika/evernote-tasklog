@@ -1,5 +1,6 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
+import Vue = require("vue");
 var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
@@ -55,6 +56,7 @@ export class SettingsComponent extends BaseComponent {
   ready() {
     this.reload().then(() => {
       this.editStore = _.cloneDeep(serviceRegistry.dataStore.settings);
+      if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
     });
   }
 
