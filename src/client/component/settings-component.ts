@@ -91,7 +91,7 @@ export class SettingsComponent extends BaseComponent {
       if (field.reParse) reParse = true;
       if (field.reload) reload = true;
       serviceRegistry.progress.next(`Saving ${key}...`);
-      return serviceRegistry.entity.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]})).then(() => {
+      return serviceRegistry.request.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]})).then(() => {
         serviceRegistry.dataStore.settings[key] = this.editStore[key];
       });
     }).then(() => {

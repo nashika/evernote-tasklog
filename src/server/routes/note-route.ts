@@ -11,21 +11,21 @@ export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
 
   getRouter(): Router {
     let _router = super.getRouter();
-    _router.post("/get-content", this.onGetContent);
-    _router.post("/re-parse", this.onReParse);
+    _router.post("/get-content", (req, res) => this.wrap(req, res, this.getContent));
+    _router.post("/re-parse", (req, res) => this.wrap(req, res, this.reParse));
     return _router;
   }
 
-  onGetContent = (req: Request, res: Response) => {
-    this.getTable(req).getRemoteContent(req.body).then(notes => {
-      res.json(notes);
-    }).catch(err => this.responseErrorJson(res, err));
-  };
+  getContent(req: Request, res: Response): Promise<NoteEntity[]> {
+    return this.getTable(req).getRemoteContent(req.body).then(notes => {
+      return notes;
+    });
+  }
 
-  onReParse = (req: Request, res: Response) => {
-    this.getTable(req).reParseNotes(req.body).then(() => {
-      res.json(true);
-    }).catch(err => this.responseErrorJson(res, err));
+  reParse(req: Request, res: Response): Promise<boolean> {
+    return this.getTable(req).reParseNotes(req.body).then(() => {
+      return true;
+    });
   };
 
 }

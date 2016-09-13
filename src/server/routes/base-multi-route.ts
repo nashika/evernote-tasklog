@@ -10,21 +10,29 @@ export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends Base
 
   getRouter(): Router {
     let _router = Router();
-    _router.post("/", (req: Request, res: Response) => this.index(req, res));
-    _router.post("/count", (req: Request, res: Response) => this.count(req, res));
+    _router.post("/", (req, res) => this.wrap(req, res, this.index));
+    _router.post("/count", (req, res) => this.wrap(req, res, this.count));
+    _router.post("/save", (req, res) => this.wrap(req, res, this.save));
     return _router;
   }
 
-  index(req: Request, res: Response) {
-    this.getTable(req).find(req.body).then((entities: T1[]) => {
-      res.json(entities);
-    }).catch(err => this.responseErrorJson(res, err));
+  index(req: Request, res: Response): Promise<T1[]> {
+    return this.getTable(req).find(req.body).then((entities: T1[]) => {
+      return entities;
+    });
   }
 
-  count(req: Request, res: Response) {
-    this.getTable(req).count(req.body).then(count => {
-      res.json(count);
-    }).catch(err => this.responseErrorJson(res, err));
+  count(req: Request, res: Response): Promise<number> {
+    return this.getTable(req).count(req.body).then(count => {
+      return count;
+    });
+  }
+
+  save(req: Request, res: Response): Promise<boolean> {
+    let entity: T1 = new (<any>this.Class.EntityClass)(req.body);
+    return this.getTable(req).save(entity).then(() => {
+      return true;
+    });
   }
 
 }

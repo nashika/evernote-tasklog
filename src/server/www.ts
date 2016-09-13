@@ -84,7 +84,7 @@ export class Www {
         note: new NoteTable(username),
         notebook: new NotebookTable(username),
         profitLog: new ProfitLogTable(username),
-        searche: new SearchTable(username),
+        search: new SearchTable(username),
         setting: new SettingTable(username),
         syncState: new SyncStateTable(username),
         tag: new TagTable(username),
@@ -106,9 +106,9 @@ export class Www {
     return Promise.resolve().then(() => {
       // Reload settings
       return this.getTable<SettingTable>(username, SettingEntity).find().then((settings: SettingEntity[]) => {
-        for (let setting of settings) {
+        core.users[username].settings = <any>{};
+        for (let setting of settings)
           core.users[username].settings[setting._id] = setting.value;
-        }
       });
     }).then(() => {
       // Reload userStore

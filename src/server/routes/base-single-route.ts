@@ -10,14 +10,12 @@ export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends Ba
 
   getRouter(): Router {
     let _router = Router();
-    _router.post("/", (req: Request, res: Response) => this.index(req, res));
+    _router.post("/", (req, res) => this.wrap(req, res, this.index));
     return _router;
   }
 
-  index(req: Request, res: Response) {
-    this.getTable(req).findOne().then(entity => {
-      res.json(entity);
-    }).catch(err => this.responseErrorJson(res, err));
+  index(req: Request, res: Response): Promise<T1> {
+    return this.getTable(req).findOne();
   }
 
 }

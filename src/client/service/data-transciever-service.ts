@@ -38,13 +38,13 @@ export class DataTranscieverService extends BaseService {
       // get user
       if (serviceRegistry.dataStore.user) return;
       serviceRegistry.progress.next("Getting user data.");
-      return serviceRegistry.entity.findOne<UserEntity>(UserEntity).then(user => {
+      return serviceRegistry.request.findOne<UserEntity>(UserEntity).then(user => {
         serviceRegistry.dataStore.user = user;
       });
     }).then(() => {
       // get settings
       serviceRegistry.progress.next("Getting settings data.");
-      return serviceRegistry.entity.find<SettingEntity>(SettingEntity).then(settings => {
+      return serviceRegistry.request.find<SettingEntity>(SettingEntity).then(settings => {
         let result: {[key:string]: any} = {};
         for (let setting of settings) result[setting._id] = setting.value;
         serviceRegistry.dataStore.settings = result;
@@ -55,11 +55,11 @@ export class DataTranscieverService extends BaseService {
         return Promise.reject(new MyPromiseTerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
       // sync
       serviceRegistry.progress.next("Syncing remote server.");
-      return serviceRegistry.entity.sync();
+      return serviceRegistry.request.sync();
     }).then(() => {
       // get notebooks
       serviceRegistry.progress.next("Getting notebooks data.");
-      return serviceRegistry.entity.find<NotebookEntity>(NotebookEntity).then(notebooks => {
+      return serviceRegistry.request.find<NotebookEntity>(NotebookEntity).then(notebooks => {
         serviceRegistry.dataStore.notebooks = _.keyBy(notebooks, "guid");
         serviceRegistry.dataStore.stacks = _(notebooks).map<string>("stack").uniq().value();
       });
@@ -67,7 +67,7 @@ export class DataTranscieverService extends BaseService {
       if (params.getContent) return Promise.resolve().then(() => {
         // get note count
         serviceRegistry.progress.next("Getting notes count.");
-        return serviceRegistry.entity.count(NoteEntity, noteQuery).then(count => {
+        return serviceRegistry.request.count(NoteEntity, noteQuery).then(count => {
           if (count > 100)
             if (!window.confirm(`Current query find ${count} notes. It is too many. Continue anyway?`))
               return Promise.reject(new MyPromiseTerminateResult(`User Canceled`));
@@ -75,7 +75,7 @@ export class DataTranscieverService extends BaseService {
       }).then(() => {
         // get notes
         serviceRegistry.progress.next("Getting notes.");
-        return serviceRegistry.entity.find<NoteEntity>(NoteEntity, noteQuery).then(notes => {
+        return serviceRegistry.request.find<NoteEntity>(NoteEntity, noteQuery).then(notes => {
           serviceRegistry.dataStore.notes = _.keyBy(notes, "guid");
         });
       }).then(() => {
@@ -85,7 +85,7 @@ export class DataTranscieverService extends BaseService {
         return MyPromise.eachPromiseSeries(serviceRegistry.dataStore.notes, (note, noteGuid) => {
           serviceRegistry.progress.set(`Request remote contents. ${++count} / ${_.size(serviceRegistry.dataStore.notes)}`);
           if (!note.hasContent)
-            return serviceRegistry.entity.getNoteContent(noteGuid).then(notes => {
+            return serviceRegistry.request.getNoteContent(noteGuid).then(notes => {
               for (note of notes)
                 serviceRegistry.dataStore.notes[note.guid] = note;
             });
@@ -99,7 +99,7 @@ export class DataTranscieverService extends BaseService {
           guids.push(note.guid);
         }
         let timeLogQuery = this._makeTimeLogQuery(_.merge({}, params, {noteGuids: guids}));
-        return serviceRegistry.entity.find<TimeLogEntity>(TimeLogEntity, timeLogQuery).then(timeLogs => {
+        return serviceRegistry.request.find<TimeLogEntity>(TimeLogEntity, timeLogQuery).then(timeLogs => {
           serviceRegistry.dataStore.timeLogs = {};
           for (var timeLog of timeLogs) {
             if (!serviceRegistry.dataStore.timeLogs[timeLog.noteGuid])
@@ -115,7 +115,7 @@ export class DataTranscieverService extends BaseService {
           let note = serviceRegistry.dataStore.notes[noteGuid];
           guids.push(note.guid);
         }
-        return serviceRegistry.entity.find<ProfitLogEntity>(ProfitLogEntity, {noteGuid: {$in: guids}}).then(profitLogs => {
+        return serviceRegistry.request.find<ProfitLogEntity>(ProfitLogEntity, {noteGuid: {$in: guids}}).then(profitLogs => {
           serviceRegistry.dataStore.profitLogs = {};
           for (let profitLog of profitLogs) {
             if (!serviceRegistry.dataStore.profitLogs[profitLog.noteGuid])
@@ -138,7 +138,7 @@ export class DataTranscieverService extends BaseService {
   reParse(): Promise<void> {
     serviceRegistry.progress.open(2);
     serviceRegistry.progress.next("Re Parse notes...");
-    return serviceRegistry.entity.reParseNote().then(() => {
+    return serviceRegistry.request.reParseNote().then(() => {
       serviceRegistry.progress.next("Done.");
       serviceRegistry.progress.close();
     }).catch(err => {
@@ -149,14 +149,14 @@ export class DataTranscieverService extends BaseService {
 
   countNotes(params: DataTranscieverServiceParams): Promise<number> {
     let query = this._makeNoteQuery(params);
-    return serviceRegistry.entity.count(NoteEntity, query).then(count => {
+    return serviceRegistry.request.count(NoteEntity, query).then(count => {
       return count;
     });
   }
 
   countTimeLogs(params: DataTranscieverServiceParams): Promise<number> {
     let query = this._makeTimeLogQuery(params);
-    return serviceRegistry.entity.count(TimeLogEntity, query).then(count => {
+    return serviceRegistry.request.count(TimeLogEntity, query).then(count => {
       return count;
     });
   }

@@ -35,7 +35,15 @@ export abstract class BaseRoute {
 
   abstract getRouter(): Router;
 
-  protected responseErrorJson(res: Response, err: any) {
+  protected wrap(req: Request, res: Response, func: (req: Request, res: Response) => Promise<any>) {
+    Promise.resolve().then(() => {
+      return func.call(this, req, res);
+    }).then(data => {
+      res.json(data);
+    }).catch(err => this.responseErrorJson(res, err));
+  }
+
+  private responseErrorJson(res: Response, err: any) {
     let parse = this.parseError(err);
     let result = {
       result: false,
