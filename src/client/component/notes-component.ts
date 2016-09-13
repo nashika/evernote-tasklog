@@ -3,7 +3,7 @@ import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
 import {DataStoreService} from "../service/data-store-service";
-import {serviceRegistry} from "../service/service-registry";
+import {clientServiceRegistry} from "../service/client-service-registry";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
 
@@ -12,6 +12,9 @@ let template = require("./notes-component.jade");
 @Component({
   template: template,
   components: {},
+  events: {
+    "reload": "reload",
+  },
 })
 export class NotesComponent extends BaseComponent {
 
@@ -23,7 +26,7 @@ export class NotesComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: serviceRegistry.dataStore,
+      dataStoreService: clientServiceRegistry.dataStore,
       notesSpentTimes: {},
       notesProfits: {},
       existPersons: [],
@@ -38,10 +41,10 @@ export class NotesComponent extends BaseComponent {
 
   reload() {
     this.isReady = false;
-    serviceRegistry.dataTransciever.reload({getContent: true}).then(() => {
-      this.reloadTimeLogs(serviceRegistry.dataStore.timeLogs);
+    clientServiceRegistry.dataTransciever.reload({getContent: true}).then(() => {
+      this.reloadTimeLogs(clientServiceRegistry.dataStore.timeLogs);
     }).then(() => {
-      this.reloadProfitLogs(serviceRegistry.dataStore.profitLogs);
+      this.reloadProfitLogs(clientServiceRegistry.dataStore.profitLogs);
     }).then(() => {
       this.isReady = true;
     });

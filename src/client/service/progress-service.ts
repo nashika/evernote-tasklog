@@ -1,7 +1,7 @@
-import {BaseService} from "./base-service";
+import {BaseClientService} from "./base-client-service";
 import {ProgressModalComponent} from "../component/progress-modal-component";
 
-export class ProgressService extends BaseService {
+export class ProgressService extends BaseClientService {
 
   private $component: ProgressModalComponent;
 

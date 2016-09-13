@@ -3,7 +3,7 @@ import _ = require("lodash");
 var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
-import {serviceRegistry} from "../service/service-registry";
+import {clientServiceRegistry} from "../service/client-service-registry";
 import {DataTranscieverService} from "../service/data-transciever-service";
 import {DataStoreService} from "../service/data-store-service";
 import {AppComponent} from "./app-component";
@@ -41,8 +41,8 @@ export class MenuComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: serviceRegistry.dataStore,
-      dataTranscieverService: serviceRegistry.dataTransciever,
+      dataStoreService: clientServiceRegistry.dataStore,
+      dataTranscieverService: clientServiceRegistry.dataTransciever,
       noteCount: 0,
       allNoteCount: 0,
       loadedNoteCount: 0,
@@ -106,13 +106,13 @@ export class MenuComponent extends BaseComponent {
   }
 
   logout() {
-    serviceRegistry.request.logoutAuth().then(() => {
+    clientServiceRegistry.request.logoutAuth().then(() => {
       this.$parent.mode = "auth";
     });
   }
 
   reParse() {
-    serviceRegistry.dataTransciever.reParse();
+    clientServiceRegistry.dataTransciever.reParse();
   }
 
 }

@@ -2,8 +2,8 @@ import _ = require("lodash");
 
 import {UserEntity} from "../../common/entity/user-entity";
 import {NotebookEntity} from "../../common/entity/notebook-entity";
-import {BaseService} from "./base-service";
-import {serviceRegistry} from "./service-registry";
+import {BaseClientService} from "./base-client-service";
+import {clientServiceRegistry} from "./client-service-registry";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {MyPromise, MyPromiseTerminateResult} from "../../common/util/my-promise";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
@@ -19,7 +19,7 @@ interface DataTranscieverServiceParams {
   getContent?: boolean,
 }
 
-export class DataTranscieverService extends BaseService {
+export class DataTranscieverService extends BaseClientService {
 
   filterParams: {notebookGuids: string[], stacks: string[]} = null;
 
@@ -33,130 +33,130 @@ export class DataTranscieverService extends BaseService {
 
   reload(params: DataTranscieverServiceParams): Promise<void> {
     let noteQuery = this._makeNoteQuery(params);
-    serviceRegistry.progress.open(params.getContent ? 10 : 6);
+    clientServiceRegistry.progress.open(params.getContent ? 10 : 6);
     return Promise.resolve().then(() => {
       // get user
-      if (serviceRegistry.dataStore.user) return;
-      serviceRegistry.progress.next("Getting user data.");
-      return serviceRegistry.request.findOne<UserEntity>(UserEntity).then(user => {
-        serviceRegistry.dataStore.user = user;
+      if (clientServiceRegistry.dataStore.user) return;
+      clientServiceRegistry.progress.next("Getting user data.");
+      return clientServiceRegistry.request.findOne<UserEntity>(UserEntity).then(user => {
+        clientServiceRegistry.dataStore.user = user;
       });
     }).then(() => {
       // get settings
-      serviceRegistry.progress.next("Getting settings data.");
-      return serviceRegistry.request.find<SettingEntity>(SettingEntity).then(settings => {
+      clientServiceRegistry.progress.next("Getting settings data.");
+      return clientServiceRegistry.request.find<SettingEntity>(SettingEntity).then(settings => {
         let result: {[key:string]: any} = {};
         for (let setting of settings) result[setting._id] = setting.value;
-        serviceRegistry.dataStore.settings = result;
+        clientServiceRegistry.dataStore.settings = result;
       });
     }).then(() => {
       // check settings
-      if (!serviceRegistry.dataStore.settings["persons"] || serviceRegistry.dataStore.settings["persons"].length == 0)
+      if (!clientServiceRegistry.dataStore.settings["persons"] || clientServiceRegistry.dataStore.settings["persons"].length == 0)
         return Promise.reject(new MyPromiseTerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
       // sync
-      serviceRegistry.progress.next("Syncing remote server.");
-      return serviceRegistry.request.sync();
+      clientServiceRegistry.progress.next("Syncing remote server.");
+      return clientServiceRegistry.request.sync();
     }).then(() => {
       // get notebooks
-      serviceRegistry.progress.next("Getting notebooks data.");
-      return serviceRegistry.request.find<NotebookEntity>(NotebookEntity).then(notebooks => {
-        serviceRegistry.dataStore.notebooks = _.keyBy(notebooks, "guid");
-        serviceRegistry.dataStore.stacks = _(notebooks).map<string>("stack").uniq().value();
+      clientServiceRegistry.progress.next("Getting notebooks data.");
+      return clientServiceRegistry.request.find<NotebookEntity>(NotebookEntity).then(notebooks => {
+        clientServiceRegistry.dataStore.notebooks = _.keyBy(notebooks, "guid");
+        clientServiceRegistry.dataStore.stacks = _(notebooks).map<string>("stack").uniq().value();
       });
     }).then(() => {
       if (params.getContent) return Promise.resolve().then(() => {
         // get note count
-        serviceRegistry.progress.next("Getting notes count.");
-        return serviceRegistry.request.count(NoteEntity, noteQuery).then(count => {
+        clientServiceRegistry.progress.next("Getting notes count.");
+        return clientServiceRegistry.request.count(NoteEntity, noteQuery).then(count => {
           if (count > 100)
             if (!window.confirm(`Current query find ${count} notes. It is too many. Continue anyway?`))
               return Promise.reject(new MyPromiseTerminateResult(`User Canceled`));
         });
       }).then(() => {
         // get notes
-        serviceRegistry.progress.next("Getting notes.");
-        return serviceRegistry.request.find<NoteEntity>(NoteEntity, noteQuery).then(notes => {
-          serviceRegistry.dataStore.notes = _.keyBy(notes, "guid");
+        clientServiceRegistry.progress.next("Getting notes.");
+        return clientServiceRegistry.request.find<NoteEntity>(NoteEntity, noteQuery).then(notes => {
+          clientServiceRegistry.dataStore.notes = _.keyBy(notes, "guid");
         });
       }).then(() => {
         // get content from remote
-        serviceRegistry.progress.next("Request remote contents.");
+        clientServiceRegistry.progress.next("Request remote contents.");
         let count = 0;
-        return MyPromise.eachPromiseSeries(serviceRegistry.dataStore.notes, (note, noteGuid) => {
-          serviceRegistry.progress.set(`Request remote contents. ${++count} / ${_.size(serviceRegistry.dataStore.notes)}`);
+        return MyPromise.eachPromiseSeries(clientServiceRegistry.dataStore.notes, (note, noteGuid) => {
+          clientServiceRegistry.progress.set(`Request remote contents. ${++count} / ${_.size(clientServiceRegistry.dataStore.notes)}`);
           if (!note.hasContent)
-            return serviceRegistry.request.getContentNote(noteGuid).then(notes => {
+            return clientServiceRegistry.request.getContentNote(noteGuid).then(notes => {
               for (note of notes)
-                serviceRegistry.dataStore.notes[note.guid] = note;
+                clientServiceRegistry.dataStore.notes[note.guid] = note;
             });
         });
       }).then(() => {
         // get time logs
-        serviceRegistry.progress.next("Getting time logs.");
+        clientServiceRegistry.progress.next("Getting time logs.");
         let guids: string[] = [];
-        for (let noteGuid in serviceRegistry.dataStore.notes) {
-          var note = serviceRegistry.dataStore.notes[noteGuid];
+        for (let noteGuid in clientServiceRegistry.dataStore.notes) {
+          var note = clientServiceRegistry.dataStore.notes[noteGuid];
           guids.push(note.guid);
         }
         let timeLogQuery = this._makeTimeLogQuery(_.merge({}, params, {noteGuids: guids}));
-        return serviceRegistry.request.find<TimeLogEntity>(TimeLogEntity, timeLogQuery).then(timeLogs => {
-          serviceRegistry.dataStore.timeLogs = {};
+        return clientServiceRegistry.request.find<TimeLogEntity>(TimeLogEntity, timeLogQuery).then(timeLogs => {
+          clientServiceRegistry.dataStore.timeLogs = {};
           for (var timeLog of timeLogs) {
-            if (!serviceRegistry.dataStore.timeLogs[timeLog.noteGuid])
-              serviceRegistry.dataStore.timeLogs[timeLog.noteGuid] = {};
-            serviceRegistry.dataStore.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+            if (!clientServiceRegistry.dataStore.timeLogs[timeLog.noteGuid])
+              clientServiceRegistry.dataStore.timeLogs[timeLog.noteGuid] = {};
+            clientServiceRegistry.dataStore.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
           }
         });
       }).then(() => {
         // get profit logs
-        serviceRegistry.progress.next("Getting profit logs.");
+        clientServiceRegistry.progress.next("Getting profit logs.");
         let guids: string[] = [];
-        for (let noteGuid in serviceRegistry.dataStore.notes) {
-          let note = serviceRegistry.dataStore.notes[noteGuid];
+        for (let noteGuid in clientServiceRegistry.dataStore.notes) {
+          let note = clientServiceRegistry.dataStore.notes[noteGuid];
           guids.push(note.guid);
         }
-        return serviceRegistry.request.find<ProfitLogEntity>(ProfitLogEntity, {noteGuid: {$in: guids}}).then(profitLogs => {
-          serviceRegistry.dataStore.profitLogs = {};
+        return clientServiceRegistry.request.find<ProfitLogEntity>(ProfitLogEntity, {noteGuid: {$in: guids}}).then(profitLogs => {
+          clientServiceRegistry.dataStore.profitLogs = {};
           for (let profitLog of profitLogs) {
-            if (!serviceRegistry.dataStore.profitLogs[profitLog.noteGuid])
-              serviceRegistry.dataStore.profitLogs[profitLog.noteGuid] = {};
-            serviceRegistry.dataStore.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog;
+            if (!clientServiceRegistry.dataStore.profitLogs[profitLog.noteGuid])
+              clientServiceRegistry.dataStore.profitLogs[profitLog.noteGuid] = {};
+            clientServiceRegistry.dataStore.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog;
           }
         });
       });
     }).then(() => {
-      serviceRegistry.progress.next("Done.");
-      serviceRegistry.progress.close();
+      clientServiceRegistry.progress.next("Done.");
+      clientServiceRegistry.progress.close();
     }).catch(err => {
       alert(err);
-      serviceRegistry.progress.close();
+      clientServiceRegistry.progress.close();
       if (!(err instanceof MyPromiseTerminateResult))
         throw new Error(`HTTP request error. err=${err}`);
     });
   }
 
   reParse(): Promise<void> {
-    serviceRegistry.progress.open(2);
-    serviceRegistry.progress.next("Re Parse notes...");
-    return serviceRegistry.request.reParseNote().then(() => {
-      serviceRegistry.progress.next("Done.");
-      serviceRegistry.progress.close();
+    clientServiceRegistry.progress.open(2);
+    clientServiceRegistry.progress.next("Re Parse notes...");
+    return clientServiceRegistry.request.reParseNote().then(() => {
+      clientServiceRegistry.progress.next("Done.");
+      clientServiceRegistry.progress.close();
     }).catch(err => {
-      serviceRegistry.progress.close();
+      clientServiceRegistry.progress.close();
       throw err;
     });
   }
 
   countNotes(params: DataTranscieverServiceParams): Promise<number> {
     let query = this._makeNoteQuery(params);
-    return serviceRegistry.request.count(NoteEntity, query).then(count => {
+    return clientServiceRegistry.request.count(NoteEntity, query).then(count => {
       return count;
     });
   }
 
   countTimeLogs(params: DataTranscieverServiceParams): Promise<number> {
     let query = this._makeTimeLogQuery(params);
-    return serviceRegistry.request.count(TimeLogEntity, query).then(count => {
+    return clientServiceRegistry.request.count(TimeLogEntity, query).then(count => {
       return count;
     });
   }
@@ -179,8 +179,8 @@ export class DataTranscieverService extends BaseService {
       // check stacks
       if (this.filterParams.stacks && this.filterParams.stacks.length > 0)
         for (var stack of this.filterParams.stacks)
-          for (let notebookGuid in serviceRegistry.dataStore.notebooks) {
-            var notebook = serviceRegistry.dataStore.notebooks[notebookGuid];
+          for (let notebookGuid in clientServiceRegistry.dataStore.notebooks) {
+            var notebook = clientServiceRegistry.dataStore.notebooks[notebookGuid];
             if (stack == notebook.stack)
               notebooksHash[notebook.guid] = true;
           }

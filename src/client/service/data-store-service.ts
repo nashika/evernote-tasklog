@@ -3,9 +3,9 @@ import {UserEntity} from "../../common/entity/user-entity";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {NotebookEntity} from "../../common/entity/notebook-entity";
-import {BaseService} from "./base-service";
+import {BaseClientService} from "./base-client-service";
 
-export class DataStoreService extends BaseService {
+export class DataStoreService extends BaseClientService {
 
   user: UserEntity;
   persons: Object[];

@@ -2,7 +2,7 @@ import Component from "vue-class-component";
 import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
-import {serviceRegistry} from "../service/service-registry";
+import {clientServiceRegistry} from "../service/client-service-registry";
 import {AppComponent} from "./app-component";
 import {AuthEntity} from "../../common/entity/auth-entity";
 
@@ -36,7 +36,7 @@ export class AuthComponent extends BaseComponent {
   }
 
   load() {
-    serviceRegistry.request.loadAuth().then(auth => {
+    clientServiceRegistry.request.loadAuth().then(auth => {
       if (auth) {
         this.$parent.mode = "menu";
       } else {
@@ -47,14 +47,14 @@ export class AuthComponent extends BaseComponent {
 
   initialize() {
     return Promise.resolve().then(() => {
-      return serviceRegistry.request.tokenAuth(false).then(auth => this.production = auth);
+      return clientServiceRegistry.request.tokenAuth(false).then(auth => this.production = auth);
     }).then(() => {
-      return serviceRegistry.request.tokenAuth(true).then(auth => this.sandbox = auth);
+      return clientServiceRegistry.request.tokenAuth(true).then(auth => this.sandbox = auth);
     }).then(() => null);
   }
 
   login(sandbox: boolean, useToken: boolean) {
-    serviceRegistry.request.loginAuth(sandbox, useToken).then(() => {
+    clientServiceRegistry.request.loginAuth(sandbox, useToken).then(() => {
       this.load();
     }).catch(err => {
       alert(`Login failed. err="${err}"`);
@@ -64,7 +64,7 @@ export class AuthComponent extends BaseComponent {
   setToken(sandbox: boolean) {
     var token = prompt(`Input developer token (${sandbox ? "sandbox" : "production"})`);
     if (!token) return;
-    return serviceRegistry.request.tokenAuth(sandbox, token).then(auth => {
+    return clientServiceRegistry.request.tokenAuth(sandbox, token).then(auth => {
       if (sandbox)
         this.sandbox = auth;
       else

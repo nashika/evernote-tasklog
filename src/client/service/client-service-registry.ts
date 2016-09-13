@@ -1,13 +1,13 @@
 import {SingletonRegistry} from "../../common/util/singleton-registry";
-import {BaseService} from "./base-service";
+import {BaseClientService} from "./base-client-service";
 import {DataTranscieverService} from "./data-transciever-service";
 import {ProgressService} from "./progress-service";
 import {DataStoreService} from "./data-store-service";
 import {RequestService} from "./request-service";
 
-export class ServiceRegistry extends SingletonRegistry<BaseService> {
+export class ClientServiceRegistry extends SingletonRegistry<BaseClientService> {
 
-  Classes: {[key: string]: typeof BaseService} = {
+  Classes: {[key: string]: typeof BaseClientService} = {
     dataStore: DataStoreService,
     dataTransciever: DataTranscieverService,
     progress: ProgressService,
@@ -32,4 +32,4 @@ export class ServiceRegistry extends SingletonRegistry<BaseService> {
 
 }
 
-export var serviceRegistry = new ServiceRegistry();
+export var clientServiceRegistry = new ClientServiceRegistry();

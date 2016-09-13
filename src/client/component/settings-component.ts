@@ -5,7 +5,7 @@ var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
 import {DataStoreService} from "../service/data-store-service";
-import {serviceRegistry} from "../service/service-registry";
+import {clientServiceRegistry} from "../service/client-service-registry";
 import {MyPromise} from "../../common/util/my-promise";
 import {SettingEntity} from "../../common/entity/setting-entity";
 
@@ -45,7 +45,7 @@ export class SettingsComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: serviceRegistry.dataStore,
+      dataStoreService: clientServiceRegistry.dataStore,
       editStore: {
         persons: [],
       },
@@ -55,13 +55,13 @@ export class SettingsComponent extends BaseComponent {
 
   ready() {
     this.reload().then(() => {
-      this.editStore = _.cloneDeep(serviceRegistry.dataStore.settings);
+      this.editStore = _.cloneDeep(clientServiceRegistry.dataStore.settings);
       if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
     });
   }
 
   reload(): Promise<void> {
-    return serviceRegistry.dataTransciever.reload({getContent: false});
+    return clientServiceRegistry.dataTransciever.reload({getContent: false});
   }
 
   up(index: number) {
@@ -83,26 +83,26 @@ export class SettingsComponent extends BaseComponent {
   }
 
   submit() {
-    serviceRegistry.progress.open(_.size(this.fields));
+    clientServiceRegistry.progress.open(_.size(this.fields));
     let count = 0;
     let reParse = false;
     let reload = false;
     MyPromise.eachPromiseSeries(this.fields, (field: any, key: string) => {
-      if (JSON.stringify(this.editStore[key]) == JSON.stringify(serviceRegistry.dataStore.settings[key]))
+      if (JSON.stringify(this.editStore[key]) == JSON.stringify(clientServiceRegistry.dataStore.settings[key]))
         return;
       if (field.reParse) reParse = true;
       if (field.reload) reload = true;
-      serviceRegistry.progress.next(`Saving ${key}...`);
-      return serviceRegistry.request.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]})).then(() => {
-        serviceRegistry.dataStore.settings[key] = this.editStore[key];
+      clientServiceRegistry.progress.next(`Saving ${key}...`);
+      return clientServiceRegistry.request.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]})).then(() => {
+        clientServiceRegistry.dataStore.settings[key] = this.editStore[key];
       });
     }).then(() => {
-      serviceRegistry.progress.close();
+      clientServiceRegistry.progress.close();
       if (reParse)
-        return serviceRegistry.dataTransciever.reParse();
+        return clientServiceRegistry.dataTransciever.reParse();
     }).then(() => {
       if (reload)
-        return serviceRegistry.dataTransciever.reload({getContent: false});
+        return clientServiceRegistry.dataTransciever.reload({getContent: false});
     }).catch(err => alert(err));
   }
 

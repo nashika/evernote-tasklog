@@ -3,7 +3,7 @@ import _ = require("lodash");
 var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
-import {serviceRegistry} from "../service/service-registry";
+import {clientServiceRegistry} from "../service/client-service-registry";
 
 let template = require("./progress-modal-component.jade");
 
@@ -33,7 +33,7 @@ export class ProgressModalComponent extends BaseComponent {
   }
 
   ready() {
-    serviceRegistry.progress.register(this);
+    clientServiceRegistry.progress.register(this);
   }
 
 }

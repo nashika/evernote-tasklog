@@ -3,6 +3,7 @@ import {Request, Response, Router} from "express";
 
 import {BaseRoute} from "./base-route";
 import core from "../core";
+import {serverServiceRegistry} from "../service/server-service-registry";
 
 export class SyncRoute extends BaseRoute {
 
@@ -13,7 +14,8 @@ export class SyncRoute extends BaseRoute {
   }
 
   index(req: Request, res: Response): Promise<boolean> {
-    return core.www.sync(req.session["evernote"].user.username).then(() => {
+    let session = serverServiceRegistry.session.get(req);
+    return core.www.sync(session.user.username).then(() => {
       return true
     });
   };

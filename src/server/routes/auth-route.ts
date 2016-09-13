@@ -8,6 +8,7 @@ import {Request, Response, Router} from "express";
 import {UserTable} from "../table/user-table";
 import {SettingEntity} from "../../common/entity/setting-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
+import {serverServiceRegistry} from "../service/server-service-registry";
 
 export class AuthRoute extends BaseRoute {
 
@@ -22,25 +23,21 @@ export class AuthRoute extends BaseRoute {
   }
 
   index(req: Request, res: Response): Promise<AuthEntity> {
-    if (!(req.session["evernote"] && req.session["evernote"].token)) {
+    let session = serverServiceRegistry.session.get(req);
+    if (!(session && session.token)) {
       return Promise.resolve(null);
     } else {
-      let sandbox: boolean = req.session["evernote"].sandbox;
-      let token: string = req.session["evernote"].token;
+      let sandbox: boolean = session.sandbox;
+      let token: string = session.token;
       return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
-        req.session["evernote"].user = user;
-        return new Promise((resolve, reject) => {
-          req.session.save((err) => {
-            if (err) reject(err);
-            resolve();
-          });
-        });
+        session.user = user;
+        return serverServiceRegistry.session.save(req);
       }).then(() => {
-        return core.www.initUser(req.session["evernote"].user.username, token, sandbox);
+        return core.www.initUser(session.user.username, token, sandbox);
       }).then(() => {
         let auth = new AuthEntity();
         auth.token = token;
-        auth.username = req.session["evernote"].user.username;
+        auth.username = session.user.username;
         return auth;
       }).catch(err => {
         throw new Code403Error(`Evernote user auth failed. err=${err}`);
@@ -48,7 +45,7 @@ export class AuthRoute extends BaseRoute {
     }
   }
 
-  login(req: Request, res: Response): Promise<boolean> {
+  login(req: Request, res: Response): Promise<void> {
     let sandbox: boolean = req.body.sandbox ? true : false;
     let token: boolean = req.body.token ? true : false;
     let envConfig = sandbox ? config.env.sandbox : config.env.production;
@@ -58,16 +55,11 @@ export class AuthRoute extends BaseRoute {
         let resToken: string = entity.value;
         if (resToken) {
           let developerToken = resToken;
-          req.session["evernote"] = {
+          serverServiceRegistry.session.set(req, {
             sandbox: sandbox,
             token: developerToken,
-          };
-          return new Promise((resolve, reject) => {
-            req.session.save(err => {
-              if (err) return reject(err);
-              resolve(true);
-            });
           });
+          return serverServiceRegistry.session.save(req);
         } else {
           throw new Code403Error();
         }
@@ -79,23 +71,22 @@ export class AuthRoute extends BaseRoute {
         sandbox: sandbox,
       });
       client.getRequestToken(`${req.protocol}://${req.get("host")}/auth/callback`, (error: Error, oauthToken: string, oauthTokenSecret: string, results: any) => {
-        if (error) return res.status(500).send(`Error getting OAuth request token : ${JSON.stringify(error)}`);
-        req.session["evernote"] = {
+        if (error) return Promise.reject(`Error getting OAuth request token : ${JSON.stringify(error)}`);
+        serverServiceRegistry.session.set(req, {
           sandbox: sandbox,
           authTokenSecret: oauthTokenSecret,
-        };
-        req.session.save(() => {
-          res.redirect(client.getAuthorizeUrl(oauthToken));
         });
+        return serverServiceRegistry.session.save(req);
       });
     }
   };
 
   callback(req: Request, res: Response): Promise<void> {
-    var oauthToken = req.query["oauth_token"];
-    var oauthVerifier = req.query["oauth_verifier"];
-    var oauthTokenSecret = req.session["evernote"] ? req.session["evernote"].authTokenSecret : null;
-    var sandbox = req.session["evernote"] ? req.session["evernote"].sandbox : null;
+    let session = serverServiceRegistry.session.get(req);
+    let oauthToken = req.query["oauth_token"];
+    let oauthVerifier = req.query["oauth_verifier"];
+    let oauthTokenSecret = session ? session.authTokenSecret : null;
+    let sandbox = session ? session.sandbox : null;
     if (!oauthToken || !oauthVerifier || !oauthTokenSecret) {
       res.redirect("/auth");
       return;
@@ -107,21 +98,16 @@ export class AuthRoute extends BaseRoute {
       sandbox: sandbox,
     });
     client.getAccessToken(oauthToken, oauthTokenSecret, oauthVerifier, (error: Error, oauthAccessToken: string, oauthAccessTokenSecret: string, results: any) => {
-      req.session["evernote"].token = oauthAccessToken;
-      req.session.save(() => {
+      session.token = oauthAccessToken;
+      serverServiceRegistry.session.save(req).then(() => {
         res.redirect("/");
       });
     });
   }
 
-  logout(req: Request, res: Response): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      req.session["evernote"] = undefined;
-      req.session.save(err => {
-        if (err) reject(err);
-        resolve(true);
-      });
-    });
+  logout(req: Request, res: Response): Promise<void> {
+    serverServiceRegistry.session.set(req, null);
+    return serverServiceRegistry.session.save(req);
   }
 
   token(req: Request, res: Response): Promise<AuthEntity> {
