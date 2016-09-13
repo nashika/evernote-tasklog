@@ -1,3 +1,5 @@
-export class BaseClientService {
+import {injectable} from "inversify";
 
+@injectable()
+export abstract class BaseClientService {
 }

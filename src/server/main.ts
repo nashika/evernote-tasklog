@@ -7,8 +7,10 @@
  }*/
 
 // Enable Source Map Support
-import {Server} from "http";
 require('source-map-support').install();
+
+import "reflect-metadata";
+import {Server} from "http";
 
 // Normalize a port into a number, string, or false.
 var normalizePort:(val:string)=>any = (val) => {

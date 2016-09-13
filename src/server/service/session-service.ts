@@ -1,3 +1,5 @@
+import {injectable} from "inversify";
+
 import {BaseServerService} from "./base-server-service";
 import {Request} from "express";
 import {UserEntity} from "../../common/entity/user-entity";
@@ -9,6 +11,7 @@ export interface ISession {
   authTokenSecret?: string;
 }
 
+@injectable()
 export class SessionService extends BaseServerService {
 
   public get(req: Request): ISession {

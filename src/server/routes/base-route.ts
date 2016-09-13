@@ -1,8 +1,7 @@
 import _ = require("lodash");
 import log4js = require("log4js");
 import {Express, Request, Response, Router} from "express";
-
-import {BaseEntity} from "../../common/entity/base-entity";
+import {injectable} from "inversify";
 
 let logger = log4js.getLogger("system");
 
@@ -25,13 +24,8 @@ export class Code500Error extends CodeError {
   message: string = "Internal Server Error";
 }
 
+@injectable()
 export abstract class BaseRoute {
-
-  protected app: Express;
-
-  constructor(app: Express) {
-    this.app = app;
-  }
 
   abstract getRouter(): Router;
 

@@ -1,3 +1,5 @@
-export class BaseServerService {
+import {injectable} from "inversify";
 
+@injectable()
+export class BaseServerService {
 }

@@ -1,5 +1,6 @@
 import express = require("express");
 import evernote = require("evernote");
+import {injectable, inject} from "inversify";
 
 import core from "../core";
 import config from "../config";
@@ -8,9 +9,14 @@ import {Request, Response, Router} from "express";
 import {UserTable} from "../table/user-table";
 import {SettingEntity} from "../../common/entity/setting-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
-import {serverServiceRegistry} from "../service/server-service-registry";
+import {SessionService} from "../service/session-service";
 
+@injectable()
 export class AuthRoute extends BaseRoute {
+
+  constructor(private sessionService: SessionService) {
+    super();
+  }
 
   getRouter(): Router {
     let _router = Router();
@@ -23,7 +29,7 @@ export class AuthRoute extends BaseRoute {
   }
 
   index(req: Request, res: Response): Promise<AuthEntity> {
-    let session = serverServiceRegistry.session.get(req);
+    let session = this.sessionService.get(req);
     if (!(session && session.token)) {
       return Promise.resolve(null);
     } else {
@@ -31,7 +37,7 @@ export class AuthRoute extends BaseRoute {
       let token: string = session.token;
       return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
         session.user = user;
-        return serverServiceRegistry.session.save(req);
+        return this.sessionService.save(req);
       }).then(() => {
         return core.www.initUser(session.user.username, token, sandbox);
       }).then(() => {
@@ -55,11 +61,11 @@ export class AuthRoute extends BaseRoute {
         let resToken: string = entity.value;
         if (resToken) {
           let developerToken = resToken;
-          serverServiceRegistry.session.set(req, {
+          this.sessionService.set(req, {
             sandbox: sandbox,
             token: developerToken,
           });
-          return serverServiceRegistry.session.save(req);
+          return this.sessionService.save(req);
         } else {
           throw new Code403Error();
         }
@@ -72,17 +78,17 @@ export class AuthRoute extends BaseRoute {
       });
       client.getRequestToken(`${req.protocol}://${req.get("host")}/auth/callback`, (error: Error, oauthToken: string, oauthTokenSecret: string, results: any) => {
         if (error) return Promise.reject(`Error getting OAuth request token : ${JSON.stringify(error)}`);
-        serverServiceRegistry.session.set(req, {
+        this.sessionService.set(req, {
           sandbox: sandbox,
           authTokenSecret: oauthTokenSecret,
         });
-        return serverServiceRegistry.session.save(req);
+        return this.sessionService.save(req);
       });
     }
   };
 
   callback(req: Request, res: Response): Promise<void> {
-    let session = serverServiceRegistry.session.get(req);
+    let session = this.sessionService.get(req);
     let oauthToken = req.query["oauth_token"];
     let oauthVerifier = req.query["oauth_verifier"];
     let oauthTokenSecret = session ? session.authTokenSecret : null;
@@ -99,15 +105,15 @@ export class AuthRoute extends BaseRoute {
     });
     client.getAccessToken(oauthToken, oauthTokenSecret, oauthVerifier, (error: Error, oauthAccessToken: string, oauthAccessTokenSecret: string, results: any) => {
       session.token = oauthAccessToken;
-      serverServiceRegistry.session.save(req).then(() => {
+      this.sessionService.save(req).then(() => {
         res.redirect("/");
       });
     });
   }
 
   logout(req: Request, res: Response): Promise<void> {
-    serverServiceRegistry.session.set(req, null);
-    return serverServiceRegistry.session.save(req);
+    this.sessionService.set(req, null);
+    return this.sessionService.save(req);
   }
 
   token(req: Request, res: Response): Promise<AuthEntity> {
