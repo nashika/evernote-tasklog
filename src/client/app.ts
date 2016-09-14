@@ -1,6 +1,7 @@
 import "font-awesome/css/font-awesome.css";
 import "./scss/style.scss";
 
+import "reflect-metadata";
 import "core-js";
 
 // filters
@@ -10,6 +11,7 @@ import './filter/object-length';
 import './filter/order-object-by';
 import './filter/spent-time';
 
-import {AppComponent} from "./component/app-component";
+import {kernel} from "./inversify.config";
 
-let app:AppComponent = new (<any>AppComponent)({el: "#app"});
+let AppComponent = kernel.get("Newable<AppComponent>");
+let app = new (<any>AppComponent)({el: "#app"});

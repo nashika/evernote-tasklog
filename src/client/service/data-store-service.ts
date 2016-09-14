@@ -1,3 +1,5 @@
+import {injectable} from "inversify";
+
 import {NoteEntity} from "../../common/entity/note-entity";
 import {UserEntity} from "../../common/entity/user-entity";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
@@ -5,6 +7,7 @@ import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {NotebookEntity} from "../../common/entity/notebook-entity";
 import {BaseClientService} from "./base-client-service";
 
+@injectable()
 export class DataStoreService extends BaseClientService {
 
   user: UserEntity;

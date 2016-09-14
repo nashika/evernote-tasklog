@@ -2,9 +2,10 @@ import Component from "vue-class-component";
 import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
-import {clientServiceRegistry} from "../service/client-service-registry";
 import {AppComponent} from "./app-component";
 import {AuthEntity} from "../../common/entity/auth-entity";
+import {RequestService} from "../service/request-service";
+import {kernel} from "../inversify.config";
 
 let template = require("./auth-component.jade");
 
@@ -16,6 +17,7 @@ export class AuthComponent extends BaseComponent {
 
   $parent: AppComponent;
 
+  requestService: RequestService;
   message: string;
   isDeveloper: boolean;
   sandbox: AuthEntity;
@@ -23,6 +25,7 @@ export class AuthComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
+      requestService: kernel.get(RequestService),
       message: null,
       isDeveloper: false,
       sandbox: null,
@@ -36,7 +39,7 @@ export class AuthComponent extends BaseComponent {
   }
 
   load() {
-    clientServiceRegistry.request.loadAuth().then(auth => {
+    this.requestService.loadAuth().then(auth => {
       if (auth) {
         this.$parent.mode = "menu";
       } else {
@@ -47,14 +50,14 @@ export class AuthComponent extends BaseComponent {
 
   initialize() {
     return Promise.resolve().then(() => {
-      return clientServiceRegistry.request.tokenAuth(false).then(auth => this.production = auth);
+      return this.requestService.tokenAuth(false).then(auth => this.production = auth);
     }).then(() => {
-      return clientServiceRegistry.request.tokenAuth(true).then(auth => this.sandbox = auth);
+      return this.requestService.tokenAuth(true).then(auth => this.sandbox = auth);
     }).then(() => null);
   }
 
   login(sandbox: boolean, useToken: boolean) {
-    clientServiceRegistry.request.loginAuth(sandbox, useToken).then(() => {
+    this.requestService.loginAuth(sandbox, useToken).then(() => {
       this.load();
     }).catch(err => {
       alert(`Login failed. err="${err}"`);
@@ -64,7 +67,7 @@ export class AuthComponent extends BaseComponent {
   setToken(sandbox: boolean) {
     var token = prompt(`Input developer token (${sandbox ? "sandbox" : "production"})`);
     if (!token) return;
-    return clientServiceRegistry.request.tokenAuth(sandbox, token).then(auth => {
+    return this.requestService.tokenAuth(sandbox, token).then(auth => {
       if (sandbox)
         this.sandbox = auth;
       else

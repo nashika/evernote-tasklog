@@ -3,11 +3,12 @@ import _ = require("lodash");
 var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
-import {clientServiceRegistry} from "../service/client-service-registry";
 import {DataTranscieverService} from "../service/data-transciever-service";
 import {DataStoreService} from "../service/data-store-service";
 import {AppComponent} from "./app-component";
 import {NotebookEntity} from "../../common/entity/notebook-entity";
+import {RequestService} from "../service/request-service";
+import {kernel} from "../inversify.config";
 
 let template = require("./menu-component.jade");
 
@@ -30,6 +31,7 @@ export class MenuComponent extends BaseComponent {
 
   dataStoreService: DataStoreService;
   dataTranscieverService: DataTranscieverService;
+  requestService: RequestService;
   noteCount: number;
   allNoteCount: number;
   loadedNoteCount: number;
@@ -41,8 +43,9 @@ export class MenuComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: clientServiceRegistry.dataStore,
-      dataTranscieverService: clientServiceRegistry.dataTransciever,
+      dataStoreService: kernel.get(DataStoreService),
+      dataTranscieverService: kernel.get(DataTranscieverService),
+      requestService: kernel.get(RequestService),
       noteCount: 0,
       allNoteCount: 0,
       loadedNoteCount: 0,
@@ -93,26 +96,26 @@ export class MenuComponent extends BaseComponent {
     });
   }
 
-  getNotebookOptions(notebooks: {[guid: string]: NotebookEntity}): {value:string, label:string}[] {
+  getNotebookOptions(notebooks: {[guid: string]: NotebookEntity}): {value: string, label: string}[] {
     return _.map(notebooks, (notebook: NotebookEntity) => {
       return {value: notebook.guid, label: notebook.name};
     });
   }
 
   getStackOptions(stacks: string[]): {value: string, label: string}[] {
-    return _.map(stacks, (stack:string) => {
+    return _.map(stacks, (stack: string) => {
       return {value: stack, label: stack};
     });
   }
 
   logout() {
-    clientServiceRegistry.request.logoutAuth().then(() => {
+    this.requestService.logoutAuth().then(() => {
       this.$parent.mode = "auth";
     });
   }
 
   reParse() {
-    clientServiceRegistry.dataTransciever.reParse();
+    this.dataTranscieverService.reParse();
   }
 
 }

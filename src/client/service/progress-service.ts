@@ -1,6 +1,9 @@
-import {BaseClientService} from "./base-client-service";
+import {injectable} from "inversify";
+
+import{BaseClientService} from "./base-client-service";
 import {ProgressModalComponent} from "../component/progress-modal-component";
 
+@injectable()
 export class ProgressService extends BaseClientService {
 
   private $component: ProgressModalComponent;

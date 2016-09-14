@@ -5,9 +5,12 @@ var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
 import {DataStoreService} from "../service/data-store-service";
-import {clientServiceRegistry} from "../service/client-service-registry";
 import {MyPromise} from "../../common/util/my-promise";
 import {SettingEntity} from "../../common/entity/setting-entity";
+import {DataTranscieverService} from "../service/data-transciever-service";
+import {ProgressService} from "../service/progress-service";
+import {RequestService} from "../service/request-service";
+import {kernel} from "../inversify.config";
 
 let template = require("./settings-component.jade");
 
@@ -40,12 +43,18 @@ let fields: {[fieldName: string]: {[key: string]: any}} = {
 export class SettingsComponent extends BaseComponent {
 
   dataStoreService: DataStoreService;
+  dataTranscieverService: DataTranscieverService;
+  requestService: RequestService;
+  progressService: ProgressService;
   editStore: {[key: string]: any};
   fields: {[field: string]: {[key: string]: any}};
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: clientServiceRegistry.dataStore,
+      dataStoreService: kernel.get(DataStoreService),
+      dataTranscieverService: kernel.get(DataTranscieverService),
+      requestService: kernel.get(RequestService),
+      progressService: kernel.get(ProgressService),
       editStore: {
         persons: [],
       },
@@ -55,13 +64,13 @@ export class SettingsComponent extends BaseComponent {
 
   ready() {
     this.reload().then(() => {
-      this.editStore = _.cloneDeep(clientServiceRegistry.dataStore.settings);
+      this.editStore = _.cloneDeep(this.dataStoreService.settings);
       if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
     });
   }
 
   reload(): Promise<void> {
-    return clientServiceRegistry.dataTransciever.reload({getContent: false});
+    return this.dataTranscieverService.reload({getContent: false});
   }
 
   up(index: number) {
@@ -83,26 +92,29 @@ export class SettingsComponent extends BaseComponent {
   }
 
   submit() {
-    clientServiceRegistry.progress.open(_.size(this.fields));
+    this.progressService.open(_.size(this.fields));
     let count = 0;
     let reParse = false;
     let reload = false;
     MyPromise.eachPromiseSeries(this.fields, (field: any, key: string) => {
-      clientServiceRegistry.progress.next(`Saving ${key}...`);
-      if (JSON.stringify(this.editStore[key]) == JSON.stringify(clientServiceRegistry.dataStore.settings[key]))
+      this.progressService.next(`Saving ${key}...`);
+      if (JSON.stringify(this.editStore[key]) == JSON.stringify(this.dataStoreService.settings[key]))
         return;
       if (field.reParse) reParse = true;
       if (field.reload) reload = true;
-      return clientServiceRegistry.request.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]})).then(() => {
-        clientServiceRegistry.dataStore.settings[key] = this.editStore[key];
+      return this.requestService.save<SettingEntity>(SettingEntity, new SettingEntity({
+        _id: key,
+        value: this.editStore[key]
+      })).then(() => {
+        this.dataStoreService.settings[key] = this.editStore[key];
       });
     }).then(() => {
-      clientServiceRegistry.progress.close();
+      this.progressService.close();
       if (reParse)
-        return clientServiceRegistry.dataTransciever.reParse();
+        return this.dataTranscieverService.reParse();
     }).then(() => {
       if (reload)
-        return clientServiceRegistry.dataTransciever.reload({getContent: false});
+        return this.dataTranscieverService.reload({getContent: false});
     }).catch(err => alert(err));
   }
 

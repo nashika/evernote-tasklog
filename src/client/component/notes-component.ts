@@ -3,9 +3,10 @@ import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
 import {DataStoreService} from "../service/data-store-service";
-import {clientServiceRegistry} from "../service/client-service-registry";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
+import {DataTranscieverService} from "../service/data-transciever-service";
+import {kernel} from "../inversify.config";
 
 let template = require("./notes-component.jade");
 
@@ -19,14 +20,20 @@ let template = require("./notes-component.jade");
 export class NotesComponent extends BaseComponent {
 
   dataStoreService: DataStoreService;
+  dataTranscieverService: DataTranscieverService;
   notesSpentTimes: {[noteGuid: string]: {[person: string]: number}};
   notesProfits: {[noteGuid: string]: {[person: string]: number}};
   existPersons: string[];
   isReady: boolean;
 
+  constructor() {
+    super();
+  }
+
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: clientServiceRegistry.dataStore,
+      dataStoreService: kernel.get(DataStoreService),
+      dataTranscieverService: kernel.get(DataTranscieverService),
       notesSpentTimes: {},
       notesProfits: {},
       existPersons: [],
@@ -41,10 +48,10 @@ export class NotesComponent extends BaseComponent {
 
   reload() {
     this.isReady = false;
-    clientServiceRegistry.dataTransciever.reload({getContent: true}).then(() => {
-      this.reloadTimeLogs(clientServiceRegistry.dataStore.timeLogs);
+    this.dataTranscieverService.reload({getContent: true}).then(() => {
+      this.reloadTimeLogs(this.dataStoreService.timeLogs);
     }).then(() => {
-      this.reloadProfitLogs(clientServiceRegistry.dataStore.profitLogs);
+      this.reloadProfitLogs(this.dataStoreService.profitLogs);
     }).then(() => {
       this.isReady = true;
     });

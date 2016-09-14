@@ -3,7 +3,8 @@ import _ = require("lodash");
 var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
-import {clientServiceRegistry} from "../service/client-service-registry";
+import {ProgressService} from "../service/progress-service";
+import {kernel} from "../inversify.config";
 
 let template = require("./progress-modal-component.jade");
 
@@ -16,6 +17,7 @@ let template = require("./progress-modal-component.jade");
 })
 export class ProgressModalComponent extends BaseComponent {
 
+  progressService: ProgressService;
   show: boolean;
   value: number;
   completeCount: number;
@@ -24,6 +26,7 @@ export class ProgressModalComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
+      progressService: kernel.get(ProgressService),
       show: false,
       value: 0,
       completeCount: 0,
@@ -33,7 +36,7 @@ export class ProgressModalComponent extends BaseComponent {
   }
 
   ready() {
-    clientServiceRegistry.progress.register(this);
+    this.progressService.register(this);
   }
 
 }

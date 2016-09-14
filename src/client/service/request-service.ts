@@ -1,5 +1,6 @@
 import request = require("superagent");
 import _ = require("lodash");
+import {injectable} from "inversify";
 
 import {BaseClientService} from "./base-client-service";
 import {BaseEntity} from "../../common/entity/base-entity";
@@ -7,6 +8,7 @@ import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base
 import {NoteEntity} from "../../common/entity/note-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
 
+@injectable()
 export class RequestService extends BaseClientService {
 
   public find<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, query: Object = {}, limit?: number, sort?: {[key: string]: number}|string): Promise<T[]> {
