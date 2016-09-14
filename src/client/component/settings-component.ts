@@ -88,11 +88,11 @@ export class SettingsComponent extends BaseComponent {
     let reParse = false;
     let reload = false;
     MyPromise.eachPromiseSeries(this.fields, (field: any, key: string) => {
+      clientServiceRegistry.progress.next(`Saving ${key}...`);
       if (JSON.stringify(this.editStore[key]) == JSON.stringify(clientServiceRegistry.dataStore.settings[key]))
         return;
       if (field.reParse) reParse = true;
       if (field.reload) reload = true;
-      clientServiceRegistry.progress.next(`Saving ${key}...`);
       return clientServiceRegistry.request.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]})).then(() => {
         clientServiceRegistry.dataStore.settings[key] = this.editStore[key];
       });

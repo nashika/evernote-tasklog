@@ -5,12 +5,11 @@ import express = require("express");
 import cookieParser = require("cookie-parser");
 import session = require("express-session");
 import bodyParser = require("body-parser");
-let connectNedbSession = require("connect-nedb-session");
 
 import {BaseRoute} from "./routes/base-route";
 import {kernel} from "./inversify.config";
 
-let NedbStore = connectNedbSession(session);
+let NedbStore = require("nedb-session-store")(session);
 let app: express.Express = express();
 
 // view engine setup
@@ -25,10 +24,16 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(session({
   secret: "mysecret",
-  cookie: {path: "/", httpOnly: true, maxAge: 365 * 24 * 3600 * 1000},
-  store: new NedbStore({filename: path.join(__dirname, "../../db/session.db")}),
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: {
+    path: "/",
+    httpOnly: true,
+    maxAge: 365 * 24 * 3600 * 1000,
+  },
+  store: new NedbStore({
+    filename: path.join(__dirname, `../../db/session.db`),
+  }),
 }));
 app.use(express.static(path.join(__dirname, "./public")));
 for (let route of kernel.getAll<BaseRoute>(BaseRoute))

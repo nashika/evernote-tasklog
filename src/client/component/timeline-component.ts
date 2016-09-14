@@ -26,6 +26,7 @@ interface TimelineItem {
   components: {},
   events: {
     "reload": "reload",
+    //this.$on("resize", this.onResize);
   },
 })
 export class TimelineComponent extends BaseComponent {
@@ -92,8 +93,6 @@ export class TimelineComponent extends BaseComponent {
       });
       // add events
       this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
-      this.$on("resize", this.onResize);
-      this.$on("reload", this.onReload);
       // reload
       this.onReloadEnd();
     });
