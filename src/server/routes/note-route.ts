@@ -1,13 +1,20 @@
 import express = require("express");
 import {Request, Response, Router} from "express";
+import {injectable} from "inversify";
 
 import {BaseMultiRoute} from "./base-multi-route";
 import {NoteTable} from "../table/note-table";
 import {NoteEntity} from "../../common/entity/note-entity";
+import {SessionService} from "../service/session-service";
 
+@injectable()
 export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
 
   static EntityClass = NoteEntity;
+
+  constructor(protected sessionService: SessionService) {
+    super(sessionService);
+  }
 
   getRouter(): Router {
     let _router = super.getRouter();

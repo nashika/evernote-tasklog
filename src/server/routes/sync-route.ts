@@ -1,11 +1,17 @@
 import express = require("express");
 import {Request, Response, Router} from "express";
+import {injectable} from "inversify";
 
 import {BaseRoute} from "./base-route";
 import core from "../core";
-import {serverServiceRegistry} from "../service/server-service-registry";
+import {SessionService} from "../service/session-service";
 
+@injectable()
 export class SyncRoute extends BaseRoute {
+
+  constructor(protected sessionService: SessionService) {
+    super();
+  }
 
   getBasePath(): string {
     return "/sync";
@@ -18,7 +24,7 @@ export class SyncRoute extends BaseRoute {
   }
 
   index(req: Request, res: Response): Promise<boolean> {
-    let session = serverServiceRegistry.session.get(req);
+    let session = this.sessionService.get(req);
     return core.www.sync(session.user.username).then(() => {
       return true
     });

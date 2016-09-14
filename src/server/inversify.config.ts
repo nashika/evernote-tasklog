@@ -27,9 +27,7 @@ import {UserTable} from "./table/user-table";
 
 export var kernel = new Kernel();
 
-
-kernel.bind<SessionService>(SessionService).toSelf();
-
+kernel.bind<SessionService>(SessionService).toSelf().inSingletonScope();
 
 kernel.bind<BaseRoute>(BaseRoute).to(AuthRoute).whenTargetNamed("auth");
 kernel.bind<BaseRoute>(BaseRoute).to(IndexRoute).whenTargetNamed("index");
@@ -41,13 +39,13 @@ kernel.bind<BaseRoute>(BaseRoute).to(SyncRoute).whenTargetNamed("sync");
 kernel.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("time-log");
 kernel.bind<BaseRoute>(BaseRoute).to(UserRoute).whenTargetNamed("user");
 
-kernel.bind<BaseTable>(BaseTable).to(LinkedNotebookTable).inSingletonScope().whenTargetNamed("linked-notebook");
-kernel.bind<BaseTable>(BaseTable).to(NoteTable).inSingletonScope().whenTargetNamed("note");
-kernel.bind<BaseTable>(BaseTable).to(NotebookTable).inSingletonScope().whenTargetNamed("notebook");
-kernel.bind<BaseTable>(BaseTable).to(ProfitLogTable).inSingletonScope().whenTargetNamed("profit-log");
-kernel.bind<BaseTable>(BaseTable).to(SearchTable).inSingletonScope().whenTargetNamed("search");
-kernel.bind<BaseTable>(BaseTable).to(SettingTable).inSingletonScope().whenTargetNamed("setting");
-kernel.bind<BaseTable>(BaseTable).to(SyncStateTable).inSingletonScope().whenTargetNamed("sync-state");
-kernel.bind<BaseTable>(BaseTable).to(TagTable).inSingletonScope().whenTargetNamed("tag");
-kernel.bind<BaseTable>(BaseTable).to(TimeLogTable).inSingletonScope().whenTargetNamed("time-log");
-kernel.bind<BaseTable>(BaseTable).to(UserTable).inSingletonScope().whenTargetNamed("user");
+kernel.bind<BaseTable>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linked-notebook");
+kernel.bind<BaseTable>(BaseTable).to(NoteTable).whenTargetNamed("note");
+kernel.bind<BaseTable>(BaseTable).to(NotebookTable).whenTargetNamed("notebook");
+kernel.bind<BaseTable>(BaseTable).to(ProfitLogTable).whenTargetNamed("profit-log");
+kernel.bind<BaseTable>(BaseTable).to(SearchTable).whenTargetNamed("search");
+kernel.bind<BaseTable>(BaseTable).to(SettingTable).whenTargetNamed("setting");
+kernel.bind<BaseTable>(BaseTable).to(SyncStateTable).whenTargetNamed("sync-state");
+kernel.bind<BaseTable>(BaseTable).to(TagTable).whenTargetNamed("tag");
+kernel.bind<BaseTable>(BaseTable).to(TimeLogTable).whenTargetNamed("time-log");
+kernel.bind<BaseTable>(BaseTable).to(UserTable).whenTargetNamed("user");
