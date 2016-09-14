@@ -11,12 +11,10 @@ import core from "./core";
 import {LinkedNotebookTable} from "./table/linked-notebook-table";
 import {NoteTable} from "./table/note-table";
 import {NotebookTable} from "./table/notebook-table";
-import {ProfitLogTable} from "./table/profit-log-table";
 import {SearchTable} from "./table/search-table";
 import {SettingTable} from "./table/setting-table";
 import {SyncStateTable} from "./table/sync-state-table";
 import {TagTable} from "./table/tag-table";
-import {TimeLogTable} from "./table/time-log-table";
 import {UserTable} from "./table/user-table";
 import {UserEntity} from "../common/entity/user-entity";
 import {SyncStateEntity} from "../common/entity/sync-state-entity";
@@ -29,6 +27,7 @@ import {NotebookEntity} from "../common/entity/notebook-entity";
 import {TagEntity} from "../common/entity/tag-entity";
 import {SearchEntity} from "../common/entity/serch-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
+import {kernel} from "./inversify.config";
 
 let logger = getLogger("system");
 
@@ -40,7 +39,8 @@ export class Www {
     // Initialize core object
     core.www = this;
     app.locals.core = core; // TODO: Set password to web server
-    core.models.settings = new SettingTable();
+    core.models.settings = <SettingTable>kernel.getNamed<BaseTable>(BaseTable, "setting");
+    core.models.settings.connect();
     // Initialize global settings
     return core.models.settings.find().then(settings => {
       let results:{[_id:string]: SettingEntity} = {};
@@ -75,18 +75,11 @@ export class Www {
     }).then((user: UserEntity) => {
       core.users[username].user = user;
       // Initialize database
-      core.users[username].models = {
-        linkedNotebook: new LinkedNotebookTable(username),
-        note: new NoteTable(username),
-        notebook: new NotebookTable(username),
-        profitLog: new ProfitLogTable(username),
-        search: new SearchTable(username),
-        setting: new SettingTable(username),
-        syncState: new SyncStateTable(username),
-        tag: new TagTable(username),
-        timeLog: new TimeLogTable(username),
-        user: new UserTable(username),
-      };
+      core.users[username].models = {};
+      for (let table of kernel.getAll<BaseTable>(BaseTable)) {
+        core.users[username].models[table.Class.EntityClass.params.name] = table;
+        table.connect(username);
+      }
       // Initialize datas
       return this.sync(username);
     }).then(() => {

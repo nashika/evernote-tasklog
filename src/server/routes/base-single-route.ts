@@ -2,9 +2,9 @@ import {Request, Response, Router} from "express";
 
 import {BaseSingleEntity} from "../../common/entity/base-single-entity";
 import {BaseSingleTable} from "../table/base-single-table";
-import {BaseEntityRoute} from "./base-entity-route";
+import {BaseTableRoute} from "./base-table-route";
 
-export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends BaseSingleTable<T1>> extends BaseEntityRoute<T1, T2> {
+export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends BaseSingleTable<T1>> extends BaseTableRoute<T1, T2> {
 
   static EntityClass: typeof BaseSingleEntity;
 

@@ -1,5 +1,4 @@
 import express = require("express");
-import {Request, Response, Router} from "express";
 
 import {SettingEntity} from "../../common/entity/setting-entity";
 import {SettingTable} from "../table/setting-table";

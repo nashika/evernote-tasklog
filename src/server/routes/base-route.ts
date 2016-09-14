@@ -27,6 +27,8 @@ export class Code500Error extends CodeError {
 @injectable()
 export abstract class BaseRoute {
 
+  abstract getBasePath(): string;
+
   abstract getRouter(): Router;
 
   protected wrap(req: Request, res: Response, func: (req: Request, res: Response) => Promise<any>) {

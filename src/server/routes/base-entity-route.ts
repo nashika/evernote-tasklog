@@ -1,12 +1,9 @@
-import {Request} from "express";
+import _ = require("lodash");
 
-import core from "../core";
 import {BaseRoute} from "./base-route";
-import {BaseTable} from "../table/base-table";
 import {BaseEntity} from "../../common/entity/base-entity";
-import {serverServiceRegistry} from "../service/server-service-registry";
 
-export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTable> extends BaseRoute {
+export abstract class BaseEntityRoute<T extends BaseEntity> extends BaseRoute {
 
   static EntityClass: typeof BaseEntity;
 
@@ -14,9 +11,8 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
     return <typeof BaseEntityRoute>this.constructor;
   }
 
-  getTable(req: Request): T2 {
-    let session = serverServiceRegistry.session.get(req);
-    return <T2>core.users[session.user.username].models[this.Class.EntityClass.params.name];
+  getBasePath(): string {
+    return "/" + _.kebabCase(this.Class.EntityClass.params.name);
   }
 
 }

@@ -1,9 +1,12 @@
+import {injectable} from "inversify";
+
 import core from "../core";
 import {BaseMultiTable} from "./base-multi-table";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 
+@injectable()
 export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFindOptions> {
 
   static EntityClass = TimeLogEntity;

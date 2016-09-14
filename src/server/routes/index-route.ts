@@ -6,6 +6,10 @@ import {BaseRoute} from "./base-route";
 
 export class IndexRoute extends BaseRoute {
 
+  getBasePath(): string {
+    return "/";
+  }
+
   getRouter(): Router {
     let _router = Router();
     _router.get("/", this.onIndex);

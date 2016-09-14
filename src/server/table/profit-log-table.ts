@@ -1,8 +1,11 @@
+import {injectable} from "inversify";
+
 import {BaseMultiTable} from "./base-multi-table";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 
+@injectable()
 export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, IMultiEntityFindOptions> {
 
   static EntityClass = ProfitLogEntity;

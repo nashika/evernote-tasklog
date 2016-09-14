@@ -1,5 +1,6 @@
 import _ = require("lodash");
 import evernote = require("evernote");
+import {injectable} from "inversify";
 import {getLogger} from "log4js";
 
 import {NoteEntity} from "../../common/entity/note-entity";
@@ -15,6 +16,7 @@ export interface NoteTableOptions extends IMultiEntityFindOptions {
   content?: boolean;
 }
 
+@injectable()
 export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptions> {
 
   static EntityClass = NoteEntity;

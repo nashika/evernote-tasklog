@@ -4,14 +4,14 @@ import express = require("express");
 //import favicon = require("serve-favicon");
 import cookieParser = require("cookie-parser");
 import session = require("express-session");
-import * as bodyParser from "body-parser";
+import bodyParser = require("body-parser");
+let connectNedbSession = require("connect-nedb-session");
 
-import {routes} from "./routes/index";
+import {BaseRoute} from "./routes/base-route";
+import {kernel} from "./inversify.config";
 
-var connectNedbSession = require("connect-nedb-session");
-
-var NedbStore = connectNedbSession(session);
-var app: express.Express = express();
+let NedbStore = connectNedbSession(session);
+let app: express.Express = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -31,7 +31,8 @@ app.use(session({
   saveUninitialized: false
 }));
 app.use(express.static(path.join(__dirname, "./public")));
-routes(app);
+for (let route of kernel.getAll<BaseRoute>(BaseRoute))
+  app.use(route.getBasePath(), route.getRouter());
 
 // catch 404 and forward to error handler
 app.use((req: express.Request, res: express.Response, next: Function) => {

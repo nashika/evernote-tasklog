@@ -1,18 +1,21 @@
 import express = require("express");
+import {Request, Response, Router} from "express";
 import evernote = require("evernote");
-import {injectable, inject} from "inversify";
+import {injectable} from "inversify";
 
 import core from "../core";
 import config from "../config";
-import {BaseRoute, Code403Error} from "./base-route";
-import {Request, Response, Router} from "express";
+import {Code403Error} from "./base-route";
 import {UserTable} from "../table/user-table";
 import {SettingEntity} from "../../common/entity/setting-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
 import {SessionService} from "../service/session-service";
+import {BaseEntityRoute} from "./base-entity-route";
 
 @injectable()
-export class AuthRoute extends BaseRoute {
+export class AuthRoute extends BaseEntityRoute<AuthEntity> {
+
+  static EntityClass = AuthEntity;
 
   constructor(private sessionService: SessionService) {
     super();

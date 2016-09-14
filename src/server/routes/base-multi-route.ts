@@ -2,9 +2,9 @@ import {Request, Response, Router} from "express";
 
 import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 import {BaseMultiTable} from "../table/base-multi-table";
-import {BaseEntityRoute} from "./base-entity-route";
+import {BaseTableRoute} from "./base-table-route";
 
-export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends BaseMultiTable<T1, IMultiEntityFindOptions>> extends BaseEntityRoute<T1, T2> {
+export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends BaseMultiTable<T1, IMultiEntityFindOptions>> extends BaseTableRoute<T1, T2> {
 
   static EntityClass: typeof BaseMultiEntity;
 

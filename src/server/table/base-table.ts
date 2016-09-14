@@ -2,10 +2,12 @@ import _ = require("lodash");
 import NeDBDataStore = require("nedb");
 import pluralize = require("pluralize");
 import evernote = require("evernote");
+import {injectable} from "inversify";
 
 import core from "../core";
 import {BaseEntity} from "../../common/entity/base-entity";
 
+@injectable()
 export abstract class BaseTable {
 
   static EntityClass: typeof BaseEntity;
@@ -21,7 +23,7 @@ export abstract class BaseTable {
     return <typeof BaseTable>this.constructor;
   }
 
-  constructor(username: string = "") {
+  connect(username: string = "") {
     if (this.Class.REQUIRE_USER && !username) {
       throw Error(`need username.`);
     }

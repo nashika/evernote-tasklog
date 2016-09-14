@@ -1,9 +1,11 @@
 import evernote = require("evernote");
+import {injectable} from "inversify";
 
 import core from "../core";
 import {UserEntity} from "../../common/entity/user-entity";
 import {BaseSingleEvernoteTable} from "./base-single-evernote-table";
 
+@injectable()
 export class UserTable extends BaseSingleEvernoteTable<UserEntity> {
 
   static EntityClass = UserEntity;
