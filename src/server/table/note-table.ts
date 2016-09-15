@@ -19,7 +19,6 @@ export interface NoteTableOptions extends IMultiEntityFindOptions {
 @injectable()
 export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptions> {
 
-  static EntityClass = NoteEntity;
   static PLURAL_NAME: string = 'notes';
   static TITLE_FIELD: string = 'title';
   static APPEND_QUERY: Object = {deleted: null};

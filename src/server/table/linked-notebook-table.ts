@@ -7,7 +7,6 @@ import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
 @injectable()
 export class LinkedNotebookTable extends BaseMultiEvernoteTable<LinkedNotebookEntity, IMultiEntityFindOptions> {
 
-  static EntityClass = LinkedNotebookEntity;
   static PLURAL_NAME: string = 'linkedNotebooks';
 
 }

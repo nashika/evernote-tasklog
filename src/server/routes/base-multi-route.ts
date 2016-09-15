@@ -27,7 +27,7 @@ export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends Base
   }
 
   save(req: Request, res: Response): Promise<boolean> {
-    let entity: T1 = new (<any>this.Class.EntityClass)(req.body);
+    let entity: T1 = new (<any>this.EntityClass)(req.body);
     return this.getTable(req).save(entity).then(() => {
       return true;
     });

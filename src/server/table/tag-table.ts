@@ -7,7 +7,6 @@ import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
 @injectable()
 export class TagTable extends BaseMultiEvernoteTable<TagEntity, IMultiEntityFindOptions> {
 
-  static EntityClass = TagEntity;
   static PLURAL_NAME: string = 'tags';
 
 }

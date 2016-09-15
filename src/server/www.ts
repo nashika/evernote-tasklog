@@ -77,7 +77,7 @@ export class Www {
       // Initialize database
       core.users[username].models = {};
       for (let table of kernel.getAll<BaseTable>(BaseTable)) {
-        core.users[username].models[table.Class.EntityClass.params.name] = table;
+        core.users[username].models[table.EntityClass.params.name] = table;
         table.connect(username);
       }
       // Initialize datas

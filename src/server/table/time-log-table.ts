@@ -9,7 +9,6 @@ import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 @injectable()
 export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFindOptions> {
 
-  static EntityClass = TimeLogEntity;
   static PLURAL_NAME: string = "timeLogs";
   static TITLE_FIELD: string = "comment";
   static DEFAULT_LIMIT: number = 2000;

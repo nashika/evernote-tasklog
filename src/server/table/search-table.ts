@@ -7,7 +7,6 @@ import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
 @injectable()
 export class SearchTable extends BaseMultiEvernoteTable<SearchEntity, IMultiEntityFindOptions> {
 
-  static EntityClass = SearchEntity;
   static PLURAL_NAME: string = 'searches';
 
 }

@@ -6,21 +6,27 @@ import {injectable} from "inversify";
 
 import core from "../core";
 import {BaseEntity} from "../../common/entity/base-entity";
+import {kernel} from "../inversify.config";
 
 @injectable()
 export abstract class BaseTable {
 
-  static EntityClass: typeof BaseEntity;
-
   static PLURAL_NAME: string = "";
   static TITLE_FIELD: string = "name";
   static REQUIRE_USER: boolean = true;
+
+  EntityClass: typeof BaseEntity;
 
   protected username: string = "";
   protected datastore: NeDBDataStore = null;
 
   get Class(): typeof BaseTable {
     return <typeof BaseTable>this.constructor;
+  }
+
+  constructor() {
+    let name = _.lowerFirst(_.replace(this.Class.name, /Table$/, ""));
+    this.EntityClass = <any>kernel.getNamed(BaseEntity, name);
   }
 
   connect(username: string = "") {

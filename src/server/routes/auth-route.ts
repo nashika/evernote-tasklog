@@ -1,7 +1,7 @@
 import express = require("express");
 import {Request, Response, Router} from "express";
 import evernote = require("evernote");
-import {injectable, interfaces} from "inversify";
+import {injectable} from "inversify";
 
 import core from "../core";
 import config from "../config";

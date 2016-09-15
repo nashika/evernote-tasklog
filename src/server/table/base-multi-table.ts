@@ -13,7 +13,6 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
   static DEFAULT_SORT: Object = {updated: -1};
   static APPEND_SORT: Object = {};
   static DEFAULT_LIMIT: number = 500;
-  static EntityClass: typeof BaseMultiEntity;
 
   get Class(): typeof BaseMultiTable {
     return <typeof BaseMultiTable>this.constructor;
@@ -26,7 +25,7 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
       this.datastore.findOne(query, (err, doc) => {
         logger.debug(`Find local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}.`);
         if (err) return reject(err);
-        resolve(new (<any>this.Class.EntityClass)(doc));
+        resolve(new (<any>this.EntityClass)(doc));
       });
     });
   }
@@ -38,7 +37,7 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
       this.datastore.find(options.query).sort(options.sort).limit(options.limit).exec((err, docs) => {
         logger.debug(`Find local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}. ${err ? "err=" + err : "docs.length=" + docs.length}`);
         if (err) return reject(err);
-        resolve(_.map(docs, doc => new (<any>this.Class.EntityClass)(doc)));
+        resolve(_.map(docs, doc => new (<any>this.EntityClass)(doc)));
       });
     });
   }
