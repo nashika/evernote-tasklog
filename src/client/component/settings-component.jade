@@ -1,0 +1,28 @@
+mixin single-input(key)
+  form.form-horizontal
+    .form-group
+      label.col-sm-2.control-label {{fields.#{key}.heading}}
+      .col-sm-10
+        input.form-control(type="{{fields.#{key}.type}}", v-model="editStore.#{key}")
+
+section.settings
+  .container
+    tabs
+      tab(header="Persons")
+        h2 Person Settings
+        form.form-horizontal
+          .form-group(v-for="person in editStore.persons")
+            label.col-sm-2.control-label person-{{$index + 1}}
+            .col-sm-6
+              input.form-control(type="text", v-model="person.name")
+            .col-sm-4
+              button.btn.btn-warning(type="button", @click="up($index)") Up
+              button.btn.btn-warning(type="button", @click="down($index)") Down
+              button.btn.btn-danger(type="button", @click="remove($index)") Remove
+          .form-group
+            button.col-sm-6.col-sm-offset-2.btn.btn-success(type="button", @click="add()") Add
+      tab(header="Timeline")
+        h2 Timeline Settings
+        +single-input("startWorkingTime")
+        +single-input("endWorkingTime")
+    button.btn.btn-primary.btn-lg.btn-block(type="button", @click="submit()") Submit

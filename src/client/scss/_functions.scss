@@ -1,0 +1,7 @@
+@function my-shade($color, $percentage) {
+  @return mix(rgb(0, 0, 0), $color, $percentage);
+}
+
+@function my-tint($color, $percentage) {
+  @return mix(rgb(255, 255, 255), $color, $percentage)
+}

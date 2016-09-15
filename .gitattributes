@@ -1,0 +1,12 @@
+* text=auto
+* text eol=lf
+
+*.ts text
+*.js text
+*.json text
+
+*.bat eol=crlf
+
+*.png binary
+*.jpg binary
+*.gif binary
