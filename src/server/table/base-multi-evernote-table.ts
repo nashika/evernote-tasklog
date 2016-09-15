@@ -14,16 +14,16 @@ export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity<any>, T2 
     if (!entities) return Promise.resolve();
     let arrEntities: T1[] = _.castArray(entities);
     if (arrEntities.length == 0) return Promise.resolve();
-    logger.debug(`Save local ${this.Class.PLURAL_NAME} was started. docs.count=${arrEntities.length}`);
+    logger.debug(`Save local ${this.EntityClass.params.name} was started. docs.count=${arrEntities.length}`);
     return MyPromise.eachFunctionSeries<T1>(arrEntities, (resolve, reject, entity) => {
-      logger.trace(`Upsert local ${this.Class.PLURAL_NAME} was started. guid=${entity.guid}, title=${_.get(entity, this.Class.TITLE_FIELD)}`);
+      logger.trace(`Upsert local ${this.EntityClass.params.name} was started. guid=${entity.guid}, title=${_.get(entity, this.EntityClass.params.titleField)}`);
       this.datastore.update({guid: entity.guid}, entity, {upsert: true}, (err, numReplaced) => {
-        logger.trace(`Upsert local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}. guid=${entity.guid}, numReplaced=${numReplaced}`);
+        logger.trace(`Upsert local ${this.EntityClass.params.name} was ${err ? "failed" : "succeed"}. guid=${entity.guid}, numReplaced=${numReplaced}`);
         if (err) return reject(err);
         resolve();
       });
     }).then(() => {
-      logger.debug(`Save local ${this.Class.PLURAL_NAME} was succeed. docs.count=${arrEntities.length}`);
+      logger.debug(`Save local ${this.EntityClass.params.name} was succeed. docs.count=${arrEntities.length}`);
     });
   }
 

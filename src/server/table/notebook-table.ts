@@ -6,8 +6,4 @@ import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
 
 @injectable()
 export class NotebookTable extends BaseMultiEvernoteTable<NotebookEntity, IMultiEntityFindOptions> {
-
-  static PLURAL_NAME: string = 'notebooks';
-  static DEFAULT_SORT: Object = {stack: 1, name: 1};
-
 }

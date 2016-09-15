@@ -11,10 +11,6 @@ import {kernel} from "../inversify.config";
 @injectable()
 export abstract class BaseTable {
 
-  static PLURAL_NAME: string = "";
-  static TITLE_FIELD: string = "name";
-  static REQUIRE_USER: boolean = true;
-
   EntityClass: typeof BaseEntity;
 
   protected username: string = "";
@@ -30,13 +26,13 @@ export abstract class BaseTable {
   }
 
   connect(username: string = "") {
-    if (this.Class.REQUIRE_USER && !username) {
+    if (this.EntityClass.params.requireUser && !username) {
       throw Error(`need username.`);
     }
     var dbPath = `${__dirname}/../../../db/${username ? username + "/" : ""}`;
     this.username = username;
     this.datastore = new NeDBDataStore({
-      filename: dbPath + _.kebabCase(pluralize.plural(this.Class.PLURAL_NAME)) + ".db",
+      filename: dbPath + _.kebabCase(pluralize.plural(this.EntityClass.params.name)) + ".db",
       autoload: true
     });
   }

@@ -8,9 +8,6 @@ import {BaseSingleEvernoteTable} from "./base-single-evernote-table";
 @injectable()
 export class UserTable extends BaseSingleEvernoteTable<UserEntity> {
 
-  static PLURAL_NAME = "users";
-  static DEFAULT_DOC = {};
-
   loadRemote(): Promise<UserEntity> {
     let userStore: evernote.Evernote.UserStoreClient = core.users[this.username].client.getUserStore();
     return new Promise((resolve, reject) => {

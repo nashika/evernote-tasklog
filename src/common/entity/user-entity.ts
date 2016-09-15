@@ -1,12 +1,16 @@
 import evernote = require("evernote");
 
 import {BaseSingleEvernoteEntity} from "./base-single-evernote-entity";
-import {IEntityParams} from "./base-entity";
+import {IBaseEntityParams} from "./base-entity";
+import {IBaseSingleEntityParams} from "./base-single-entity";
 
 export class UserEntity extends BaseSingleEvernoteEntity<evernote.Evernote.User> {
 
-  static params:IEntityParams = {
+  static params:IBaseSingleEntityParams = {
     name: "user",
+    titleField: "name",
+    requireUser: true,
+    defaultDoc: {},
   };
 
   id: number;

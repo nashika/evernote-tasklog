@@ -10,8 +10,4 @@ export interface SettingTableOptions extends IMultiEntityFindOptions {
 
 @injectable()
 export class SettingTable extends BaseMultiTable<SettingEntity, SettingTableOptions> {
-
-  static PLURAL_NAME: string = 'settings';
-  static REQUIRE_USER: boolean = false;
-
 }

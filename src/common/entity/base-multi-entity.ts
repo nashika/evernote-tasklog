@@ -1,4 +1,16 @@
-import {BaseEntity} from "./base-entity";
+import {BaseEntity, IBaseEntityParams} from "./base-entity";
+
+export interface IBaseMultiEntityParams extends IBaseEntityParams {
+  default: {
+    query: Object;
+    sort: Object;
+    limit: number
+  }
+  append: {
+    query: Object;
+    sort: Object;
+  };
+}
 
 export interface IMultiEntityFindOptions {
   query?: Object;
@@ -7,4 +19,7 @@ export interface IMultiEntityFindOptions {
 }
 
 export abstract class BaseMultiEntity extends BaseEntity {
+
+  static params:IBaseMultiEntityParams;
+
 }

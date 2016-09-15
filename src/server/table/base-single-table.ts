@@ -8,22 +8,22 @@ let logger = getLogger("system");
 
 export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTable {
 
-  static DEFAULT_DOC = {};
+  EntityClass: typeof BaseSingleEntity;
 
   get Class(): typeof BaseSingleTable {
     return <typeof BaseSingleTable>this.constructor;
   }
 
   findOne(): Promise<T> {
-    logger.debug(`Load local ${this.Class.PLURAL_NAME} was started.`);
+    logger.debug(`Load local ${this.EntityClass.params.name} was started.`);
     return new Promise<T>((resolve, reject) => {
       this.datastore.findOne({_id: "1"}, (err, doc) => {
-        logger.debug(`Load local ${this.Class.PLURAL_NAME} was ${err ? "failed" : "succeed"}.`);
+        logger.debug(`Load local ${this.EntityClass.params.name} was ${err ? "failed" : "succeed"}.`);
         if (err) return reject(err);
         if (doc)
           resolve(new (<any>this.EntityClass)(doc));
         else
-          resolve(new (<any>this.EntityClass)(_.cloneDeep(this.Class.DEFAULT_DOC)));
+          resolve(new (<any>this.EntityClass)(_.cloneDeep(this.EntityClass.params.defaultDoc)));
       });
     });
   }
@@ -33,7 +33,7 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
     return new Promise<void>((resolve, reject) => {
       this.datastore.update({_id: "1"}, doc, {upsert: true}, (err, numReplaced, newDoc) => {
         if (err) return reject(err);
-        logger.debug(`Upsert ${this.Class.PLURAL_NAME} end. numReplaced=${numReplaced}`);
+        logger.debug(`Upsert ${this.EntityClass.params.name} end. numReplaced=${numReplaced}`);
         resolve(new (<any>this.EntityClass)(newDoc));
       });
     });

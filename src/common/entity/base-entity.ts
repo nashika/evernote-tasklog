@@ -1,12 +1,14 @@
 import _ = require("lodash");
 
-export interface IEntityParams {
+export interface IBaseEntityParams {
   name: string;
+  titleField: string;
+  requireUser: boolean;
 }
 
 export abstract class BaseEntity {
 
-  static params:IEntityParams;
+  static params:IBaseEntityParams;
 
   _id: string;
 

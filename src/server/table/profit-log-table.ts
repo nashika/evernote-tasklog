@@ -8,10 +8,6 @@ import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 @injectable()
 export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, IMultiEntityFindOptions> {
 
-  static PLURAL_NAME: string = 'profitLogs';
-  static TITLE_FIELD: string = 'comment';
-  static DEFAULT_LIMIT: number = 2000;
-
   parse(note: NoteEntity, lines: string[]): Promise<void> {
     let profitLogs: ProfitLogEntity[] = [];
     for (var line of lines) {
