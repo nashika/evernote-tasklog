@@ -1,7 +1,7 @@
 import express = require("express");
 import {Request, Response, Router} from "express";
 import evernote = require("evernote");
-import {injectable} from "inversify";
+import {injectable, interfaces} from "inversify";
 
 import core from "../core";
 import config from "../config";
@@ -14,8 +14,6 @@ import {BaseEntityRoute} from "./base-entity-route";
 
 @injectable()
 export class AuthRoute extends BaseEntityRoute<AuthEntity> {
-
-  static EntityClass = AuthEntity;
 
   constructor(private sessionService: SessionService) {
     super();

@@ -9,8 +9,6 @@ import {SessionService} from "../service/session-service";
 @injectable()
 export class ProfitLogRoute extends BaseMultiRoute<ProfitLogEntity, ProfitLogTable> {
 
-  static EntityClass = ProfitLogEntity;
-
   constructor(protected sessionService: SessionService) {
     super(sessionService);
   }

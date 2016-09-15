@@ -9,8 +9,6 @@ import {SessionService} from "../service/session-service";
 @injectable()
 export class TimeLogRoute extends BaseMultiRoute<TimeLogEntity, TimeLogTable> {
 
-  static EntityClass = TimeLogEntity;
-
   constructor(protected sessionService: SessionService) {
     super(sessionService);
   }

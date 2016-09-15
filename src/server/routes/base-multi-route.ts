@@ -6,8 +6,6 @@ import {BaseTableRoute} from "./base-table-route";
 
 export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends BaseMultiTable<T1, IMultiEntityFindOptions>> extends BaseTableRoute<T1, T2> {
 
-  static EntityClass: typeof BaseMultiEntity;
-
   getRouter(): Router {
     let _router = Router();
     _router.post("/", (req, res) => this.wrap(req, res, this.index));

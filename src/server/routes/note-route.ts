@@ -10,8 +10,6 @@ import {SessionService} from "../service/session-service";
 @injectable()
 export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
 
-  static EntityClass = NoteEntity;
-
   constructor(protected sessionService: SessionService) {
     super(sessionService);
   }

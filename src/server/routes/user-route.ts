@@ -9,8 +9,6 @@ import {SessionService} from "../service/session-service";
 @injectable()
 export class UserRoute extends BaseSingleRoute<UserEntity, UserTable> {
 
-  static EntityClass = UserEntity;
-
   constructor(protected sessionService: SessionService) {
     super(sessionService);
   }

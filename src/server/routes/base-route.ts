@@ -1,6 +1,6 @@
 import _ = require("lodash");
 import log4js = require("log4js");
-import {Express, Request, Response, Router} from "express";
+import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 
 let logger = log4js.getLogger("system");

@@ -6,8 +6,6 @@ import {BaseTableRoute} from "./base-table-route";
 
 export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends BaseSingleTable<T1>> extends BaseTableRoute<T1, T2> {
 
-  static EntityClass: typeof BaseSingleEntity;
-
   getRouter(): Router {
     let _router = Router();
     _router.post("/", (req, res) => this.wrap(req, res, this.index));

@@ -14,7 +14,7 @@ export abstract class BaseTableRoute<T1 extends BaseEntity, T2 extends BaseTable
 
   getTable(req: Request): T2 {
     let session = this.sessionService.get(req);
-    return <T2>core.users[session.user.username].models[this.Class.EntityClass.params.name];
+    return <T2>core.users[session.user.username].models[this.EntityClass.params.name];
   }
 
 }
