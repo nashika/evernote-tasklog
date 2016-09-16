@@ -9,6 +9,9 @@ import {BaseMultiEvernoteTable} from "./base-multi-evernote-table";
 import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 import {TimeLogTable} from "./time-log-table";
 import {ProfitLogTable} from "./profit-log-table";
+import {TableService} from "../service/table-service";
+import {TimeLogEntity} from "../../common/entity/time-log-entity";
+import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 
 let logger = getLogger("system");
 
@@ -18,6 +21,10 @@ export interface NoteTableOptions extends IMultiEntityFindOptions {
 
 @injectable()
 export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptions> {
+
+  constructor(protected tableService: TableService) {
+    super();
+  }
 
   find(options: NoteTableOptions): Promise<NoteEntity[]> {
     return super.find(options).then(notes => {
@@ -107,9 +114,9 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
       lines.push(line.replace(/<[^>]*>/g, ''));
     }
     return Promise.resolve().then(() => {
-      return this.getOtherTable<TimeLogTable>("timeLog").parse(note, lines);
+      return this.tableService.getUserTable<TimeLogTable>(TimeLogEntity, this.username).parse(note, lines);
     }).then(() => {
-      return this.getOtherTable<ProfitLogTable>("profitLog").parse(note, lines);
+      return this.tableService.getUserTable<ProfitLogTable>(ProfitLogEntity, this.username).parse(note, lines);
     }).then(() => {
       logger.debug(`Parsing note was succeed. guid=${note.guid}`);
     });

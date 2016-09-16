@@ -1,5 +1,7 @@
 import {Kernel} from "inversify";
 
+import {Www} from "./www";
+
 import {BaseEntity} from "../common/entity/base-entity";
 import {AuthEntity} from "../common/entity/auth-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
@@ -14,6 +16,7 @@ import {TimeLogEntity} from "../common/entity/time-log-entity";
 import {UserEntity} from "../common/entity/user-entity";
 
 import {SessionService} from "./service/session-service";
+import {TableService} from "./service/table-service";
 
 import {BaseRoute} from "./routes/base-route";
 import {AuthRoute} from "./routes/auth-route";
@@ -40,6 +43,8 @@ import {UserTable} from "./table/user-table";
 
 export var kernel = new Kernel();
 
+kernel.bind<Www>(Www).toSelf();
+
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(AuthEntity).whenTargetNamed("auth");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(LinkedNotebookEntity).whenTargetNamed("linkedNotebook");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(NoteEntity).whenTargetNamed("note");
@@ -53,6 +58,7 @@ kernel.bind<BaseEntity>(BaseEntity).toConstructor(TimeLogEntity).whenTargetNamed
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(UserEntity).whenTargetNamed("user");
 
 kernel.bind<SessionService>(SessionService).toSelf().inSingletonScope();
+kernel.bind<TableService>(TableService).toSelf().inSingletonScope();
 
 kernel.bind<BaseRoute>(BaseRoute).to(AuthRoute).whenTargetNamed("auth");
 kernel.bind<BaseRoute>(BaseRoute).to(IndexRoute).whenTargetNamed("index");

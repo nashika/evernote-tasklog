@@ -10,6 +10,7 @@
 require('source-map-support').install();
 
 import "reflect-metadata";
+import {kernel} from "./inversify.config";
 import {Server} from "http";
 
 // Normalize a port into a number, string, or false.
@@ -63,7 +64,7 @@ server.on('listening', onListening);
 
 // main logic
 import {Www} from './www';
-var www:Www = new Www();
+var www:Www = kernel.get<Www>(Www);
 www.main(expressApp, server);
 
 // app executed from electron then call electron window

@@ -9,13 +9,16 @@ import {Code403Error} from "./base-route";
 import {UserTable} from "../table/user-table";
 import {SettingEntity} from "../../common/entity/setting-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
-import {SessionService} from "../service/session-service";
 import {BaseEntityRoute} from "./base-entity-route";
+import {TableService} from "../service/table-service";
+import {SessionService} from "../service/session-service";
+import {SettingTable} from "../table/setting-table";
 
 @injectable()
 export class AuthRoute extends BaseEntityRoute<AuthEntity> {
 
-  constructor(private sessionService: SessionService) {
+  constructor(protected tableService: TableService,
+              protected sessionService: SessionService) {
     super();
   }
 
@@ -56,9 +59,10 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
     let sandbox: boolean = req.body.sandbox ? true : false;
     let token: boolean = req.body.token ? true : false;
     let envConfig = sandbox ? config.env.sandbox : config.env.production;
+    let globalSettingTable = this.tableService.getGlobalTable<SettingTable>(SettingEntity);
     if (token) {
       let key = sandbox ? "token.sandbox" : "token.production";
-      return core.models.settings.findOne({_id: key}).then(entity => {
+      return globalSettingTable.findOne({_id: key}).then(entity => {
         let resToken: string = entity.value;
         if (resToken) {
           let developerToken = resToken;
@@ -123,25 +127,26 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
       let token: string = req.body.token;
       let key = sandbox ? "token.sandbox" : "token.production";
       let result: {token: string, username: string};
+      let globalSettingTable = this.tableService.getGlobalTable<SettingTable>(SettingEntity);
       if (token) {
         return this.checkToken(sandbox, token).then(user => {
           result = user;
           let setting = new SettingEntity();
           setting._id = key;
           setting.value = token;
-          return core.models.settings.save(setting);
+          return globalSettingTable.save(setting);
         }).then(() => {
           return result;
         });
       } else {
-        return core.models.settings.findOne({_id: key}).then(setting => {
+        return globalSettingTable.findOne({_id: key}).then(setting => {
           let resToken: string = setting.value;
           if (!resToken) return null;
           return this.checkToken(sandbox, resToken);
         }).then(user => {
           return user;
         }).catch(err => {
-          return core.models.settings.remove({_id: key}).then(() => {
+          return globalSettingTable.remove({_id: key}).then(() => {
             return null;
           });
         });

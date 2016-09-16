@@ -37,10 +37,6 @@ export abstract class BaseTable {
     });
   }
 
-  getOtherTable<T extends BaseTable>(name: string): T {
-    return <T>core.users[this.username].models[name];
-  }
-
   getClient(): evernote.Evernote.Client {
     return core.users[this.username].client;
   }

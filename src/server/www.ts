@@ -5,6 +5,7 @@ import express = require("express");
 import http = require("http");
 import {getLogger} from "log4js";
 import _ = require("lodash");
+import {injectable} from "inversify";
 
 import "./log4js";
 import core from "./core";
@@ -21,17 +22,19 @@ import {SyncStateEntity} from "../common/entity/sync-state-entity";
 import {NoteEntity} from "../common/entity/note-entity";
 import {MyPromise} from "../common/util/my-promise";
 import {SettingEntity} from "../common/entity/setting-entity";
-import {BaseTable} from "./table/base-table";
-import {BaseEntity} from "../common/entity/base-entity";
 import {NotebookEntity} from "../common/entity/notebook-entity";
 import {TagEntity} from "../common/entity/tag-entity";
 import {SearchEntity} from "../common/entity/serch-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
-import {kernel} from "./inversify.config";
+import {TableService} from "./service/table-service";
 
 let logger = getLogger("system");
 
+@injectable()
 export class Www {
+
+  constructor(protected tableService: TableService) {
+  }
 
   SYNC_CHUNK_COUNT = 100;
 
@@ -39,10 +42,9 @@ export class Www {
     // Initialize core object
     core.www = this;
     app.locals.core = core; // TODO: Set password to web server
-    core.models.settings = <SettingTable>kernel.getNamed<BaseTable>(BaseTable, "setting");
-    core.models.settings.connect();
+    this.tableService.initializeGlobalTable();
     // Initialize global settings
-    return core.models.settings.find().then(settings => {
+    return this.tableService.getGlobalTable<SettingTable>(SettingEntity).find().then(settings => {
       let results:{[_id:string]: SettingEntity} = {};
       for (let setting of settings) results[setting._id] = setting;
       core.settings = results;
@@ -74,13 +76,7 @@ export class Www {
       })
     }).then((user: UserEntity) => {
       core.users[username].user = user;
-      // Initialize database
-      core.users[username].models = {};
-      for (let table of kernel.getAll<BaseTable>(BaseTable)) {
-        core.users[username].models[table.EntityClass.params.name] = table;
-        table.connect(username);
-      }
-      // Initialize datas
+      this.tableService.initializeUserTable(username);
       return this.sync(username);
     }).then(() => {
       logger.info(`Init user finished. user:${username} data was initialized.`);
@@ -94,22 +90,22 @@ export class Www {
     var lastSyncChunk: evernote.Evernote.SyncChunk = null;
     return Promise.resolve().then(() => {
       // Reload settings
-      return this.getTable<SettingTable>(username, SettingEntity).find().then((settings: SettingEntity[]) => {
+      return this.tableService.getUserTable<SettingTable>(SettingEntity, username).find().then((settings: SettingEntity[]) => {
         core.users[username].settings = <any>{};
         for (let setting of settings)
           core.users[username].settings[setting._id] = setting.value;
       });
     }).then(() => {
       // Reload userStore
-      return this.getTable<UserTable>(username, UserEntity).loadRemote()
+      return this.tableService.getUserTable<UserTable>(UserEntity, username).loadRemote()
     }).then((remoteUser: UserEntity) => {
-      return this.getTable<UserTable>(username, UserEntity).save(remoteUser);
+      return this.tableService.getUserTable<UserTable>(UserEntity, username).save(remoteUser);
     }).then(() => {
       // Get syncState
-      return this.getTable<SyncStateTable>(username, SyncStateEntity).findOne();
+      return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, username).findOne();
     }).then((syncState: SyncStateEntity) => {
       localSyncState = syncState;
-      return this.getTable<SyncStateTable>(username, SyncStateEntity).loadRemote();
+      return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, username).loadRemote();
     }).then((syncState: SyncStateEntity) => {
       remoteSyncState = syncState;
       // Sync process
@@ -131,28 +127,28 @@ export class Www {
             });
           });
         }).then(() => {
-          return this.getTable<NoteTable>(username, NoteEntity).saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
+          return this.tableService.getUserTable<NoteTable>(NoteEntity, username).saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
         }).then(() => {
-          return this.getTable<NoteTable>(username, NoteEntity).removeByGuid(lastSyncChunk.expungedNotes);
+          return this.tableService.getUserTable<NoteTable>(NoteEntity, username).removeByGuid(lastSyncChunk.expungedNotes);
         }).then(() => {
-          return this.getTable<NotebookTable>(username, NotebookEntity).saveByGuid(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
+          return this.tableService.getUserTable<NotebookTable>(NotebookEntity, username).saveByGuid(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
         }).then(() => {
-          return this.getTable<NotebookTable>(username, NotebookEntity).removeByGuid(lastSyncChunk.expungedNotebooks);
+          return this.tableService.getUserTable<NotebookTable>(NotebookEntity, username).removeByGuid(lastSyncChunk.expungedNotebooks);
         }).then(() => {
-          return this.getTable<TagTable>(username, TagEntity).saveByGuid(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
+          return this.tableService.getUserTable<TagTable>(TagEntity, username).saveByGuid(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
         }).then(() => {
-          return this.getTable<TagTable>(username, TagEntity).removeByGuid(lastSyncChunk.expungedTags);
+          return this.tableService.getUserTable<TagTable>(TagEntity, username).removeByGuid(lastSyncChunk.expungedTags);
         }).then(() => {
-          return this.getTable<SearchTable>(username, SearchEntity).saveByGuid(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
+          return this.tableService.getUserTable<SearchTable>(SearchEntity, username).saveByGuid(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
         }).then(() => {
-          return this.getTable<SearchTable>(username, SearchEntity).removeByGuid(lastSyncChunk.expungedSearches);
+          return this.tableService.getUserTable<SearchTable>(SearchEntity, username).removeByGuid(lastSyncChunk.expungedSearches);
         }).then(() => {
-          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).saveByGuid(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
+          return this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, username).saveByGuid(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
         }).then(() => {
-          return this.getTable<LinkedNotebookTable>(username, LinkedNotebookEntity).removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
+          return this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, username).removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
         }).then(() => {
           localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
-          return this.getTable<SyncStateTable>(username, SyncStateEntity).save(localSyncState);
+          return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, username).save(localSyncState);
         }).then(() => {
           logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
         });
@@ -160,10 +156,6 @@ export class Www {
         logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       });
     });
-  }
-
-  getTable<T extends BaseTable>(username: string, EntityClass: typeof BaseEntity): T {
-    return <T>core.users[username].models[EntityClass.params.name];
   }
 
 }

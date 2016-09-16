@@ -14,19 +14,14 @@ interface UserCore {
   client?: evernote.Evernote.Client;
   user?: UserEntity;
   settings?: UserSetting;
-  models?: {[name:string]: BaseTable};
 }
 
 export class Core {
   www: Www;
   settings: {[key: string]: Object};
-  models: {
-    settings?: SettingTable,
-  };
   users: {[username: string]: UserCore};
 
   constructor() {
-    this.models = {};
     this.users = {};
   }
 }

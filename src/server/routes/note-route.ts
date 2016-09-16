@@ -5,13 +5,13 @@ import {injectable} from "inversify";
 import {BaseMultiRoute} from "./base-multi-route";
 import {NoteTable} from "../table/note-table";
 import {NoteEntity} from "../../common/entity/note-entity";
-import {SessionService} from "../service/session-service";
+import {TableService} from "../service/table-service";
 
 @injectable()
 export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
 
-  constructor(protected sessionService: SessionService) {
-    super(sessionService);
+  constructor(protected tableService: TableService) {
+    super(tableService);
   }
 
   getRouter(): Router {
