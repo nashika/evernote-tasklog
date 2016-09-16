@@ -65,16 +65,6 @@ export class Www {
       sandbox: sandbox,
     });
     return Promise.resolve().then(() => {
-      // Initialize evernote user
-      return new Promise((resolve, reject) => {
-        var userStore: evernote.Evernote.UserStoreClient = core.users[username].client.getUserStore();
-        userStore.getUser((err, user) => {
-          if (err) return reject(err);
-          resolve(new UserEntity(user));
-        });
-      })
-    }).then((user: UserEntity) => {
-      core.users[username].user = user;
       this.tableService.initializeUser(username);
       return this.sync(username);
     }).then(() => {

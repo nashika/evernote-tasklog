@@ -8,7 +8,6 @@ import {BaseTable} from "./table/base-table";
 
 interface UserCore {
   client?: evernote.Evernote.Client;
-  user?: UserEntity;
 }
 
 export class Core {
