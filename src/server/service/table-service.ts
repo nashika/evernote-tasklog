@@ -21,12 +21,12 @@ export class TableService extends BaseServerService {
     this.userTables = {};
   }
 
-  initializeGlobalTable() {
+  initializeGlobal() {
     this.globalTables["setting"] = <SettingTable>kernel.getNamed<BaseTable>(BaseTable, "setting");
     this.globalTables["setting"].connect();
   }
 
-  initializeUserTable(username: string) {
+  initializeUser(username: string) {
     this.userTables[username] = {};
     for (let table of kernel.getAll<BaseTable>(BaseTable)) {
       this.userTables[username][table.EntityClass.params.name] = table;

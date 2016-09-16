@@ -27,13 +27,15 @@ import {TagEntity} from "../common/entity/tag-entity";
 import {SearchEntity} from "../common/entity/serch-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
 import {TableService} from "./service/table-service";
+import {SettingService} from "./service/setting-service";
 
 let logger = getLogger("system");
 
 @injectable()
 export class Www {
 
-  constructor(protected tableService: TableService) {
+  constructor(protected tableService: TableService,
+              protected settingService: SettingService) {
   }
 
   SYNC_CHUNK_COUNT = 100;
@@ -42,12 +44,9 @@ export class Www {
     // Initialize core object
     core.www = this;
     app.locals.core = core; // TODO: Set password to web server
-    this.tableService.initializeGlobalTable();
+    this.tableService.initializeGlobal();
     // Initialize global settings
-    return this.tableService.getGlobalTable<SettingTable>(SettingEntity).find().then(settings => {
-      let results:{[_id:string]: SettingEntity} = {};
-      for (let setting of settings) results[setting._id] = setting;
-      core.settings = results;
+    return this.settingService.initializeGlobal().then(() => {
       logger.info("Initialize web server finished.");
     }).catch((err) => {
       logger.error(`Main process failed. err=${err}`);
@@ -76,7 +75,7 @@ export class Www {
       })
     }).then((user: UserEntity) => {
       core.users[username].user = user;
-      this.tableService.initializeUserTable(username);
+      this.tableService.initializeUser(username);
       return this.sync(username);
     }).then(() => {
       logger.info(`Init user finished. user:${username} data was initialized.`);
@@ -89,12 +88,7 @@ export class Www {
     var remoteSyncState: SyncStateEntity = null;
     var lastSyncChunk: evernote.Evernote.SyncChunk = null;
     return Promise.resolve().then(() => {
-      // Reload settings
-      return this.tableService.getUserTable<SettingTable>(SettingEntity, username).find().then((settings: SettingEntity[]) => {
-        core.users[username].settings = <any>{};
-        for (let setting of settings)
-          core.users[username].settings[setting._id] = setting.value;
-      });
+      return this.settingService.initializeUser(username);
     }).then(() => {
       // Reload userStore
       return this.tableService.getUserTable<UserTable>(UserEntity, username).loadRemote()

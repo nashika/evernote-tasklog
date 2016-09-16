@@ -40,6 +40,7 @@ import {SyncStateTable} from "./table/sync-state-table";
 import {TagTable} from "./table/tag-table";
 import {TimeLogTable} from "./table/time-log-table";
 import {UserTable} from "./table/user-table";
+import {SettingService} from "./service/setting-service";
 
 export var kernel = new Kernel();
 
@@ -58,6 +59,7 @@ kernel.bind<BaseEntity>(BaseEntity).toConstructor(TimeLogEntity).whenTargetNamed
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(UserEntity).whenTargetNamed("user");
 
 kernel.bind<SessionService>(SessionService).toSelf().inSingletonScope();
+kernel.bind<SettingService>(SettingService).toSelf().inSingletonScope();
 kernel.bind<TableService>(TableService).toSelf().inSingletonScope();
 
 kernel.bind<BaseRoute>(BaseRoute).to(AuthRoute).whenTargetNamed("auth");
