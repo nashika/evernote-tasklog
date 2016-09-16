@@ -14,15 +14,15 @@ export interface ISession {
 @injectable()
 export class SessionService extends BaseServerService {
 
-  public get(req: Request): ISession {
+  get(req: Request): ISession {
     return req.session["evernote"];
   }
 
-  public set(req: Request, session: ISession): ISession {
+  set(req: Request, session: ISession): ISession {
     return req.session["evernote"] = session;
   }
 
-  public save(req: Request): Promise<void> {
+  save(req: Request): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       req.session.save(err => {
         if (err) reject(err);

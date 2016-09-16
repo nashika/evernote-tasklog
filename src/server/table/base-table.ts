@@ -37,8 +37,4 @@ export abstract class BaseTable {
     });
   }
 
-  getClient(): evernote.Evernote.Client {
-    return core.users[this.username].client;
-  }
-
 }

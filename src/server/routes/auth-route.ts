@@ -13,12 +13,14 @@ import {BaseEntityRoute} from "./base-entity-route";
 import {TableService} from "../service/table-service";
 import {SessionService} from "../service/session-service";
 import {SettingTable} from "../table/setting-table";
+import {EvernoteClientService} from "../service/evernote-client-service";
 
 @injectable()
 export class AuthRoute extends BaseEntityRoute<AuthEntity> {
 
   constructor(protected tableService: TableService,
-              protected sessionService: SessionService) {
+              protected sessionService: SessionService,
+              protected evernoteClientService: EvernoteClientService) {
     super();
   }
 
@@ -39,7 +41,7 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
     } else {
       let sandbox: boolean = session.sandbox;
       let token: string = session.token;
-      return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
+      return this.evernoteClientService.getUserFromToken(token, sandbox).then(user => {
         session.user = user;
         return this.sessionService.save(req);
       }).then(() => {
@@ -157,7 +159,7 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
   }
 
   private checkToken(sandbox: boolean, token: string): Promise<AuthEntity> {
-    return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
+    return this.evernoteClientService.getUserFromToken(token, sandbox).then(user => {
       let auth = new AuthEntity();
       auth.token = token;
       auth.username = user.username;

@@ -13,7 +13,6 @@ import {LinkedNotebookTable} from "./table/linked-notebook-table";
 import {NoteTable} from "./table/note-table";
 import {NotebookTable} from "./table/notebook-table";
 import {SearchTable} from "./table/search-table";
-import {SettingTable} from "./table/setting-table";
 import {SyncStateTable} from "./table/sync-state-table";
 import {TagTable} from "./table/tag-table";
 import {UserTable} from "./table/user-table";
@@ -21,13 +20,13 @@ import {UserEntity} from "../common/entity/user-entity";
 import {SyncStateEntity} from "../common/entity/sync-state-entity";
 import {NoteEntity} from "../common/entity/note-entity";
 import {MyPromise} from "../common/util/my-promise";
-import {SettingEntity} from "../common/entity/setting-entity";
 import {NotebookEntity} from "../common/entity/notebook-entity";
 import {TagEntity} from "../common/entity/tag-entity";
 import {SearchEntity} from "../common/entity/serch-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
 import {TableService} from "./service/table-service";
 import {SettingService} from "./service/setting-service";
+import {EvernoteClientService} from "./service/evernote-client-service";
 
 let logger = getLogger("system");
 
@@ -35,10 +34,9 @@ let logger = getLogger("system");
 export class Www {
 
   constructor(protected tableService: TableService,
-              protected settingService: SettingService) {
+              protected settingService: SettingService,
+              protected evernoteClientService: EvernoteClientService) {
   }
-
-  SYNC_CHUNK_COUNT = 100;
 
   main(app: express.Application, server: http.Server): Promise<void> {
     // Initialize core object
@@ -54,16 +52,7 @@ export class Www {
   }
 
   initUser(username: string, token: string, sandbox: boolean): Promise<void> {
-    if (core.users[username]) {
-      logger.info("Init user finished. already initialized.");
-      return Promise.resolve();
-    }
-    core.users[username] = {};
-    // Initialize evernote client
-    core.users[username].client = new evernote.Evernote.Client({
-      token: token,
-      sandbox: sandbox,
-    });
+    this.evernoteClientService.initializeUser(username, token, sandbox);
     return Promise.resolve().then(() => {
       this.tableService.initializeUser(username);
       return this.sync(username);
@@ -73,7 +62,6 @@ export class Www {
   }
 
   sync(username: string): Promise<void> {
-    var noteStore: evernote.Evernote.NoteStoreClient = core.users[username].client.getNoteStore();
     var localSyncState: SyncStateEntity = null;
     var remoteSyncState: SyncStateEntity = null;
     var lastSyncChunk: evernote.Evernote.SyncChunk = null;
@@ -96,21 +84,10 @@ export class Www {
       logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       return MyPromise.whilePromiseSeries(() => localSyncState.updateCount < remoteSyncState.updateCount, () => {
         logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
-        let syncChunkFilter: evernote.Evernote.SyncChunkFilter = new evernote.Evernote.SyncChunkFilter();
-        syncChunkFilter.includeNotes = true;
-        syncChunkFilter.includeNotebooks = true;
-        syncChunkFilter.includeTags = true;
-        syncChunkFilter.includeSearches = true;
-        syncChunkFilter.includeExpunged = true;
         return Promise.resolve().then(() => {
-          return new Promise((resolve, reject) => {
-            noteStore.getFilteredSyncChunk(localSyncState.updateCount, this.SYNC_CHUNK_COUNT, syncChunkFilter, (err, syncChunk) => {
-              if (err) return reject(err);
-              lastSyncChunk = <any>syncChunk;
-              resolve();
-            });
-          });
-        }).then(() => {
+          return this.evernoteClientService.getFilteredSyncChunk(username, localSyncState.updateCount);
+        }).then(syncChunk => {
+          lastSyncChunk = <any>syncChunk;
           return this.tableService.getUserTable<NoteTable>(NoteEntity, username).saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
         }).then(() => {
           return this.tableService.getUserTable<NoteTable>(NoteEntity, username).removeByGuid(lastSyncChunk.expungedNotes);

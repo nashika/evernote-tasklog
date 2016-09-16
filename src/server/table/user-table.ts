@@ -4,32 +4,17 @@ import {injectable} from "inversify";
 import core from "../core";
 import {UserEntity} from "../../common/entity/user-entity";
 import {BaseSingleEvernoteTable} from "./base-single-evernote-table";
+import {EvernoteClientService} from "../service/evernote-client-service";
 
 @injectable()
 export class UserTable extends BaseSingleEvernoteTable<UserEntity> {
 
-  loadRemote(): Promise<UserEntity> {
-    let userStore: evernote.Evernote.UserStoreClient = core.users[this.username].client.getUserStore();
-    return new Promise((resolve, reject) => {
-      userStore.getUser((err, user) => {
-        if (err) return reject(err);
-        return resolve(new UserEntity(user));
-      });
-    });
+  constructor(protected evernoteClientService: EvernoteClientService) {
+    super();
   }
 
-  static loadRemoteFromToken(token: string, sandbox: boolean): Promise<UserEntity> {
-    let client = new evernote.Evernote.Client({
-      token: token,
-      sandbox: sandbox,
-    });
-    let userStore: evernote.Evernote.UserStoreClient = client.getUserStore();
-    return new Promise((resolve, reject) => {
-      userStore.getUser((err, user) => {
-        if (err) return reject(err);
-        resolve(new UserEntity(user));
-      });
-    });
+  loadRemote(): Promise<UserEntity> {
+    return this.evernoteClientService.getUser(this.username);
   }
 
 }
