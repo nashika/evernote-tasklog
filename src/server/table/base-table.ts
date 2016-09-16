@@ -4,7 +4,6 @@ import pluralize = require("pluralize");
 import evernote = require("evernote");
 import {injectable} from "inversify";
 
-import core from "../core";
 import {BaseEntity} from "../../common/entity/base-entity";
 import {kernel} from "../inversify.config";
 

@@ -3,10 +3,8 @@ import {Request, Response, Router} from "express";
 import evernote = require("evernote");
 import {injectable} from "inversify";
 
-import core from "../core";
 import config from "../config";
 import {Code403Error} from "./base-route";
-import {UserTable} from "../table/user-table";
 import {SettingEntity} from "../../common/entity/setting-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
 import {BaseEntityRoute} from "./base-entity-route";
@@ -14,13 +12,15 @@ import {TableService} from "../service/table-service";
 import {SessionService} from "../service/session-service";
 import {SettingTable} from "../table/setting-table";
 import {EvernoteClientService} from "../service/evernote-client-service";
+import {MainService} from "../service/main-service";
 
 @injectable()
 export class AuthRoute extends BaseEntityRoute<AuthEntity> {
 
   constructor(protected tableService: TableService,
               protected sessionService: SessionService,
-              protected evernoteClientService: EvernoteClientService) {
+              protected evernoteClientService: EvernoteClientService,
+              protected mainService: MainService) {
     super();
   }
 
@@ -45,7 +45,7 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
         session.user = user;
         return this.sessionService.save(req);
       }).then(() => {
-        return core.www.initUser(session.user.username, token, sandbox);
+        return this.mainService.initializeUser(session.user.username, token, sandbox);
       }).then(() => {
         let auth = new AuthEntity();
         auth.token = token;

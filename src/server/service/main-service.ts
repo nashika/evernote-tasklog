@@ -1,3 +1,4 @@
+///<reference path="../table/base-multi-evernote-table.ts"/>
 import path = require("path");
 
 import evernote = require("evernote");
@@ -7,51 +8,43 @@ import {getLogger} from "log4js";
 import _ = require("lodash");
 import {injectable} from "inversify";
 
-import "./log4js";
-import core from "./core";
-import {LinkedNotebookTable} from "./table/linked-notebook-table";
-import {NoteTable} from "./table/note-table";
-import {NotebookTable} from "./table/notebook-table";
-import {SearchTable} from "./table/search-table";
-import {SyncStateTable} from "./table/sync-state-table";
-import {TagTable} from "./table/tag-table";
-import {UserTable} from "./table/user-table";
-import {UserEntity} from "../common/entity/user-entity";
-import {SyncStateEntity} from "../common/entity/sync-state-entity";
-import {NoteEntity} from "../common/entity/note-entity";
-import {MyPromise} from "../common/util/my-promise";
-import {NotebookEntity} from "../common/entity/notebook-entity";
-import {TagEntity} from "../common/entity/tag-entity";
-import {SearchEntity} from "../common/entity/serch-entity";
-import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
-import {TableService} from "./service/table-service";
-import {SettingService} from "./service/setting-service";
-import {EvernoteClientService} from "./service/evernote-client-service";
+import {TableService} from "./table-service";
+import {SettingService} from "./setting-service";
+import {EvernoteClientService} from "./evernote-client-service";
+import {SyncStateEntity} from "../../common/entity/sync-state-entity";
+import {UserTable} from "../table/user-table";
+import {UserEntity} from "../../common/entity/user-entity";
+import {SyncStateTable} from "../table/sync-state-table";
+import {MyPromise} from "../../common/util/my-promise";
+import {NoteTable} from "../table/note-table";
+import {NoteEntity} from "../../common/entity/note-entity";
+import {NotebookTable} from "../table/notebook-table";
+import {LinkedNotebookEntity} from "../../common/entity/linked-notebook-entity";
+import {LinkedNotebookTable} from "../table/linked-notebook-table";
+import {SearchEntity} from "../../common/entity/serch-entity";
+import {SearchTable} from "../table/search-table";
+import {TagEntity} from "../../common/entity/tag-entity";
+import {TagTable} from "../table/tag-table";
+import {NotebookEntity} from "../../common/entity/notebook-entity";
+import {BaseServerService} from "./base-server-service";
 
 let logger = getLogger("system");
 
 @injectable()
-export class Www {
+export class MainService extends BaseServerService {
 
   constructor(protected tableService: TableService,
               protected settingService: SettingService,
               protected evernoteClientService: EvernoteClientService) {
+    super();
   }
 
-  main(app: express.Application, server: http.Server): Promise<void> {
-    // Initialize core object
-    core.www = this;
-    app.locals.core = core; // TODO: Set password to web server
+  initializeGlobal(): Promise<void> {
     this.tableService.initializeGlobal();
-    // Initialize global settings
-    return this.settingService.initializeGlobal().then(() => {
-      logger.info("Initialize web server finished.");
-    }).catch((err) => {
-      logger.error(`Main process failed. err=${err}`);
-    });
+    return this.settingService.initializeGlobal();
   }
 
-  initUser(username: string, token: string, sandbox: boolean): Promise<void> {
+  initializeUser(username: string, token: string, sandbox: boolean): Promise<void> {
     this.evernoteClientService.initializeUser(username, token, sandbox);
     return Promise.resolve().then(() => {
       this.tableService.initializeUser(username);

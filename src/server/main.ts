@@ -10,8 +10,14 @@
 require('source-map-support').install();
 
 import "reflect-metadata";
-import {kernel} from "./inversify.config";
+import {getLogger} from "log4js";
 import {Server} from "http";
+
+import "./log4js";
+import {kernel} from "./inversify.config";
+import {MainService} from "./service/main-service";
+
+let logger = getLogger("system");
 
 // Normalize a port into a number, string, or false.
 var normalizePort:(val:string)=>any = (val) => {
@@ -62,10 +68,15 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+
+
 // main logic
-import {Www} from './www';
-var www:Www = kernel.get<Www>(Www);
-www.main(expressApp, server);
+let mainService:MainService = kernel.get<MainService>(MainService);
+mainService.initializeGlobal().then(() => {
+  logger.info(`Initialize web server finished.`);
+}).catch(err => {
+  logger.error(`Initialize web server failed. err=${err}`);
+});
 
 // app executed from electron then call electron window
 /*if (electronApp) {

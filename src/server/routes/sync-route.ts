@@ -3,13 +3,14 @@ import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 
 import {BaseRoute} from "./base-route";
-import core from "../core";
 import {SessionService} from "../service/session-service";
+import {MainService} from "../service/main-service";
 
 @injectable()
 export class SyncRoute extends BaseRoute {
 
-  constructor(protected sessionService: SessionService) {
+  constructor(protected sessionService: SessionService,
+              protected mainService: MainService) {
     super();
   }
 
@@ -25,7 +26,7 @@ export class SyncRoute extends BaseRoute {
 
   index(req: Request, res: Response): Promise<boolean> {
     let session = this.sessionService.get(req);
-    return core.www.sync(session.user.username).then(() => {
+    return this.mainService.sync(session.user.username).then(() => {
       return true
     });
   };
