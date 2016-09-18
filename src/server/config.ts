@@ -1,12 +1,12 @@
 export default {
-    env: {
-        sandbox: {
-            consumerKey: '',
-            consumerSecret: '',
-        },
-        production: {
-            consumerKey: '',
-            consumerSecret: '',
-        },
+  env: {
+    sandbox: {
+      consumerKey: '',
+      consumerSecret: '',
     },
+    production: {
+      consumerKey: '',
+      consumerSecret: '',
+    },
+  },
 }

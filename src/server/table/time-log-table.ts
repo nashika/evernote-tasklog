@@ -1,13 +1,17 @@
 import {injectable} from "inversify";
 
-import core from "../core";
 import {BaseMultiTable} from "./base-multi-table";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
+import {SettingService} from "../service/setting-service";
 
 @injectable()
 export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFindOptions> {
+
+  constructor(protected settingService: SettingService) {
+    super();
+  }
 
   parse(note: NoteEntity, lines: string[]): Promise<void> {
     let timeLogs: TimeLogEntity[] = [];
@@ -30,7 +34,7 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFind
         timeLog.date = (new Date(dateText + ' ' + timeText)).getTime();
         if (timeText) timeLog.allDay = false;
         // parse person
-        for (let person of core.users[this.username].settings.persons) {
+        for (let person of this.settingService.getUser(this.username).persons) {
           if (attributesText.indexOf(person.name) != -1)
             timeLog.person = person.name;
         }

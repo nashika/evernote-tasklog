@@ -4,7 +4,6 @@ import pluralize = require("pluralize");
 import evernote = require("evernote");
 import {injectable} from "inversify";
 
-import core from "../core";
 import {BaseEntity} from "../../common/entity/base-entity";
 import {kernel} from "../inversify.config";
 
@@ -35,14 +34,6 @@ export abstract class BaseTable {
       filename: dbPath + _.kebabCase(pluralize.plural(this.EntityClass.params.name)) + ".db",
       autoload: true
     });
-  }
-
-  getOtherTable<T extends BaseTable>(name: string): T {
-    return <T>core.users[this.username].models[name];
-  }
-
-  getClient(): evernote.Evernote.Client {
-    return core.users[this.username].client;
   }
 
 }

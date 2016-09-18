@@ -13,7 +13,11 @@ import {TagEntity} from "../common/entity/tag-entity";
 import {TimeLogEntity} from "../common/entity/time-log-entity";
 import {UserEntity} from "../common/entity/user-entity";
 
+import {EvernoteClientService} from "./service/evernote-client-service";
+import {MainService} from "./service/main-service";
 import {SessionService} from "./service/session-service";
+import {SettingService} from "./service/setting-service";
+import {TableService} from "./service/table-service";
 
 import {BaseRoute} from "./routes/base-route";
 import {AuthRoute} from "./routes/auth-route";
@@ -52,7 +56,11 @@ kernel.bind<BaseEntity>(BaseEntity).toConstructor(TagEntity).whenTargetNamed("ta
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(TimeLogEntity).whenTargetNamed("timeLog");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(UserEntity).whenTargetNamed("user");
 
+kernel.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingletonScope();
+kernel.bind<MainService>(MainService).toSelf().inSingletonScope();
 kernel.bind<SessionService>(SessionService).toSelf().inSingletonScope();
+kernel.bind<SettingService>(SettingService).toSelf().inSingletonScope();
+kernel.bind<TableService>(TableService).toSelf().inSingletonScope();
 
 kernel.bind<BaseRoute>(BaseRoute).to(AuthRoute).whenTargetNamed("auth");
 kernel.bind<BaseRoute>(BaseRoute).to(IndexRoute).whenTargetNamed("index");

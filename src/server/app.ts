@@ -1,73 +1,99 @@
-import path = require("path");
+/*try {
+ var electronApp = require('app');
+ var BrouserWindow = require('browser-window');
+ } catch (e) {
+ var electronApp = null;
+ var BrowserWindow = null;
+ }*/
 
-import express = require("express");
-//import favicon = require("serve-favicon");
-import cookieParser = require("cookie-parser");
-import session = require("express-session");
-import bodyParser = require("body-parser");
+// Enable Source Map Support
+require('source-map-support').install();
 
-import {BaseRoute} from "./routes/base-route";
+import "reflect-metadata";
+import {getLogger} from "log4js";
+import {Server} from "http";
+
+import "./log4js";
 import {kernel} from "./inversify.config";
+import {MainService} from "./service/main-service";
 
-let NedbStore = require("nedb-session-store")(session);
-let app: express.Express = express();
+let logger = getLogger("system");
 
-// view engine setup
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
+// Normalize a port into a number, string, or false.
+var normalizePort:(val:string)=>any = (val) => {
+    let port:number = parseInt(val, 10);
+    if (isNaN(port)) return val;
+    if (port >= 0) return port;
+    return false;
+};
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
-//app.use(logger("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(cookieParser());
-app.use(session({
-  secret: "mysecret",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    path: "/",
-    httpOnly: true,
-    maxAge: 365 * 24 * 3600 * 1000,
-  },
-  store: new NedbStore({
-    filename: path.join(__dirname, `../../db/session.db`),
-  }),
-}));
-app.use(express.static(path.join(__dirname, "./public")));
-for (let route of kernel.getAll<BaseRoute>(BaseRoute))
-  app.use(route.getBasePath(), route.getRouter());
+// Event listener for HTTP server "error" event.
+var onError = (error:any) => {
+    if (error.syscall != 'listen') throw error;
+    var bind = (typeof port == 'string') ? 'Pipe ' + port : 'Port ' + port;
+    switch (error.code) {
+        case 'EACCES':
+            console.error(bind + ' requires elevated privileges');
+            process.exit(1);
+            break;
+        case 'EADDRINUSE':
+            console.error(bind + ' is already in use');
+            process.exit(1);
+        default:
+            throw error;
+    }
+};
 
-// catch 404 and forward to error handler
-app.use((req: express.Request, res: express.Response, next: Function) => {
-  var err: any = new Error("Not Found");
-  err["status"] = 404;
-  next(err);
+// Event listener for HTTP server "listening" event.
+var onListening = () => {
+    var addr = server.address();
+    var bind = (typeof addr == 'string') ? 'pipe ' + addr : 'port ' + addr.port;
+    debug('Listening on ' + bind);
+};
+
+// Module dependencies.
+var expressApp = require("./app-express");
+var debug = require('debug')('evernote-tasklog:server');
+import * as http from 'http';
+
+// Get port from environment and store in Express.
+var port:string = normalizePort(process.env.PORT || '3000');
+expressApp.set('port', port);
+
+// Create HTTP server.
+var server:Server = http.createServer(expressApp);
+
+// Listen on provided port, on all network interfaces.
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+
+
+// main logic
+let mainService:MainService = kernel.get<MainService>(MainService);
+mainService.initializeGlobal().then(() => {
+  logger.info(`Initialize web server finished.`);
+}).catch(err => {
+  logger.error(`Initialize web server failed. err=${err}`);
 });
 
-// error handlers
+// app executed from electron then call electron window
+/*if (electronApp) {
+ require('crash-reporter').start();
 
-// development error handler
-// will print stacktrace
-if (app.get("env") == "development") {
-  app.use((err: any, req: express.Request, res: express.Response, next: Function) => {
-    res.status(err["status"] || 500);
-    res.render("error", {
-      message: err.message,
-      error: err
-    });
-  });
-}
+ var mainWindow = null;
 
-// production error handler
-// no stacktraces leaked to user
-app.use((err: any, req: express.Request, res: express.Response, next: Function) => {
-  res.status(err.status || 500);
-  res.render("error", {
-    message: err.message,
-    error: {}
-  });
-});
+ electronApp.on('window-all-closed', () => {
+ if (process.platform != 'darwin') electronApp.quit();
+ });
 
-export = app;
+ electronApp.on('ready', () => {
+ mainWindow = new BrowserWindow({width: 800, height: 600});
+ mainWindow.loadUrl("http://localhost:#{port}");
+ mainWindow.on('closed', () => {
+ mainWindow = null;
+ });
+ });
+ }
+ */

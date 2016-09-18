@@ -3,19 +3,24 @@ import {Request, Response, Router} from "express";
 import evernote = require("evernote");
 import {injectable} from "inversify";
 
-import core from "../core";
 import config from "../config";
 import {Code403Error} from "./base-route";
-import {UserTable} from "../table/user-table";
 import {SettingEntity} from "../../common/entity/setting-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
-import {SessionService} from "../service/session-service";
 import {BaseEntityRoute} from "./base-entity-route";
+import {TableService} from "../service/table-service";
+import {SessionService} from "../service/session-service";
+import {SettingTable} from "../table/setting-table";
+import {EvernoteClientService} from "../service/evernote-client-service";
+import {MainService} from "../service/main-service";
 
 @injectable()
 export class AuthRoute extends BaseEntityRoute<AuthEntity> {
 
-  constructor(private sessionService: SessionService) {
+  constructor(protected tableService: TableService,
+              protected sessionService: SessionService,
+              protected evernoteClientService: EvernoteClientService,
+              protected mainService: MainService) {
     super();
   }
 
@@ -36,11 +41,11 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
     } else {
       let sandbox: boolean = session.sandbox;
       let token: string = session.token;
-      return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
+      return this.evernoteClientService.getUserFromToken(token, sandbox).then(user => {
         session.user = user;
         return this.sessionService.save(req);
       }).then(() => {
-        return core.www.initUser(session.user.username, token, sandbox);
+        return this.mainService.initializeUser(session.user.username, token, sandbox);
       }).then(() => {
         let auth = new AuthEntity();
         auth.token = token;
@@ -56,9 +61,10 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
     let sandbox: boolean = req.body.sandbox ? true : false;
     let token: boolean = req.body.token ? true : false;
     let envConfig = sandbox ? config.env.sandbox : config.env.production;
+    let globalSettingTable = this.tableService.getGlobalTable<SettingTable>(SettingEntity);
     if (token) {
       let key = sandbox ? "token.sandbox" : "token.production";
-      return core.models.settings.findOne({_id: key}).then(entity => {
+      return globalSettingTable.findOne({_id: key}).then(entity => {
         let resToken: string = entity.value;
         if (resToken) {
           let developerToken = resToken;
@@ -123,25 +129,26 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
       let token: string = req.body.token;
       let key = sandbox ? "token.sandbox" : "token.production";
       let result: {token: string, username: string};
+      let globalSettingTable = this.tableService.getGlobalTable<SettingTable>(SettingEntity);
       if (token) {
         return this.checkToken(sandbox, token).then(user => {
           result = user;
           let setting = new SettingEntity();
           setting._id = key;
           setting.value = token;
-          return core.models.settings.save(setting);
+          return globalSettingTable.save(setting);
         }).then(() => {
           return result;
         });
       } else {
-        return core.models.settings.findOne({_id: key}).then(setting => {
+        return globalSettingTable.findOne({_id: key}).then(setting => {
           let resToken: string = setting.value;
           if (!resToken) return null;
           return this.checkToken(sandbox, resToken);
         }).then(user => {
           return user;
         }).catch(err => {
-          return core.models.settings.remove({_id: key}).then(() => {
+          return globalSettingTable.remove({_id: key}).then(() => {
             return null;
           });
         });
@@ -152,7 +159,7 @@ export class AuthRoute extends BaseEntityRoute<AuthEntity> {
   }
 
   private checkToken(sandbox: boolean, token: string): Promise<AuthEntity> {
-    return UserTable.loadRemoteFromToken(token, sandbox).then(user => {
+    return this.evernoteClientService.getUserFromToken(token, sandbox).then(user => {
       let auth = new AuthEntity();
       auth.token = token;
       auth.username = user.username;
