@@ -9,59 +9,62 @@
 // Enable Source Map Support
 require('source-map-support').install();
 
+import http = require("http");
+
 import "reflect-metadata";
 import {getLogger} from "log4js";
 import {Server} from "http";
+import _ = require("lodash");
+import commander = require("commander");
 
 import "./log4js";
 import {kernel} from "./inversify.config";
 import {MainService} from "./service/main-service";
 
 let logger = getLogger("system");
+let pjson = require("../../package");
 
-// Normalize a port into a number, string, or false.
-var normalizePort:(val:string)=>any = (val) => {
-    let port:number = parseInt(val, 10);
-    if (isNaN(port)) return val;
-    if (port >= 0) return port;
-    return false;
-};
+commander
+  .version(pjson.version)
+  .option("-p --port <n>", "set HTTP server port number.", parseInt)
+  .parse(process.argv);
+
+let port: number = _.get<number>(commander, "port");
+port = port || 3000;
 
 // Event listener for HTTP server "error" event.
-var onError = (error:any) => {
-    if (error.syscall != 'listen') throw error;
-    var bind = (typeof port == 'string') ? 'Pipe ' + port : 'Port ' + port;
-    switch (error.code) {
-        case 'EACCES':
-            console.error(bind + ' requires elevated privileges');
-            process.exit(1);
-            break;
-        case 'EADDRINUSE':
-            console.error(bind + ' is already in use');
-            process.exit(1);
-        default:
-            throw error;
-    }
+var onError = (error: any) => {
+  if (error.syscall != 'listen') throw error;
+  var bind = (typeof port == 'string') ? 'Pipe ' + port : 'Port ' + port;
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+    default:
+      throw error;
+  }
 };
 
 // Event listener for HTTP server "listening" event.
 var onListening = () => {
-    var addr = server.address();
-    var bind = (typeof addr == 'string') ? 'pipe ' + addr : 'port ' + addr.port;
-    debug('Listening on ' + bind);
+  var addr = server.address();
+  var bind = (typeof addr == 'string') ? 'pipe ' + addr : 'port ' + addr.port;
+  debug('Listening on ' + bind);
 };
 
 // Module dependencies.
 var expressApp = require("./app-express");
 var debug = require('debug')('evernote-tasklog:server');
-import * as http from 'http';
 
 // Get port from environment and store in Express.
-var port:string = normalizePort(process.env.PORT || '3000');
 expressApp.set('port', port);
 
 // Create HTTP server.
-var server:Server = http.createServer(expressApp);
+var server: Server = http.createServer(expressApp);
 
 // Listen on provided port, on all network interfaces.
 server.listen(port);
@@ -69,11 +72,11 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 
-
 // main logic
-let mainService:MainService = kernel.get<MainService>(MainService);
+let mainService: MainService = kernel.get<MainService>(MainService);
 mainService.initializeGlobal().then(() => {
   logger.info(`Initialize web server finished.`);
+  logger.info(`Server address is http://localhost:${port}/`);
 }).catch(err => {
   logger.error(`Initialize web server failed. err=${err}`);
 });
