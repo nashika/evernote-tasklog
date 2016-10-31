@@ -12,7 +12,11 @@ export abstract class BaseTableRoute<T1 extends BaseEntity, T2 extends BaseTable
   }
 
   getTable(req: Request): T2 {
-    return <T2>this.tableService.getUserTable(this.EntityClass, req);
+    if (this.EntityClass.params.requireUser) {
+      return <T2>this.tableService.getUserTable(this.EntityClass, req);
+    } else {
+      return <T2>this.tableService.getGlobalTable(this.EntityClass);
+    }
   }
 
 }

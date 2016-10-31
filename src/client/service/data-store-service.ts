@@ -6,10 +6,12 @@ import {TimeLogEntity} from "../../common/entity/time-log-entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {NotebookEntity} from "../../common/entity/notebook-entity";
 import {BaseClientService} from "./base-client-service";
+import {GlobalUserEntity} from "../../common/entity/global-user-entity";
 
 @injectable()
 export class DataStoreService extends BaseClientService {
 
+  globalUser: GlobalUserEntity;
   user: UserEntity;
   persons: Object[];
   notebooks: {[guid: string]: NotebookEntity};

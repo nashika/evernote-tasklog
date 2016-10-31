@@ -20,6 +20,6 @@ export interface IMultiEntityFindOptions {
 
 export abstract class BaseMultiEntity extends BaseEntity {
 
-  static params:IBaseMultiEntityParams;
+  static params: IBaseMultiEntityParams;
 
 }

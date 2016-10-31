@@ -9,12 +9,14 @@ import {AppComponent} from "./app-component";
 import {NotebookEntity} from "../../common/entity/notebook-entity";
 import {RequestService} from "../service/request-service";
 import {kernel} from "../inversify.config";
+import {UserMenuComponent} from "./menu/user-menu-component";
 
 let template = require("./menu-component.jade");
 
 @Component({
   template: template,
   components: {
+    "user-menu-component": UserMenuComponent,
     vSelect: VueStrap.select,
   },
   watch: {
@@ -59,9 +61,6 @@ export class MenuComponent extends BaseComponent {
 
   ready() {
     super.ready();
-    this.reload().then(() => {
-      this.onWatchFilterParams();
-    });
   }
 
   reload(): Promise<void> {

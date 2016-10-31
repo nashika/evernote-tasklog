@@ -2,6 +2,7 @@ import {Kernel} from "inversify";
 
 import {BaseEntity} from "../common/entity/base-entity";
 import {AuthEntity} from "../common/entity/auth-entity";
+import {GlobalUserEntity} from "../common/entity/global-user-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
 import {NoteEntity} from "../common/entity/note-entity";
 import {NotebookEntity} from "../common/entity/notebook-entity";
@@ -20,7 +21,7 @@ import {SettingService} from "./service/setting-service";
 import {TableService} from "./service/table-service";
 
 import {BaseRoute} from "./routes/base-route";
-import {AuthRoute} from "./routes/auth-route";
+import {GlobalUserRoute} from "./routes/global-user-route";
 import {IndexRoute} from "./routes/index-route";
 import {NoteRoute} from "./routes/note-route";
 import {NotebookRoute} from "./routes/notebook-route";
@@ -31,6 +32,7 @@ import {TimeLogRoute} from "./routes/time-log-route";
 import {UserRoute} from "./routes/user-route";
 
 import {BaseTable} from "./table/base-table";
+import {GlobalUserTable} from "./table/global-user-table";
 import {LinkedNotebookTable} from "./table/linked-notebook-table";
 import {NoteTable} from "./table/note-table";
 import {NotebookTable} from "./table/notebook-table";
@@ -45,6 +47,7 @@ import {UserTable} from "./table/user-table";
 export var kernel = new Kernel();
 
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(AuthEntity).whenTargetNamed("auth");
+kernel.bind<BaseEntity>(BaseEntity).toConstructor(GlobalUserEntity).whenTargetNamed("globalUser");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(LinkedNotebookEntity).whenTargetNamed("linkedNotebook");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(NoteEntity).whenTargetNamed("note");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(NotebookEntity).whenTargetNamed("notebook");
@@ -62,8 +65,8 @@ kernel.bind<SessionService>(SessionService).toSelf().inSingletonScope();
 kernel.bind<SettingService>(SettingService).toSelf().inSingletonScope();
 kernel.bind<TableService>(TableService).toSelf().inSingletonScope();
 
-kernel.bind<BaseRoute>(BaseRoute).to(AuthRoute).whenTargetNamed("auth");
 kernel.bind<BaseRoute>(BaseRoute).to(IndexRoute).whenTargetNamed("index");
+kernel.bind<BaseRoute>(BaseRoute).to(GlobalUserRoute).whenTargetNamed("globalUser");
 kernel.bind<BaseRoute>(BaseRoute).to(NoteRoute).whenTargetNamed("note");
 kernel.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");
 kernel.bind<BaseRoute>(BaseRoute).to(ProfitLogRoute).whenTargetNamed("profitLog");
@@ -73,6 +76,7 @@ kernel.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 kernel.bind<BaseRoute>(BaseRoute).to(UserRoute).whenTargetNamed("user");
 
 kernel.bind<BaseTable>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linkedNotebook");
+kernel.bind<BaseTable>(BaseTable).to(GlobalUserTable).whenTargetNamed("globalUser");
 kernel.bind<BaseTable>(BaseTable).to(NoteTable).whenTargetNamed("note");
 kernel.bind<BaseTable>(BaseTable).to(NotebookTable).whenTargetNamed("notebook");
 kernel.bind<BaseTable>(BaseTable).to(ProfitLogTable).whenTargetNamed("profitLog");

@@ -7,6 +7,7 @@ import {BaseEntity} from "../../common/entity/base-entity";
 import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {AuthEntity} from "../../common/entity/auth-entity";
+import {GlobalUserEntity} from "../../common/entity/global-user-entity";
 
 @injectable()
 export class RequestService extends BaseClientService {
@@ -61,14 +62,11 @@ export class RequestService extends BaseClientService {
     });
   }
 
-  public tokenAuth(sandbox: boolean, token?: string): Promise<AuthEntity> {
-    return request.post(`/auth/token`).send({sandbox: sandbox, token: token}).then(req => {
-      return new AuthEntity(req.body);
+  public tokenAuth(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
+    if (!token) return Promise.reject<GlobalUserEntity>("No Token");
+    return request.post(`/global-user/auth`).send({sandbox: sandbox, token: token}).then(req => {
+      return new GlobalUserEntity(req.body);
     });
-  }
-
-  public loginAuth(sandbox: boolean, useToken: boolean): Promise<void> {
-    return request.post(`/auth/login`).send({sandbox: sandbox, token: useToken}).then(req => null);
   }
 
   public logoutAuth(): Promise<void> {

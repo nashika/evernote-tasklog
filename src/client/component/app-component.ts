@@ -1,7 +1,6 @@
 import Component from "vue-class-component";
 
 import {BaseComponent} from "./base-component";
-import {AuthComponent} from "./auth-component";
 import {NavigationComponent} from "./navigation-component";
 import {MenuComponent} from "./menu-component";
 import {SettingsComponent} from "./settings-component";
@@ -14,7 +13,6 @@ let template = require("./app-component.jade");
 @Component({
   template: template,
   components: {
-    "auth-component": AuthComponent,
     "menu-component": MenuComponent,
     "navigation-component": NavigationComponent,
     "notes-component": NotesComponent,
@@ -29,7 +27,7 @@ export class AppComponent extends BaseComponent {
 
   data():any {
     return {
-      mode: "auth",
+      mode: "menu",
     }
   }
 

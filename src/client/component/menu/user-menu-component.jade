@@ -1,0 +1,42 @@
+section
+  h2 #[span.fa.fa-user] User Info
+  h3 Current User
+  dl.dl-horizontal
+    dt Id
+    dd {{dataStoreService.user && dataStoreService.user.id}}
+    dt Username
+    dd {{dataStoreService.user && dataStoreService.user.username}}
+    dt Email
+    dd {{dataStoreService.user && dataStoreService.user.email}}
+    dt Name
+    dd {{dataStoreService.user && dataStoreService.user.name}}
+  h3 Manage Users
+  div(v-if="globalUsers")
+    table.table.table-bordered
+      tr
+        th Sandbox
+        th Username
+        th Action
+      tr(:class="{'success': !dataStoreService.user}")
+        td
+        td None
+        td
+          button.btn.btn-danger.btn-block(v-if="dataStoreService.globalUser", type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
+      tr(v-for="globalUser in globalUsers")
+        td {{globalUser.sandbox}}
+        td {{globalUser.username}}
+        td
+          button.btn.btn-primary.btn-sm.btn-block(v-if="dataStoreService.globalUser != globalUser") Change
+    h3 Add User
+    button.btn.btn-primary.btn-block(@click="add(false)") Add Production User
+    p: .well Login to system using the Evernote developer token. Get token from&nbsp;
+      a(href='https://www.evernote.com/api/DeveloperToken.action') Evernote developer token API
+      br
+      | Notice: All client in this server use this token.
+    button.btn.btn-primary.btn-block(@click="add(true)") Add Sandbox User
+    p: .well Login to sandbox system using the Evernote sandbox developer token. Get token from&nbsp;
+      a(href="https://sandbox.evernote.com/api/DeveloperToken.action") Evernote sandbox developer token API
+      br
+      | Notice: All client in this server use this token.
+  div(v-else)
+    div.loading #[i.fa.fa-spinner.fa-pulse] Loading...

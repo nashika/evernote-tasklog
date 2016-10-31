@@ -3,12 +3,11 @@ import {injectable} from "inversify";
 import {BaseServerService} from "./base-server-service";
 import {Request} from "express";
 import {UserEntity} from "../../common/entity/user-entity";
+import {GlobalUserEntity} from "../../common/entity/global-user-entity";
 
 export interface ISession {
-  token?: string;
-  sandbox?: boolean;
-  user?: UserEntity;
-  authTokenSecret?: string;
+  globalUser: GlobalUserEntity;
+  user: UserEntity;
 }
 
 @injectable()

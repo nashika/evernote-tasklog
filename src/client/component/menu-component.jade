@@ -3,6 +3,8 @@
     h1 #[span.fa.fa-tasks] Evernote Tasklog
   .row
     .col-md-4
+      user-menu-component
+    .col-md-4(v-if="dataStoreService.user")
       h2 #[span.fa.fa-search] Note Filter
       .well.h3
         p #[span.fa.fa-2x.fa-files-o] {{noteCount}} notes.
@@ -18,19 +20,7 @@
             v-select(:options="getStackOptions(dataStoreService.stacks)", multiple,
             :value.sync="dataTranscieverService.filterParams.stacks", search, clear-button)
       button.btn.btn-primary.btn-lg.btn-block(type="button", @click="reload()") #[span.fa.fa-refresh] Reload
-    .col-md-4
-      h2 #[span.fa.fa-user] User Info
-      dl.dl-horizontal
-        dt Id
-        dd {{dataStoreService.user && dataStoreService.user.id}}
-        dt Username
-        dd {{dataStoreService.user && dataStoreService.user.username}}
-        dt Email
-        dd {{dataStoreService.user && dataStoreService.user.email}}
-        dt Name
-        dd {{dataStoreService.user && dataStoreService.user.name}}
-      button.btn.btn-danger.btn-block(type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
-    .col-md-4
+    .col-md-4(v-if="dataStoreService.user")
       h2 #[span.fa.fa-database] Data Info
       table.table.table-bordered.table-condensed.table-striped
         tr

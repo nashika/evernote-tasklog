@@ -8,6 +8,7 @@ import {BaseEntity} from "../../common/entity/base-entity";
 import {SessionService} from "./session-service";
 import {SettingTable} from "../table/setting-table";
 import {kernel} from "../inversify.config";
+import {GlobalUserTable} from "../table/global-user-table";
 
 @injectable()
 export class TableService extends BaseServerService {
@@ -24,6 +25,8 @@ export class TableService extends BaseServerService {
   initializeGlobal() {
     this.globalTables["setting"] = <SettingTable>kernel.getNamed<BaseTable>(BaseTable, "setting");
     this.globalTables["setting"].connect();
+    this.globalTables["globalUser"] = <GlobalUserTable>kernel.getNamed<BaseTable>(BaseTable, "globalUser");
+    this.globalTables["globalUser"].connect();
   }
 
   initializeUser(username: string) {

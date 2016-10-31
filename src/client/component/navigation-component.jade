@@ -1,5 +1,5 @@
-mixin item(name, icon, label)
-  li(:class="{active: mode == '#{name}'}")
+mixin item(name, icon, label, needLogin)
+  li(v-if=needLogin ? "dataStoreService.user && " : "true", :class="{active: mode == '#{name}'}")
     a(@click="mode = '#{name}'") #[span.fa(class="fa-#{icon}")] #{label}
 
 nav.navbar.navbar-inverse.navbar-fixed-bottom
@@ -13,9 +13,9 @@ nav.navbar.navbar-inverse.navbar-fixed-bottom
       a.navbar-brand(href="/#/") #[span.fa.fa-tasks] Evernote Tasklog
     .collapse.navbar-collapse(collapse="navCollapse")
       ul.nav.navbar-nav(@click="navCollapse = true")
-        +item("menu", "th-large", "Menu")
-        +item("timeline", "clock-o", "Timeline")
-        +item("notes", "files-o", "Notes")
-        +item("settings", "gear", "Settings")
+        +item("menu", "th-large", "Menu", false)
+        +item("timeline", "clock-o", "Timeline", true)
+        +item("notes", "files-o", "Notes", true)
+        +item("settings", "gear", "Settings", true)
       form.navbar-form.navbar-right
         button.btn.btn-primary(type="button", @click="reload()") Reload
