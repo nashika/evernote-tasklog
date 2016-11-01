@@ -1,8 +1,8 @@
-///<reference path="../table/base-multi-evernote-table.ts"/>
 import path = require("path");
 
 import evernote = require("evernote");
 import express = require("express");
+import {Request} from "express";
 import http = require("http");
 import {getLogger} from "log4js";
 import _ = require("lodash");
@@ -27,6 +27,9 @@ import {TagEntity} from "../../common/entity/tag-entity";
 import {TagTable} from "../table/tag-table";
 import {NotebookEntity} from "../../common/entity/notebook-entity";
 import {BaseServerService} from "./base-server-service";
+import {SessionService} from "./session-service";
+import {GlobalUserEntity} from "../../common/entity/global-user-entity";
+import {GlobalUserTable} from "../table/global-user-table";
 
 let logger = getLogger("system");
 
@@ -35,42 +38,52 @@ export class MainService extends BaseServerService {
 
   constructor(protected tableService: TableService,
               protected settingService: SettingService,
+              protected sessionService: SessionService,
               protected evernoteClientService: EvernoteClientService) {
     super();
   }
 
   initializeGlobal(): Promise<void> {
-    this.tableService.initializeGlobal();
-    return this.settingService.initializeGlobal();
-  }
-
-  initializeUser(username: string, token: string, sandbox: boolean): Promise<void> {
-    this.evernoteClientService.initializeUser(username, token, sandbox);
     return Promise.resolve().then(() => {
-      this.tableService.initializeUser(username);
-      return this.sync(username);
+      return this.tableService.initializeGlobal();
     }).then(() => {
-      logger.info(`Init user finished. user:${username} data was initialized.`);
+      return this.tableService.getGlobalTable<GlobalUserTable>(GlobalUserEntity).find();
+    }).then(globalUsers => {
+      return MyPromise.eachPromiseSeries(globalUsers, (globalUser: GlobalUserEntity) => {
+        return this.initializeUser(globalUser);
+      });
     });
   }
 
-  sync(username: string): Promise<void> {
+  initializeUser(globalUser: GlobalUserEntity): Promise<void> {
+    return Promise.resolve().then(() => {
+      return this.evernoteClientService.initializeUser(globalUser);
+    }).then(() => {
+      return this.tableService.initializeUser(globalUser);
+    }).then(() => {
+      return this.sync(globalUser);
+    }).then(() => {
+      logger.info(`Init user finished. user:${globalUser._id} data was initialized.`);
+    });
+  }
+
+  sync(globalUser: GlobalUserEntity): Promise<void> {
     var localSyncState: SyncStateEntity = null;
     var remoteSyncState: SyncStateEntity = null;
     var lastSyncChunk: evernote.Evernote.SyncChunk = null;
     return Promise.resolve().then(() => {
-      return this.settingService.initializeUser(username);
+      return this.settingService.initializeUser(globalUser);
     }).then(() => {
       // Reload userStore
-      return this.tableService.getUserTable<UserTable>(UserEntity, username).loadRemote()
+      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
     }).then((remoteUser: UserEntity) => {
-      return this.tableService.getUserTable<UserTable>(UserEntity, username).save(remoteUser);
+      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
     }).then(() => {
       // Get syncState
-      return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, username).findOne();
+      return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser).findOne();
     }).then((syncState: SyncStateEntity) => {
       localSyncState = syncState;
-      return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, username).loadRemote();
+      return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser).loadRemote();
     }).then((syncState: SyncStateEntity) => {
       remoteSyncState = syncState;
       // Sync process
@@ -78,31 +91,31 @@ export class MainService extends BaseServerService {
       return MyPromise.whilePromiseSeries(() => localSyncState.updateCount < remoteSyncState.updateCount, () => {
         logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
         return Promise.resolve().then(() => {
-          return this.evernoteClientService.getFilteredSyncChunk(username, localSyncState.updateCount);
+          return this.evernoteClientService.getFilteredSyncChunk(globalUser, localSyncState.updateCount);
         }).then(syncChunk => {
           lastSyncChunk = <any>syncChunk;
-          return this.tableService.getUserTable<NoteTable>(NoteEntity, username).saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
+          return this.tableService.getUserTable<NoteTable>(NoteEntity, globalUser).saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
         }).then(() => {
-          return this.tableService.getUserTable<NoteTable>(NoteEntity, username).removeByGuid(lastSyncChunk.expungedNotes);
+          return this.tableService.getUserTable<NoteTable>(NoteEntity, globalUser).removeByGuid(lastSyncChunk.expungedNotes);
         }).then(() => {
-          return this.tableService.getUserTable<NotebookTable>(NotebookEntity, username).saveByGuid(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
+          return this.tableService.getUserTable<NotebookTable>(NotebookEntity, globalUser).saveByGuid(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
         }).then(() => {
-          return this.tableService.getUserTable<NotebookTable>(NotebookEntity, username).removeByGuid(lastSyncChunk.expungedNotebooks);
+          return this.tableService.getUserTable<NotebookTable>(NotebookEntity, globalUser).removeByGuid(lastSyncChunk.expungedNotebooks);
         }).then(() => {
-          return this.tableService.getUserTable<TagTable>(TagEntity, username).saveByGuid(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
+          return this.tableService.getUserTable<TagTable>(TagEntity, globalUser).saveByGuid(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
         }).then(() => {
-          return this.tableService.getUserTable<TagTable>(TagEntity, username).removeByGuid(lastSyncChunk.expungedTags);
+          return this.tableService.getUserTable<TagTable>(TagEntity, globalUser).removeByGuid(lastSyncChunk.expungedTags);
         }).then(() => {
-          return this.tableService.getUserTable<SearchTable>(SearchEntity, username).saveByGuid(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
+          return this.tableService.getUserTable<SearchTable>(SearchEntity, globalUser).saveByGuid(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
         }).then(() => {
-          return this.tableService.getUserTable<SearchTable>(SearchEntity, username).removeByGuid(lastSyncChunk.expungedSearches);
+          return this.tableService.getUserTable<SearchTable>(SearchEntity, globalUser).removeByGuid(lastSyncChunk.expungedSearches);
         }).then(() => {
-          return this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, username).saveByGuid(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
+          return this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, globalUser).saveByGuid(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
         }).then(() => {
-          return this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, username).removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
+          return this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, globalUser).removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
         }).then(() => {
           localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
-          return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, username).save(localSyncState);
+          return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser).save(localSyncState);
         }).then(() => {
           logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
         });

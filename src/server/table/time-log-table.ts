@@ -34,7 +34,7 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFind
         timeLog.date = (new Date(dateText + ' ' + timeText)).getTime();
         if (timeText) timeLog.allDay = false;
         // parse person
-        for (let person of this.settingService.getUser(this.username).persons) {
+        for (let person of this.settingService.getUser(this.globalUser).persons) {
           if (attributesText.indexOf(person.name) != -1)
             timeLog.person = person.name;
         }

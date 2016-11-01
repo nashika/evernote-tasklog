@@ -67,7 +67,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
   loadRemote(guid: string): Promise<NoteEntity> {
     let lastNote: NoteEntity = null;
     return Promise.resolve().then(() => {
-      return this.evernoteClientService.getNote(this.username, guid);
+      return this.evernoteClientService.getNote(this.globalUser, guid);
     }).then((note: NoteEntity) => {
       lastNote = note;
       return this.saveByGuid(note);
@@ -101,9 +101,9 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
       lines.push(line.replace(/<[^>]*>/g, ''));
     }
     return Promise.resolve().then(() => {
-      return this.tableService.getUserTable<TimeLogTable>(TimeLogEntity, this.username).parse(note, lines);
+      return this.tableService.getUserTable<TimeLogTable>(TimeLogEntity, this.globalUser).parse(note, lines);
     }).then(() => {
-      return this.tableService.getUserTable<ProfitLogTable>(ProfitLogEntity, this.username).parse(note, lines);
+      return this.tableService.getUserTable<ProfitLogTable>(ProfitLogEntity, this.globalUser).parse(note, lines);
     }).then(() => {
       logger.debug(`Parsing note was succeed. guid=${note.guid}`);
     });

@@ -56,51 +56,53 @@ export class TimelineComponent extends BaseComponent {
     });
   }
 
-  ready() {
-    let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
-    // set working time
-    let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
-    if (this.dataStoreService.settings && this.dataStoreService.settings["startWorkingTime"] && this.dataStoreService.settings["endWorkingTime"])
-      hiddenDates = [{
-        start: moment().subtract(1, "days").startOf("day").hour(this.dataStoreService.settings["endWorkingTime"]),
-        end: moment().startOf("day").hour(this.dataStoreService.settings["startWorkingTime"]),
-        repeat: "daily",
-      }];
-    else
-      hiddenDates = [];
-    // generate timeline object
-    this.timelineItems = new vis.DataSet();
-    this.timelineGroups = new vis.DataSet();
-    this.timeline = new vis.Timeline(container, this.timelineItems, this.timelineGroups, {
-      margin: {item: 5},
-      height: window.innerHeight - 80,
-      orientation: {axis: "both", item: "top"},
-      start: this.start,
-      end: this.end,
-      order: (a: TimelineItem, b: TimelineItem) => {
-        return a.start.getTime() - b.start.getTime();
-      },
-      hiddenDates: hiddenDates,
-    });
-    // set person data
-    if (!this.dataStoreService.settings || !this.dataStoreService.settings["persons"]) return;
-    for (let person of this.dataStoreService.settings["persons"])
-      this.timelineGroups.add({
-        id: person.name,
-        content: person.name,
+  ready(): Promise<void> {
+    return super.ready().then(() => {
+      let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
+      // set working time
+      let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
+      if (this.dataStoreService.settings && this.dataStoreService.settings["startWorkingTime"] && this.dataStoreService.settings["endWorkingTime"])
+        hiddenDates = [{
+          start: moment().subtract(1, "days").startOf("day").hour(this.dataStoreService.settings["endWorkingTime"]),
+          end: moment().startOf("day").hour(this.dataStoreService.settings["startWorkingTime"]),
+          repeat: "daily",
+        }];
+      else
+        hiddenDates = [];
+      // generate timeline object
+      this.timelineItems = new vis.DataSet();
+      this.timelineGroups = new vis.DataSet();
+      this.timeline = new vis.Timeline(container, this.timelineItems, this.timelineGroups, {
+        margin: {item: 5},
+        height: window.innerHeight - 80,
+        orientation: {axis: "both", item: "top"},
+        start: this.start,
+        end: this.end,
+        order: (a: TimelineItem, b: TimelineItem) => {
+          return a.start.getTime() - b.start.getTime();
+        },
+        hiddenDates: hiddenDates,
       });
-    this.timelineGroups.add({
-      id: "updated",
-      content: "Update",
+      // set person data
+      if (!this.dataStoreService.settings || !this.dataStoreService.settings["persons"]) return;
+      for (let person of this.dataStoreService.settings["persons"])
+        this.timelineGroups.add({
+          id: person.name,
+          content: person.name,
+        });
+      this.timelineGroups.add({
+        id: "updated",
+        content: "Update",
+      });
+      // add events
+      this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
+      // reload
+      return this.reload();
     });
-    // add events
-    this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
-    // reload
-    this.reload();
   }
 
-  reload() {
-    this.dataTranscieverService.reload({start: this.start, end: this.end, getContent: true}).then(() => {
+  reload(): Promise<void> {
+    return this.dataTranscieverService.reload({start: this.start, end: this.end, getContent: true}).then(() => {
       this.timelineItems.clear();
       let notes: {[noteGuid: string]: NoteEntity} = {};
       for (var noteGuid in this.dataStoreService.notes) {

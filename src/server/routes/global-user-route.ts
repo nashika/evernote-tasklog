@@ -17,13 +17,29 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService,
               protected sessionService: SessionService) {
-    super(tableService);
+    super(tableService, sessionService);
   }
 
   getRouter(): Router {
     let _router = super.getRouter();
+    _router.post("/load", (req, res) => this.wrap(req, res, this.load));
+    _router.post("/change", (req, res) => this.wrap(req, res, this.change));
     _router.post("/auth", (req, res) => this.wrap(req, res, this.auth));
+    _router.post("/logout", (req, res) => this.wrap(req, res, this.logout));
     return _router;
+  }
+
+  load(req: Request, res: Response): Promise<GlobalUserEntity> {
+    let result: GlobalUserEntity;
+    let session = this.sessionService.get(req);
+    return Promise.resolve(session.globalUser);
+  }
+
+  change(req: Request, res: Response): Promise<void> {
+    let globalUser: GlobalUserEntity = new GlobalUserEntity(req.body);
+    let session = this.sessionService.get(req);
+    session.globalUser = globalUser;
+    return this.sessionService.save(req);
   }
 
   auth(req: Request, res: Response): Promise<GlobalUserEntity> {

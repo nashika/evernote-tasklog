@@ -1,5 +1,6 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
+import Vue = require("vue");
 
 import {MenuComponent} from "../menu-component";
 import {BaseComponent} from "../base-component";
@@ -7,6 +8,7 @@ import {kernel} from "../../inversify.config";
 import {DataStoreService} from "../../service/data-store-service";
 import {RequestService} from "../../service/request-service";
 import {GlobalUserEntity} from "../../../common/entity/global-user-entity";
+import {AppComponent} from "../app-component";
 
 let template = require("./user-menu-component.jade");
 
@@ -15,6 +17,7 @@ let template = require("./user-menu-component.jade");
 })
 export class UserMenuComponent extends BaseComponent {
 
+  $root: AppComponent;
   $parent: MenuComponent;
 
   dataStoreService: DataStoreService;
@@ -30,9 +33,16 @@ export class UserMenuComponent extends BaseComponent {
     });
   }
 
-  ready() {
-    super.ready();
-    this.reload();
+  ready(): Promise<void> {
+    return super.ready().then(() => {
+      return this.reload();
+    }).then(() => {
+      return this.requestService.loadAuth();
+    }).then(loadGlobalUser => {
+      if (!loadGlobalUser) return;
+      let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
+      return this.select(globalUser);
+    });
   }
 
   reload(): Promise<void> {
@@ -41,14 +51,26 @@ export class UserMenuComponent extends BaseComponent {
     });
   }
 
+  select(globalUser: GlobalUserEntity): Promise<void> {
+    Vue.set(this.dataStoreService, "globalUser", globalUser);
+    return this.requestService.changeAuth(globalUser).then(() => {
+      this.$root.$broadcast("changeUser");
+    });
+  }
+
   add(sandbox: boolean): Promise<void> {
     let token = prompt(`Input developer token (${sandbox ? "sandbox" : "production"})`);
-    let selected: GlobalUserEntity;
     return this.requestService.tokenAuth(sandbox, token).then(globalUser => {
       this.dataStoreService.globalUser = globalUser;
       return this.reload();
     }).catch(err => {
       alert(`Add user failed. err="${err}"`);
+    });
+  }
+
+  logout(): Promise<void> {
+    return this.requestService.logoutAuth().then(() => {
+      this.select(null);
     });
   }
 

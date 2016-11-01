@@ -14,19 +14,16 @@ section
   div(v-if="globalUsers")
     table.table.table-bordered
       tr
-        th Sandbox
-        th Username
+        th Id
         th Action
-      tr(:class="{'success': !dataStoreService.user}")
-        td
+      tr(:class="{'success': !dataStoreService.globalUser}")
         td None
         td
           button.btn.btn-danger.btn-block(v-if="dataStoreService.globalUser", type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
-      tr(v-for="globalUser in globalUsers")
-        td {{globalUser.sandbox}}
-        td {{globalUser.username}}
+      tr(v-for="globalUser in globalUsers", :class="{'success': dataStoreService.globalUser == globalUser}")
+        td {{globalUser._id}}
         td
-          button.btn.btn-primary.btn-sm.btn-block(v-if="dataStoreService.globalUser != globalUser") Change
+          button.btn.btn-primary.btn-sm.btn-block(v-if="dataStoreService.globalUser != globalUser", @click="select(globalUser)") Change
     h3 Add User
     button.btn.btn-primary.btn-block(@click="add(false)") Add Production User
     p: .well Login to system using the Evernote developer token. Get token from&nbsp;

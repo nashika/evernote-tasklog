@@ -13,7 +13,7 @@ export class SyncStateTable extends BaseSingleEvernoteTable<SyncStateEntity> {
   }
 
   loadRemote(): Promise<SyncStateEntity> {
-    return this.evernoteClientService.getSyncState(this.username);
+    return this.evernoteClientService.getSyncState(this.globalUser);
   }
 
 }

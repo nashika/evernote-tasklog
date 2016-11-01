@@ -41,12 +41,13 @@ export class NotesComponent extends BaseComponent {
     });
   }
 
-  ready() {
-    super.ready();
-    this.reload();
+  ready(): Promise<void> {
+    return super.ready().then(() => {
+      return this.reload();
+    });
   }
 
-  reload() {
+  reload(): Promise<void> {
     this.isReady = false;
     this.dataTranscieverService.reload({getContent: true}).then(() => {
       this.reloadTimeLogs(this.dataStoreService.timeLogs);
@@ -55,6 +56,7 @@ export class NotesComponent extends BaseComponent {
     }).then(() => {
       this.isReady = true;
     });
+    return Promise.resolve();
   }
 
   reloadTimeLogs(timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}}) {

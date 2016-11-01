@@ -26,8 +26,8 @@ export class SyncRoute extends BaseRoute {
 
   index(req: Request, res: Response): Promise<boolean> {
     let session = this.sessionService.get(req);
-    return this.mainService.sync(session.user.username).then(() => {
-      return true
+    return this.mainService.sync(session.globalUser).then(() => {
+      return true;
     });
   };
 

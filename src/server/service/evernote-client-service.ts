@@ -6,6 +6,7 @@ import {BaseServerService} from "./base-server-service";
 import {UserEntity} from "../../common/entity/user-entity";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {SyncStateEntity} from "../../common/entity/sync-state-entity";
+import {GlobalUserEntity} from "../../common/entity/global-user-entity";
 
 let logger = getLogger("system");
 
@@ -21,15 +22,16 @@ export class EvernoteClientService extends BaseServerService {
     this.clients = {};
   }
 
-  initializeUser(username: string, token: string, sandbox: boolean): void {
-    this.clients[username] = new evernote.Evernote.Client({
-      token: token,
-      sandbox: sandbox,
+  initializeUser(globalUser: GlobalUserEntity): Promise<void> {
+    this.clients[globalUser._id] = new evernote.Evernote.Client({
+      token: globalUser.token,
+      sandbox: globalUser.sandbox,
     });
+    return Promise.resolve();
   }
 
-  getUser(username: string): Promise<UserEntity> {
-    let userStore: evernote.Evernote.UserStoreClient = this.clients[username].getUserStore();
+  getUser(globalUser: GlobalUserEntity): Promise<UserEntity> {
+    let userStore: evernote.Evernote.UserStoreClient = this.clients[globalUser._id].getUserStore();
     return new Promise((resolve, reject) => {
       userStore.getUser((err, user) => {
         if (err) return reject(err);
@@ -38,8 +40,8 @@ export class EvernoteClientService extends BaseServerService {
     });
   }
 
-  getSyncState(username: string): Promise<SyncStateEntity> {
-    let noteStore: evernote.Evernote.NoteStoreClient = this.clients[username].getNoteStore();
+  getSyncState(globalUser: GlobalUserEntity): Promise<SyncStateEntity> {
+    let noteStore: evernote.Evernote.NoteStoreClient = this.clients[globalUser._id].getNoteStore();
     return new Promise((resolve, reject) => {
       noteStore.getSyncState((err, syncState) => {
         if (err) return reject(err);
@@ -48,8 +50,8 @@ export class EvernoteClientService extends BaseServerService {
     });
   }
 
-  getFilteredSyncChunk(username: string, updateCount: number): Promise<evernote.Evernote.SyncChunk> {
-    let noteStore: evernote.Evernote.NoteStoreClient = this.clients[username].getNoteStore();
+  getFilteredSyncChunk(globalUser: GlobalUserEntity, updateCount: number): Promise<evernote.Evernote.SyncChunk> {
+    let noteStore: evernote.Evernote.NoteStoreClient = this.clients[globalUser._id].getNoteStore();
     let syncChunkFilter: evernote.Evernote.SyncChunkFilter = new evernote.Evernote.SyncChunkFilter();
     syncChunkFilter.includeNotes = true;
     syncChunkFilter.includeNotebooks = true;
@@ -65,8 +67,8 @@ export class EvernoteClientService extends BaseServerService {
     });
   }
 
-  getNote(username: string, guid: string): Promise<NoteEntity> {
-    let noteStore: evernote.Evernote.NoteStoreClient = this.clients[username].getNoteStore();
+  getNote(globalUser: GlobalUserEntity, guid: string): Promise<NoteEntity> {
+    let noteStore: evernote.Evernote.NoteStoreClient = this.clients[globalUser._id].getNoteStore();
     logger.debug(`Loading note from remote was started. guid=${guid}`);
     return Promise.resolve().then(() => {
       return new Promise((resolve, reject) => {

@@ -5,7 +5,7 @@ export class SettingEntity extends BaseMultiEntity {
   static params:IBaseMultiEntityParams = {
     name: "setting",
     titleField: "name",
-    requireUser: false,
+    requireUser: true,
     default: {
       query: {},
       sort: {updated: -1},

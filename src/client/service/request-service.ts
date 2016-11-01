@@ -6,7 +6,6 @@ import {BaseClientService} from "./base-client-service";
 import {BaseEntity} from "../../common/entity/base-entity";
 import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 import {NoteEntity} from "../../common/entity/note-entity";
-import {AuthEntity} from "../../common/entity/auth-entity";
 import {GlobalUserEntity} from "../../common/entity/global-user-entity";
 
 @injectable()
@@ -56,10 +55,14 @@ export class RequestService extends BaseClientService {
     });
   }
 
-  public loadAuth(): Promise<AuthEntity> {
-    return request.post(`/auth`).then(req => {
-      return req.body ? new AuthEntity(req.body) : null;
+  public loadAuth(): Promise<GlobalUserEntity> {
+    return request.post(`/global-user/load`).then(req => {
+      return req.body ? new GlobalUserEntity(req.body) : null;
     });
+  }
+
+  public changeAuth(globalUser: GlobalUserEntity): Promise<void> {
+    return request.post("/global-user/change").send(globalUser).then(req => null);
   }
 
   public tokenAuth(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
@@ -70,7 +73,7 @@ export class RequestService extends BaseClientService {
   }
 
   public logoutAuth(): Promise<void> {
-    return request.post(`/auth/logout`).then(req => null);
+    return request.post(`/global-user/logout`).then(req => null);
   }
 
 }

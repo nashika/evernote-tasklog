@@ -6,12 +6,14 @@ import {BaseMultiRoute} from "./base-multi-route";
 import {NoteTable} from "../table/note-table";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {TableService} from "../service/table-service";
+import {SessionService} from "../service/session-service";
 
 @injectable()
 export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
 
-  constructor(protected tableService: TableService) {
-    super(tableService);
+  constructor(protected tableService: TableService,
+              protected sessionService: SessionService) {
+    super(tableService, sessionService);
   }
 
   getRouter(): Router {

@@ -13,7 +13,7 @@ export class UserTable extends BaseSingleEvernoteTable<UserEntity> {
   }
 
   loadRemote(): Promise<UserEntity> {
-    return this.evernoteClientService.getUser(this.username);
+    return this.evernoteClientService.getUser(this.globalUser);
   }
 
 }

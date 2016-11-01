@@ -1,7 +1,6 @@
 import {Kernel} from "inversify";
 
 import {BaseEntity} from "../common/entity/base-entity";
-import {AuthEntity} from "../common/entity/auth-entity";
 import {GlobalUserEntity} from "../common/entity/global-user-entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook-entity";
 import {NoteEntity} from "../common/entity/note-entity";
@@ -46,7 +45,6 @@ import {UserTable} from "./table/user-table";
 
 export var kernel = new Kernel();
 
-kernel.bind<BaseEntity>(BaseEntity).toConstructor(AuthEntity).whenTargetNamed("auth");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(GlobalUserEntity).whenTargetNamed("globalUser");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(LinkedNotebookEntity).whenTargetNamed("linkedNotebook");
 kernel.bind<BaseEntity>(BaseEntity).toConstructor(NoteEntity).whenTargetNamed("note");

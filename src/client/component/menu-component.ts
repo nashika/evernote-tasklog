@@ -25,6 +25,7 @@ let template = require("./menu-component.jade");
   },
   events: {
     "reload": "reload",
+    "changeUser": "changeUser",
   },
 })
 export class MenuComponent extends BaseComponent {
@@ -59,16 +60,18 @@ export class MenuComponent extends BaseComponent {
     });
   }
 
-  ready() {
-    super.ready();
-  }
-
   reload(): Promise<void> {
     return this.dataTranscieverService.reload({getContent: false});
   }
 
-  onWatchFilterParams() {
-    Promise.resolve().then(() => {
+  changeUser(): Promise<void> {
+    return this.reload().then(() => {
+      return this.onWatchFilterParams();
+    });
+  }
+
+  onWatchFilterParams(): Promise<void> {
+    return Promise.resolve().then(() => {
       return this.dataTranscieverService.countNotes({}).then(count => {
         this.noteCount = count;
       });

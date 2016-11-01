@@ -62,8 +62,10 @@ export class SettingsComponent extends BaseComponent {
     });
   }
 
-  ready() {
-    this.reload().then(() => {
+  ready(): Promise<void> {
+    return super.ready().then(() => {
+      return this.reload();
+    }).then(() => {
       this.editStore = _.cloneDeep(this.dataStoreService.settings);
       if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
     });
