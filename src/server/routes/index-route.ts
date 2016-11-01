@@ -18,7 +18,7 @@ export class IndexRoute extends BaseRoute {
     return _router;
   }
 
-  onIndex = (req: Request, res: Response) => {
+  onIndex = (_req: Request, res: Response) => {
     res.render("index");
   };
 

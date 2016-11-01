@@ -101,7 +101,7 @@ export class SettingsComponent extends BaseComponent {
     MyPromise.eachPromiseSeries(this.fields, (field: any, key: string) => {
       this.progressService.next(`Saving ${key}...`);
       if (JSON.stringify(this.editStore[key]) == JSON.stringify(this.dataStoreService.settings[key]))
-        return;
+        return null;
       if (field.reParse) reParse = true;
       if (field.reload) reload = true;
       return this.requestService.save<SettingEntity>(SettingEntity, new SettingEntity({
@@ -114,9 +114,11 @@ export class SettingsComponent extends BaseComponent {
       this.progressService.close();
       if (reParse)
         return this.dataTranscieverService.reParse();
+      return null;
     }).then(() => {
       if (reload)
         return this.dataTranscieverService.reload({getContent: false});
+      return null;
     }).catch(err => alert(err));
   }
 

@@ -23,13 +23,13 @@ export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
     return _router;
   }
 
-  getContent(req: Request, res: Response): Promise<NoteEntity[]> {
+  getContent(req: Request, _res: Response): Promise<NoteEntity[]> {
     return this.getTable(req).getRemoteContent(req.body).then(notes => {
       return notes;
     });
   }
 
-  reParse(req: Request, res: Response): Promise<boolean> {
+  reParse(req: Request, _res: Response): Promise<boolean> {
     return this.getTable(req).reParseNotes(req.body).then(() => {
       return true;
     });

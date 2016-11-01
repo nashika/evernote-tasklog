@@ -28,6 +28,8 @@ export class MyPromise {
         return new Promise<void>((resolve, reject) => eachFunc(resolve, reject, item, key));
       };
       return MyPromise.eachPromiseSeries<T1, T2>(collection, eachPromiseFunc, resultFunc);
+    } else {
+      throw new Error();
     }
   }
 

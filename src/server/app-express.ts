@@ -40,7 +40,7 @@ for (let route of kernel.getAll<BaseRoute>(BaseRoute))
   app.use(route.getBasePath(), route.getRouter());
 
 // catch 404 and forward to error handler
-app.use((req: express.Request, res: express.Response, next: Function) => {
+app.use((_req: express.Request, _res: express.Response, next: Function) => {
   var err: any = new Error("Not Found");
   err["status"] = 404;
   next(err);
@@ -51,7 +51,7 @@ app.use((req: express.Request, res: express.Response, next: Function) => {
 // development error handler
 // will print stacktrace
 if (app.get("env") == "development") {
-  app.use((err: any, req: express.Request, res: express.Response, next: Function) => {
+  app.use((err: any, _req: express.Request, res: express.Response, _next: Function) => {
     res.status(err["status"] || 500);
     res.render("error", {
       message: err.message,
@@ -62,7 +62,7 @@ if (app.get("env") == "development") {
 
 // production error handler
 // no stacktraces leaked to user
-app.use((err: any, req: express.Request, res: express.Response, next: Function) => {
+app.use((err: any, _req: express.Request, res: express.Response, _next: Function) => {
   res.status(err.status || 500);
   res.render("error", {
     message: err.message,

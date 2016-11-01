@@ -18,6 +18,7 @@ Vue.filter("orderObjectBy", function (items: {[key: string]: any}, field: any = 
       return (a[field] > b[field]) ? -1 : 1;
     if (typeof field == "function")
       return (field(a.item, a.key) > field(b.item, b.key)) ? -1 : 1;
+    return 0;
   });
   if (reverse)
     filtered.reverse();

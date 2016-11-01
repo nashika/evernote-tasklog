@@ -84,7 +84,7 @@ export class TimelineComponent extends BaseComponent {
         hiddenDates: hiddenDates,
       });
       // set person data
-      if (!this.dataStoreService.settings || !this.dataStoreService.settings["persons"]) return;
+      if (!this.dataStoreService.settings || !this.dataStoreService.settings["persons"]) return null;
       for (let person of this.dataStoreService.settings["persons"])
         this.timelineGroups.add({
           id: person.name,

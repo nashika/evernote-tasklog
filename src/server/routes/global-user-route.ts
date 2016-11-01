@@ -29,20 +29,20 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
     return _router;
   }
 
-  load(req: Request, res: Response): Promise<GlobalUserEntity> {
+  load(req: Request, _res: Response): Promise<GlobalUserEntity> {
     let result: GlobalUserEntity;
     let session = this.sessionService.get(req);
     return Promise.resolve(session.globalUser);
   }
 
-  change(req: Request, res: Response): Promise<void> {
+  change(req: Request, _res: Response): Promise<void> {
     let globalUser: GlobalUserEntity = new GlobalUserEntity(req.body);
     let session = this.sessionService.get(req);
     session.globalUser = globalUser;
     return this.sessionService.save(req);
   }
 
-  auth(req: Request, res: Response): Promise<GlobalUserEntity> {
+  auth(req: Request, _res: Response): Promise<GlobalUserEntity> {
     let result: GlobalUserEntity;
     let session = this.sessionService.get(req);
     return Promise.resolve().then(() => {
@@ -60,7 +60,7 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
     });
   }
 
-  logout(req: Request, res: Response): Promise<void> {
+  logout(req: Request, _res: Response): Promise<void> {
     this.sessionService.set(req, null);
     return this.sessionService.save(req);
   }

@@ -14,19 +14,19 @@ export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends Base
     return _router;
   }
 
-  index(req: Request, res: Response): Promise<T1[]> {
+  index(req: Request, _res: Response): Promise<T1[]> {
     return this.getTable(req).find(req.body).then((entities: T1[]) => {
       return entities;
     });
   }
 
-  count(req: Request, res: Response): Promise<number> {
+  count(req: Request, _res: Response): Promise<number> {
     return this.getTable(req).count(req.body).then(count => {
       return count;
     });
   }
 
-  save(req: Request, res: Response): Promise<boolean> {
+  save(req: Request, _res: Response): Promise<boolean> {
     let entity: T1 = new (<any>this.EntityClass)(req.body);
     return this.getTable(req).save(entity).then(() => {
       return true;

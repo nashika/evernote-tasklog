@@ -12,7 +12,7 @@ export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends Ba
     return _router;
   }
 
-  index(req: Request, res: Response): Promise<T1> {
+  index(req: Request, _res: Response): Promise<T1> {
     return this.getTable(req).findOne();
   }
 

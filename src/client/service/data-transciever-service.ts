@@ -42,7 +42,7 @@ export class DataTranscieverService extends BaseClientService {
     this.progressService.open(params.getContent ? 10 : 6);
     return Promise.resolve().then(() => {
       // get user
-      if (this.dataStoreService.user) return;
+      if (this.dataStoreService.user) return null;
       this.progressService.next("Getting user data.");
       return this.requestService.findOne<UserEntity>(UserEntity).then(user => {
         this.dataStoreService.user = user;
@@ -70,13 +70,15 @@ export class DataTranscieverService extends BaseClientService {
         this.dataStoreService.stacks = _(notebooks).map<string>("stack").uniq().value();
       });
     }).then(() => {
-      if (params.getContent) return Promise.resolve().then(() => {
+      if (!params.getContent) return null;
+      return Promise.resolve().then(() => {
         // get note count
         this.progressService.next("Getting notes count.");
         return this.requestService.count(NoteEntity, noteQuery).then(count => {
           if (count > 100)
             if (!window.confirm(`Current query find ${count} notes. It is too many. Continue anyway?`))
               return Promise.reject(new MyPromiseTerminateResult(`User Canceled`));
+          return null;
         });
       }).then(() => {
         // get notes
@@ -95,6 +97,7 @@ export class DataTranscieverService extends BaseClientService {
               for (note of notes)
                 this.dataStoreService.notes[note.guid] = note;
             });
+          return null;
         });
       }).then(() => {
         // get time logs

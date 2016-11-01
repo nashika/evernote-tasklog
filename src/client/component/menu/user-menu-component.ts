@@ -39,7 +39,7 @@ export class UserMenuComponent extends BaseComponent {
     }).then(() => {
       return this.requestService.loadAuth();
     }).then(loadGlobalUser => {
-      if (!loadGlobalUser) return;
+      if (!loadGlobalUser) return Promise.resolve();
       let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
       return this.select(globalUser);
     });

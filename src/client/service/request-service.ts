@@ -40,7 +40,7 @@ export class RequestService extends BaseClientService {
   }
 
   public sync(): Promise<void> {
-    return request.post(`/sync`).then(req => {
+    return request.post(`/sync`).then(_req => {
     });
   }
 
@@ -51,7 +51,7 @@ export class RequestService extends BaseClientService {
   }
 
   public reParseNote(): Promise<void> {
-    return request.post(`/note/re-parse`).then(req => {
+    return request.post(`/note/re-parse`).then(_req => {
     });
   }
 
@@ -62,7 +62,7 @@ export class RequestService extends BaseClientService {
   }
 
   public changeAuth(globalUser: GlobalUserEntity): Promise<void> {
-    return request.post("/global-user/change").send(globalUser).then(req => null);
+    return request.post("/global-user/change").send(globalUser).then(_req => null);
   }
 
   public tokenAuth(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
@@ -73,7 +73,7 @@ export class RequestService extends BaseClientService {
   }
 
   public logoutAuth(): Promise<void> {
-    return request.post(`/global-user/logout`).then(req => null);
+    return request.post(`/global-user/logout`).then(_req => null);
   }
 
 }
