@@ -32,9 +32,11 @@ export class EvernoteClientService extends BaseServerService {
 
   getUser(globalUser: GlobalUserEntity): Promise<UserEntity> {
     let userStore: evernote.Evernote.UserStoreClient = this.clients[globalUser._id].getUserStore();
+    this.mes_(true, "user", {userId: globalUser._id});
     return new Promise((resolve, reject) => {
       userStore.getUser((err, user) => {
         if (err) return reject(err);
+        this.mes_(false, "user", {userId: globalUser._id});
         resolve(new UserEntity(user));
       });
     });
@@ -42,9 +44,11 @@ export class EvernoteClientService extends BaseServerService {
 
   getSyncState(globalUser: GlobalUserEntity): Promise<SyncStateEntity> {
     let noteStore: evernote.Evernote.NoteStoreClient = this.clients[globalUser._id].getNoteStore();
+    this.mes_(true, "syncState", {});
     return new Promise((resolve, reject) => {
       noteStore.getSyncState((err, syncState) => {
         if (err) return reject(err);
+        this.mes_(false, "syncState", {});
         resolve(new SyncStateEntity(syncState));
       });
     });
@@ -58,10 +62,11 @@ export class EvernoteClientService extends BaseServerService {
     syncChunkFilter.includeTags = true;
     syncChunkFilter.includeSearches = true;
     syncChunkFilter.includeExpunged = true;
-    logger.info(`Get sync chunk start. startUSN=${updateCount}`);
+    this.mes_(true, "syncChunk", {startUSN: updateCount});
     return new Promise((resolve, reject) => {
       noteStore.getFilteredSyncChunk(updateCount, this.SYNC_CHUNK_COUNT, syncChunkFilter, (err, syncChunk) => {
         if (err) return reject(err);
+        this.mes_(false, "syncChunk", {startUSN: updateCount});
         resolve(<any>syncChunk);
       });
     });
@@ -69,12 +74,12 @@ export class EvernoteClientService extends BaseServerService {
 
   getNote(globalUser: GlobalUserEntity, guid: string): Promise<NoteEntity> {
     let noteStore: evernote.Evernote.NoteStoreClient = this.clients[globalUser._id].getNoteStore();
-    logger.debug(`Loading note from remote was started. guid=${guid}`);
+    this.mes_(true, "note", {guid: guid});
     return Promise.resolve().then(() => {
       return new Promise((resolve, reject) => {
         noteStore.getNote(guid, true, false, false, false, (err, note) => {
           if (err) return reject(err);
-          logger.debug(`Loading note was succeed. guid=${note.guid} title=${note.title}`);
+          this.mes_(false, "note", {guid: note.guid, title: note.title});
           resolve(new NoteEntity(note));
         });
       });
@@ -93,6 +98,10 @@ export class EvernoteClientService extends BaseServerService {
         resolve(new UserEntity(user));
       });
     });
+  }
+
+  private mes_(start: boolean, name: string, dispData: Object) {
+    logger.debug(`Load remote ${name} was ${start ? "started" : "finished"}. ${JSON.stringify(dispData)}`);
   }
 
 }
