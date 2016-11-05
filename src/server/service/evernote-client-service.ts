@@ -78,8 +78,8 @@ export class EvernoteClientService extends BaseServerService {
     return Promise.resolve().then(() => {
       return new Promise((resolve, reject) => {
         noteStore.getNote(guid, true, false, false, false, (err, note) => {
+          this.mes_(false, "note", {guid: note.guid, title: note.title}, err);
           if (err) return reject(err);
-          this.mes_(false, "note", {guid: note.guid, title: note.title});
           resolve(new NoteEntity(note));
         });
       });
@@ -100,8 +100,8 @@ export class EvernoteClientService extends BaseServerService {
     });
   }
 
-  private mes_(start: boolean, name: string, dispData: Object) {
-    logger.debug(`Load remote ${name} was ${start ? "started" : "finished"}. ${JSON.stringify(dispData)}`);
+  private mes_(start: boolean, name: string, dispData: Object, err: any = null) {
+    logger.debug(`Load remote ${name} was ${start ? "started" : err ? "failed" : "succeed"}. ${JSON.stringify(dispData)}`);
   }
 
 }
