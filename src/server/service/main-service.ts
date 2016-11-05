@@ -58,6 +58,10 @@ export class MainService extends BaseServerService {
     }).then(() => {
       return this.settingService.initializeUser(globalUser);
     }).then(() => {
+      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
+    }).then((remoteUser: UserEntity) => {
+      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
+    }).then(() => {
       return this.sync(globalUser);
     }).then(() => {
       this.intervalUser(globalUser);
@@ -78,12 +82,6 @@ export class MainService extends BaseServerService {
     var remoteSyncState: SyncStateEntity = null;
     var lastSyncChunk: evernote.Evernote.SyncChunk = null;
     return Promise.resolve().then(() => {
-      // Reload userStore
-      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
-    }).then((remoteUser: UserEntity) => {
-      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
-    }).then(() => {
-      // Get syncState
       return this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser).findOne();
     }).then((syncState: SyncStateEntity) => {
       localSyncState = syncState;
