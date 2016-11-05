@@ -7,6 +7,9 @@ import {SettingsComponent} from "./settings-component";
 import {ProgressModalComponent} from "./progress-modal-component";
 import {NotesComponent} from "./notes-component";
 import {TimelineComponent} from "./timeline-component";
+import {RequestService} from "../service/request-service";
+import {kernel} from "../inversify.config";
+import {SyncStateEntity} from "../../common/entity/sync-state-entity";
 
 let template = require("./app-component.jade");
 
@@ -23,12 +26,31 @@ let template = require("./app-component.jade");
 })
 export class AppComponent extends BaseComponent {
 
-  mode: string;
+  requestService: RequestService;
 
-  data():any {
+  mode: string;
+  lastSyncState: SyncStateEntity;
+
+  data(): any {
     return {
+      requestService: kernel.get(RequestService),
       mode: "menu",
+      lastSyncState: null,
     }
+  }
+
+  ready(): Promise<void> {
+    return super.ready().then(() => {
+      setInterval(() => this.interval(), 5000);
+    });
+  }
+
+  interval() {
+    this.requestService.findOne<SyncStateEntity>(SyncStateEntity).then(syncState => {
+      if (!this.lastSyncState) return;
+      if (this.lastSyncState.updateCount == syncState.updateCount) return;
+      this.$broadcast("reload");
+    });
   }
 
 }

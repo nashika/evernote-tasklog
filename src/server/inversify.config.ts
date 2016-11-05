@@ -27,6 +27,7 @@ import {NotebookRoute} from "./routes/notebook-route";
 import {ProfitLogRoute} from "./routes/profit-log-route";
 import {SettingRoute} from "./routes/setting-route";
 import {SyncRoute} from "./routes/sync-route";
+import {SyncStateRoute} from "./routes/sync-state-route";
 import {TimeLogRoute} from "./routes/time-log-route";
 import {UserRoute} from "./routes/user-route";
 
@@ -70,6 +71,7 @@ kernel.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");
 kernel.bind<BaseRoute>(BaseRoute).to(ProfitLogRoute).whenTargetNamed("profitLog");
 kernel.bind<BaseRoute>(BaseRoute).to(SettingRoute).whenTargetNamed("setting");
 kernel.bind<BaseRoute>(BaseRoute).to(SyncRoute).whenTargetNamed("sync");
+kernel.bind<BaseRoute>(BaseRoute).to(SyncStateRoute).whenTargetNamed("syncState");
 kernel.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 kernel.bind<BaseRoute>(BaseRoute).to(UserRoute).whenTargetNamed("user");
 
