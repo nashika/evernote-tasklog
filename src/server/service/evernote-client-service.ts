@@ -35,8 +35,8 @@ export class EvernoteClientService extends BaseServerService {
     this.mes_(true, "user", {userId: globalUser._id});
     return new Promise((resolve, reject) => {
       userStore.getUser((err, user) => {
+        this.mes_(false, "user", {userId: globalUser._id}, err);
         if (err) return reject(err);
-        this.mes_(false, "user", {userId: globalUser._id});
         resolve(new UserEntity(user));
       });
     });
@@ -47,8 +47,8 @@ export class EvernoteClientService extends BaseServerService {
     this.mes_(true, "syncState", {});
     return new Promise((resolve, reject) => {
       noteStore.getSyncState((err, syncState) => {
+        this.mes_(false, "syncState", {updateCount: syncState && syncState.updateCount}, err);
         if (err) return reject(err);
-        this.mes_(false, "syncState", {});
         resolve(new SyncStateEntity(syncState));
       });
     });
@@ -65,8 +65,8 @@ export class EvernoteClientService extends BaseServerService {
     this.mes_(true, "syncChunk", {startUSN: updateCount});
     return new Promise((resolve, reject) => {
       noteStore.getFilteredSyncChunk(updateCount, this.SYNC_CHUNK_COUNT, syncChunkFilter, (err, syncChunk) => {
+        this.mes_(false, "syncChunk", {startUSN: updateCount}, err);
         if (err) return reject(err);
-        this.mes_(false, "syncChunk", {startUSN: updateCount});
         resolve(<any>syncChunk);
       });
     });
@@ -78,7 +78,7 @@ export class EvernoteClientService extends BaseServerService {
     return Promise.resolve().then(() => {
       return new Promise((resolve, reject) => {
         noteStore.getNote(guid, true, false, false, false, (err, note) => {
-          this.mes_(false, "note", {guid: note.guid, title: note.title}, err);
+          this.mes_(false, "note", {guid: guid, title: note && note.title}, err);
           if (err) return reject(err);
           resolve(new NoteEntity(note));
         });
