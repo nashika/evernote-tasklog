@@ -1,4 +1,3 @@
-import evernote = require("evernote");
 import {injectable} from "inversify";
 
 import {SyncStateEntity} from "../../common/entity/sync-state-entity";

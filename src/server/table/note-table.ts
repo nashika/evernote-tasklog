@@ -1,5 +1,4 @@
 import _ = require("lodash");
-import evernote = require("evernote");
 import {injectable} from "inversify";
 import {getLogger} from "log4js";
 

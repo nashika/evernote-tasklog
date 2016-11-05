@@ -27,7 +27,7 @@ export class RequestService extends BaseClientService {
     });
   }
 
-  public count<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, query: Object = {}): Promise<number> {
+  public count(EntityClass: typeof BaseMultiEntity, query: Object = {}): Promise<number> {
     return request.post(`/${_.kebabCase(EntityClass.params.name)}/count`).send(query).then(res => {
       let count: number = res.body;
       return count;

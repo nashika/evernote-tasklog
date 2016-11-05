@@ -1,4 +1,3 @@
-import express = require("express");
 import {injectable} from "inversify";
 
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";

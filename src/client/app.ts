@@ -15,3 +15,4 @@ import {kernel} from "./inversify.config";
 
 let AppComponent = kernel.get("Newable<AppComponent>");
 let app = new (<any>AppComponent)({el: "#app"});
+app;

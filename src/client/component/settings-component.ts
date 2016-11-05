@@ -95,7 +95,6 @@ export class SettingsComponent extends BaseComponent {
 
   submit() {
     this.progressService.open(_.size(this.fields));
-    let count = 0;
     let reParse = false;
     let reload = false;
     MyPromise.eachPromiseSeries(this.fields, (field: any, key: string) => {

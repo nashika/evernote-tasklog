@@ -1,7 +1,6 @@
 import _ = require("lodash");
 import NeDBDataStore = require("nedb");
 import pluralize = require("pluralize");
-import evernote = require("evernote");
 import {injectable} from "inversify";
 
 import {BaseEntity} from "../../common/entity/base-entity";

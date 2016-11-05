@@ -1,8 +1,4 @@
-import path = require("path");
-
 import evernote = require("evernote");
-import express = require("express");
-import http = require("http");
 import {getLogger} from "log4js";
 import _ = require("lodash");
 import {injectable} from "inversify";

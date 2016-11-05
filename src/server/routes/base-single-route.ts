@@ -4,7 +4,7 @@ import {BaseSingleEntity} from "../../common/entity/base-single-entity";
 import {BaseSingleTable} from "../table/base-single-table";
 import {BaseTableRoute} from "./base-table-route";
 
-export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends BaseSingleTable<T1>> extends BaseTableRoute<T1, T2> {
+export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends BaseSingleTable<T1>> extends BaseTableRoute<T2> {
 
   getRouter(): Router {
     let _router = Router();

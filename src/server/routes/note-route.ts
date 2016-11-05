@@ -1,4 +1,3 @@
-import express = require("express");
 import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 

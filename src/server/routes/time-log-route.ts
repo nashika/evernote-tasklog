@@ -1,4 +1,3 @@
-import express = require("express");
 import {injectable} from "inversify";
 
 import {TimeLogEntity} from "../../common/entity/time-log-entity";

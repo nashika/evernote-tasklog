@@ -1,4 +1,3 @@
-import express = require("express");
 import {injectable} from "inversify";
 
 import {BaseMultiRoute} from "./base-multi-route";

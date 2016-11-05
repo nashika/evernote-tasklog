@@ -1,6 +1,4 @@
-import express = require("express");
 import {Router, Request, Response} from "express";
-import evernote = require("evernote");
 import {injectable} from "inversify";
 
 import {TableService} from "../service/table-service";
@@ -30,7 +28,6 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
   }
 
   load(req: Request, _res: Response): Promise<GlobalUserEntity> {
-    let result: GlobalUserEntity;
     let session = this.sessionService.get(req);
     return Promise.resolve(session.globalUser);
   }
@@ -50,7 +47,7 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
       let token: string = req.body.token;
       return this.checkToken(sandbox, token);
     }).then(globalUserEntity => {
-      let result = globalUserEntity;
+      result = globalUserEntity;
       return this.getTable(req).save(globalUserEntity);
     }).then(() => {
       session.globalUser = result;

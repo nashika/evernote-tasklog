@@ -8,7 +8,7 @@ import {IMultiEntityFindOptions} from "../../common/entity/base-multi-entity";
 
 let logger = getLogger("system");
 
-export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity<any>, T2 extends IMultiEntityFindOptions> extends BaseMultiTable<T1, T2> {
+export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity, T2 extends IMultiEntityFindOptions> extends BaseMultiTable<T1, T2> {
 
   saveByGuid(entities: T1|T1[]): Promise<void> {
     if (!entities) return Promise.resolve();

@@ -1,13 +1,10 @@
-import _ = require("lodash");
 import {injectable} from "inversify";
 
 import {BaseServerService} from "./base-server-service";
 import {BaseTable} from "../table/base-table";
 import {BaseEntity} from "../../common/entity/base-entity";
 import {SessionService} from "./session-service";
-import {SettingTable} from "../table/setting-table";
 import {kernel} from "../inversify.config";
-import {GlobalUserTable} from "../table/global-user-table";
 import {GlobalUserEntity} from "../../common/entity/global-user-entity";
 
 @injectable()

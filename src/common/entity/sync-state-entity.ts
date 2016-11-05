@@ -1,9 +1,7 @@
-import evernote = require("evernote");
-
 import {BaseSingleEvernoteEntity} from "./base-single-evernote-entity";
 import {IBaseSingleEntityParams} from "./base-single-entity";
 
-export class SyncStateEntity extends BaseSingleEvernoteEntity<evernote.Evernote.SyncState> {
+export class SyncStateEntity extends BaseSingleEvernoteEntity {
 
   static params:IBaseSingleEntityParams = {
     name: "syncState",

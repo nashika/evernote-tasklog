@@ -1,4 +1,3 @@
-import express = require("express");
 import {injectable} from "inversify";
 
 import {SettingEntity} from "../../common/entity/setting-entity";

@@ -4,7 +4,7 @@ import {BaseRoute} from "./base-route";
 import {BaseEntity} from "../../common/entity/base-entity";
 import {kernel} from "../inversify.config";
 
-export abstract class BaseEntityRoute<T extends BaseEntity> extends BaseRoute {
+export abstract class BaseEntityRoute extends BaseRoute {
 
   EntityClass: typeof BaseEntity;
 

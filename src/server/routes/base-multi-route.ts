@@ -4,7 +4,7 @@ import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base
 import {BaseMultiTable} from "../table/base-multi-table";
 import {BaseTableRoute} from "./base-table-route";
 
-export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends BaseMultiTable<T1, IMultiEntityFindOptions>> extends BaseTableRoute<T1, T2> {
+export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends BaseMultiTable<T1, IMultiEntityFindOptions>> extends BaseTableRoute<T2> {
 
   getRouter(): Router {
     let _router = Router();

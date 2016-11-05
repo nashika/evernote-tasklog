@@ -1,5 +1,3 @@
-import express = require("express");
-import evernote = require("evernote");
 import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 

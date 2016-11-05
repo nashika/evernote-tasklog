@@ -1,9 +1,7 @@
-import evernote = require("evernote");
-
 import {BaseMultiEvernoteEntity} from "./base-multi-evernote-entity";
 import {IBaseMultiEntityParams} from "./base-multi-entity";
 
-export class TagEntity extends BaseMultiEvernoteEntity<evernote.Evernote.Tag> {
+export class TagEntity extends BaseMultiEvernoteEntity {
 
   static params:IBaseMultiEntityParams = {
     name: "tag",
