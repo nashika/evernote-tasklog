@@ -63,8 +63,17 @@ export class MainService extends BaseServerService {
     }).then(() => {
       return this.sync(globalUser);
     }).then(() => {
+      this.intervalUser(globalUser);
       logger.info(`Init user finished. user:${globalUser._id} data was initialized.`);
     });
+  }
+
+  intervalUser(globalUser: GlobalUserEntity) {
+    setTimeout(() => {
+      this.sync(globalUser).then(() => {
+        this.intervalUser(globalUser);
+      });
+    }, 5 * 60 * 1000);
   }
 
   sync(globalUser: GlobalUserEntity): Promise<void> {
