@@ -61,8 +61,7 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
   }
 
   logout(req: Request, _res: Response): Promise<void> {
-    this.sessionService.set(req, null);
-    return this.sessionService.save(req);
+    return this.sessionService.clear(req);
   }
 
   private checkToken(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
