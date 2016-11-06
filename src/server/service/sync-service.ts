@@ -57,7 +57,6 @@ export class SyncService extends BaseServerService {
     clearTimeout(userTimerData.timer);
     let localSyncState: SyncStateEntity = null;
     let remoteSyncState: SyncStateEntity = null;
-    let lastSyncChunk: evernote.Evernote.SyncChunk = null;
     let syncStateTable = this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser);
     return Promise.resolve().then(() => {
       return syncStateTable.findOne();
@@ -69,54 +68,76 @@ export class SyncService extends BaseServerService {
       // Sync process
       logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       return MyPromise.whilePromiseSeries(() => localSyncState.updateCount < remoteSyncState.updateCount, () => {
-        logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
-        let noteTable = this.tableService.getUserTable<NoteTable>(NoteEntity, globalUser);
-        let notebookTable = this.tableService.getUserTable<NotebookTable>(NotebookEntity, globalUser);
-        let tagTable = this.tableService.getUserTable<TagTable>(TagEntity, globalUser);
-        let searchTable = this.tableService.getUserTable<SearchTable>(SearchEntity, globalUser);
-        let linkedNotebookTable = this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, globalUser);
-        return Promise.resolve().then(() => {
-          return syncStateTable.save(localSyncState);
-        }).then(() => {
-          return this.evernoteClientService.getFilteredSyncChunk(globalUser, localSyncState.updateCount);
-        }).then(syncChunk => {
-          lastSyncChunk = <any>syncChunk;
-          return noteTable.saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
-        }).then(() => {
-          return noteTable.removeByGuid(lastSyncChunk.expungedNotes);
-        }).then(() => {
-          return notebookTable.saveByGuid(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
-        }).then(() => {
-          return notebookTable.removeByGuid(lastSyncChunk.expungedNotebooks);
-        }).then(() => {
-          return tagTable.saveByGuid(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
-        }).then(() => {
-          return tagTable.removeByGuid(lastSyncChunk.expungedTags);
-        }).then(() => {
-          return searchTable.saveByGuid(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
-        }).then(() => {
-          return searchTable.removeByGuid(lastSyncChunk.expungedSearches);
-        }).then(() => {
-          return linkedNotebookTable.saveByGuid(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
-        }).then(() => {
-          return linkedNotebookTable.removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
-        }).then(() => {
-          localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
-          return syncStateTable.save(localSyncState);
-        }).then(() => {
-          logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
-        });
-      }).then(() => {
-        logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
-        userTimerData.updateCount = localSyncState.updateCount;
-        userTimerData.interval = manualReload ? this.Class.startInterval : Math.min(Math.round(userTimerData.interval * 1.5), this.Class.maxInterval);
-        userTimerData.timer = setTimeout(() => this.sync(globalUser, false), userTimerData.interval);
+        return this.getSyncChunk(globalUser, localSyncState);
       });
+    }).then(() => {
+      logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
+      userTimerData.updateCount = localSyncState.updateCount;
+      userTimerData.interval = manualReload ? this.Class.startInterval : Math.min(Math.round(userTimerData.interval * 1.5), this.Class.maxInterval);
+      userTimerData.timer = setTimeout(() => this.sync(globalUser, false), userTimerData.interval);
+      logger.info(`Next auto reload will run after ${userTimerData.interval} msec.`);
+      if (!manualReload) return this.autoGetNoteContent(globalUser, userTimerData.interval);
+      return Promise.resolve();
     });
   }
 
   updateCount(globalUser: GlobalUserEntity): number {
     return this.userTimers[globalUser._id].updateCount;
+  }
+
+  private getSyncChunk(globalUser: GlobalUserEntity, localSyncState: SyncStateEntity): Promise<void> {
+    logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
+    let lastSyncChunk: evernote.Evernote.SyncChunk = null;
+    let syncStateTable = this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser);
+    let noteTable = this.tableService.getUserTable<NoteTable>(NoteEntity, globalUser);
+    let notebookTable = this.tableService.getUserTable<NotebookTable>(NotebookEntity, globalUser);
+    let tagTable = this.tableService.getUserTable<TagTable>(TagEntity, globalUser);
+    let searchTable = this.tableService.getUserTable<SearchTable>(SearchEntity, globalUser);
+    let linkedNotebookTable = this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, globalUser);
+    return Promise.resolve().then(() => {
+      return this.evernoteClientService.getFilteredSyncChunk(globalUser, localSyncState.updateCount);
+    }).then(syncChunk => {
+      lastSyncChunk = <any>syncChunk;
+      return noteTable.saveByGuid(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
+    }).then(() => {
+      return noteTable.removeByGuid(lastSyncChunk.expungedNotes);
+    }).then(() => {
+      return notebookTable.saveByGuid(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
+    }).then(() => {
+      return notebookTable.removeByGuid(lastSyncChunk.expungedNotebooks);
+    }).then(() => {
+      return tagTable.saveByGuid(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
+    }).then(() => {
+      return tagTable.removeByGuid(lastSyncChunk.expungedTags);
+    }).then(() => {
+      return searchTable.saveByGuid(_.map(lastSyncChunk.searches, search => new SearchEntity(search)));
+    }).then(() => {
+      return searchTable.removeByGuid(lastSyncChunk.expungedSearches);
+    }).then(() => {
+      return linkedNotebookTable.saveByGuid(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
+    }).then(() => {
+      return linkedNotebookTable.removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
+    }).then(() => {
+      localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
+      return syncStateTable.save(localSyncState);
+    }).then(() => {
+      logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
+    });
+  }
+
+  private autoGetNoteContent(globalUser: GlobalUserEntity, interval: number): Promise<void> {
+    let numNote: number = Math.ceil(interval / (60 * 1000));
+    let noteTable = this.tableService.getUserTable<NoteTable>(NoteEntity, globalUser);
+    logger.info(`Auto get note content was started. Number of note is ${numNote}.`);
+    return Promise.resolve().then(() => {
+      return noteTable.find({query: {content: null}, sort: {updated: -1}, limit: numNote});
+    }).then(notes => {
+      return MyPromise.eachPromiseSeries(notes, (note: NoteEntity) => {
+        return noteTable.loadRemote(note.guid);
+      });
+    }).then(() => {
+      logger.info(`Auto get note content was finished.`);
+    });
   }
 
 }
