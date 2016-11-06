@@ -3,6 +3,7 @@
 /.idea/libraries/Generated_files.xml
 /db/**/*.db
 /logs/*
+/npm-debug.log
 /node_modules
 /public/dist
 /src/**/*.js
