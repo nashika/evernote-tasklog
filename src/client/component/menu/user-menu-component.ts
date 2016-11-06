@@ -42,6 +42,8 @@ export class UserMenuComponent extends BaseComponent {
       if (!loadGlobalUser) return Promise.resolve();
       let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
       return this.select(globalUser);
+    }).then(() => {
+      this.$root.$broadcast("reload");
     });
   }
 
@@ -52,9 +54,8 @@ export class UserMenuComponent extends BaseComponent {
   }
 
   select(globalUser: GlobalUserEntity): Promise<void> {
-    Vue.set(this.dataStoreService, "globalUser", globalUser);
     return this.requestService.changeAuth(globalUser).then(() => {
-      this.$root.$broadcast("changeUser");
+      Vue.set(this.dataStoreService, "globalUser", globalUser);
     });
   }
 
