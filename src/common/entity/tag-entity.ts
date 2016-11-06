@@ -7,6 +7,7 @@ export class TagEntity extends BaseMultiEvernoteEntity {
     name: "tag",
     titleField: "name",
     requireUser: true,
+    archive: false,
     default: {
       query: {},
       sort: {updated: -1},

@@ -10,7 +10,7 @@ let logger = getLogger("system");
 
 export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity, T2 extends IMultiEntityFindOptions> extends BaseMultiTable<T1, T2> {
 
-  saveByGuid(entities: T1|T1[]): Promise<void> {
+  saveByGuid(entities: T1|T1[], archive: boolean = false): Promise<void> {
     if (!entities) return Promise.resolve();
     let arrEntities: T1[] = _.castArray(entities);
     if (arrEntities.length == 0) return Promise.resolve();
@@ -21,6 +21,16 @@ export class BaseMultiEvernoteTable<T1 extends BaseMultiEvernoteEntity, T2 exten
         logger.trace(`Upsert local ${this.EntityClass.params.name} was ${err ? "failed" : "succeed"}. guid=${entity.guid}, numReplaced=${numReplaced}`);
         if (err) return reject(err);
         resolve();
+      });
+    }).then(() => {
+      if (!this.EntityClass.params.archive || !archive) return Promise.resolve();
+      return MyPromise.eachFunctionSeries<T1>(arrEntities, (resolve, reject, entity) => {
+        logger.trace(`Upsert local archive ${this.EntityClass.params.name} was started. guid=${entity.guid}, usn=${entity.updateSequenceNum}, title=${_.get(entity, this.EntityClass.params.titleField)}`);
+        this.archiveDatastore.update({guid: entity.guid, updateSequenceNum: entity.updateSequenceNum}, entity, {upsert: true}, (err, numReplaced) => {
+          logger.trace(`Upsert local archive ${this.EntityClass.params.name} was ${err ? "failed" : "succeed"}. guid=${entity.guid}, numReplaced=${numReplaced}`);
+          if (err) return reject(err);
+          resolve();
+        });
       });
     }).then(() => {
       logger.debug(`Save local ${this.EntityClass.params.name} was succeed. docs.count=${arrEntities.length}`);

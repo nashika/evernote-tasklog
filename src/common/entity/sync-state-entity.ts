@@ -7,6 +7,7 @@ export class SyncStateEntity extends BaseSingleEvernoteEntity {
     name: "syncState",
     titleField: "name",
     requireUser: true,
+    archive: false,
     defaultDoc: {updateCount: 0},
   };
 

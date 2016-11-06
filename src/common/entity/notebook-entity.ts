@@ -7,6 +7,7 @@ export class NotebookEntity extends BaseMultiEvernoteEntity {
     name: "notebook",
     titleField: "name",
     requireUser: true,
+    archive: false,
     default: {
       query: {},
       sort: {stack: 1, name: 1},

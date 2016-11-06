@@ -6,6 +6,7 @@ export class TimeLogEntity extends BaseMultiEntity {
     name: "timeLog",
     titleField: "comment",
     requireUser: true,
+    archive: false,
     default: {
       query: {},
       sort: {updated: -1},

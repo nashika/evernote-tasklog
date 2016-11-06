@@ -7,6 +7,7 @@ export class UserEntity extends BaseSingleEvernoteEntity {
     name: "user",
     titleField: "name",
     requireUser: true,
+    archive: false,
     defaultDoc: {},
   };
 

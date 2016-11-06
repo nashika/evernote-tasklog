@@ -47,7 +47,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
       return this.evernoteClientService.getNote(this.globalUser, guid);
     }).then((note: NoteEntity) => {
       lastNote = note;
-      return this.saveByGuid(note);
+      return this.saveByGuid(note, true);
     }).then(() => {
       return this.parseNote(lastNote);
     }).then(() => {
@@ -68,7 +68,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
     });
   }
 
-  protected parseNote(note: NoteEntity): Promise<void> {
+  private parseNote(note: NoteEntity): Promise<void> {
     if (!note.content) return Promise.resolve();
     logger.debug(`Parsing note was started. guid=${note.guid}, title=${note.title}`);
     let content: string = note.content;

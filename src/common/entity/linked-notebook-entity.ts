@@ -7,6 +7,7 @@ export class LinkedNotebookEntity extends BaseMultiEvernoteEntity {
     name: "linkedNotebook",
     titleField: "name",
     requireUser: true,
+    archive: false,
     default: {
       query: {},
       sort: {updated: -1},

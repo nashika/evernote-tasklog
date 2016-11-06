@@ -6,6 +6,7 @@ export class SettingEntity extends BaseMultiEntity {
     name: "setting",
     titleField: "name",
     requireUser: true,
+    archive: false,
     default: {
       query: {},
       sort: {updated: -1},

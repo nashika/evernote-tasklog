@@ -7,6 +7,7 @@ export class SearchEntity extends BaseMultiEvernoteEntity {
     name: "search",
     titleField: "name",
     requireUser: true,
+    archive: false,
     default: {
       query: {},
       sort: {updated: -1},

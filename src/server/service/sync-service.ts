@@ -82,7 +82,7 @@ export class SyncService extends BaseServerService {
   }
 
   updateCount(globalUser: GlobalUserEntity): number {
-    return this.userTimers[globalUser._id].updateCount;
+    return this.userTimers[globalUser._id] ? this.userTimers[globalUser._id].updateCount : 0;
   }
 
   private getSyncChunk(globalUser: GlobalUserEntity, localSyncState: SyncStateEntity): Promise<void> {

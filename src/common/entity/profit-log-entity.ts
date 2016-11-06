@@ -6,6 +6,7 @@ export class ProfitLogEntity extends BaseMultiEntity {
     name: "profitLog",
     titleField: "comment",
     requireUser: true,
+    archive: false,
     default: {
       query: {},
       sort: {updated: -1},

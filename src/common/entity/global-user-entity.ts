@@ -6,6 +6,7 @@ export class GlobalUserEntity extends BaseMultiEntity {
     name: "globalUser",
     titleField: "username",
     requireUser: false,
+    archive: false,
     default: {
       query: {},
       sort: {username: 1},

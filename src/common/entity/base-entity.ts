@@ -4,6 +4,7 @@ export interface IBaseEntityParams {
   name: string;
   titleField: string;
   requireUser: boolean;
+  archive: boolean;
 }
 
 export abstract class BaseEntity {

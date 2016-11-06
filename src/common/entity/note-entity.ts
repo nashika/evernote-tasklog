@@ -7,6 +7,7 @@ export class NoteEntity extends BaseMultiEvernoteEntity {
     name: "note",
     titleField: "title",
     requireUser: true,
+    archive: true,
     default: {
       query: {},
       sort: {updated: -1},
