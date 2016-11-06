@@ -1,10 +1,7 @@
 import _ = require("lodash");
-import {getLogger} from "log4js";
 
 import {BaseTable} from "./base-table";
 import {BaseSingleEntity} from "../../common/entity/base-single-entity";
-
-let logger = getLogger("system");
 
 export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTable {
 
@@ -15,10 +12,10 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
   }
 
   findOne(): Promise<T> {
-    logger.debug(`Load local ${this.EntityClass.params.name} was started.`);
+    this.message("load", ["local"], this.EntityClass.params.name, true);
     return new Promise<T>((resolve, reject) => {
       this.datastore.findOne({_id: "1"}, (err, doc) => {
-        logger.debug(`Load local ${this.EntityClass.params.name} was ${err ? "failed" : "succeed"}.`);
+        this.message("load", ["local"], this.EntityClass.params.name, false, null, err);
         if (err) return reject(err);
         if (doc)
           resolve(new (<any>this.EntityClass)(doc));
@@ -30,10 +27,11 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
 
   save(doc: T): Promise<void> {
     doc._id = "1";
+    this.message("upsert", ["local"], this.EntityClass.params.name, true);
     return new Promise<void>((resolve, reject) => {
       this.datastore.update({_id: "1"}, doc, {upsert: true}, (err, numReplaced, newDoc) => {
+        this.message("upsert", ["local"], this.EntityClass.params.name, false, {numReplaced: numReplaced}, err);
         if (err) return reject(err);
-        logger.debug(`Upsert ${this.EntityClass.params.name} end. numReplaced=${numReplaced}`);
         resolve(new (<any>this.EntityClass)(newDoc));
       });
     });

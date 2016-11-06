@@ -1,6 +1,5 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
-import {getLogger} from "log4js";
 
 import {NoteEntity} from "../../common/entity/note-entity";
 import {MyPromise} from "../../common/util/my-promise";
@@ -12,8 +11,6 @@ import {TableService} from "../service/table-service";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {EvernoteClientService} from "../service/evernote-client-service";
-
-let logger = getLogger("system");
 
 export interface NoteTableOptions extends IMultiEntityFindOptions {
   content?: boolean;
@@ -43,6 +40,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
 
   loadRemote(guid: string): Promise<NoteEntity> {
     let lastNote: NoteEntity = null;
+    this.message("load", ["remote"], "note", true, {guid: guid});
     return Promise.resolve().then(() => {
       return this.evernoteClientService.getNote(this.globalUser, guid);
     }).then((note: NoteEntity) => {
@@ -51,7 +49,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
     }).then(() => {
       return this.parseNote(lastNote);
     }).then(() => {
-      logger.debug(`Loading note from remote was finished. note is loaded. guid=${lastNote.guid} title=${lastNote.title}`);
+      this.message("load", ["remote"], "note", false, {guid: lastNote.guid, title: lastNote.title});
       return lastNote;
     });
   }
@@ -70,7 +68,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
 
   private parseNote(note: NoteEntity): Promise<void> {
     if (!note.content) return Promise.resolve();
-    logger.debug(`Parsing note was started. guid=${note.guid}, title=${note.title}`);
+    this.message("parse", ["local"], "note", true, {guid: note.guid, title: note.title});
     let content: string = note.content;
     content = content.replace(/\r\n|\r|\n|<br\/>|<\/div>|<\/ul>|<\/li>/g, '<>');
     let lines: string[] = [];
@@ -82,7 +80,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
     }).then(() => {
       return this.tableService.getUserTable<ProfitLogTable>(ProfitLogEntity, this.globalUser).parse(note, lines);
     }).then(() => {
-      logger.debug(`Parsing note was succeed. guid=${note.guid}`);
+      this.message("parse", ["local"], "note", false, {guid: note.guid, title: note.title});
     });
   }
 

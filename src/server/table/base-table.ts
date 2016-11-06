@@ -2,10 +2,13 @@ import _ = require("lodash");
 import NeDBDataStore = require("nedb");
 import pluralize = require("pluralize");
 import {injectable} from "inversify";
+import {getLogger} from "log4js";
 
 import {BaseEntity} from "../../common/entity/base-entity";
 import {kernel} from "../inversify.config";
 import {GlobalUserEntity} from "../../common/entity/global-user-entity";
+
+let logger = getLogger("system");
 
 @injectable()
 export abstract class BaseTable {
@@ -40,6 +43,15 @@ export abstract class BaseTable {
         filename: dbPath + _.kebabCase(pluralize.plural(this.EntityClass.params.name)) + ".archive.db",
         autoload: true,
       });
+    }
+  }
+
+  protected message(action: string, options: string[], name: string, isStart: boolean, dispData: Object = null, err: any = null) {
+    let message = `${_.startCase(action)} ${_.join(options, " ")} ${name} was ${isStart ? "started" : err ? "failed" : "finished"}.${err ? " err=" + JSON.stringify(err) : ""}${dispData ? " " + JSON.stringify(dispData) : ""}`;
+    if (err) {
+      logger.error(message);
+    } else {
+      logger.trace(message);
     }
   }
 
