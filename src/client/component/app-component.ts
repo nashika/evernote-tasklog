@@ -9,6 +9,7 @@ import {NotesComponent} from "./notes-component";
 import {TimelineComponent} from "./timeline-component";
 import {RequestService} from "../service/request-service";
 import {kernel} from "../inversify.config";
+import {ActivityComponent} from "./activity-component";
 
 let template = require("./app-component.jade");
 
@@ -17,10 +18,11 @@ let template = require("./app-component.jade");
   components: {
     "menu-component": MenuComponent,
     "navigation-component": NavigationComponent,
-    "notes-component": NotesComponent,
     "progress-modal-component": ProgressModalComponent,
-    "settings-component": SettingsComponent,
     "timeline-component": TimelineComponent,
+    "notes-component": NotesComponent,
+    "activity-component": ActivityComponent,
+    "settings-component": SettingsComponent,
   },
 })
 export class AppComponent extends BaseComponent {

@@ -20,6 +20,7 @@ interface DataTranscieverServiceParams {
   hasContent?: boolean,
   noFilter?: boolean,
   getContent?: boolean,
+  getArchive?: boolean,
 }
 
 @injectable()
