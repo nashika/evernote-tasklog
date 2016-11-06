@@ -41,28 +41,6 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
     });
   }
 
-  getRemoteContent(query: Object): Promise<NoteEntity[]> {
-    let options: NoteTableOptions = {};
-    options.query = query;
-    options.limit = 0;
-    return this.find(options).then(notes => {
-      let results: NoteEntity[] = [];
-      return MyPromise.eachPromiseSeries(notes, (note) => {
-        if (note.content || note.hasContent) {
-          results.push(note);
-          return Promise.resolve();
-        } else {
-          return this.loadRemote(note.guid).then(loadedNote => {
-            results.push(loadedNote);
-            // TODO: set hasContentProperty
-          });
-        }
-      }).then(() => {
-        return results;
-      });
-    });
-  }
-
   loadRemote(guid: string): Promise<NoteEntity> {
     let lastNote: NoteEntity = null;
     return Promise.resolve().then(() => {

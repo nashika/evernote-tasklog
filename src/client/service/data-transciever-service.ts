@@ -93,9 +93,8 @@ export class DataTranscieverService extends BaseClientService {
         return MyPromise.eachPromiseSeries(this.dataStoreService.notes, (note, noteGuid) => {
           this.progressService.set(`Request remote contents. ${++count} / ${_.size(this.dataStoreService.notes)}`);
           if (!note.hasContent)
-            return this.requestService.getContentNote(noteGuid).then(notes => {
-              for (note of notes)
-                this.dataStoreService.notes[note.guid] = note;
+            return this.requestService.getContentNote(noteGuid).then(note => {
+              this.dataStoreService.notes[note.guid] = note;
             });
           return null;
         });

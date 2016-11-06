@@ -40,7 +40,7 @@ export class RequestService extends BaseClientService {
   }
 
   public sync(): Promise<void> {
-    return request.post(`/sync`).then(_req => {
+    return request.post(`/sync`).then(_res => {
     });
   }
 
@@ -48,36 +48,36 @@ export class RequestService extends BaseClientService {
     return request.post(`/sync/update-count`).then(res => _.toInteger(res.body));
   }
 
-  public getContentNote(guid: string): Promise<NoteEntity[]> {
+  public getContentNote(guid: string): Promise<NoteEntity> {
     return request.post(`/note/get-content`).send({guid: guid}).then(res => {
-      return _.map(res.body, doc => new NoteEntity(doc));
+      return res.body ? new NoteEntity(res.body) : null;
     });
   }
 
   public reParseNote(): Promise<void> {
-    return request.post(`/note/re-parse`).then(_req => {
+    return request.post(`/note/re-parse`).then(_res => {
     });
   }
 
   public loadAuth(): Promise<GlobalUserEntity> {
-    return request.post(`/global-user/load`).then(req => {
-      return req.body ? new GlobalUserEntity(req.body) : null;
+    return request.post(`/global-user/load`).then(res => {
+      return res.body ? new GlobalUserEntity(res.body) : null;
     });
   }
 
   public changeAuth(globalUser: GlobalUserEntity): Promise<void> {
-    return request.post("/global-user/change").send(globalUser).then(_req => null);
+    return request.post("/global-user/change").send(globalUser).then(_res => null);
   }
 
   public tokenAuth(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
     if (!token) return Promise.reject<GlobalUserEntity>("No Token");
-    return request.post(`/global-user/auth`).send({sandbox: sandbox, token: token}).then(req => {
-      return new GlobalUserEntity(req.body);
+    return request.post(`/global-user/auth`).send({sandbox: sandbox, token: token}).then(res => {
+      return new GlobalUserEntity(res.body);
     });
   }
 
   public logoutAuth(): Promise<void> {
-    return request.post(`/global-user/logout`).then(_req => null);
+    return request.post(`/global-user/logout`).then(_res => null);
   }
 
 }
