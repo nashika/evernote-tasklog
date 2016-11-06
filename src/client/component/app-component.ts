@@ -9,7 +9,6 @@ import {NotesComponent} from "./notes-component";
 import {TimelineComponent} from "./timeline-component";
 import {RequestService} from "../service/request-service";
 import {kernel} from "../inversify.config";
-import {SyncStateEntity} from "../../common/entity/sync-state-entity";
 
 let template = require("./app-component.jade");
 
@@ -29,13 +28,13 @@ export class AppComponent extends BaseComponent {
   requestService: RequestService;
 
   mode: string;
-  lastSyncState: SyncStateEntity;
+  lastUpdateCount: number;
 
   data(): any {
     return {
       requestService: kernel.get(RequestService),
       mode: "menu",
-      lastSyncState: null,
+      lastUpdateCount: 0,
     }
   }
 
@@ -46,10 +45,14 @@ export class AppComponent extends BaseComponent {
   }
 
   interval() {
-    this.requestService.findOne<SyncStateEntity>(SyncStateEntity).then(syncState => {
-      if (!this.lastSyncState) return;
-      if (this.lastSyncState.updateCount == syncState.updateCount) return;
-      this.$broadcast("reload");
+    this.requestService.getUpdateCount().then(updateCount => {
+      if (!this.lastUpdateCount) {
+        this.lastUpdateCount = updateCount;
+      } else {
+        if (this.lastUpdateCount == updateCount) return;
+        this.lastUpdateCount = updateCount;
+        this.$broadcast("reload");
+      }
     });
   }
 

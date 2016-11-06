@@ -11,7 +11,5 @@ export class SyncStateEntity extends BaseSingleEvernoteEntity {
   };
 
   updateCount: number;
-  lastChecked: number;
-  nextInterval: number;
 
 }

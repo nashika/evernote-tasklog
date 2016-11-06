@@ -3,13 +3,13 @@ import {injectable} from "inversify";
 
 import {BaseRoute} from "./base-route";
 import {SessionService} from "../service/session-service";
-import {MainService} from "../service/main-service";
+import {SyncService} from "../service/sync-service";
 
 @injectable()
 export class SyncRoute extends BaseRoute {
 
   constructor(protected sessionService: SessionService,
-              protected mainService: MainService) {
+              protected syncService: SyncService) {
     super();
   }
 
@@ -20,14 +20,20 @@ export class SyncRoute extends BaseRoute {
   getRouter(): Router {
     let _router = Router();
     _router.post("/", (req, res) => this.wrap(req, res, this.index));
+    _router.post("/update-count", (req, res) => this.wrap(req, res, this.updateCount));
     return _router;
   }
 
   index(req: Request, _res: Response): Promise<boolean> {
     let session = this.sessionService.get(req);
-    return this.mainService.sync(session.globalUser).then(() => {
+    return this.syncService.sync(session.globalUser, true).then(() => {
       return true;
     });
-  };
+  }
+
+  updateCount(req: Request, _res: Response): Promise<number> {
+    let session = this.sessionService.get(req);
+    return Promise.resolve(this.syncService.updateCount(session.globalUser));
+  }
 
 }

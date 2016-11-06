@@ -17,6 +17,7 @@ import {EvernoteClientService} from "./service/evernote-client-service";
 import {MainService} from "./service/main-service";
 import {SessionService} from "./service/session-service";
 import {SettingService} from "./service/setting-service";
+import {SyncService} from "./service/sync-service";
 import {TableService} from "./service/table-service";
 
 import {BaseRoute} from "./routes/base-route";
@@ -27,7 +28,6 @@ import {NotebookRoute} from "./routes/notebook-route";
 import {ProfitLogRoute} from "./routes/profit-log-route";
 import {SettingRoute} from "./routes/setting-route";
 import {SyncRoute} from "./routes/sync-route";
-import {SyncStateRoute} from "./routes/sync-state-route";
 import {TimeLogRoute} from "./routes/time-log-route";
 import {UserRoute} from "./routes/user-route";
 
@@ -62,6 +62,7 @@ kernel.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingletonSc
 kernel.bind<MainService>(MainService).toSelf().inSingletonScope();
 kernel.bind<SessionService>(SessionService).toSelf().inSingletonScope();
 kernel.bind<SettingService>(SettingService).toSelf().inSingletonScope();
+kernel.bind<SyncService>(SyncService).toSelf().inSingletonScope();
 kernel.bind<TableService>(TableService).toSelf().inSingletonScope();
 
 kernel.bind<BaseRoute>(BaseRoute).to(IndexRoute).whenTargetNamed("index");
@@ -71,7 +72,6 @@ kernel.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");
 kernel.bind<BaseRoute>(BaseRoute).to(ProfitLogRoute).whenTargetNamed("profitLog");
 kernel.bind<BaseRoute>(BaseRoute).to(SettingRoute).whenTargetNamed("setting");
 kernel.bind<BaseRoute>(BaseRoute).to(SyncRoute).whenTargetNamed("sync");
-kernel.bind<BaseRoute>(BaseRoute).to(SyncStateRoute).whenTargetNamed("syncState");
 kernel.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 kernel.bind<BaseRoute>(BaseRoute).to(UserRoute).whenTargetNamed("user");
 
