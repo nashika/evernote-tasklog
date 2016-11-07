@@ -40,6 +40,7 @@ export class DatastoreService extends BaseClientService {
   constructor(protected requestService: RequestService,
               protected progressService: ProgressService) {
     super();
+    this.globalUser = null;
     this.user = null;
     this.persons = [];
     this.notebooks = {};
@@ -55,6 +56,7 @@ export class DatastoreService extends BaseClientService {
   }
 
   reload(params: IDatastoreServiceParams): Promise<void> {
+    if (!this.globalUser) return Promise.resolve();
     let noteQuery = this._makeNoteQuery(params);
     this.progressService.open(params.getContent ? 10 : 6);
     return Promise.resolve().then(() => {
