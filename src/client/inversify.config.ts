@@ -1,9 +1,9 @@
 import {Kernel, interfaces} from "inversify";
 
-import {DatastoreService} from "./service/datastore-service";
-import {ProgressService} from "./service/progress-service";
-import {RequestService} from "./service/request-service";
-import {AppComponent} from "./component/app-component";
+import {DatastoreService} from "./service/datastore.service";
+import {ProgressService} from "./service/progress.service";
+import {RequestService} from "./service/request.service";
+import {AppComponent} from "./component/app.component";
 
 export var kernel = new Kernel();
 

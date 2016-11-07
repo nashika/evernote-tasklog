@@ -19,7 +19,7 @@ import commander = require("commander");
 
 import "./log4js";
 import {kernel} from "./inversify.config";
-import {MainService} from "./service/main-service";
+import {MainService} from "./service/main.service";
 
 let logger = getLogger("system");
 let pjson = require("../../package");

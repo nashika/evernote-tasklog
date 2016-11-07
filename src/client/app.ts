@@ -5,11 +5,11 @@ import "reflect-metadata";
 import "core-js";
 
 // filters
-import './filter/abbreviate';
-import './filter/filter-by-property';
-import './filter/object-length';
-import './filter/order-object-by';
-import './filter/spent-time';
+import './filter/abbreviate.filter';
+import './filter/filter-by-property.filter';
+import './filter/object-length.filter';
+import './filter/order-object-by.filter';
+import './filter/spent-time.filter';
 
 import {kernel} from "./inversify.config";
 

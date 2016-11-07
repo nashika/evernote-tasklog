@@ -6,7 +6,7 @@ import cookieParser = require("cookie-parser");
 import session = require("express-session");
 import bodyParser = require("body-parser");
 
-import {BaseRoute} from "./routes/base-route";
+import {BaseRoute} from "./routes/base.route";
 import {kernel} from "./inversify.config";
 
 let NedbStore = require("nedb-session-store")(session);
