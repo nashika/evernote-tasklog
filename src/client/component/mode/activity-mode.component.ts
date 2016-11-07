@@ -41,7 +41,9 @@ export class ActivityModeComponent extends BaseComponent {
   reload(manual: boolean): Promise<void> {
     let start = moment().startOf("day");
     let end = moment().endOf("day");
-    return this.datastoreService.reload({start: start, end: end, getArchive: true, manual: manual}).then(() => {
+    return this.datastoreService.reload({start: start, end: end, getArchive: true, manual: manual}).then(isUpdated => {
+      if (!isUpdated) return Promise.resolve();
+      return Promise.resolve();
     });
   }
 

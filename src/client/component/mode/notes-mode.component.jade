@@ -1,10 +1,10 @@
 section.notes
-  table.table.table-bordered.table-striped.table-hover.table-condensed(v-if="isReady")
+  table.table.table-bordered.table-striped.table-hover.table-condensed
     tr
       th Title
       th(v-for="person in existPersons") {{person}}
       th Total
-    tr(v-for="note in datastoreService.notes")
+    tr(v-for="note in notes")
       td: a(href="evernote:///view/{{datastoreService.user.id}}/{{datastoreService.user.shardId}}/{{note.guid}}/{{note.guid}}/") {{note.title}}
       td.text-right(v-for="person in existPersons.concat(['$total'])")
         div(v-if="notesSpentTimes[note.guid] && notesSpentTimes[note.guid][person]")

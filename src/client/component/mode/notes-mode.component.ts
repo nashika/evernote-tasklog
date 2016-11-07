@@ -7,6 +7,7 @@ import {ProfitLogEntity} from "../../../common/entity/profit-log.entity";
 import {TimeLogEntity} from "../../../common/entity/time-log.entity";
 import {kernel} from "../../inversify.config";
 import {AppComponent} from "../app.component";
+import {NoteEntity} from "../../../common/entity/note.entity";
 
 let template = require("./notes-mode.component.jade");
 
@@ -22,10 +23,10 @@ export class NotesModeComponent extends BaseComponent {
   $root: AppComponent;
 
   datastoreService: DatastoreService;
+  notes: {[guid:string]: NoteEntity};
   notesSpentTimes: {[noteGuid: string]: {[person: string]: number}};
   notesProfits: {[noteGuid: string]: {[person: string]: number}};
   existPersons: string[];
-  isReady: boolean;
 
   constructor() {
     super();
@@ -34,6 +35,7 @@ export class NotesModeComponent extends BaseComponent {
   data(): any {
     return _.assign(super.data(), {
       datastoreService: kernel.get(DatastoreService),
+      notes: {},
       notesSpentTimes: {},
       notesProfits: {},
       existPersons: [],
@@ -48,15 +50,13 @@ export class NotesModeComponent extends BaseComponent {
   }
 
   reload(manual: boolean): Promise<void> {
-    this.isReady = false;
-    this.datastoreService.reload({getContent: true, manual: manual}).then(() => {
+    return this.datastoreService.reload({getContent: true, manual: manual}).then(isUpdated => {
+      if (!isUpdated) return Promise.resolve();
+      this.notes = this.datastoreService.notes;
       this.reloadTimeLogs(this.datastoreService.timeLogs);
-    }).then(() => {
       this.reloadProfitLogs(this.datastoreService.profitLogs);
-    }).then(() => {
-      this.isReady = true;
+      return Promise.resolve();
     });
-    return Promise.resolve();
   }
 
   reloadTimeLogs(timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}}) {
