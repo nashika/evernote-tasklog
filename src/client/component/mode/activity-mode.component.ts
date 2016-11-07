@@ -4,6 +4,7 @@ import moment = require("moment");
 import Vue = require("vue");
 import diff = require("diff");
 import htmlToText = require("html-to-text");
+import diff2html = require("diff2html");
 
 import {BaseComponent} from "../base.component";
 import {kernel} from "../../inversify.config";
@@ -15,9 +16,9 @@ import {MyPromise} from "../../../common/util/my-promise";
 let template = require("./activity-mode.component.jade");
 
 interface IActivityModifyData {
-  text?: string;
   prevNote?: NoteEntity;
-  diff?: string;
+  diffPatch?: string;
+  diffHtml?: string;
 }
 
 @Component({
@@ -64,11 +65,10 @@ export class ActivityModeComponent extends BaseComponent {
           return searchNote.guid == note.guid && searchNote.updateSequenceNum < note.updateSequenceNum;
         });
         if (modify.prevNote) {
-          modify.text = _.toString(modify.prevNote.updateSequenceNum);
           let oldText = htmlToText.fromString(modify.prevNote.content);
           let newText = htmlToText.fromString(note.content);
-          let diffPatch = diff.createPatch("diff", oldText, newText, "oldheader", "newheader");
-          modify.diff = diffPatch;
+          modify.diffPatch = diff.createPatch("Note Content", oldText, newText, "", "");
+          modify.diffHtml = diff2html.Diff2Html.getPrettyHtml(modify.diffPatch);
         }
         Vue.set(this.modifies, note._id, modify);
         return Promise.resolve();

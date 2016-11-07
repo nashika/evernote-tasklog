@@ -11,8 +11,8 @@ section.activity
     pre {{moment(note.updated).format('HH:mm:ss')}} {{note.updateSequenceNum}}
     div
       div(v-if="modifies[note._id]")
-        p {{modifies[note._id].text}}
-        pre {{modifies[note._id].diff}}
+        div(v-html="modifies[note._id].diffHtml")
+        //pre {{modifies[note._id].diffPatch}}
       div(v-else)
         i.fa.fa-spinner.fa-pulse
         | &nbsp;Loading...
