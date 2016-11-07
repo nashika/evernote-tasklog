@@ -1,0 +1,17 @@
+section.notes
+  table.table.table-bordered.table-striped.table-hover.table-condensed
+    tr
+      th Time
+      th USN
+      th Title
+      th Modify
+    tr(v-for="note in datastoreService.noteArchives")
+      td {{moment(note.updated).format('HH:mm:ss')}}
+      td {{note.updateSequenceNum}}
+      td: a(href="evernote:///view/{{datastoreService.user.id}}/{{datastoreService.user.shardId}}/{{note.guid}}/{{note.guid}}/") {{note.title}}
+      td
+        span(v-if="modifies[note._id]")
+          | {{modifies[note._id].text}}
+        span(v-else)
+          i.fa.fa-spinner.fa-pulse
+          | &nbsp;Loading...

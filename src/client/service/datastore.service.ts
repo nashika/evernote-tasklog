@@ -34,6 +34,7 @@ export class DatastoreService extends BaseClientService {
   notebooks: {[guid: string]: NotebookEntity};
   stacks: string[];
   notes: {[guid: string]: NoteEntity};
+  noteArchives: NoteEntity[];
   timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}};
   profitLogs: {[noteGuid: string]: {[_id: string]: ProfitLogEntity}};
   settings: {[key: string]: any};
@@ -49,6 +50,7 @@ export class DatastoreService extends BaseClientService {
     this.notebooks = {};
     this.stacks = [];
     this.notes = {};
+    this.noteArchives = [];
     this.timeLogs = {};
     this.profitLogs = {};
     this.settings = {};
@@ -165,6 +167,7 @@ export class DatastoreService extends BaseClientService {
     let options = this.makeNoteFindOptions(params);
     this.progressService.next("Getting notes.");
     return this.requestService.find<NoteEntity>(NoteEntity, options).then(notes => {
+      this.noteArchives = notes;
       this.notes = _.keyBy(notes, "guid");
     });
   }

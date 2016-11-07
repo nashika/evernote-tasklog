@@ -14,7 +14,7 @@ export class NoteEntity extends BaseMultiEvernoteEntity {
     archive: true,
     default: {
       query: {},
-      sort: {updated: -1},
+      sort: {updated: -1, updateSequenceNum: -1},
       limit: 500,
     },
     append: {
