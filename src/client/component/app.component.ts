@@ -7,9 +7,9 @@ import {SettingsModeComponent} from "./mode/settings-mode.component";
 import {ProgressModalComponent} from "./progress-modal.component";
 import {NotesModeComponent} from "./mode/notes-mode.component";
 import {TimelineModeComponent} from "./mode/timeline-mode.component";
-import {RequestService} from "../service/request.service";
 import {kernel} from "../inversify.config";
 import {ActivityModeComponent} from "./mode/activity-mode.component";
+import {DatastoreService} from "../service/datastore.service";
 
 let template = require("./app.component.jade");
 
@@ -27,13 +27,13 @@ let template = require("./app.component.jade");
 })
 export class AppComponent extends BaseComponent {
 
-  requestService: RequestService;
+  datastoreService: DatastoreService;
 
   mode: string;
 
   data(): any {
     return {
-      requestService: kernel.get(RequestService),
+      datastoreService: kernel.get(DatastoreService),
       mode: "menu",
       lastUpdateCount: 0,
     }
@@ -41,12 +41,19 @@ export class AppComponent extends BaseComponent {
 
   ready(): Promise<void> {
     return super.ready().then(() => {
-      setInterval(() => this.reload(false), 5000);
+      setInterval(() => this.interval(), 5000);
     });
   }
 
-  reload(manual: boolean) {
-    this.$broadcast("reload", manual);
+  interval() {
+    this.datastoreService.checkUpdateCount().then(isUpdated => {
+      if (isUpdated)
+        this.reload();
+    });
+  }
+
+  reload() {
+    this.$broadcast("reload");
   }
 
 }

@@ -21,7 +21,6 @@ interface IDatastoreServiceParams {
   noFilter?: boolean,
   getContent?: boolean,
   getArchive?: boolean,
-  manual?: boolean,
 }
 
 @injectable()
@@ -58,13 +57,11 @@ export class DatastoreService extends BaseClientService {
     };
   }
 
-  reload(params: IDatastoreServiceParams = {}): Promise<boolean> {
-    if (!this.globalUser) return Promise.resolve(false);
+  reload(params: IDatastoreServiceParams = {}): Promise<void> {
+    if (!this.globalUser) return Promise.resolve();
     let noteQuery = this.makeNoteQuery(params);
+    this.progressService.open(params.getContent ? 8 : 3);
     return Promise.resolve().then(() => {
-      return this.checkUpdateCount(params);
-    }).then(() => {
-      this.progressService.open(params.getContent ? 9 : 4);
       return this.getUser();
     }).then(() => {
       return this.getSettings();
@@ -90,28 +87,20 @@ export class DatastoreService extends BaseClientService {
     }).then(() => {
       this.progressService.next("Done.");
       this.progressService.close();
-      return true;
     }).catch(err => {
-      if (!(err instanceof MyPromiseTerminateResult) || err.data != null)
-        alert(err);
+      alert(err);
       this.progressService.close();
       if (!(err instanceof MyPromiseTerminateResult))
         throw new Error(`HTTP request error. err=${err}`);
-      return false;
     });
   }
 
-  private checkUpdateCount(params: IDatastoreServiceParams): Promise<void> {
+  checkUpdateCount(): Promise<boolean> {
     return this.requestService.getUpdateCount().then(updateCount => {
-      if (params.manual) {
-        this.lastUpdateCount = updateCount;
-        return Promise.resolve();
-      } else {
-        if (this.lastUpdateCount == updateCount)
-          return Promise.reject(new MyPromiseTerminateResult());
-        this.lastUpdateCount = updateCount;
-        return Promise.resolve();
-      }
+      if (this.lastUpdateCount == updateCount)
+        return false;
+      this.lastUpdateCount = updateCount;
+      return true;
     });
   }
 

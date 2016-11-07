@@ -56,7 +56,7 @@ export class UserMenuModeComponent extends BaseComponent {
     return this.requestService.changeAuth(globalUser).then(() => {
       this.datastoreService.globalUser = globalUser;
     }).then(() => {
-      this.$root.reload(true);
+      this.$root.reload();
     });
   }
 

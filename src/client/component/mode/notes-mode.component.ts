@@ -45,13 +45,12 @@ export class NotesModeComponent extends BaseComponent {
 
   ready(): Promise<void> {
     return super.ready().then(() => {
-      this.reload(true);
+      this.reload();
     });
   }
 
-  reload(manual: boolean): Promise<void> {
-    return this.datastoreService.reload({getContent: true, manual: manual}).then(isUpdated => {
-      if (!isUpdated) return Promise.resolve();
+  reload(): Promise<void> {
+    return this.datastoreService.reload({getContent: true}).then(() => {
       this.notes = this.datastoreService.notes;
       this.reloadTimeLogs(this.datastoreService.timeLogs);
       this.reloadProfitLogs(this.datastoreService.profitLogs);

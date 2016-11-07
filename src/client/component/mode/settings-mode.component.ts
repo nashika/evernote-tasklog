@@ -61,15 +61,15 @@ export class SettingsModeComponent extends BaseComponent {
 
   ready(): Promise<void> {
     return super.ready().then(() => {
-      return this.reload(true);
+      return this.reload();
     }).then(() => {
       this.editStore = _.cloneDeep(this.datastoreService.settings);
       if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
     });
   }
 
-  reload(manual: boolean): Promise<boolean> {
-    return this.datastoreService.reload({getContent: false, manual: manual});
+  reload(): Promise<void> {
+    return this.datastoreService.reload({getContent: false});
   }
 
   up(index: number) {
