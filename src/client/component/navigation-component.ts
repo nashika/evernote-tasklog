@@ -21,6 +21,7 @@ let template = require("./navigation-component.jade");
 })
 export class NavigationComponent extends BaseComponent {
 
+  $root: AppComponent;
   $parent: AppComponent;
 
   mode: string;
@@ -38,7 +39,7 @@ export class NavigationComponent extends BaseComponent {
 
   reload() {
     this.navCollapse = true;
-    this.$parent.$broadcast("reload");
+    this.$root.reload();
   }
 
 }

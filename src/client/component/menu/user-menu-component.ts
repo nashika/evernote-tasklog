@@ -1,6 +1,5 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
-import Vue = require("vue");
 
 import {MenuComponent} from "../menu-component";
 import {BaseComponent} from "../base-component";
@@ -43,7 +42,7 @@ export class UserMenuComponent extends BaseComponent {
       let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
       return this.select(globalUser);
     }).then(() => {
-      this.$root.$broadcast("reload");
+      this.$root.reload();
     });
   }
 
@@ -55,7 +54,9 @@ export class UserMenuComponent extends BaseComponent {
 
   select(globalUser: GlobalUserEntity): Promise<void> {
     return this.requestService.changeAuth(globalUser).then(() => {
-      Vue.set(this.datastoreService, "globalUser", globalUser);
+      this.datastoreService.globalUser = globalUser;
+    }).then(() => {
+      this.$root.reload();
     });
   }
 

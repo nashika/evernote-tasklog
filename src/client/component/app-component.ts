@@ -46,6 +46,10 @@ export class AppComponent extends BaseComponent {
     });
   }
 
+  reload() {
+    this.$broadcast("reload");
+  }
+
   interval() {
     this.requestService.getUpdateCount().then(updateCount => {
       if (!this.lastUpdateCount) {
@@ -53,7 +57,7 @@ export class AppComponent extends BaseComponent {
       } else {
         if (this.lastUpdateCount == updateCount) return;
         this.lastUpdateCount = updateCount;
-        this.$broadcast("reload");
+        this.reload();
       }
     });
   }
