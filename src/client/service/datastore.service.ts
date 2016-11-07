@@ -57,9 +57,17 @@ export class DatastoreService extends BaseClientService {
     };
   }
 
+  checkUpdateCount(): Promise<boolean> {
+    return this.requestService.getUpdateCount().then(updateCount => {
+      if (this.lastUpdateCount == updateCount)
+        return false;
+      this.lastUpdateCount = updateCount;
+      return true;
+    });
+  }
+
   reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (!this.globalUser) return Promise.resolve();
-    let noteQuery = this.makeNoteQuery(params);
     this.progressService.open(params.getContent ? 8 : 3);
     return Promise.resolve().then(() => {
       return this.getUser();
@@ -74,9 +82,9 @@ export class DatastoreService extends BaseClientService {
     }).then(() => {
       if (!params.getContent) return Promise.resolve();
       return Promise.resolve().then(() => {
-        return this.checkNoteCount(noteQuery);
+        return this.checkNoteCount(params);
       }).then(() => {
-        return this.getNotes(noteQuery);
+        return this.getNotes(params);
       }).then(() => {
         return this.getNoteContents();
       }).then(() => {
@@ -92,15 +100,6 @@ export class DatastoreService extends BaseClientService {
       this.progressService.close();
       if (!(err instanceof MyPromiseTerminateResult))
         throw new Error(`HTTP request error. err=${err}`);
-    });
-  }
-
-  checkUpdateCount(): Promise<boolean> {
-    return this.requestService.getUpdateCount().then(updateCount => {
-      if (this.lastUpdateCount == updateCount)
-        return false;
-      this.lastUpdateCount = updateCount;
-      return true;
     });
   }
 
@@ -141,7 +140,8 @@ export class DatastoreService extends BaseClientService {
     });
   }
 
-  private checkNoteCount(noteQuery: Object): Promise<void> {
+  private checkNoteCount(params: IDatastoreServiceParams): Promise<void> {
+    let noteQuery = this.makeNoteQuery(params);
     this.progressService.next("Getting notes count.");
     return this.requestService.count(NoteEntity, noteQuery).then(count => {
       if (count > 100)
@@ -151,7 +151,8 @@ export class DatastoreService extends BaseClientService {
     });
   }
 
-  private getNotes(noteQuery: Object): Promise<void> {
+  private getNotes(params: IDatastoreServiceParams): Promise<void> {
+    let noteQuery = this.makeNoteQuery(params);
     this.progressService.next("Getting notes.");
     return this.requestService.find<NoteEntity>(NoteEntity, noteQuery).then(notes => {
       this.notes = _.keyBy(notes, "guid");
@@ -232,7 +233,7 @@ export class DatastoreService extends BaseClientService {
     });
   }
 
-  protected makeNoteQuery = (params: IDatastoreServiceParams): Object => {
+  protected makeNoteQuery(params: IDatastoreServiceParams): Object {
     var result = {};
     // set updated query
     if (params.start)
@@ -262,7 +263,7 @@ export class DatastoreService extends BaseClientService {
     return result;
   };
 
-  protected makeTimeLogQuery = (params: IDatastoreServiceParams): Object => {
+  protected makeTimeLogQuery(params: IDatastoreServiceParams): Object {
     var result = {};
     // set date query
     if (params.start)
