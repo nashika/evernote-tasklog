@@ -25,6 +25,9 @@ let webpackConfig:webpack.Configuration = {
       {test: /\.(ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/, loader: "file", query: {name: "fonts/[name].[ext]"}},
     ],
   },
+  node: {
+    fs: "empty",
+  },
   plugins: process.env.NODE_ENV == "production" ? [new UglifyJsPlugin({
     compress: {
       warnings: false,
