@@ -42,7 +42,7 @@ export class UserMenuModeComponent extends BaseComponent {
       let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
       return this.select(globalUser);
     }).then(() => {
-      this.$root.reload();
+      //this.$root.reload(true);
     });
   }
 
@@ -56,7 +56,7 @@ export class UserMenuModeComponent extends BaseComponent {
     return this.requestService.changeAuth(globalUser).then(() => {
       this.datastoreService.globalUser = globalUser;
     }).then(() => {
-      this.$root.reload();
+      this.$root.reload(true);
     });
   }
 

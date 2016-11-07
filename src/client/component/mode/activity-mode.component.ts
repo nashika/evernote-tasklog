@@ -1,9 +1,11 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
+import moment = require("moment");
 
 import {BaseComponent} from "../base.component";
 import {kernel} from "../../inversify.config";
 import {DatastoreService} from "../../service/datastore.service";
+import {AppComponent} from "../app.component";
 
 let template = require("./activity-mode.component.jade");
 
@@ -15,6 +17,8 @@ let template = require("./activity-mode.component.jade");
   },
 })
 export class ActivityModeComponent extends BaseComponent {
+
+  $root: AppComponent;
 
   datastoreService: DatastoreService;
 
@@ -30,14 +34,14 @@ export class ActivityModeComponent extends BaseComponent {
 
   ready(): Promise<void> {
     return super.ready().then(() => {
-      return this.reload();
+      return this.reload(true);
     });
   }
 
-  reload(): Promise<void> {
+  reload(manual: boolean): Promise<void> {
     let start = moment().startOf("day");
     let end = moment().endOf("day");
-    return this.datastoreService.reload({start: start, end: end, getArchive: true}).then(() => {
+    return this.datastoreService.reload({start: start, end: end, getArchive: true, manual: manual}).then(() => {
     });
   }
 

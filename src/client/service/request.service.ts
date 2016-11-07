@@ -48,7 +48,7 @@ export class RequestService extends BaseClientService {
     return request.post(`/sync/update-count`).then(res => _.toInteger(res.body));
   }
 
-  public getContentNote(guid: string): Promise<NoteEntity> {
+  public getNoteContent(guid: string): Promise<NoteEntity> {
     return request.post(`/note/get-content`).send({guid: guid}).then(res => {
       return res.body ? new NoteEntity(res.body) : null;
     });

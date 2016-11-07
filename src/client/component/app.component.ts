@@ -30,7 +30,6 @@ export class AppComponent extends BaseComponent {
   requestService: RequestService;
 
   mode: string;
-  lastUpdateCount: number;
 
   data(): any {
     return {
@@ -42,24 +41,12 @@ export class AppComponent extends BaseComponent {
 
   ready(): Promise<void> {
     return super.ready().then(() => {
-      setInterval(() => this.interval(), 5000);
+      setInterval(() => this.reload(false), 5000);
     });
   }
 
-  reload() {
-    this.$broadcast("reload");
-  }
-
-  interval() {
-    this.requestService.getUpdateCount().then(updateCount => {
-      if (!this.lastUpdateCount) {
-        this.lastUpdateCount = updateCount;
-      } else {
-        if (this.lastUpdateCount == updateCount) return;
-        this.lastUpdateCount = updateCount;
-        this.reload();
-      }
-    });
+  reload(manual: boolean) {
+    this.$broadcast("reload", manual);
   }
 
 }

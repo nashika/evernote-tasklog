@@ -39,7 +39,7 @@ export class NavigationComponent extends BaseComponent {
 
   reload() {
     this.navCollapse = true;
-    this.$root.reload();
+    this.$root.reload(true);
   }
 
 }

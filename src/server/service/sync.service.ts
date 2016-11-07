@@ -52,7 +52,7 @@ export class SyncService extends BaseServerService {
     return Promise.resolve();
   }
 
-  sync(globalUser: GlobalUserEntity, manualReload: boolean): Promise<void> {
+  sync(globalUser: GlobalUserEntity, manual: boolean): Promise<void> {
     let userTimerData = this.userTimers[globalUser._id];
     clearTimeout(userTimerData.timer);
     let localSyncState: SyncStateEntity = null;
@@ -73,10 +73,10 @@ export class SyncService extends BaseServerService {
     }).then(() => {
       logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       userTimerData.updateCount = localSyncState.updateCount;
-      userTimerData.interval = manualReload ? this.Class.startInterval : Math.min(Math.round(userTimerData.interval * 1.5), this.Class.maxInterval);
+      userTimerData.interval = manual ? this.Class.startInterval : Math.min(Math.round(userTimerData.interval * 1.5), this.Class.maxInterval);
       userTimerData.timer = setTimeout(() => this.sync(globalUser, false), userTimerData.interval);
       logger.info(`Next auto reload will run after ${userTimerData.interval} msec.`);
-      if (!manualReload) return this.autoGetNoteContent(globalUser, userTimerData.interval);
+      if (!manual) return this.autoGetNoteContent(globalUser, userTimerData.interval);
       return Promise.resolve();
     });
   }

@@ -2,7 +2,7 @@ import _ = require("lodash");
 
 export class MyPromiseTerminateResult {
 
-  constructor(public data: any) {
+  constructor(public data: any = null) {
   }
 
   toString(): string {
