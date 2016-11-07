@@ -6,9 +6,8 @@ import {MenuComponent} from "../menu-component";
 import {BaseComponent} from "../base-component";
 import {AppComponent} from "../app-component";
 import {NotebookEntity} from "../../../common/entity/notebook-entity";
-import {DataStoreService} from "../../service/data-store-service";
+import {DatastoreService} from "../../service/datastore-service";
 import {kernel} from "../../inversify.config";
-import {DataTranscieverService} from "../../service/data-transciever-service";
 
 let template = require("./note-filter-menu-component.jade");
 
@@ -23,13 +22,11 @@ export class NoteFilterMenuComponent extends BaseComponent {
   $root: AppComponent;
   $parent: MenuComponent;
 
-  dataStoreService: DataStoreService;
-  dataTranscieverService: DataTranscieverService;
+  datastoreService: DatastoreService;
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
-      dataTranscieverService: kernel.get(DataTranscieverService),
+      datastoreService: kernel.get(DatastoreService),
     });
   }
 

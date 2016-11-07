@@ -5,7 +5,7 @@ import Vue = require("vue");
 import {MenuComponent} from "../menu-component";
 import {BaseComponent} from "../base-component";
 import {kernel} from "../../inversify.config";
-import {DataStoreService} from "../../service/data-store-service";
+import {DatastoreService} from "../../service/datastore-service";
 import {RequestService} from "../../service/request-service";
 import {GlobalUserEntity} from "../../../common/entity/global-user-entity";
 import {AppComponent} from "../app-component";
@@ -20,14 +20,14 @@ export class UserMenuComponent extends BaseComponent {
   $root: AppComponent;
   $parent: MenuComponent;
 
-  dataStoreService: DataStoreService;
+  datastoreService: DatastoreService;
   requestService: RequestService;
 
   globalUsers: GlobalUserEntity[];
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
+      datastoreService: kernel.get(DatastoreService),
       requestService: kernel.get(RequestService),
       globalUsers: null,
     });
@@ -55,14 +55,14 @@ export class UserMenuComponent extends BaseComponent {
 
   select(globalUser: GlobalUserEntity): Promise<void> {
     return this.requestService.changeAuth(globalUser).then(() => {
-      Vue.set(this.dataStoreService, "globalUser", globalUser);
+      Vue.set(this.datastoreService, "globalUser", globalUser);
     });
   }
 
   add(sandbox: boolean): Promise<void> {
     let token = prompt(`Input developer token (${sandbox ? "sandbox" : "production"})`);
     return this.requestService.tokenAuth(sandbox, token).then(globalUser => {
-      this.dataStoreService.globalUser = globalUser;
+      this.datastoreService.globalUser = globalUser;
       return this.reload();
     }).catch(err => {
       alert(`Add user failed. err="${err}"`);

@@ -4,11 +4,10 @@ import moment = require("moment");
 let vis = require("vis");
 
 import {BaseComponent} from "./base-component";
-import {DataStoreService} from "../service/data-store-service";
+import {DatastoreService} from "../service/datastore-service";
 import {NoteEntity} from "../../common/entity/note-entity";
 import {abbreviateFilter} from "../filter/abbreviate";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
-import {DataTranscieverService} from "../service/data-transciever-service";
 import {kernel} from "../inversify.config";
 
 let template = require("./timeline-component.jade");
@@ -32,8 +31,7 @@ interface TimelineItem {
 })
 export class TimelineComponent extends BaseComponent {
 
-  dataStoreService: DataStoreService;
-  dataTranscieverService: DataTranscieverService;
+  datastoreService: DatastoreService;
   timeline: any;
   timelineItems: any;
   timelineGroups: any;
@@ -46,8 +44,7 @@ export class TimelineComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
-      dataTranscieverService: kernel.get(DataTranscieverService),
+      datastoreService: kernel.get(DatastoreService),
       timeline: null,
       timelineItems: null,
       timelineGroups: null,
@@ -61,10 +58,10 @@ export class TimelineComponent extends BaseComponent {
       let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
       // set working time
       let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
-      if (this.dataStoreService.settings && this.dataStoreService.settings["startWorkingTime"] && this.dataStoreService.settings["endWorkingTime"])
+      if (this.datastoreService.settings && this.datastoreService.settings["startWorkingTime"] && this.datastoreService.settings["endWorkingTime"])
         hiddenDates = [{
-          start: moment().subtract(1, "days").startOf("day").hour(this.dataStoreService.settings["endWorkingTime"]),
-          end: moment().startOf("day").hour(this.dataStoreService.settings["startWorkingTime"]),
+          start: moment().subtract(1, "days").startOf("day").hour(this.datastoreService.settings["endWorkingTime"]),
+          end: moment().startOf("day").hour(this.datastoreService.settings["startWorkingTime"]),
           repeat: "daily",
         }];
       else
@@ -84,8 +81,8 @@ export class TimelineComponent extends BaseComponent {
         hiddenDates: hiddenDates,
       });
       // set person data
-      if (!this.dataStoreService.settings || !this.dataStoreService.settings["persons"]) return null;
-      for (let person of this.dataStoreService.settings["persons"])
+      if (!this.datastoreService.settings || !this.datastoreService.settings["persons"]) return null;
+      for (let person of this.datastoreService.settings["persons"])
         this.timelineGroups.add({
           id: person.name,
           content: person.name,
@@ -102,30 +99,30 @@ export class TimelineComponent extends BaseComponent {
   }
 
   reload(): Promise<void> {
-    return this.dataTranscieverService.reload({start: this.start, end: this.end, getContent: true}).then(() => {
+    return this.datastoreService.reload({start: this.start, end: this.end, getContent: true}).then(() => {
       this.timelineItems.clear();
       let notes: {[noteGuid: string]: NoteEntity} = {};
-      for (var noteGuid in this.dataStoreService.notes) {
-        let note: NoteEntity = this.dataStoreService.notes[noteGuid];
+      for (var noteGuid in this.datastoreService.notes) {
+        let note: NoteEntity = this.datastoreService.notes[noteGuid];
         notes[note.guid] = note;
         let timelineItem: TimelineItem = {
           id: note.guid,
           group: "updated",
-          content: `<a href="evernote:///view/${this.dataStoreService.user.id}/${this.dataStoreService.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${abbreviateFilter(note.title, 40)}</a>`,
+          content: `<a href="evernote:///view/${this.datastoreService.user.id}/${this.datastoreService.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${abbreviateFilter(note.title, 40)}</a>`,
           start: moment(note.updated).toDate(),
           type: "point",
         };
         this.timelineItems.add(timelineItem);
       }
-      for (let noteGuid in this.dataStoreService.timeLogs) {
-        let noteTimeLogs = this.dataStoreService.timeLogs[noteGuid];
+      for (let noteGuid in this.datastoreService.timeLogs) {
+        let noteTimeLogs = this.datastoreService.timeLogs[noteGuid];
         for (var timeLogId in noteTimeLogs) {
           let timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
           let noteTitle: string = notes[timeLog.noteGuid].title;
           let timelineItem: TimelineItem = {
             id: timeLog._id,
             group: timeLog.person,
-            content: `<a href="evernote:///view/${this.dataStoreService.user["id"]}/${this.dataStoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${noteTitle} ${timeLog.comment}">${abbreviateFilter(noteTitle, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
+            content: `<a href="evernote:///view/${this.datastoreService.user["id"]}/${this.datastoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${noteTitle} ${timeLog.comment}">${abbreviateFilter(noteTitle, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
             start: moment(timeLog.date).toDate(),
             end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
             type: timeLog.spentTime ? 'range' : 'point',

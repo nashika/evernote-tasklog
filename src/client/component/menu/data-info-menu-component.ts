@@ -4,18 +4,17 @@ import _ = require("lodash");
 import {MenuComponent} from "../menu-component";
 import {BaseComponent} from "../base-component";
 import {AppComponent} from "../app-component";
-import {DataTranscieverService} from "../../service/data-transciever-service";
 import {kernel} from "../../inversify.config";
-import {DataStoreService} from "../../service/data-store-service";
+import {DatastoreService} from "../../service/datastore-service";
 
 let template = require("./data-info-menu-component.jade");
 
 @Component({
   template: template,
   watch: {
-    "dataTranscieverService.filterParams.notebookGuids": "reload",
-    "dataTranscieverService.filterParams.stacks": "reload",
-    "dataStoreService.globalUser": "reload",
+    "datastoreService.filterParams.notebookGuids": "reload",
+    "datastoreService.filterParams.stacks": "reload",
+    "datastoreService.globalUser": "reload",
   },
 })
 export class DataInfoMenuComponent extends BaseComponent {
@@ -23,8 +22,7 @@ export class DataInfoMenuComponent extends BaseComponent {
   $root: AppComponent;
   $parent: MenuComponent;
 
-  dataStoreService: DataStoreService;
-  dataTranscieverService: DataTranscieverService;
+  datastoreService: DatastoreService;
 
   noteCount: number;
   allNoteCount: number;
@@ -37,8 +35,7 @@ export class DataInfoMenuComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
-      dataTranscieverService: kernel.get(DataTranscieverService),
+      datastoreService: kernel.get(DatastoreService),
       noteCount: 0,
       allNoteCount: 0,
       loadedNoteCount: 0,
@@ -57,7 +54,7 @@ export class DataInfoMenuComponent extends BaseComponent {
   }
 
   reParse() {
-    this.dataTranscieverService.reParse();
+    this.datastoreService.reParse();
   }
 
   reload(): Promise<void> {
@@ -68,27 +65,27 @@ export class DataInfoMenuComponent extends BaseComponent {
     this.timeLogCount = null;
     this.allTimeLogCount = null;
     return Promise.resolve().then(() => {
-      return this.dataTranscieverService.countNotes({}).then(count => {
+      return this.datastoreService.countNotes({}).then(count => {
         this.noteCount = count;
       });
     }).then(() => {
-      return this.dataTranscieverService.countNotes({noFilter: true}).then(count => {
+      return this.datastoreService.countNotes({noFilter: true}).then(count => {
         this.allNoteCount = count;
       });
     }).then(() => {
-      return this.dataTranscieverService.countNotes({hasContent: true}).then(count => {
+      return this.datastoreService.countNotes({hasContent: true}).then(count => {
         this.loadedNoteCount = count;
       });
     }).then(() => {
-      return this.dataTranscieverService.countNotes({hasContent: true, noFilter: true}).then(count => {
+      return this.datastoreService.countNotes({hasContent: true, noFilter: true}).then(count => {
         this.allLoadedNoteCount = count;
       });
     }).then(() => {
-      return this.dataTranscieverService.countTimeLogs({}).then(count => {
+      return this.datastoreService.countTimeLogs({}).then(count => {
         this.timeLogCount = count;
       });
     }).then(() => {
-      return this.dataTranscieverService.countTimeLogs({noFilter: true}).then(count => {
+      return this.datastoreService.countTimeLogs({noFilter: true}).then(count => {
         this.allTimeLogCount = count;
       });
     });

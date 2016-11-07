@@ -3,27 +3,27 @@ section
   h3 Current User
   dl.dl-horizontal
     dt Id
-    dd {{dataStoreService.user && dataStoreService.user.id}}
+    dd {{datastoreService.user && datastoreService.user.id}}
     dt Username
-    dd {{dataStoreService.user && dataStoreService.user.username}}
+    dd {{datastoreService.user && datastoreService.user.username}}
     dt Email
-    dd {{dataStoreService.user && dataStoreService.user.email}}
+    dd {{datastoreService.user && datastoreService.user.email}}
     dt Name
-    dd {{dataStoreService.user && dataStoreService.user.name}}
+    dd {{datastoreService.user && datastoreService.user.name}}
   h3 Manage Users
   div(v-if="globalUsers")
     table.table.table-bordered
       tr
         th Id
         th Action
-      tr(:class="{'success': !dataStoreService.globalUser}")
+      tr(:class="{'success': !datastoreService.globalUser}")
         td None
         td
-          button.btn.btn-danger.btn-block(v-if="dataStoreService.globalUser", type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
-      tr(v-for="globalUser in globalUsers", :class="{'success': dataStoreService.globalUser == globalUser}")
+          button.btn.btn-danger.btn-block(v-if="datastoreService.globalUser", type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
+      tr(v-for="globalUser in globalUsers", :class="{'success': datastoreService.globalUser == globalUser}")
         td {{globalUser._id}}
         td
-          button.btn.btn-primary.btn-sm.btn-block(v-if="dataStoreService.globalUser != globalUser", @click="select(globalUser)") Change
+          button.btn.btn-primary.btn-sm.btn-block(v-if="datastoreService.globalUser != globalUser", @click="select(globalUser)") Change
     h3 Add User
     button.btn.btn-primary.btn-block(@click="add(false)") Add Production User
     p: .well Login to system using the Evernote developer token. Get token from&nbsp;

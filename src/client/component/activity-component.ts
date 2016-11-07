@@ -2,8 +2,8 @@ import Component from "vue-class-component";
 import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
-import {DataTranscieverService} from "../service/data-transciever-service";
 import {kernel} from "../inversify.config";
+import {DatastoreService} from "../service/datastore-service";
 
 let template = require("./activity-component.jade");
 
@@ -16,7 +16,7 @@ let template = require("./activity-component.jade");
 })
 export class ActivityComponent extends BaseComponent {
 
-  dataTranscieverService: DataTranscieverService;
+  datastoreService: DatastoreService;
 
   constructor() {
     super();
@@ -24,7 +24,7 @@ export class ActivityComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataTranscieverService: kernel.get(DataTranscieverService),
+      datastoreService: kernel.get(DatastoreService),
     });
   }
 
@@ -37,7 +37,7 @@ export class ActivityComponent extends BaseComponent {
   reload(): Promise<void> {
     let start = moment().startOf("day");
     let end = moment().endOf("day");
-    return this.dataTranscieverService.reload({start: start, end: end, getArchive: true}).then(() => {
+    return this.datastoreService.reload({start: start, end: end, getArchive: true}).then(() => {
     });
   }
 

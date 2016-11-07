@@ -1,5 +1,5 @@
 mixin item(name, icon, label, needLogin)
-  li(v-if=needLogin ? "dataStoreService.globalUser" : "true", :class="{active: mode == '#{name}'}")
+  li(v-if=needLogin ? "datastoreService.globalUser" : "true", :class="{active: mode == '#{name}'}")
     a(@click="mode = '#{name}'") #[span.fa(class="fa-#{icon}")] #{label}
 
 nav.navbar.navbar-inverse.navbar-fixed-bottom

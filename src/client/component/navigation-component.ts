@@ -3,7 +3,7 @@ import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
 import {AppComponent} from "./app-component";
-import {DataStoreService} from "../service/data-store-service";
+import {DatastoreService} from "../service/datastore-service";
 import {kernel} from "../inversify.config";
 
 let template = require("./navigation-component.jade");
@@ -25,13 +25,13 @@ export class NavigationComponent extends BaseComponent {
 
   mode: string;
 
-  dataStoreService: DataStoreService;
+  datastoreService: DatastoreService;
 
   navCollapse: boolean;
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
+      datastoreService: kernel.get(DatastoreService),
       navCollapse: true,
     });
   }

@@ -2,13 +2,12 @@ import Component from "vue-class-component";
 import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
-import {DataTranscieverService} from "../service/data-transciever-service";
 import {AppComponent} from "./app-component";
 import {kernel} from "../inversify.config";
 import {UserMenuComponent} from "./menu/user-menu-component";
 import {NoteFilterMenuComponent} from "./menu/note-filter-menu-component";
 import {DataInfoMenuComponent} from "./menu/data-info-menu-component";
-import {DataStoreService} from "../service/data-store-service";
+import {DatastoreService} from "../service/datastore-service";
 
 let template = require("./menu-component.jade");
 
@@ -27,18 +26,16 @@ export class MenuComponent extends BaseComponent {
 
   $parent: AppComponent;
 
-  dataStoreService: DataStoreService;
-  dataTranscieverService: DataTranscieverService;
+  datastoreService: DatastoreService;
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
-      dataTranscieverService: kernel.get(DataTranscieverService),
+      datastoreService: kernel.get(DatastoreService),
     });
   }
 
   reload(): Promise<void> {
-    return this.dataTranscieverService.reload({getContent: false});
+    return this.datastoreService.reload({getContent: false});
   }
 
 }

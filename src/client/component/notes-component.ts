@@ -2,10 +2,9 @@ import Component from "vue-class-component";
 import _ = require("lodash");
 
 import {BaseComponent} from "./base-component";
-import {DataStoreService} from "../service/data-store-service";
+import {DatastoreService} from "../service/datastore-service";
 import {ProfitLogEntity} from "../../common/entity/profit-log-entity";
 import {TimeLogEntity} from "../../common/entity/time-log-entity";
-import {DataTranscieverService} from "../service/data-transciever-service";
 import {kernel} from "../inversify.config";
 
 let template = require("./notes-component.jade");
@@ -19,8 +18,7 @@ let template = require("./notes-component.jade");
 })
 export class NotesComponent extends BaseComponent {
 
-  dataStoreService: DataStoreService;
-  dataTranscieverService: DataTranscieverService;
+  datastoreService: DatastoreService;
   notesSpentTimes: {[noteGuid: string]: {[person: string]: number}};
   notesProfits: {[noteGuid: string]: {[person: string]: number}};
   existPersons: string[];
@@ -32,8 +30,7 @@ export class NotesComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
-      dataTranscieverService: kernel.get(DataTranscieverService),
+      datastoreService: kernel.get(DatastoreService),
       notesSpentTimes: {},
       notesProfits: {},
       existPersons: [],
@@ -49,10 +46,10 @@ export class NotesComponent extends BaseComponent {
 
   reload(): Promise<void> {
     this.isReady = false;
-    this.dataTranscieverService.reload({getContent: true}).then(() => {
-      this.reloadTimeLogs(this.dataStoreService.timeLogs);
+    this.datastoreService.reload({getContent: true}).then(() => {
+      this.reloadTimeLogs(this.datastoreService.timeLogs);
     }).then(() => {
-      this.reloadProfitLogs(this.dataStoreService.profitLogs);
+      this.reloadProfitLogs(this.datastoreService.profitLogs);
     }).then(() => {
       this.isReady = true;
     });

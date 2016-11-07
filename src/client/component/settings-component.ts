@@ -4,10 +4,9 @@ import Vue = require("vue");
 var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base-component";
-import {DataStoreService} from "../service/data-store-service";
+import {DatastoreService} from "../service/datastore-service";
 import {MyPromise} from "../../common/util/my-promise";
 import {SettingEntity} from "../../common/entity/setting-entity";
-import {DataTranscieverService} from "../service/data-transciever-service";
 import {ProgressService} from "../service/progress-service";
 import {RequestService} from "../service/request-service";
 import {kernel} from "../inversify.config";
@@ -42,8 +41,7 @@ let fields: {[fieldName: string]: {[key: string]: any}} = {
 })
 export class SettingsComponent extends BaseComponent {
 
-  dataStoreService: DataStoreService;
-  dataTranscieverService: DataTranscieverService;
+  datastoreService: DatastoreService;
   requestService: RequestService;
   progressService: ProgressService;
   editStore: {[key: string]: any};
@@ -51,8 +49,7 @@ export class SettingsComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      dataStoreService: kernel.get(DataStoreService),
-      dataTranscieverService: kernel.get(DataTranscieverService),
+      datastoreService: kernel.get(DatastoreService),
       requestService: kernel.get(RequestService),
       progressService: kernel.get(ProgressService),
       editStore: {
@@ -66,13 +63,13 @@ export class SettingsComponent extends BaseComponent {
     return super.ready().then(() => {
       return this.reload();
     }).then(() => {
-      this.editStore = _.cloneDeep(this.dataStoreService.settings);
+      this.editStore = _.cloneDeep(this.datastoreService.settings);
       if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
     });
   }
 
   reload(): Promise<void> {
-    return this.dataTranscieverService.reload({getContent: false});
+    return this.datastoreService.reload({getContent: false});
   }
 
   up(index: number) {
@@ -99,7 +96,7 @@ export class SettingsComponent extends BaseComponent {
     let reload = false;
     MyPromise.eachPromiseSeries(this.fields, (field: any, key: string) => {
       this.progressService.next(`Saving ${key}...`);
-      if (JSON.stringify(this.editStore[key]) == JSON.stringify(this.dataStoreService.settings[key]))
+      if (JSON.stringify(this.editStore[key]) == JSON.stringify(this.datastoreService.settings[key]))
         return null;
       if (field.reParse) reParse = true;
       if (field.reload) reload = true;
@@ -107,16 +104,16 @@ export class SettingsComponent extends BaseComponent {
         _id: key,
         value: this.editStore[key]
       })).then(() => {
-        this.dataStoreService.settings[key] = this.editStore[key];
+        this.datastoreService.settings[key] = this.editStore[key];
       });
     }).then(() => {
       this.progressService.close();
       if (reParse)
-        return this.dataTranscieverService.reParse();
+        return this.datastoreService.reParse();
       return null;
     }).then(() => {
       if (reload)
-        return this.dataTranscieverService.reload({getContent: false});
+        return this.datastoreService.reload({getContent: false});
       return null;
     }).catch(err => alert(err));
   }
