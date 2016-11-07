@@ -1,7 +1,7 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
 
-import {NoteEntity} from "../../common/entity/note.entity";
+import {NoteEntity, INoteEntityFindOptions} from "../../common/entity/note.entity";
 import {UserEntity} from "../../common/entity/user.entity";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
@@ -12,6 +12,7 @@ import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
 import {SettingEntity} from "../../common/entity/setting.entity";
 import {MyPromiseTerminateResult, MyPromise} from "../../common/util/my-promise";
+import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
 
 interface IDatastoreServiceParams {
   start?: moment.Moment,
@@ -20,7 +21,7 @@ interface IDatastoreServiceParams {
   hasContent?: boolean,
   noFilter?: boolean,
   getContent?: boolean,
-  getArchive?: boolean,
+  archive?: boolean,
 }
 
 @injectable()
@@ -68,7 +69,7 @@ export class DatastoreService extends BaseClientService {
 
   reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (!this.globalUser) return Promise.resolve();
-    this.progressService.open(params.getContent ? 8 : 3);
+    this.progressService.open(params.getContent ? 8 : params.archive ? 5 : 3);
     return Promise.resolve().then(() => {
       return this.getUser();
     }).then(() => {
@@ -80,18 +81,27 @@ export class DatastoreService extends BaseClientService {
     }).then(() => {
       return this.getNotebooks();
     }).then(() => {
-      if (!params.getContent) return Promise.resolve();
-      return Promise.resolve().then(() => {
-        return this.checkNoteCount(params);
-      }).then(() => {
-        return this.getNotes(params);
-      }).then(() => {
-        return this.getNoteContents();
-      }).then(() => {
-        return this.getTimeLogs(params);
-      }).then(() => {
-        return this.getProfitLogs();
-      });
+      if (params.getContent) {
+        return Promise.resolve().then(() => {
+          return this.checkNoteCount(params);
+        }).then(() => {
+          return this.getNotes(params);
+        }).then(() => {
+          return this.getNoteContents();
+        }).then(() => {
+          return this.getTimeLogs(params);
+        }).then(() => {
+          return this.getProfitLogs();
+        });
+      } else if (params.archive) {
+        return Promise.resolve().then(() => {
+          return this.checkNoteCount(params);
+        }).then(() => {
+          return this.getNotes(params);
+        });
+      } else {
+        return Promise.resolve();
+      }
     }).then(() => {
       this.progressService.next("Done.");
       this.progressService.close();
@@ -106,7 +116,7 @@ export class DatastoreService extends BaseClientService {
   private getUser(): Promise<void> {
     if (this.user) return Promise.resolve();
     this.progressService.next("Getting user data.");
-    return this.requestService.findOne<UserEntity>(UserEntity).then(user => {
+    return this.requestService.load<UserEntity>(UserEntity).then(user => {
       this.user = user;
     });
   }
@@ -141,9 +151,9 @@ export class DatastoreService extends BaseClientService {
   }
 
   private checkNoteCount(params: IDatastoreServiceParams): Promise<void> {
-    let noteQuery = this.makeNoteQuery(params);
+    let options = this.makeNoteFindOptions(params);
     this.progressService.next("Getting notes count.");
-    return this.requestService.count(NoteEntity, noteQuery).then(count => {
+    return this.requestService.count(NoteEntity, options).then(count => {
       if (count > 100)
         if (!window.confirm(`Current query find ${count} notes. It is too many. Continue anyway?`))
           return Promise.reject(new MyPromiseTerminateResult(`User Canceled`));
@@ -152,9 +162,9 @@ export class DatastoreService extends BaseClientService {
   }
 
   private getNotes(params: IDatastoreServiceParams): Promise<void> {
-    let noteQuery = this.makeNoteQuery(params);
+    let options = this.makeNoteFindOptions(params);
     this.progressService.next("Getting notes.");
-    return this.requestService.find<NoteEntity>(NoteEntity, noteQuery).then(notes => {
+    return this.requestService.find<NoteEntity>(NoteEntity, options).then(notes => {
       this.notes = _.keyBy(notes, "guid");
     });
   }
@@ -179,8 +189,8 @@ export class DatastoreService extends BaseClientService {
       var note = this.notes[noteGuid];
       guids.push(note.guid);
     }
-    let timeLogQuery = this.makeTimeLogQuery(_.merge({}, params, {noteGuids: guids}));
-    return this.requestService.find<TimeLogEntity>(TimeLogEntity, timeLogQuery).then(timeLogs => {
+    let options = this.makeTimeLogFindOptions(_.merge({}, params, {noteGuids: guids}));
+    return this.requestService.find<TimeLogEntity>(TimeLogEntity, options).then(timeLogs => {
       this.timeLogs = {};
       for (var timeLog of timeLogs) {
         if (!this.timeLogs[timeLog.noteGuid])
@@ -197,7 +207,7 @@ export class DatastoreService extends BaseClientService {
       let note = this.notes[noteGuid];
       guids.push(note.guid);
     }
-    return this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {noteGuid: {$in: guids}}).then(profitLogs => {
+    return this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {query: {noteGuid: {$in: guids}}}).then(profitLogs => {
       this.profitLogs = {};
       for (let profitLog of profitLogs) {
         if (!this.profitLogs[profitLog.noteGuid])
@@ -220,27 +230,28 @@ export class DatastoreService extends BaseClientService {
   }
 
   countNotes(params: IDatastoreServiceParams): Promise<number> {
-    let query = this.makeNoteQuery(params);
-    return this.requestService.count(NoteEntity, query).then(count => {
+    let options = this.makeNoteFindOptions(params);
+    return this.requestService.count(NoteEntity, options).then(count => {
       return count;
     });
   }
 
   countTimeLogs(params: IDatastoreServiceParams): Promise<number> {
-    let query = this.makeTimeLogQuery(params);
-    return this.requestService.count(TimeLogEntity, query).then(count => {
+    let options = this.makeTimeLogFindOptions(params);
+    return this.requestService.count(TimeLogEntity, options).then(count => {
       return count;
     });
   }
 
-  protected makeNoteQuery(params: IDatastoreServiceParams): Object {
-    var result = {};
-    // set updated query
+  protected makeNoteFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
+    let options: INoteEntityFindOptions = {query: {$and: []}};
     if (params.start)
-      _.merge(result, {updated: {$gte: params.start.valueOf()}});
+      options.query.$and.push({updated: {$gte: params.start.valueOf()}});
+    if (params.end)
+      options.query.$and.push({updated: {$lte: params.end.valueOf()}});
     // set hasContent query
     if (params.hasContent)
-      _.merge(result, {content: {$ne: null}});
+      options.query.$and.push({content: {$ne: null}});
     // set noFilter
     if (!params.noFilter) {
       // check notebooks
@@ -258,26 +269,30 @@ export class DatastoreService extends BaseClientService {
           }
       // set notebooks query
       if (_.size(notebooksHash) > 0)
-        _.merge(result, {notebookGuid: {$in: _.keys(notebooksHash)}});
+        options.query.$and.push({notebookGuid: {$in: _.keys(notebooksHash)}});
     }
-    return result;
+    if (params.archive) {
+      options.archive = true;
+      options.content = true;
+    }
+    return options;
   };
 
-  protected makeTimeLogQuery(params: IDatastoreServiceParams): Object {
-    var result = {};
+  protected makeTimeLogFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
+    let options:IMultiEntityFindOptions = {query: {$and: []}};
     // set date query
     if (params.start)
-      _.merge(result, {date: {$gte: params.start.valueOf()}});
+      options.query.$and.push({date: {$gte: params.start.valueOf()}});
     if (params.end)
-      _.merge(result, {date: {$lte: params.end.valueOf()}});
+      options.query.$and.push({date: {$lte: params.end.valueOf()}});
     // set noFilter query
     if (params.noFilter) {
     }
     // set note guids query
     if (params.noteGuids)
       if (params.noteGuids.length > 0)
-        _.merge(result, {noteGuid: {$in: params.noteGuids}});
-    return result;
+        _.merge(options.query, {noteGuid: {$in: params.noteGuids}});
+    return options;
   };
 
 }

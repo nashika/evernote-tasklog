@@ -15,13 +15,15 @@ export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends Base
   }
 
   index(req: Request, _res: Response): Promise<T1[]> {
-    return this.getTable(req).find(req.body).then((entities: T1[]) => {
+    let options: IMultiEntityFindOptions = req.body;
+    return this.getTable(req).find(options).then((entities: T1[]) => {
       return entities;
     });
   }
 
   count(req: Request, _res: Response): Promise<number> {
-    return this.getTable(req).count(req.body).then(count => {
+    let options: IMultiEntityFindOptions = req.body;
+    return this.getTable(req).count(options).then(count => {
       return count;
     });
   }

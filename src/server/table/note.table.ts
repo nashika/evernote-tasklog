@@ -1,10 +1,9 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
 
-import {NoteEntity} from "../../common/entity/note.entity";
+import {NoteEntity, INoteEntityFindOptions} from "../../common/entity/note.entity";
 import {MyPromise} from "../../common/util/my-promise";
 import {BaseMultiEvernoteTable} from "./base-multi-evernote.table";
-import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
 import {TimeLogTable} from "./time-log.table";
 import {ProfitLogTable} from "./profit-log.table";
 import {TableService} from "../service/table.service";
@@ -12,19 +11,15 @@ import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {EvernoteClientService} from "../service/evernote-client.service";
 
-export interface NoteTableOptions extends IMultiEntityFindOptions {
-  content?: boolean;
-}
-
 @injectable()
-export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptions> {
+export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, INoteEntityFindOptions> {
 
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService) {
     super();
   }
 
-  find(options: NoteTableOptions): Promise<NoteEntity[]> {
+  find(options: INoteEntityFindOptions): Promise<NoteEntity[]> {
     return super.find(options).then(notes => {
       if (options.content) {
         return notes;
@@ -54,8 +49,8 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, NoteTableOptio
     });
   }
 
-  reParseNotes(query: Object = {}): Promise<void> {
-    let options: NoteTableOptions = {};
+  reParseNotes(query = {}): Promise<void> {
+    let options: INoteEntityFindOptions = {};
     options.query = query;
     options.limit = 0;
     options.content = true;

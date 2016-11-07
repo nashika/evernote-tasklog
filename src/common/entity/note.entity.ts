@@ -1,5 +1,9 @@
 import {BaseMultiEvernoteEntity} from "./base-multi-evernote.entity";
-import {IBaseMultiEntityParams} from "./base-multi.entity";
+import {IBaseMultiEntityParams, IMultiEntityFindOptions} from "./base-multi.entity";
+
+export interface INoteEntityFindOptions extends IMultiEntityFindOptions {
+  content?: boolean;
+}
 
 export class NoteEntity extends BaseMultiEvernoteEntity {
 

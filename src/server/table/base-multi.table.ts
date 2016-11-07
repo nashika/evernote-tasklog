@@ -2,7 +2,7 @@ import _ = require("lodash");
 
 import {BaseTable} from "./base.table";
 import {MyPromise} from "../../common/util/my-promise";
-import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
+import {BaseMultiEntity, IMultiEntityFindOptions, INedbQuery} from "../../common/entity/base-multi.entity";
 
 export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityFindOptions> extends BaseTable {
 
@@ -12,7 +12,7 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     return <typeof BaseMultiTable>this.constructor;
   }
 
-  findOne(query: Object): Promise<T1> {
+  findOne(query: INedbQuery): Promise<T1> {
     query = this.parseFindQuery(query);
     this.message("find", ["local"], this.EntityClass.params.name, true, {query: query});
     return new Promise((resolve, reject) => {
@@ -26,9 +26,10 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
 
   find(options: T2 = <any>{}): Promise<T1[]> {
     options = this.parseFindOptions(options);
+    let datastore = options.archive ? this.archiveDatastore : this.datastore;
     this.message("find", ["local"], this.EntityClass.params.name, true, {options: options});
     return new Promise((resolve, reject) => {
-      this.datastore.find(options.query).sort(options.sort).limit(options.limit).exec((err, docs) => {
+      datastore.find(options.query).sort(options.sort).limit(options.limit).exec((err, docs) => {
         this.message("find", ["local"], this.EntityClass.params.name, false, {"docs.length": docs.length, options: options}, err);
         if (err) return reject(err);
         resolve(_.map(docs, doc => new (<any>this.EntityClass)(doc)));
@@ -36,11 +37,12 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     });
   }
 
-  count(query: Object = null): Promise<number> {
-    query = this.parseFindQuery(query);
-    this.message("count", ["local"], this.EntityClass.params.name, true, {query: query});
+  count(options: T2 = <any>{}): Promise<number> {
+    options = this.parseFindOptions(options);
+    let datastore = options.archive ? this.archiveDatastore : this.datastore;
+    this.message("count", ["local"], this.EntityClass.params.name, true, options);
     return new Promise((resolve, reject) => {
-      this.datastore.count(query, (err, count) => {
+      datastore.count(options.query, (err, count) => {
         this.message("count", ["local"], this.EntityClass.params.name, false, {count: count}, err);
         if (err) return reject(err);
         resolve(count);
@@ -49,29 +51,19 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
   }
 
   private parseFindOptions(options: T2): T2 {
-    var result: any = {};
+    let result: T2 = <any>{};
     // Detect options has query only or has some parameters.
     result.query = this.parseFindQuery(options.query);
     result.sort = options.sort || _.cloneDeep(this.EntityClass.params.default.sort);
     result.limit = options.limit || this.EntityClass.params.default.limit;
-    // If some parameter type is string, convert object.
-    for (var key of ["query", "sort"]) {
-      switch (typeof result[key]) {
-        case "object":
-          result[key] = result[key];
-          break;
-        case "string":
-          result[key] = JSON.parse(result[key]);
-          break;
-      }
-    }
+    result.archive = options.archive;
     // Merge default append parameters.
     _.merge(result.sort, this.EntityClass.params.append.sort);
     return result;
   }
 
-  private parseFindQuery(query: Object): Object {
-    let result = query || _.cloneDeep(this.EntityClass.params.default.query);
+  private parseFindQuery(query: INedbQuery): INedbQuery {
+    let result: INedbQuery = query || _.cloneDeep(this.EntityClass.params.default.query);
     _.merge(result, this.EntityClass.params.append.query);
     return result;
   }
