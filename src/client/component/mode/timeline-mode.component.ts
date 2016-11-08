@@ -80,7 +80,17 @@ export class TimelineModeComponent extends BaseComponent {
         },
         hiddenDates: hiddenDates,
       });
-      // set person data
+      // add events
+      this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
+      // reload
+      return this.reload();
+    });
+  }
+
+  reload(): Promise<void> {
+    return this.datastoreService.reload({start: this.start, end: this.end, getContent: true}).then(() => {
+      this.timelineGroups.clear();
+      this.timelineItems.clear();
       if (!this.datastoreService.settings || !this.datastoreService.settings["persons"]) return null;
       for (let person of this.datastoreService.settings["persons"])
         this.timelineGroups.add({
@@ -91,16 +101,6 @@ export class TimelineModeComponent extends BaseComponent {
         id: "updated",
         content: "Update",
       });
-      // add events
-      this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
-      // reload
-      return this.reload();
-    });
-  }
-
-  reload(): Promise<void> {
-    return this.datastoreService.reload({start: this.start, end: this.end, getContent: true}).then(() => {
-      this.timelineItems.clear();
       let notes: {[noteGuid: string]: NoteEntity} = {};
       for (var noteGuid in this.datastoreService.notes) {
         let note: NoteEntity = this.datastoreService.notes[noteGuid];

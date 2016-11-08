@@ -42,4 +42,9 @@ export class NavigationComponent extends BaseComponent {
     this.$root.reload();
   }
 
+  changeMode(mode: string) {
+    this.datastoreService.clear();
+    this.mode = mode;
+  }
+
 }

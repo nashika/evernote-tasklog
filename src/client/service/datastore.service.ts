@@ -46,6 +46,14 @@ export class DatastoreService extends BaseClientService {
     this.lastUpdateCount = 0;
     this.globalUser = null;
     this.user = null;
+    this.filterParams = {
+      notebookGuids: [],
+      stacks: [],
+    };
+    this.clear();
+  }
+
+  clear(): void {
     this.persons = [];
     this.notebooks = {};
     this.stacks = [];
@@ -54,10 +62,6 @@ export class DatastoreService extends BaseClientService {
     this.timeLogs = {};
     this.profitLogs = {};
     this.settings = {};
-    this.filterParams = {
-      notebookGuids: [],
-      stacks: [],
-    };
   }
 
   checkUpdateCount(): Promise<boolean> {
