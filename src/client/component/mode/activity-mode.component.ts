@@ -5,6 +5,7 @@ import Vue = require("vue");
 import diff = require("diff");
 import htmlToText = require("html-to-text");
 import diff2html = require("diff2html");
+let vueStrap = require("vue-strap");
 
 import {BaseComponent} from "../base.component";
 import {kernel} from "../../inversify.config";
@@ -23,7 +24,9 @@ interface IActivityModifyData {
 
 @Component({
   template: template,
-  components: {},
+  components: {
+    popover: vueStrap.popover,
+  },
   events: {
     "reload": "reload",
   },
@@ -79,6 +82,10 @@ export class ActivityModeComponent extends BaseComponent {
   changeDate(direction: boolean) {
     this.date = moment(this.date).add(direction ? 1 : -1, "days").toDate();
     this.reload();
+  }
+
+  detail(note: NoteEntity) {
+    return `UpdateSequenceNum: ${note.updateSequenceNum}`;
   }
 
 }

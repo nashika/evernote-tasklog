@@ -7,7 +7,9 @@
   "scripts": {
     "build": "npm-run-all tsc webpack-production",
     "ncu": "ncu",
-    "postinstall": "typings install",
+    "postinstall": "npm-run-all postinstall:*",
+    "postinstall:copy-bootstrap": "cpx \"node_modules/bootstrap-sass/assets/stylesheets/bootstrap/**/*\" \"src/client/scss/bootstrap\" -C",
+    "postinstall:typings": "typings install",
     "start": "node ./bin/evernote-tasklog",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
@@ -53,6 +55,7 @@
   "devDependencies": {
     "bootstrap-sass": "^3.3.7",
     "core-js": "^2.4.1",
+    "cpx": "^1.5.0",
     "css-loader": "^0.25.0",
     "diff": "^3.0.1",
     "diff2html": "^2.0.10",

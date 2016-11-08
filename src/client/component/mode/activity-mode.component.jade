@@ -1,14 +1,16 @@
-section.activity
+section.activity-mode
   .row
     .col-md-3
       button.btn.btn-default.btn-block(@click="changeDate(false)") Prev Date
     .col-md-6
-      .text-center {{moment(date).format('YYYY/MM/DD')}}
+      h1 {{moment(date).format('YYYY/MM/DD')}}
     .col-md-3
       button.btn.btn-default.btn-block(@click="changeDate(true)") Next Date
-  div(v-for="note in datastoreService.noteArchives")
-    h1: a(href="evernote:///view/{{datastoreService.user.id}}/{{datastoreService.user.shardId}}/{{note.guid}}/{{note.guid}}/") {{note.title}}
-    pre {{moment(note.updated).format('HH:mm:ss')}} {{note.updateSequenceNum}}
+  section.activity-mode-item(v-for="note in datastoreService.noteArchives")
+    h1
+      popover(trigger="hover", placement="bottom", title="Info", :content="detail(note)")
+        a(href="evernote:///view/{{datastoreService.user.id}}/{{datastoreService.user.shardId}}/{{note.guid}}/{{note.guid}}/")
+          | {{moment(note.updated).format('HH:mm:ss')}} {{note.title}}
     div
       div(v-if="modifies[note._id]")
         div(v-html="modifies[note._id].diffHtml")
