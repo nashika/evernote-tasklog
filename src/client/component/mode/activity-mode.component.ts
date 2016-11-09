@@ -92,7 +92,8 @@ Notebook: [${this.notebookName(note)}]
 Tags: ${_.join(_.map(this.tagNames(note), tagName => `[${tagName}]`), " ")}
 
 ###Note Content###
-${plainContentText}`;
+${plainContentText}
+`;
   }
 
   changeDate(direction: boolean) {
