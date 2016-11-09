@@ -22,7 +22,7 @@ export class RequestService extends BaseClientService {
     options.limit = 1;
     return request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options).then(res => {
       let results: T[] = _.map(res.body, doc => new (<any>EntityClass)(doc));
-      return results[0] && null;
+      return results[0] || null;
     });
   }
 

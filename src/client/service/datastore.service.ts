@@ -263,6 +263,20 @@ export class DatastoreService extends BaseClientService {
     });
   }
 
+  getPrevNote(note: NoteEntity): Promise<NoteEntity> {
+    let prevNote: NoteEntity;
+    prevNote = _.find(this.noteArchives, (searchNote: NoteEntity) => {
+      return searchNote.guid == note.guid && searchNote.updateSequenceNum < note.updateSequenceNum;
+    });
+    if (prevNote) return Promise.resolve(prevNote);
+    let options: INoteEntityFindOptions = {
+      query: {guid: note.guid, updateSequenceNum: {$lt: note.updateSequenceNum}},
+      archive: true,
+      content: true,
+    };
+    return this.requestService.findOne<NoteEntity>(NoteEntity, options);
+  }
+
   protected makeNoteFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
     let options: INoteEntityFindOptions = {query: {$and: []}};
     if (params.start)

@@ -61,25 +61,25 @@ export class ActivityModeComponent extends BaseComponent {
   reload(): Promise<void> {
     let start = moment(this.date).startOf("day");
     let end = moment(this.date).endOf("day");
+    this.modifies = {};
     return this.datastoreService.reload({start: start, end: end, archive: true}).then(() => {
       return MyPromise.eachPromiseSeries(this.datastoreService.noteArchives, (note: NoteEntity) => {
-        let modify: IActivityModifyData = {};
-        modify.prevNote = _.find(this.datastoreService.noteArchives, (searchNote: NoteEntity) => {
-          return searchNote.guid == note.guid && searchNote.updateSequenceNum < note.updateSequenceNum;
-        });
-        if (modify.prevNote) {
+        return this.datastoreService.getPrevNote(note).then(prevNote => {
+          let modify: IActivityModifyData = {};
+          modify.prevNote = prevNote;
           let oldText = this.makeDiffText(modify.prevNote);
           let newText = this.makeDiffText(note);
           modify.diffPatch = diff.createPatch("Note Content", oldText, newText, "", "", {context: 0});
           modify.diffHtml = diff2html.Diff2Html.getPrettyHtml(modify.diffPatch);
-        }
-        Vue.set(this.modifies, note._id, modify);
-        return Promise.resolve();
+          Vue.set(this.modifies, note._id, modify);
+          return Promise.resolve();
+        });
       });
     });
   }
 
   private makeDiffText(note: NoteEntity): string {
+    if (!note) return "";
     let noteContent = note.content
       .replace(/<en-todo checked="false"\/>/g, "□")
       .replace(/<en-todo checked="true"\/>/g, "■")

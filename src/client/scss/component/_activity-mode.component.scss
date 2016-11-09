@@ -34,7 +34,44 @@ section.activity-mode {
       }
 
       > .body {
-        padding: 5px;
+
+        div.d2h-wrapper {
+
+          div.d2h-file-wrapper {
+            border: none;
+            border-radius: 0;
+            margin-bottom: 0;
+
+            div.d2h-file-header {
+              display: none;
+            }
+
+            div.d2h-file-diff {
+              max-height: 200px;
+              overflow-x: auto;
+              overflow-y: auto;
+
+              table.d2h-diff-table {
+
+                tbody.d2h-diff-tbody {
+
+                  tr {
+
+                    td.d2h-code-linenumber {
+                      display: none;
+                    }
+
+                    td {
+                      div.d2h-code-line {
+                        margin-left: 0;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
