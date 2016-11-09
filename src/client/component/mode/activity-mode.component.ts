@@ -62,7 +62,7 @@ export class ActivityModeComponent extends BaseComponent {
     let start = moment(this.date).startOf("day");
     let end = moment(this.date).endOf("day");
     this.modifies = {};
-    return this.datastoreService.reload({start: start, end: end, archive: true}).then(() => {
+    return this.datastoreService.reload({start: start, end: end, archive: true, archiveMinStepMinute: 10}).then(() => {
       return MyPromise.eachPromiseSeries(this.datastoreService.noteArchives, (note: NoteEntity) => {
         return this.datastoreService.getPrevNote(note).then(prevNote => {
           let modify: IActivityModifyData = {};

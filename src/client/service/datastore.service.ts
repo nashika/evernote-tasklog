@@ -22,7 +22,8 @@ interface IDatastoreServiceParams {
   hasContent?: boolean,
   noFilter?: boolean,
   getContent?: boolean,
-  archive?: boolean,
+  archive?: boolean
+  archiveMinStepMinute?: number;
 }
 
 @injectable()
@@ -184,6 +185,15 @@ export class DatastoreService extends BaseClientService {
     this.progressService.next("Getting notes.");
     let options = this.makeNoteFindOptions(params);
     return this.requestService.find<NoteEntity>(NoteEntity, options).then(notes => {
+      if (params.archiveMinStepMinute) {
+        notes = _.filter(notes, (filterNote: NoteEntity) => {
+          return !_.find(notes, (findNote: NoteEntity) => {
+            if (filterNote.guid != findNote.guid) return false;
+            if (filterNote.updateSequenceNum >= findNote.updateSequenceNum) return false;
+            return (findNote.updated - filterNote.updated) < params.archiveMinStepMinute * 60 * 1000;
+          });
+        });
+      }
       this.noteArchives = notes;
       this.notes = _.keyBy(notes, "guid");
     });
