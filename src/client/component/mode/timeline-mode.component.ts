@@ -55,6 +55,12 @@ export class TimelineModeComponent extends BaseComponent {
 
   ready(): Promise<void> {
     return super.ready().then(() => {
+      // generate timeline object
+      this.timelineItems = new vis.DataSet();
+      this.timelineGroups = new vis.DataSet();
+      // reload
+      return this.reload();
+    }).then(() => {
       let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
       // set working time
       let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
@@ -66,9 +72,6 @@ export class TimelineModeComponent extends BaseComponent {
         }];
       else
         hiddenDates = [];
-      // generate timeline object
-      this.timelineItems = new vis.DataSet();
-      this.timelineGroups = new vis.DataSet();
       this.timeline = new vis.Timeline(container, this.timelineItems, this.timelineGroups, {
         margin: {item: 5},
         height: window.innerHeight - 80,
@@ -82,9 +85,7 @@ export class TimelineModeComponent extends BaseComponent {
       });
       // add events
       this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
-      // reload
-      return this.reload();
-    });
+    })
   }
 
   reload(): Promise<void> {

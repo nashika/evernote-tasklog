@@ -19,4 +19,7 @@ export class TagEntity extends BaseMultiEvernoteEntity {
     },
   };
 
+  name: string;
+  parentGuid: string;
+
 }

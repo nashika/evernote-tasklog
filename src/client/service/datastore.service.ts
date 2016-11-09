@@ -13,6 +13,7 @@ import {RequestService} from "./request.service";
 import {SettingEntity} from "../../common/entity/setting.entity";
 import {MyPromiseTerminateResult, MyPromise} from "../../common/util/my-promise";
 import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
+import {TagEntity} from "../../common/entity/tag.entity";
 
 interface IDatastoreServiceParams {
   start?: moment.Moment,
@@ -33,6 +34,7 @@ export class DatastoreService extends BaseClientService {
   persons: Object[];
   notebooks: {[guid: string]: NotebookEntity};
   stacks: string[];
+  tags: {[guid: string]: TagEntity};
   notes: {[guid: string]: NoteEntity};
   noteArchives: NoteEntity[];
   timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}};
@@ -57,6 +59,7 @@ export class DatastoreService extends BaseClientService {
     this.persons = [];
     this.notebooks = {};
     this.stacks = [];
+    this.tags = {};
     this.notes = {};
     this.noteArchives = [];
     this.timeLogs = {};
@@ -75,7 +78,7 @@ export class DatastoreService extends BaseClientService {
 
   reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (!this.globalUser) return Promise.resolve();
-    this.progressService.open(params.getContent ? 8 : params.archive ? 5 : 3);
+    this.progressService.open(params.getContent ? 12 : params.archive ? 9 : 7);
     return Promise.resolve().then(() => {
       return this.getUser();
     }).then(() => {
@@ -86,6 +89,8 @@ export class DatastoreService extends BaseClientService {
       return this.runSync();
     }).then(() => {
       return this.getNotebooks();
+    }).then(() => {
+      return this.getTags();
     }).then(() => {
       if (params.getContent) {
         return Promise.resolve().then(() => {
@@ -120,8 +125,8 @@ export class DatastoreService extends BaseClientService {
   }
 
   private getUser(): Promise<void> {
-    if (this.user) return Promise.resolve();
     this.progressService.next("Getting user data.");
+    if (this.user) return Promise.resolve();
     return this.requestService.load<UserEntity>(UserEntity).then(user => {
       this.user = user;
     });
@@ -137,6 +142,7 @@ export class DatastoreService extends BaseClientService {
   }
 
   private checkSettings(): Promise<void> {
+    this.progressService.next("Checking settings data.");
     if (!this.settings["persons"] || this.settings["persons"].length == 0)
       return Promise.reject(new MyPromiseTerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
     else
@@ -156,9 +162,16 @@ export class DatastoreService extends BaseClientService {
     });
   }
 
+  private getTags(): Promise<void> {
+    this.progressService.next("Getting tags data.");
+    return this.requestService.find<TagEntity>(TagEntity).then(tags => {
+      this.tags = _.keyBy(tags, "guid");
+    });
+  }
+
   private checkNoteCount(params: IDatastoreServiceParams): Promise<void> {
+    this.progressService.next("Checking notes count.");
     let options = this.makeNoteFindOptions(params);
-    this.progressService.next("Getting notes count.");
     return this.requestService.count(NoteEntity, options).then(count => {
       if (count > 100)
         if (!window.confirm(`Current query find ${count} notes. It is too many. Continue anyway?`))
@@ -168,8 +181,8 @@ export class DatastoreService extends BaseClientService {
   }
 
   private getNotes(params: IDatastoreServiceParams): Promise<void> {
-    let options = this.makeNoteFindOptions(params);
     this.progressService.next("Getting notes.");
+    let options = this.makeNoteFindOptions(params);
     return this.requestService.find<NoteEntity>(NoteEntity, options).then(notes => {
       this.noteArchives = notes;
       this.notes = _.keyBy(notes, "guid");

@@ -24,6 +24,9 @@ export class NoteEntity extends BaseMultiEvernoteEntity {
   };
 
   title: string;
+  notebookGuid: string;
+  tagGuids: string[];
+  created: number;
   updated: number;
   content: string;
 
