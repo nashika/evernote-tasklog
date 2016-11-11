@@ -64,7 +64,7 @@ export class ActivityModeComponent extends BaseComponent {
     this.modifies = {};
     return this.datastoreService.reload({start: start, end: end, archive: true, archiveMinStepMinute: 10}).then(() => {
       return MyPromise.eachPromiseSeries(this.datastoreService.noteArchives, (note: NoteEntity) => {
-        return this.datastoreService.getPrevNote(note).then(prevNote => {
+        return this.datastoreService.getPrevNote(note, 10).then(prevNote => {
           let modify: IActivityModifyData = {};
           modify.prevNote = prevNote;
           let oldText = this.makeDiffText(modify.prevNote);
