@@ -117,13 +117,14 @@ export class TimelineModeComponent extends BaseComponent {
       }
       for (let noteGuid in this.datastoreService.timeLogs) {
         let noteTimeLogs = this.datastoreService.timeLogs[noteGuid];
-        for (var timeLogId in noteTimeLogs) {
+        for (let timeLogId in noteTimeLogs) {
           let timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
-          let noteTitle: string = notes[timeLog.noteGuid].title;
+          let note: NoteEntity = notes[timeLog.noteGuid];
+          if (!note) continue;
           let timelineItem: TimelineItem = {
             id: timeLog._id,
             group: timeLog.person,
-            content: `<a href="evernote:///view/${this.datastoreService.user["id"]}/${this.datastoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${noteTitle} ${timeLog.comment}">${abbreviateFilter(noteTitle, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
+            content: `<a href="evernote:///view/${this.datastoreService.user["id"]}/${this.datastoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
             start: moment(timeLog.date).toDate(),
             end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
             type: timeLog.spentTime ? 'range' : 'point',
