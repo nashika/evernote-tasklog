@@ -54,44 +54,15 @@ export class TimelineModeComponent extends BaseComponent {
   }
 
   ready(): Promise<void> {
-    return super.ready().then(() => {
-      // generate timeline object
-      this.timelineItems = new vis.DataSet();
-      this.timelineGroups = new vis.DataSet();
-      // reload
-      return this.reload();
-    }).then(() => {
-      let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
-      // set working time
-      let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
-      if (this.datastoreService.settings && this.datastoreService.settings["startWorkingTime"] && this.datastoreService.settings["endWorkingTime"])
-        hiddenDates = [{
-          start: moment().subtract(1, "days").startOf("day").hour(this.datastoreService.settings["endWorkingTime"]),
-          end: moment().startOf("day").hour(this.datastoreService.settings["startWorkingTime"]),
-          repeat: "daily",
-        }];
-      else
-        hiddenDates = [];
-      this.timeline = new vis.Timeline(container, this.timelineItems, this.timelineGroups, {
-        margin: {item: 5},
-        height: window.innerHeight - 80,
-        orientation: {axis: "both", item: "top"},
-        start: this.start,
-        end: this.end,
-        order: (a: TimelineItem, b: TimelineItem) => {
-          return a.start.getTime() - b.start.getTime();
-        },
-        hiddenDates: hiddenDates,
-      });
-      // add events
-      this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
-    })
+    return this.reload();
   }
 
   reload(): Promise<void> {
     return this.datastoreService.reload({start: this.start, end: this.end, getContent: true}).then(() => {
-      this.timelineGroups.clear();
-      this.timelineItems.clear();
+      if (this.timeline) this.timeline.destroy();
+      this.timelineGroups = new vis.DataSet();
+      this.timelineItems = new vis.DataSet();
+    }).then(() => {
       if (!this.datastoreService.settings || !this.datastoreService.settings["persons"]) return null;
       for (let person of this.datastoreService.settings["persons"])
         this.timelineGroups.add({
@@ -133,6 +104,30 @@ export class TimelineModeComponent extends BaseComponent {
         }
       }
       return Promise.resolve();
+    }).then(() => {
+      let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
+      // set working time
+      let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
+      if (this.datastoreService.settings && this.datastoreService.settings["startWorkingTime"] && this.datastoreService.settings["endWorkingTime"])
+        hiddenDates = [{
+          start: moment().subtract(1, "days").startOf("day").hour(this.datastoreService.settings["endWorkingTime"]),
+          end: moment().startOf("day").hour(this.datastoreService.settings["startWorkingTime"]),
+          repeat: "daily",
+        }];
+      else
+        hiddenDates = [];
+      this.timeline = new vis.Timeline(container, this.timelineItems, this.timelineGroups, {
+        margin: {item: 5},
+        height: window.innerHeight - 80,
+        orientation: {axis: "both", item: "top"},
+        start: this.start,
+        end: this.end,
+        order: (a: TimelineItem, b: TimelineItem) => {
+          return a.start.getTime() - b.start.getTime();
+        },
+        hiddenDates: hiddenDates,
+      });
+      this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
     });
   }
 
