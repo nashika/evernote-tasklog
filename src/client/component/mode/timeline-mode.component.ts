@@ -37,6 +37,8 @@ export class TimelineModeComponent extends BaseComponent {
   timelineGroups: any;
   start: moment.Moment;
   end: moment.Moment;
+  startView: moment.Moment;
+  endView: moment.Moment;
 
   constructor() {
     super();
@@ -50,6 +52,8 @@ export class TimelineModeComponent extends BaseComponent {
       timelineGroups: null,
       start: moment().startOf("day"),
       end: moment().endOf("day"),
+      startView: moment().startOf("day"),
+      endView: moment().endOf("day"),
     });
   }
 
@@ -120,8 +124,8 @@ export class TimelineModeComponent extends BaseComponent {
         margin: {item: 5},
         height: window.innerHeight - 80,
         orientation: {axis: "both", item: "top"},
-        start: this.start,
-        end: this.end,
+        start: this.startView,
+        end: this.endView,
         order: (a: TimelineItem, b: TimelineItem) => {
           return a.start.getTime() - b.start.getTime();
         },
@@ -132,6 +136,8 @@ export class TimelineModeComponent extends BaseComponent {
   }
 
   onRangeChanged(properties: {start: Date, end: Date}) {
+    this.startView = moment(properties.start);
+    this.endView = moment(properties.end);
     let currentStart = moment(properties.start).startOf("day");
     let currentEnd = moment(properties.end).endOf("day");
     if (currentStart.isSameOrAfter(this.start) && currentEnd.isSameOrBefore(this.end))
