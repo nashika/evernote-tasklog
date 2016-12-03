@@ -94,7 +94,7 @@ export class SettingsModeComponent extends BaseComponent {
     this.progressService.open(_.size(this.fields));
     let reParse = false;
     let reload = false;
-    MyPromise.eachPromiseSeries(this.fields, (field: any, key: string) => {
+    MyPromise.eachSeries(this.fields, (field: any, key: string) => {
       this.progressService.next(`Saving ${key}...`);
       if (JSON.stringify(this.editStore[key]) == JSON.stringify(this.datastoreService.settings[key]))
         return null;

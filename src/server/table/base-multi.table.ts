@@ -73,12 +73,14 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     let arrEntities: T1[] = _.castArray(entities);
     if (arrEntities.length == 0) return Promise.resolve();
     this.message("save", ["local"], this.EntityClass.params.name, true, {"docs.count": arrEntities.length});
-    return MyPromise.eachFunctionSeries<T1>(arrEntities, (resolve, reject, entity) => {
-      this.message("upsert", ["local"], this.EntityClass.params.name, true, {_id: entity._id, title: _.get(entity, this.EntityClass.params.titleField)});
-      this.datastore.update({_id: entity._id}, entity, {upsert: true}, (err, numReplaced) => {
-        this.message("upsert", ["local"], this.EntityClass.params.name, false, {_id: entity._id, numReplaced: numReplaced}, err);
-        if (err) return reject(err);
-        resolve();
+    return MyPromise.eachSeries<T1>(arrEntities, entity => {
+      return new Promise((resolve, reject) => {
+        this.message("upsert", ["local"], this.EntityClass.params.name, true, {_id: entity._id, title: _.get(entity, this.EntityClass.params.titleField)});
+        this.datastore.update({_id: entity._id}, entity, {upsert: true}, (err, numReplaced) => {
+          this.message("upsert", ["local"], this.EntityClass.params.name, false, {_id: entity._id, numReplaced: numReplaced}, err);
+          if (err) return reject(err);
+          resolve();
+        });
       });
     }).then(() => {
       this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});

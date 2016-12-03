@@ -11,7 +11,7 @@ import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
 import {SettingEntity} from "../../common/entity/setting.entity";
-import {MyPromiseTerminateResult, MyPromise} from "../../common/util/my-promise";
+import {MyPromise} from "../../common/util/my-promise";
 import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
 import {TagEntity} from "../../common/entity/tag.entity";
 
@@ -24,6 +24,17 @@ interface IDatastoreServiceParams {
   getContent?: boolean,
   archive?: boolean
   archiveMinStepMinute?: number;
+}
+
+export class TerminateResult {
+
+  constructor(public data: any = null) {
+  }
+
+  toString(): string {
+    return this.data;
+  }
+
 }
 
 @injectable()
@@ -120,7 +131,7 @@ export class DatastoreService extends BaseClientService {
     }).catch(err => {
       alert(err);
       this.progressService.close();
-      if (!(err instanceof MyPromiseTerminateResult))
+      if (!(err instanceof TerminateResult))
         throw new Error(`HTTP request error. err=${err}`);
     });
   }
@@ -145,7 +156,7 @@ export class DatastoreService extends BaseClientService {
   private checkSettings(): Promise<void> {
     this.progressService.next("Checking settings data.");
     if (!this.settings["persons"] || this.settings["persons"].length == 0)
-      return Promise.reject(new MyPromiseTerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
+      return Promise.reject(new TerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`));
     else
       return Promise.resolve();
   }
@@ -176,7 +187,7 @@ export class DatastoreService extends BaseClientService {
     return this.requestService.count(NoteEntity, options).then(count => {
       if (count > 100)
         if (!window.confirm(`Current query find ${count} notes. It is too many. Continue anyway?`))
-          return Promise.reject(new MyPromiseTerminateResult(`User Canceled`));
+          return Promise.reject(new TerminateResult(`User Canceled`));
       return Promise.resolve();
     });
   }
@@ -202,7 +213,7 @@ export class DatastoreService extends BaseClientService {
   private getNoteContents(): Promise<void> {
     this.progressService.next("Request remote contents.");
     let count = 0;
-    return MyPromise.eachPromiseSeries(this.notes, (note, noteGuid) => {
+    return MyPromise.eachSeries(this.notes, (note, noteGuid) => {
       this.progressService.set(`Request remote contents. ${++count} / ${_.size(this.notes)}`);
       if (!note.hasContent)
         return this.requestService.getNoteContent(noteGuid).then(note => {

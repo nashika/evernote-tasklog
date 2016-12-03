@@ -30,7 +30,7 @@ export class MainService extends BaseServerService {
     }).then(() => {
       return this.tableService.getGlobalTable<GlobalUserTable>(GlobalUserEntity).find();
     }).then(globalUsers => {
-      return MyPromise.eachPromiseSeries(globalUsers, (globalUser: GlobalUserEntity) => {
+      return MyPromise.eachSeries(globalUsers, globalUser => {
         return this.initializeUser(globalUser);
       });
     });

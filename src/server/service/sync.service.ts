@@ -67,7 +67,7 @@ export class SyncService extends BaseServerService {
       remoteSyncState = syncState;
       // Sync process
       logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
-      return MyPromise.whilePromiseSeries(() => localSyncState.updateCount < remoteSyncState.updateCount, () => {
+      return MyPromise.whileSeries(() => localSyncState.updateCount < remoteSyncState.updateCount, () => {
         return this.getSyncChunk(globalUser, localSyncState);
       });
     }).then(() => {
@@ -132,7 +132,7 @@ export class SyncService extends BaseServerService {
     return Promise.resolve().then(() => {
       return noteTable.find({query: {content: null}, sort: {updated: -1}, limit: numNote});
     }).then(notes => {
-      return MyPromise.eachPromiseSeries(notes, (note: NoteEntity) => {
+      return MyPromise.eachSeries(notes, note => {
         return noteTable.loadRemote(note.guid);
       });
     }).then(() => {

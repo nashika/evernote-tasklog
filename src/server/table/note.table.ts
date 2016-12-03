@@ -55,7 +55,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, INoteEntityFin
     options.limit = 0;
     options.content = true;
     return this.find(options).then(notes => {
-      return MyPromise.eachPromiseSeries(notes, note => {
+      return MyPromise.eachSeries(notes, note => {
         return this.parseNote(note);
       });
     });
