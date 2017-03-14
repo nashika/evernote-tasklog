@@ -11,18 +11,18 @@ let webpackConfig:webpack.Configuration = {
     filename: "[name].bundle.js",
   },
   resolve: {
-    extensions: ["", ".ts", ".js"],
+    extensions: [".ts", ".js"],
   },
   module: {
     loaders: [
-      {test: /\.ts$/, loader: "ts", exclude: /node_modules/,},
-      {test: /\.html$/, loader: "html", },
-      {test: /\.jade$/, loaders: ["raw", "jade-html"], },
-      {test: /\.css$/, loaders: ["style", "css"], },
-      {test: /\.scss$/, loaders: ["style", "css", "sass"], },
-      {test: /\.(jpg|jpeg|png|gif)$/, loader: "url"},
-      {test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/, loader: "url", query: {prefix: "dist/fonts/", name:"fonts/[name].[ext]", limit: 10000, mimetype: "application/font-woff"}},
-      {test: /\.(ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/, loader: "file", query: {name: "fonts/[name].[ext]"}},
+      {test: /\.ts$/, loader: "ts-loader", exclude: /node_modules/,},
+      {test: /\.html$/, loader: "html-loader", },
+      {test: /\.jade$/, loaders: ["raw-loader", "jade-html-loader"], },
+      {test: /\.css$/, loaders: ["style-loader", "css-loader"], },
+      {test: /\.scss$/, loaders: ["style-loader", "css-loader", "sass-loader"], },
+      {test: /\.(jpg|jpeg|png|gif)$/, loader: "url-loader"},
+      {test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/, loader: "url-loader", query: {prefix: "dist/fonts/", name:"fonts/[name].[ext]", limit: 10000, mimetype: "application/font-woff"}},
+      {test: /\.(ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader", query: {name: "fonts/[name].[ext]"}},
     ],
   },
   node: {
