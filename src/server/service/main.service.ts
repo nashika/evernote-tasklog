@@ -24,36 +24,23 @@ export class MainService extends BaseServerService {
     super();
   }
 
-  initializeGlobal(): Promise<void> {
-    return Promise.resolve().then(() => {
-      return this.tableService.initializeGlobal();
-    }).then(() => {
-      return this.tableService.getGlobalTable<GlobalUserTable>(GlobalUserEntity).find();
-    }).then(globalUsers => {
-      return MyPromise.eachSeries(globalUsers, globalUser => {
-        return this.initializeUser(globalUser);
-      });
-    });
+  async initializeGlobal(): Promise<void> {
+    await this.tableService.initializeGlobal();
+    let globalUsers = await this.tableService.getGlobalTable<GlobalUserTable>(GlobalUserEntity).find();
+    for (let globalUser of globalUsers) {
+      await this.initializeUser(globalUser);
+    }
   }
 
-  initializeUser(globalUser: GlobalUserEntity): Promise<void> {
-    return Promise.resolve().then(() => {
-      return this.evernoteClientService.initializeUser(globalUser);
-    }).then(() => {
-      return this.tableService.initializeUser(globalUser);
-    }).then(() => {
-      return this.settingService.initializeUser(globalUser);
-    }).then(() => {
-      return this.syncService.initializeUser(globalUser);
-    }).then(() => {
-      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
-    }).then((remoteUser: UserEntity) => {
-      return this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
-    }).then(() => {
-      return this.syncService.sync(globalUser, true);
-    }).then(() => {
-      logger.info(`Init user finished. user:${globalUser._id} data was initialized.`);
-    });
+  async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
+    await this.evernoteClientService.initializeUser(globalUser);
+    await this.tableService.initializeUser(globalUser);
+    await this.settingService.initializeUser(globalUser);
+    await this.syncService.initializeUser(globalUser);
+    let remoteUser = await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
+    await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
+    await this.syncService.sync(globalUser, true);
+    logger.info(`Init user finished. user:${globalUser._id} data was initialized.`);
   }
 
 }

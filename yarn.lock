@@ -1930,9 +1930,9 @@ eventsource@0.1.6:
   dependencies:
     original ">=0.0.5"
 
-evernote@1.25.81:
-  version "1.25.81"
-  resolved "https://registry.yarnpkg.com/evernote/-/evernote-1.25.81.tgz#b3656a38e213ffcd4f8d33256100ff9ae318ae05"
+evernote@1.25.82:
+  version "1.25.82"
+  resolved "https://registry.yarnpkg.com/evernote/-/evernote-1.25.82.tgz#79f3f74767c655c5bb42b2ac341913e81c50fa54"
   dependencies:
     oauth "*"
 

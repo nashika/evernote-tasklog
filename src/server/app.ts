@@ -73,6 +73,7 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 
+
 // main logic
 let mainService: MainService = container.get<MainService>(MainService);
 mainService.initializeGlobal().then(() => {
