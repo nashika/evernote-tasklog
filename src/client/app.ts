@@ -11,8 +11,8 @@ import './filter/object-length.filter';
 import './filter/order-object-by.filter';
 import './filter/spent-time.filter';
 
-import {kernel} from "./inversify.config";
+import {container} from "./inversify.config";
 
-let AppComponent = kernel.get("Newable<AppComponent>");
+let AppComponent = container.get("Newable<AppComponent>");
 let app = new (<any>AppComponent)({el: "#app"});
 app;

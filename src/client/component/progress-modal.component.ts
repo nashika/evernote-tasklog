@@ -4,7 +4,7 @@ var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base.component";
 import {ProgressService} from "../service/progress.service";
-import {kernel} from "../inversify.config";
+import {container} from "../inversify.config";
 
 let template = require("./progress-modal.component.jade");
 
@@ -26,7 +26,7 @@ export class ProgressModalComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      progressService: kernel.get(ProgressService),
+      progressService: container.get(ProgressService),
       show: false,
       value: 0,
       completeCount: 0,

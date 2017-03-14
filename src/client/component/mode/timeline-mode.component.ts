@@ -8,7 +8,7 @@ import {DatastoreService} from "../../service/datastore.service";
 import {NoteEntity} from "../../../common/entity/note.entity";
 import {abbreviateFilter} from "../../filter/abbreviate.filter";
 import {TimeLogEntity} from "../../../common/entity/time-log.entity";
-import {kernel} from "../../inversify.config";
+import {container} from "../../inversify.config";
 
 let template = require("./timeline-mode.component.jade");
 
@@ -46,7 +46,7 @@ export class TimelineModeComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      datastoreService: kernel.get(DatastoreService),
+      datastoreService: container.get(DatastoreService),
       timeline: null,
       timelineItems: null,
       timelineGroups: null,

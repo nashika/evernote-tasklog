@@ -3,7 +3,7 @@ import _ = require("lodash");
 
 import {MenuModeComponent} from "../menu-mode.component";
 import {BaseComponent} from "../../base.component";
-import {kernel} from "../../../inversify.config";
+import {container} from "../../../inversify.config";
 import {DatastoreService} from "../../../service/datastore.service";
 import {RequestService} from "../../../service/request.service";
 import {GlobalUserEntity} from "../../../../common/entity/global-user.entity";
@@ -26,8 +26,8 @@ export class UserMenuModeComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      datastoreService: kernel.get(DatastoreService),
-      requestService: kernel.get(RequestService),
+      datastoreService: container.get(DatastoreService),
+      requestService: container.get(RequestService),
       globalUsers: null,
     });
   }

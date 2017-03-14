@@ -5,7 +5,7 @@ import {BaseComponent} from "../base.component";
 import {DatastoreService} from "../../service/datastore.service";
 import {ProfitLogEntity} from "../../../common/entity/profit-log.entity";
 import {TimeLogEntity} from "../../../common/entity/time-log.entity";
-import {kernel} from "../../inversify.config";
+import {container} from "../../inversify.config";
 import {AppComponent} from "../app.component";
 import {NoteEntity} from "../../../common/entity/note.entity";
 
@@ -34,7 +34,7 @@ export class NotesModeComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      datastoreService: kernel.get(DatastoreService),
+      datastoreService: container.get(DatastoreService),
       notes: {},
       notesSpentTimes: {},
       notesProfits: {},

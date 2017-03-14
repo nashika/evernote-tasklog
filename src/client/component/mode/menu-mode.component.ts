@@ -3,7 +3,7 @@ import _ = require("lodash");
 
 import {BaseComponent} from "../base.component";
 import {AppComponent} from "../app.component";
-import {kernel} from "../../inversify.config";
+import {container} from "../../inversify.config";
 import {UserMenuModeComponent} from "./menu/user-menu-mode.component";
 import {NoteFilterMenuModeComponent} from "./menu/note-filter-menu-mode.component";
 import {DataInfoMenuModeComponent} from "./menu/data-info-menu-mode.component";
@@ -30,7 +30,7 @@ export class MenuModeComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      datastoreService: kernel.get(DatastoreService),
+      datastoreService: container.get(DatastoreService),
     });
   }
 

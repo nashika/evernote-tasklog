@@ -5,7 +5,7 @@ import {injectable} from "inversify";
 import {getLogger} from "log4js";
 
 import {BaseEntity} from "../../common/entity/base.entity";
-import {kernel} from "../inversify.config";
+import {container} from "../inversify.config";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 
 let logger = getLogger("system");
@@ -25,7 +25,7 @@ export abstract class BaseTable {
 
   constructor() {
     let name = _.lowerFirst(_.replace(this.Class.name, /Table$/, ""));
-    this.EntityClass = <any>kernel.getNamed(BaseEntity, name);
+    this.EntityClass = <any>container.getNamed(BaseEntity, name);
   }
 
   connect(globalUser: GlobalUserEntity = null) {

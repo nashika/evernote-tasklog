@@ -2646,9 +2646,9 @@ invariant@^2.2.0:
   dependencies:
     loose-envify "^1.0.0"
 
-inversify@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/inversify/-/inversify-2.0.1.tgz#0cb27673ccb7a096caa1c7ff9fa79db80be38686"
+inversify@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/inversify/-/inversify-3.1.0.tgz#820571ddf52e7d8f875a5de15de3468319b86f80"
 
 invert-kv@^1.0.0:
   version "1.0.0"
@@ -4451,9 +4451,9 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "^0.4.2"
 
-reflect-metadata@0.1.8:
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.8.tgz#72426d570b60776e3688968bd5ab9537a15cecf6"
+reflect-metadata@0.1.10:
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.10.tgz#b4f83704416acad89988c9b15635d47e03b9344a"
 
 regenerate@^1.2.1:
   version "1.3.2"

@@ -7,7 +7,7 @@ import {SettingsModeComponent} from "./mode/settings-mode.component";
 import {ProgressModalComponent} from "./progress-modal.component";
 import {NotesModeComponent} from "./mode/notes-mode.component";
 import {TimelineModeComponent} from "./mode/timeline-mode.component";
-import {kernel} from "../inversify.config";
+import {container} from "../inversify.config";
 import {ActivityModeComponent} from "./mode/activity-mode.component";
 import {DatastoreService} from "../service/datastore.service";
 
@@ -33,7 +33,7 @@ export class AppComponent extends BaseComponent {
 
   data(): any {
     return {
-      datastoreService: kernel.get(DatastoreService),
+      datastoreService: container.get(DatastoreService),
       mode: "menu",
       lastUpdateCount: 0,
     }

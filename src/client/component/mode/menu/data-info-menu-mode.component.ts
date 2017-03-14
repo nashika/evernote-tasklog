@@ -4,7 +4,7 @@ import _ = require("lodash");
 import {MenuModeComponent} from "../menu-mode.component";
 import {BaseComponent} from "../../base.component";
 import {AppComponent} from "../../app.component";
-import {kernel} from "../../../inversify.config";
+import {container} from "../../../inversify.config";
 import {DatastoreService} from "../../../service/datastore.service";
 
 let template = require("./data-info-menu-mode.component.jade");
@@ -35,7 +35,7 @@ export class DataInfoMenuModeComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      datastoreService: kernel.get(DatastoreService),
+      datastoreService: container.get(DatastoreService),
       noteCount: 0,
       allNoteCount: 0,
       loadedNoteCount: 0,

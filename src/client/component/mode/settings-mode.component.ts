@@ -9,7 +9,7 @@ import {MyPromise} from "../../../common/util/my-promise";
 import {SettingEntity} from "../../../common/entity/setting.entity";
 import {ProgressService} from "../../service/progress.service";
 import {RequestService} from "../../service/request.service";
-import {kernel} from "../../inversify.config";
+import {container} from "../../inversify.config";
 
 let template = require("./settings-mode.component.jade");
 
@@ -49,9 +49,9 @@ export class SettingsModeComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      datastoreService: kernel.get(DatastoreService),
-      requestService: kernel.get(RequestService),
-      progressService: kernel.get(ProgressService),
+      datastoreService: container.get(DatastoreService),
+      requestService: container.get(RequestService),
+      progressService: container.get(ProgressService),
       editStore: {
         persons: [],
       },

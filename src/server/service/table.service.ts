@@ -4,7 +4,7 @@ import {BaseServerService} from "./base-server.service";
 import {BaseTable} from "../table/base.table";
 import {BaseEntity} from "../../common/entity/base.entity";
 import {SessionService} from "./session.service";
-import {kernel} from "../inversify.config";
+import {container} from "../inversify.config";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 
 @injectable()
@@ -20,7 +20,7 @@ export class TableService extends BaseServerService {
   }
 
   initializeGlobal(): Promise<void> {
-    for (let table of kernel.getAll<BaseTable>(BaseTable)) {
+    for (let table of container.getAll<BaseTable>(BaseTable)) {
       if (table.EntityClass.params.requireUser) continue;
       this.globalTables[table.EntityClass.params.name] = table;
       table.connect();
@@ -30,7 +30,7 @@ export class TableService extends BaseServerService {
 
   initializeUser(globalUser: GlobalUserEntity): Promise<void> {
     this.userTables[globalUser._id] = {};
-    for (let table of kernel.getAll<BaseTable>(BaseTable)) {
+    for (let table of container.getAll<BaseTable>(BaseTable)) {
       if (!table.EntityClass.params.requireUser) continue;
       this.userTables[globalUser._id][table.EntityClass.params.name] = table;
       table.connect(globalUser);

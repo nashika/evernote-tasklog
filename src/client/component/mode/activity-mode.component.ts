@@ -8,7 +8,7 @@ import diff2html = require("diff2html");
 let vueStrap = require("vue-strap");
 
 import {BaseComponent} from "../base.component";
-import {kernel} from "../../inversify.config";
+import {container} from "../../inversify.config";
 import {DatastoreService} from "../../service/datastore.service";
 import {AppComponent} from "../app.component";
 import {NoteEntity} from "../../../common/entity/note.entity";
@@ -46,7 +46,7 @@ export class ActivityModeComponent extends BaseComponent {
 
   data(): any {
     return _.assign(super.data(), {
-      datastoreService: kernel.get(DatastoreService),
+      datastoreService: container.get(DatastoreService),
       date: new Date(),
       modifies: {},
     });

@@ -7,7 +7,7 @@ import session = require("express-session");
 import bodyParser = require("body-parser");
 
 import {BaseRoute} from "./routes/base.route";
-import {kernel} from "./inversify.config";
+import {container} from "./inversify.config";
 
 let NedbStore = require("nedb-session-store")(session);
 let app: express.Express = express();
@@ -37,7 +37,7 @@ app.use(session({
   }),
 }));
 app.use(express.static(path.join(__dirname, "../../public")));
-for (let route of kernel.getAll<BaseRoute>(BaseRoute))
+for (let route of container.getAll<BaseRoute>(BaseRoute))
   app.use(route.getBasePath(), route.getRouter());
 
 // catch 404 and forward to error handler

@@ -18,7 +18,7 @@ import _ = require("lodash");
 import commander = require("commander");
 
 import "./log4js";
-import {kernel} from "./inversify.config";
+import {container} from "./inversify.config";
 import {MainService} from "./service/main.service";
 
 let logger = getLogger("system");
@@ -74,7 +74,7 @@ server.on('listening', onListening);
 
 
 // main logic
-let mainService: MainService = kernel.get<MainService>(MainService);
+let mainService: MainService = container.get<MainService>(MainService);
 mainService.initializeGlobal().then(() => {
   logger.info(`Initialize web server finished.`);
   logger.info(`Server address is http://localhost:${port}/`);
