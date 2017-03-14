@@ -21,12 +21,11 @@ export class SettingService extends BaseServerService {
     this.userSettings = {};
   }
 
-  initializeUser(globalUser: GlobalUserEntity): Promise<void> {
-    return this.tableService.getUserTable<SettingTable>(SettingEntity, globalUser).find().then((settings: SettingEntity[]) => {
-      this.userSettings[globalUser._id] = <any>{};
-      for (let setting of settings)
-        this.userSettings[globalUser._id][setting._id] = setting.value;
-    });
+  async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
+    let settings = await this.tableService.getUserTable<SettingTable>(SettingEntity, globalUser).find();
+    this.userSettings[globalUser._id] = <any>{};
+    for (let setting of settings)
+      this.userSettings[globalUser._id][setting._id] = setting.value;
   }
 
   getUser(globalUser: GlobalUserEntity): IUserSetting {

@@ -8,7 +8,7 @@ import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
 @injectable()
 export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, IMultiEntityFindOptions> {
 
-  parse(note: NoteEntity, lines: string[]): Promise<void> {
+  async parse(note: NoteEntity, lines: string[]): Promise<void> {
     let profitLogs: ProfitLogEntity[] = [];
     for (var line of lines) {
       let matches: string[];
@@ -21,11 +21,8 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, IMultiEntity
         }));
       }
     }
-    return Promise.resolve().then(() => {
-      return this.remove({noteGuid: note.guid});
-    }).then(() => {
-      return this.save(profitLogs);
-    });
+    await this.remove({noteGuid: note.guid});
+    await this.save(profitLogs);
   }
 
 }

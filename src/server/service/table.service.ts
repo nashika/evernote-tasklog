@@ -19,23 +19,21 @@ export class TableService extends BaseServerService {
     this.userTables = {};
   }
 
-  initializeGlobal(): Promise<void> {
+  async initializeGlobal(): Promise<void> {
     for (let table of container.getAll<BaseTable>(BaseTable)) {
       if (table.EntityClass.params.requireUser) continue;
       this.globalTables[table.EntityClass.params.name] = table;
       table.connect();
     }
-    return Promise.resolve();
   }
 
-  initializeUser(globalUser: GlobalUserEntity): Promise<void> {
+  async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
     this.userTables[globalUser._id] = {};
     for (let table of container.getAll<BaseTable>(BaseTable)) {
       if (!table.EntityClass.params.requireUser) continue;
       this.userTables[globalUser._id][table.EntityClass.params.name] = table;
       table.connect(globalUser);
     }
-    return Promise.resolve();
   }
 
   getGlobalTable<T extends BaseTable>(EntityClass: typeof BaseEntity): T {

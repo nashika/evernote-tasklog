@@ -11,8 +11,8 @@ export class UserTable extends BaseSingleEvernoteTable<UserEntity> {
     super();
   }
 
-  loadRemote(): Promise<UserEntity> {
-    return this.evernoteClientService.getUser(this.globalUser);
+  async loadRemote(): Promise<UserEntity> {
+    return await this.evernoteClientService.getUser(this.globalUser);
   }
 
 }

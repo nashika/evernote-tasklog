@@ -19,13 +19,13 @@ export class SessionService extends BaseServerService {
     return req.session["evernote"];
   }
 
-  clear(req: Request): Promise<void> {
+  async clear(req: Request): Promise<void> {
     req.session["evernote"] = null;
-    return this.save(req);
+    await this.save(req);
   }
 
-  save(req: Request): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
+  async save(req: Request): Promise<void> {
+    await new Promise<void>((resolve, reject) => {
       req.session.save(err => {
         if (err) reject(err);
         resolve();

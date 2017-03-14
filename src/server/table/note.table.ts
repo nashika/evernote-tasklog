@@ -2,7 +2,6 @@ import _ = require("lodash");
 import {injectable} from "inversify";
 
 import {NoteEntity, INoteEntityFindOptions} from "../../common/entity/note.entity";
-import {MyPromise} from "../../common/util/my-promise";
 import {BaseMultiEvernoteTable} from "./base-multi-evernote.table";
 import {TimeLogTable} from "./time-log.table";
 import {ProfitLogTable} from "./profit-log.table";
@@ -19,50 +18,43 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, INoteEntityFin
     super();
   }
 
-  find(options: INoteEntityFindOptions): Promise<NoteEntity[]> {
-    return super.find(options).then(notes => {
-      if (options.content) {
-        return notes;
-      } else {
-        return _.map(notes, (note: NoteEntity) => {
-          note.hasContent = note.content != null;
-          note.content = null;
-          return note;
-        });
-      }
-    });
+  async find(options: INoteEntityFindOptions): Promise<NoteEntity[]> {
+    let notes = await super.find(options);
+    if (options.content) {
+      return notes;
+    } else {
+      return _.map(notes, (note: NoteEntity) => {
+        note.hasContent = note.content != null;
+        note.content = null;
+        return note;
+      });
+    }
   }
 
-  loadRemote(guid: string): Promise<NoteEntity> {
+  async loadRemote(guid: string): Promise<NoteEntity> {
     let lastNote: NoteEntity = null;
     this.message("load", ["remote"], "note", true, {guid: guid});
-    return Promise.resolve().then(() => {
-      return this.evernoteClientService.getNote(this.globalUser, guid);
-    }).then((note: NoteEntity) => {
-      lastNote = note;
-      return this.saveByGuid(note, true);
-    }).then(() => {
-      return this.parseNote(lastNote);
-    }).then(() => {
-      this.message("load", ["remote"], "note", false, {guid: lastNote.guid, title: lastNote.title});
-      return lastNote;
-    });
+    let note = await this.evernoteClientService.getNote(this.globalUser, guid);
+    lastNote = note;
+    await this.saveByGuid(note, true);
+    await this.parseNote(lastNote);
+    this.message("load", ["remote"], "note", false, {guid: lastNote.guid, title: lastNote.title});
+    return lastNote;
   }
 
-  reParseNotes(query = {}): Promise<void> {
+  async reParseNotes(query = {}): Promise<void> {
     let options: INoteEntityFindOptions = {};
     options.query = query;
     options.limit = 0;
     options.content = true;
-    return this.find(options).then(notes => {
-      return MyPromise.eachSeries(notes, note => {
-        return this.parseNote(note);
-      });
-    });
+    let notes = await this.find(options);
+    for (let note of notes) {
+      await this.parseNote(note);
+    }
   }
 
-  private parseNote(note: NoteEntity): Promise<void> {
-    if (!note.content) return Promise.resolve();
+  private async parseNote(note: NoteEntity): Promise<void> {
+    if (!note.content) return;
     this.message("parse", ["local"], "note", true, {guid: note.guid, title: note.title});
     let content: string = note.content;
     content = content.replace(/\r\n|\r|\n|<br\/>|<\/div>|<\/ul>|<\/li>/g, '<>');
@@ -70,13 +62,9 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, INoteEntityFin
     for (var line of content.split('<>')) {
       lines.push(line.replace(/<[^>]*>/g, ''));
     }
-    return Promise.resolve().then(() => {
-      return this.tableService.getUserTable<TimeLogTable>(TimeLogEntity, this.globalUser).parse(note, lines);
-    }).then(() => {
-      return this.tableService.getUserTable<ProfitLogTable>(ProfitLogEntity, this.globalUser).parse(note, lines);
-    }).then(() => {
-      this.message("parse", ["local"], "note", false, {guid: note.guid, title: note.title});
-    });
+    await this.tableService.getUserTable<TimeLogTable>(TimeLogEntity, this.globalUser).parse(note, lines);
+    await this.tableService.getUserTable<ProfitLogTable>(ProfitLogEntity, this.globalUser).parse(note, lines);
+    this.message("parse", ["local"], "note", false, {guid: note.guid, title: note.title});
   }
 
 }

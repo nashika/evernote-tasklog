@@ -11,9 +11,9 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
     return <typeof BaseSingleTable>this.constructor;
   }
 
-  findOne(): Promise<T> {
+  async findOne(): Promise<T> {
     this.message("load", ["local"], this.EntityClass.params.name, true);
-    return new Promise<T>((resolve, reject) => {
+    return await new Promise<T>((resolve, reject) => {
       this.datastore.findOne({_id: "1"}, (err, doc) => {
         this.message("load", ["local"], this.EntityClass.params.name, false, null, err);
         if (err) return reject(err);
@@ -25,10 +25,10 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
     });
   }
 
-  save(doc: T): Promise<void> {
+  async save(doc: T): Promise<void> {
     doc._id = "1";
     this.message("upsert", ["local"], this.EntityClass.params.name, true);
-    return new Promise<void>((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       this.datastore.update({_id: "1"}, doc, {upsert: true}, (err, numReplaced, newDoc) => {
         this.message("upsert", ["local"], this.EntityClass.params.name, false, {numReplaced: numReplaced}, err);
         if (err) return reject(err);

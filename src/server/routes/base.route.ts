@@ -31,12 +31,13 @@ export abstract class BaseRoute {
 
   abstract getRouter(): Router;
 
-  protected wrap(req: Request, res: Response, func: (req: Request, res: Response) => Promise<any>) {
-    Promise.resolve().then(() => {
-      return func.call(this, req, res);
-    }).then(data => {
+  protected async wrap(req: Request, res: Response, func: (req: Request, res: Response) => Promise<any>): Promise<void> {
+    try {
+      let data = await func.call(this, req, res);
       res.json(data);
-    }).catch(err => this.responseErrorJson(res, err));
+    } catch (err) {
+      this.responseErrorJson(res, err);
+    }
   }
 
   private responseErrorJson(res: Response, err: any) {

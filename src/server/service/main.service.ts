@@ -6,7 +6,6 @@ import {SettingService} from "./setting.service";
 import {EvernoteClientService} from "./evernote-client.service";
 import {UserTable} from "../table/user.table";
 import {UserEntity} from "../../common/entity/user.entity";
-import {MyPromise} from "../../common/util/my-promise";
 import {BaseServerService} from "./base-server.service";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {GlobalUserTable} from "../table/global-user.table";

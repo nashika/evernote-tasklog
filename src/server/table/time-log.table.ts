@@ -13,7 +13,7 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFind
     super();
   }
 
-  parse(note: NoteEntity, lines: string[]): Promise<void> {
+  async parse(note: NoteEntity, lines: string[]): Promise<void> {
     let timeLogs: TimeLogEntity[] = [];
     for (let line of lines) {
       let matches: string[];
@@ -49,11 +49,8 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFind
           timeLogs.push(timeLog);
       }
     }
-    return Promise.resolve().then(() => {
-      return this.remove({noteGuid: note.guid});
-    }).then(() => {
-      return this.save(timeLogs);
-    });
+    await this.remove({noteGuid: note.guid});
+    await this.save(timeLogs);
   }
 
 }

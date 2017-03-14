@@ -12,8 +12,8 @@ export abstract class BaseSingleRoute<T1 extends BaseSingleEntity, T2 extends Ba
     return _router;
   }
 
-  index(req: Request, _res: Response): Promise<T1> {
-    return this.getTable(req).findOne();
+  async index(req: Request, _res: Response): Promise<T1> {
+    return await this.getTable(req).findOne();
   }
 
 }

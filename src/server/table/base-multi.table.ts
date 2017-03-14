@@ -1,7 +1,6 @@
 import _ = require("lodash");
 
 import {BaseTable} from "./base.table";
-import {MyPromise} from "../../common/util/my-promise";
 import {BaseMultiEntity, IMultiEntityFindOptions, INedbQuery} from "../../common/entity/base-multi.entity";
 
 export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityFindOptions> extends BaseTable {
@@ -12,10 +11,10 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     return <typeof BaseMultiTable>this.constructor;
   }
 
-  findOne(query: INedbQuery): Promise<T1> {
+  async findOne(query: INedbQuery): Promise<T1> {
     query = this.parseFindQuery(query);
     this.message("find", ["local"], this.EntityClass.params.name, true, {query: query});
-    return new Promise((resolve, reject) => {
+    return await new Promise<T1>((resolve, reject) => {
       this.datastore.findOne(query, (err, doc) => {
         this.message("find", ["local"], this.EntityClass.params.name, false, {query: query}, err);
         if (err) return reject(err);
@@ -24,11 +23,11 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     });
   }
 
-  find(options: T2 = <any>{}): Promise<T1[]> {
+  async find(options: T2 = <any>{}): Promise<T1[]> {
     options = this.parseFindOptions(options);
     let datastore = options.archive ? this.archiveDatastore : this.datastore;
     this.message("find", ["local"], this.EntityClass.params.name, true, {options: options});
-    return new Promise((resolve, reject) => {
+    return await new Promise<T1[]>((resolve, reject) => {
       datastore.find(options.query).sort(options.sort).limit(options.limit).exec((err, docs) => {
         this.message("find", ["local"], this.EntityClass.params.name, false, {"docs.length": docs.length, options: options}, err);
         if (err) return reject(err);
@@ -37,11 +36,11 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     });
   }
 
-  count(options: T2 = <any>{}): Promise<number> {
+  async count(options: T2 = <any>{}): Promise<number> {
     options = this.parseFindOptions(options);
     let datastore = options.archive ? this.archiveDatastore : this.datastore;
     this.message("count", ["local"], this.EntityClass.params.name, true, options);
-    return new Promise((resolve, reject) => {
+    return await new Promise<number>((resolve, reject) => {
       datastore.count(options.query, (err, count) => {
         this.message("count", ["local"], this.EntityClass.params.name, false, {count: count}, err);
         if (err) return reject(err);
@@ -68,29 +67,28 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     return result;
   }
 
-  save(entities: T1|T1[]): Promise<void> {
+  async save(entities: T1|T1[]): Promise<void> {
     if (!entities) return Promise.resolve();
     let arrEntities: T1[] = _.castArray(entities);
     if (arrEntities.length == 0) return Promise.resolve();
     this.message("save", ["local"], this.EntityClass.params.name, true, {"docs.count": arrEntities.length});
-    return MyPromise.eachSeries<T1>(arrEntities, entity => {
-      return new Promise((resolve, reject) => {
-        this.message("upsert", ["local"], this.EntityClass.params.name, true, {_id: entity._id, title: _.get(entity, this.EntityClass.params.titleField)});
+    for (let entity of arrEntities) {
+      this.message("upsert", ["local"], this.EntityClass.params.name, true, {_id: entity._id, title: _.get(entity, this.EntityClass.params.titleField)});
+      await new Promise<void>((resolve, reject) => {
         this.datastore.update({_id: entity._id}, entity, {upsert: true}, (err, numReplaced) => {
           this.message("upsert", ["local"], this.EntityClass.params.name, false, {_id: entity._id, numReplaced: numReplaced}, err);
           if (err) return reject(err);
           resolve();
         });
       });
-    }).then(() => {
-      this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});
-    });
+    }
+    this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});
   }
 
-  remove(query: Object): Promise<void> {
+  async remove(query: Object): Promise<void> {
     if (!query) return Promise.resolve();
     this.message("remove", ["local"], this.EntityClass.params.name, true, {query: query});
-    return new Promise<void>((resolve, reject) => {
+    return await new Promise<void>((resolve, reject) => {
       this.datastore.remove(query, {multi: true}, (err, numRemoved) => {
         this.message("remove", ["local"], this.EntityClass.params.name, false, {query: query, numRemoved: numRemoved}, err);
         if (err) return reject(err);

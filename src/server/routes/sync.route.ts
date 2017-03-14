@@ -24,16 +24,15 @@ export class SyncRoute extends BaseRoute {
     return _router;
   }
 
-  index(req: Request, _res: Response): Promise<boolean> {
+  async index(req: Request, _res: Response): Promise<boolean> {
     let session = this.sessionService.get(req);
-    return this.syncService.sync(session.globalUser, true).then(() => {
-      return true;
-    });
+    await this.syncService.sync(session.globalUser, true);
+    return true;
   }
 
-  updateCount(req: Request, _res: Response): Promise<number> {
+  async updateCount(req: Request, _res: Response): Promise<number> {
     let session = this.sessionService.get(req);
-    return Promise.resolve(this.syncService.updateCount(session.globalUser));
+    return this.syncService.updateCount(session.globalUser);
   }
 
 }

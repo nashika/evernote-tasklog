@@ -11,8 +11,8 @@ export class SyncStateTable extends BaseSingleEvernoteTable<SyncStateEntity> {
     super();
   }
 
-  loadRemote(): Promise<SyncStateEntity> {
-    return this.evernoteClientService.getSyncState(this.globalUser);
+  async loadRemote(): Promise<SyncStateEntity> {
+    return await this.evernoteClientService.getSyncState(this.globalUser);
   }
 
 }

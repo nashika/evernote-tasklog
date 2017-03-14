@@ -27,34 +27,28 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
     return _router;
   }
 
-  load(req: Request, _res: Response): Promise<GlobalUserEntity> {
+  async load(req: Request, _res: Response): Promise<GlobalUserEntity> {
     let session = this.sessionService.get(req);
-    return Promise.resolve(session.globalUser);
+    return session.globalUser;
   }
 
-  change(req: Request, _res: Response): Promise<void> {
+  async change(req: Request, _res: Response): Promise<void> {
     let globalUser: GlobalUserEntity = new GlobalUserEntity(req.body);
     let session = this.sessionService.get(req);
     session.globalUser = globalUser;
-    return this.sessionService.save(req);
+    await this.sessionService.save(req);
   }
 
-  auth(req: Request, _res: Response): Promise<GlobalUserEntity> {
+  async auth(req: Request, _res: Response): Promise<GlobalUserEntity> {
     let result: GlobalUserEntity;
     let session = this.sessionService.get(req);
-    return Promise.resolve().then(() => {
-      let sandbox: boolean = req.body.sandbox ? true : false;
-      let token: string = req.body.token;
-      return this.checkToken(sandbox, token);
-    }).then(globalUserEntity => {
-      result = globalUserEntity;
-      return this.getTable(req).save(globalUserEntity);
-    }).then(() => {
-      session.globalUser = result;
-      return this.sessionService.save(req);
-    }).then(() => {
-      return result;
-    });
+    let sandbox: boolean = !!req.body.sandbox;
+    let token: string = req.body.token;
+    result = await this.checkToken(sandbox, token);
+    await this.getTable(req).save(result);
+    session.globalUser = result;
+    await this.sessionService.save(req);
+    return result;
   }
 
   logout(req: Request, _res: Response): Promise<void> {
