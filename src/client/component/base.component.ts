@@ -2,12 +2,11 @@ import Vue = require("vue");
 import _ = require("lodash");
 import moment = require("moment");
 import {LoDashStatic} from "lodash";
-import MomentStatic = moment.MomentStatic;
 
 export class BaseComponent extends Vue {
 
   lodash: LoDashStatic;
-  moment: MomentStatic;
+  moment: moment.Moment;
 
   data(): any {
     return {

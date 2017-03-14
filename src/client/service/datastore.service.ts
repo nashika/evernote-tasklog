@@ -1,5 +1,6 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
+import moment = require("moment");
 
 import {NoteEntity, INoteEntityFindOptions} from "../../common/entity/note.entity";
 import {UserEntity} from "../../common/entity/user.entity";
