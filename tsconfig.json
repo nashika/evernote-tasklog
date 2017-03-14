@@ -15,7 +15,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "newLine": "LF"
+    "newLine": "LF",
+    "lib": ["es6", "dom"]
   },
   "exclude": [
     "node_modules"

@@ -21,9 +21,9 @@
   dependencies:
     "@types/express" "*"
 
-"@types/core-js@0.9.35":
-  version "0.9.35"
-  resolved "https://registry.yarnpkg.com/@types/core-js/-/core-js-0.9.35.tgz#444064e63711cdcc62ea844d27642f6efc2285f2"
+"@types/core-js@0.9.37":
+  version "0.9.37"
+  resolved "https://registry.yarnpkg.com/@types/core-js/-/core-js-0.9.37.tgz#461f4a29f2d34c62c45a0623aeb72c2db696b03c"
 
 "@types/diff2html@0.0.2":
   version "0.0.2"
@@ -77,19 +77,17 @@
   version "0.0.29"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-0.0.29.tgz#fbcfd330573b912ef59eeee14602bface630754b"
 
-"@types/moment@2.13.0":
-  version "2.13.0"
-  resolved "https://registry.yarnpkg.com/@types/moment/-/moment-2.13.0.tgz#604ebd189bc3bc34a1548689404e61a2a4aac896"
-  dependencies:
-    moment "*"
-
 "@types/nedb@0.0.31":
   version "0.0.31"
   resolved "https://registry.yarnpkg.com/@types/nedb/-/nedb-0.0.31.tgz#e556992cc4ac50e28eb926407fc6da008e3dcdd7"
 
-"@types/node@*", "@types/node@7.0.7":
+"@types/node@*":
   version "7.0.7"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.7.tgz#92637c6c4844bfc9a0a686323e38f3e9319118c2"
+
+"@types/node@7.0.8":
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.8.tgz#25e4dd804b630c916ae671233e6d71f6ce18124a"
 
 "@types/pluralize@0.0.27":
   version "0.0.27"
@@ -3297,7 +3295,7 @@ mkdirp@~0.3.5:
   version "0.3.5"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.3.5.tgz#de3e5f8961c88c787ee1368df849ac4413eca8d7"
 
-moment@*, moment@2.17.1, moment@^2.12.0:
+moment@2.17.1, moment@^2.12.0:
   version "2.17.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.17.1.tgz#fed9506063f36b10f066c8b59a144d7faebe1d82"
 
