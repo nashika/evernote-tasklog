@@ -41,7 +41,7 @@
     "lodash": "4.17.4",
     "log4js": "1.1.1",
     "moment": "2.17.1",
-    "nedb": "1.1.2",
+    "nedb": "1.8.0",
     "nedb-session-store": "1.1.1",
     "pluralize": "4.0.0",
     "reflect-metadata": "0.1.8",
