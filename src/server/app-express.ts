@@ -23,13 +23,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(session({
+  name: "evernote-tasklog.connect.sid",
   secret: "mysecret",
   resave: false,
   saveUninitialized: false,
   cookie: {
     path: "/",
     httpOnly: true,
-    maxAge: 365 * 24 * 3600 * 1000,
+    maxAge: 30 * 24 * 3600 * 1000,
   },
   store: new NedbStore({
     filename: path.join(__dirname, `../../db/session.db`),
