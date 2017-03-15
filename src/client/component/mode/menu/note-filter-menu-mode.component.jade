@@ -4,11 +4,10 @@ section.note-filter
     .form-group
       label.col-sm-3.control-label Notebook
       .col-sm-9
-        v-select(:options="getNotebookOptions(datastoreService.notebooks)", multiple,
-        :value.sync="datastoreService.filterParams.notebookGuids", search, clear-button)
+        b-form-select(:options="getNotebookOptions(datastoreService.notebooks)", v-model="datastoreService.filterParams.notebookGuids")
     .form-group
       label.col-sm-3.control-label Stack
       .col-sm-9
-        v-select(:options="getStackOptions(datastoreService.stacks)", multiple,
+        b-form-select(:options="getStackOptions(datastoreService.stacks)", multiple,
         :value.sync="datastoreService.filterParams.stacks", search, clear-button)
   button.btn.btn-primary.btn-lg.btn-block(type="button", @click="$parent.reload()") #[span.fa.fa-refresh] Reload

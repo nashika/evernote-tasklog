@@ -12,7 +12,10 @@ import './filter/order-object-by.filter';
 import './filter/spent-time.filter';
 
 import {container} from "./inversify.config";
+import Vue = require("vue");
+
+let BootstrapVue = require("bootstrap-vue").default;
+Vue.use(BootstrapVue);
 
 let AppComponent = container.get("Newable<AppComponent>");
-let app = new (<any>AppComponent)({el: "#app"});
-app;
+new (<any>AppComponent)({el: "#app"});

@@ -2,7 +2,7 @@ mixin item(name, icon, label, needLogin)
   li(v-if=needLogin ? "datastoreService.globalUser" : "true", :class="{active: mode == '#{name}'}")
     a(@click="changeMode('#{name}')") #[span.fa(class="fa-#{icon}")] #{label}
 
-nav.navbar.navbar-inverse.navbar-fixed-bottom
+nav.navbar.navbar-bottom.navbar-inverse.bg-inverse
   .container-fluid
     .navbar-header
       button.navbar-toggle.collapsed(type="button", @click="navCollapse = !navCollapse")

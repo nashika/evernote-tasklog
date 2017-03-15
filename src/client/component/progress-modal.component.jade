@@ -1,4 +1,4 @@
-modal(title="Progress", :show.sync="show", small, :backdrop="false")
+b-modal(id="progress-modal", title="Progress", :show.sync="show", small, :backdrop="false")
   .modal-body(slot="modal-body")
     .progress
       progressbar(:now="value", type="primary", striped)

@@ -93,8 +93,9 @@
     "typescript": "2.2.1",
     "url-loader": "0.5.8",
     "vis": "4.18.1",
-    "vue": "2.1.10",
+    "vue": "2.2.4",
     "vue-class-component": "5.0.0",
+    "vue-loader": "^11.1.4",
     "webpack": "2.2.1",
     "webpack-dev-server": "2.4.2"
   }
