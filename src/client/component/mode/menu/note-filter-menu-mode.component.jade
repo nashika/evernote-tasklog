@@ -1,13 +1,14 @@
-h2 #[span.fa.fa-search] Note Filter
-form.form-horizontal
-  .form-group
-    label.col-sm-3.control-label Notebook
-    .col-sm-9
-      v-select(:options="getNotebookOptions(datastoreService.notebooks)", multiple,
-      :value.sync="datastoreService.filterParams.notebookGuids", search, clear-button)
-  .form-group
-    label.col-sm-3.control-label Stack
-    .col-sm-9
-      v-select(:options="getStackOptions(datastoreService.stacks)", multiple,
-      :value.sync="datastoreService.filterParams.stacks", search, clear-button)
-button.btn.btn-primary.btn-lg.btn-block(type="button", @click="$parent.reload()") #[span.fa.fa-refresh] Reload
+section.note-filter
+  h2 #[span.fa.fa-search] Note Filter
+  form.form-horizontal
+    .form-group
+      label.col-sm-3.control-label Notebook
+      .col-sm-9
+        v-select(:options="getNotebookOptions(datastoreService.notebooks)", multiple,
+        :value.sync="datastoreService.filterParams.notebookGuids", search, clear-button)
+    .form-group
+      label.col-sm-3.control-label Stack
+      .col-sm-9
+        v-select(:options="getStackOptions(datastoreService.stacks)", multiple,
+        :value.sync="datastoreService.filterParams.stacks", search, clear-button)
+  button.btn.btn-primary.btn-lg.btn-block(type="button", @click="$parent.reload()") #[span.fa.fa-refresh] Reload

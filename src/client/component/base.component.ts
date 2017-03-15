@@ -15,7 +15,10 @@ export class BaseComponent extends Vue {
     };
   }
 
-  async ready(): Promise<void> {
+  async created(): Promise<void> {
+  }
+
+  async mounted(): Promise<void> {
   }
 
 }

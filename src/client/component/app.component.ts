@@ -39,8 +39,11 @@ export class AppComponent extends BaseComponent {
     }
   }
 
-  async ready(): Promise<void> {
-    await super.ready();
+  async created(): Promise<void> {
+  }
+
+  async mounted(): Promise<void> {
+    await super.mounted();
     setInterval(() => this.interval(), 5000);
   }
 
@@ -51,7 +54,7 @@ export class AppComponent extends BaseComponent {
   }
 
   reload() {
-    this.$broadcast("reload");
+    //this.$broadcast("reload");
   }
 
 }

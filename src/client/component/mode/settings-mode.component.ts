@@ -1,7 +1,6 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
 import Vue = require("vue");
-var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "../base.component";
 import {DatastoreService} from "../../service/datastore.service";
@@ -27,16 +26,16 @@ let fields: {[fieldName: string]: {[key: string]: any}} = {
   },
 };
 
-@Component({
+@Component<SettingsModeComponent>({
   template: template,
   components: {
-    tabs: VueStrap.tabset,
-    tabGroup: VueStrap.tabGroup,
-    tab: VueStrap.tab,
+    //tabs: VueStrap.tabset,
+    //tabGroup: VueStrap.tabGroup,
+    //tab: VueStrap.tab,
   },
-  events: {
+  /*events: {
     "reload": "reload",
-  },
+  },*/
 })
 export class SettingsModeComponent extends BaseComponent {
 
@@ -58,8 +57,8 @@ export class SettingsModeComponent extends BaseComponent {
     });
   }
 
-  async ready(): Promise<void> {
-    await super.ready();
+  async mounted(): Promise<void> {
+    await super.mounted();
     await this.reload();
     this.editStore = _.cloneDeep(this.datastoreService.settings);
     if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);

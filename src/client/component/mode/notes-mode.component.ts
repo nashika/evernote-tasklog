@@ -11,12 +11,12 @@ import {NoteEntity} from "../../../common/entity/note.entity";
 
 let template = require("./notes-mode.component.jade");
 
-@Component({
+@Component<NotesModeComponent>({
   template: template,
   components: {},
-  events: {
+  /*events: {
     "reload": "reload",
-  },
+  },*/
 })
 export class NotesModeComponent extends BaseComponent {
 
@@ -43,8 +43,8 @@ export class NotesModeComponent extends BaseComponent {
     });
   }
 
-  async ready(): Promise<void> {
-    await super.ready();
+  async mounted(): Promise<void> {
+    await super.mounted();
     await this.reload();
   }
 

@@ -1,6 +1,5 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
-var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "./base.component";
 import {ProgressService} from "../service/progress.service";
@@ -11,8 +10,8 @@ let template = require("./progress-modal.component.jade");
 @Component({
   template: template,
   components: {
-    modal: VueStrap.modal,
-    progressbar: VueStrap.progressbar,
+    //modal: VueStrap.modal,
+    //progressbar: VueStrap.progressbar,
   },
 })
 export class ProgressModalComponent extends BaseComponent {
@@ -35,8 +34,8 @@ export class ProgressModalComponent extends BaseComponent {
     });
   }
 
-  async ready(): Promise<void> {
-    await super.ready();
+  async mounted(): Promise<void> {
+    await super.mounted();
     this.progressService.register(this);
   }
 

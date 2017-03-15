@@ -5,7 +5,6 @@ import Vue = require("vue");
 import diff = require("diff");
 import htmlToText = require("html-to-text");
 import diff2html = require("diff2html");
-let vueStrap = require("vue-strap");
 
 import {BaseComponent} from "../base.component";
 import {container} from "../../inversify.config";
@@ -21,14 +20,14 @@ interface IActivityModifyData {
   diffHtml?: string;
 }
 
-@Component({
+@Component<ActivityModeComponent>({
   template: template,
   components: {
-    popover: vueStrap.popover,
+    //popover: vueStrap.popover,
   },
-  events: {
+  /*events: {
     "reload": "reload",
-  },
+  },*/
 })
 export class ActivityModeComponent extends BaseComponent {
 
@@ -51,8 +50,12 @@ export class ActivityModeComponent extends BaseComponent {
     });
   }
 
-  async ready(): Promise<void> {
-    await super.ready();
+  async created() {
+
+  }
+
+  async mounted(): Promise<void> {
+    await super.mounted();
     await this.reload();
   }
 

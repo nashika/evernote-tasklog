@@ -6,16 +6,19 @@ let webpackConfig:webpack.Configuration = {
     app: "./src/client/app",
   },
   output: {
-    path: "./public/dist",
+    path: "/public/dist",
     publicPath: "/dist/",
     filename: "[name].bundle.js",
   },
   resolve: {
     extensions: [".ts", ".js"],
+    alias: {
+      vue: 'vue/dist/vue.js'
+    },
   },
   module: {
     loaders: [
-      {test: /\.ts$/, loader: "ts-loader", exclude: /node_modules/,},
+      {test: /\.ts$/, loader: "awesome-typescript-loader", exclude: /node_modules/,},
       {test: /\.html$/, loader: "html-loader", },
       {test: /\.jade$/, loaders: ["raw-loader", "jade-html-loader"], },
       {test: /\.css$/, loaders: ["style-loader", "css-loader"], },

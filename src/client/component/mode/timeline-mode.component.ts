@@ -1,7 +1,6 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
 import moment = require("moment");
-let vis = require("vis");
 
 import {BaseComponent} from "../base.component";
 import {DatastoreService} from "../../service/datastore.service";
@@ -9,6 +8,7 @@ import {NoteEntity} from "../../../common/entity/note.entity";
 import {abbreviateFilter} from "../../filter/abbreviate.filter";
 import {TimeLogEntity} from "../../../common/entity/time-log.entity";
 import {container} from "../../inversify.config";
+import {DataSet, Timeline} from "vis";
 
 let template = require("./timeline-mode.component.jade");
 
@@ -21,15 +21,17 @@ interface TimelineItem {
   type: string,
 }
 
-@Component({
+@Component<TimelineModeComponent>({
   template: template,
   components: {},
-  events: {
+  /*events: {
     "reload": "reload",
     //this.$on("resize", this.onResize);
-  },
+  },*/
 })
 export class TimelineModeComponent extends BaseComponent {
+
+  template = template;
 
   datastoreService: DatastoreService;
   timeline: any;
@@ -57,15 +59,15 @@ export class TimelineModeComponent extends BaseComponent {
     });
   }
 
-  async ready(): Promise<void> {
+  async mounted(): Promise<void> {
     await this.reload();
   }
 
   async reload(): Promise<void> {
     await this.datastoreService.reload({start: this.start, end: this.end, getContent: true});
     if (this.timeline) this.timeline.destroy();
-    this.timelineGroups = new vis.DataSet();
-    this.timelineItems = new vis.DataSet();
+    this.timelineGroups = new DataSet();
+    this.timelineItems = new DataSet();
     if (!this.datastoreService.settings || !this.datastoreService.settings["persons"]) return;
     for (let person of this.datastoreService.settings["persons"])
       this.timelineGroups.add({
@@ -117,12 +119,12 @@ export class TimelineModeComponent extends BaseComponent {
       }];
     else
       hiddenDates = [];
-    this.timeline = new vis.Timeline(container, this.timelineItems, this.timelineGroups, {
+    this.timeline = new Timeline(container, this.timelineItems, this.timelineGroups, <any>{
       margin: {item: 5},
       height: window.innerHeight - 80,
       orientation: {axis: "both", item: "top"},
-      start: this.startView,
-      end: this.endView,
+      start: this.startView.toDate(),
+      end: this.endView.toDate(),
       order: (a: TimelineItem, b: TimelineItem) => {
         return a.start.getTime() - b.start.getTime();
       },

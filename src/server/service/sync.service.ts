@@ -23,7 +23,7 @@ import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 let logger = getLogger("system");
 
 interface IUserTimerData {
-  timer?: NodeJS.Timer;
+  timer?: any;
   interval?: number;
   updateCount?: number;
 }

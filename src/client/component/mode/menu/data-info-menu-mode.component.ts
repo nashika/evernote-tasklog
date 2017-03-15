@@ -47,8 +47,8 @@ export class DataInfoMenuModeComponent extends BaseComponent {
     });
   }
 
-  async ready(): Promise<void> {
-    await super.ready();
+  async mounted(): Promise<void> {
+    await super.mounted();
     await this.reload();
   }
 

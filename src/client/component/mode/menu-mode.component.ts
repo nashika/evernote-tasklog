@@ -11,16 +11,16 @@ import {DatastoreService} from "../../service/datastore.service";
 
 let template = require("./menu-mode.component.jade");
 
-@Component({
+@Component<MenuModeComponent>({
   template: template,
   components: {
     "user-menu-component": UserMenuModeComponent,
     "note-filter-menu-component": NoteFilterMenuModeComponent,
     "data-info-menu-component": DataInfoMenuModeComponent,
   },
-  events: {
+  /*events: {
     reload: "reload",
-  },
+  },*/
 })
 export class MenuModeComponent extends BaseComponent {
 
