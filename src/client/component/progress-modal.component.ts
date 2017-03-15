@@ -35,10 +35,9 @@ export class ProgressModalComponent extends BaseComponent {
     });
   }
 
-  ready(): Promise<void> {
-    return super.ready().then(() => {
-      this.progressService.register(this);
-    });
+  async ready(): Promise<void> {
+    await super.ready();
+    this.progressService.register(this);
   }
 
 }

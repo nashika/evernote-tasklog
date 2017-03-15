@@ -47,48 +47,28 @@ export class DataInfoMenuModeComponent extends BaseComponent {
     });
   }
 
-  ready(): Promise<void> {
-    return super.ready().then(() => {
-      return this.reload();
-    })
+  async ready(): Promise<void> {
+    await super.ready();
+    await this.reload();
   }
 
-  reParse() {
-    this.datastoreService.reParse();
+  async reParse(): Promise<void> {
+    await this.datastoreService.reParse();
   }
 
-  reload(): Promise<void> {
+  async reload(): Promise<void> {
     this.noteCount = null;
     this.allNoteCount = null;
     this.loadedNoteCount = null;
     this.allLoadedNoteCount = null;
     this.timeLogCount = null;
     this.allTimeLogCount = null;
-    return Promise.resolve().then(() => {
-      return this.datastoreService.countNotes({}).then(count => {
-        this.noteCount = count;
-      });
-    }).then(() => {
-      return this.datastoreService.countNotes({noFilter: true}).then(count => {
-        this.allNoteCount = count;
-      });
-    }).then(() => {
-      return this.datastoreService.countNotes({hasContent: true}).then(count => {
-        this.loadedNoteCount = count;
-      });
-    }).then(() => {
-      return this.datastoreService.countNotes({hasContent: true, noFilter: true}).then(count => {
-        this.allLoadedNoteCount = count;
-      });
-    }).then(() => {
-      return this.datastoreService.countTimeLogs({}).then(count => {
-        this.timeLogCount = count;
-      });
-    }).then(() => {
-      return this.datastoreService.countTimeLogs({noFilter: true}).then(count => {
-        this.allTimeLogCount = count;
-      });
-    });
+    this.noteCount = await this.datastoreService.countNotes({});
+    this.allNoteCount = await this.datastoreService.countNotes({noFilter: true});
+    this.loadedNoteCount = await this.datastoreService.countNotes({hasContent: true});
+    this.allLoadedNoteCount = await this.datastoreService.countNotes({hasContent: true, noFilter: true});
+    this.timeLogCount = await this.datastoreService.countTimeLogs({});
+    this.allTimeLogCount = await this.datastoreService.countTimeLogs({noFilter: true});
   }
 
 }

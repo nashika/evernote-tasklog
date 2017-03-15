@@ -5,7 +5,6 @@ var VueStrap = require("vue-strap");
 
 import {BaseComponent} from "../base.component";
 import {DatastoreService} from "../../service/datastore.service";
-import {MyPromise} from "../../../common/util/my-promise";
 import {SettingEntity} from "../../../common/entity/setting.entity";
 import {ProgressService} from "../../service/progress.service";
 import {RequestService} from "../../service/request.service";
@@ -59,63 +58,58 @@ export class SettingsModeComponent extends BaseComponent {
     });
   }
 
-  ready(): Promise<void> {
-    return super.ready().then(() => {
-      return this.reload();
-    }).then(() => {
-      this.editStore = _.cloneDeep(this.datastoreService.settings);
-      if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
-    });
+  async ready(): Promise<void> {
+    await super.ready();
+    await this.reload();
+    this.editStore = _.cloneDeep(this.datastoreService.settings);
+    if (!this.editStore["persons"]) Vue.set(this.editStore, "persons", []);
   }
 
-  reload(): Promise<void> {
-    return this.datastoreService.reload({getContent: false});
+  async reload(): Promise<void> {
+    await this.datastoreService.reload({getContent: false});
   }
 
-  up(index: number) {
+  up(index: number): void {
     if (index == 0) return;
     this.editStore["persons"].splice(index - 1, 2, this.editStore["persons"][index], this.editStore["persons"][index - 1]);
   }
 
-  down(index: number) {
+  down(index: number): void {
     if (index >= this.editStore["persons"].length - 1) return;
     this.editStore["persons"].splice(index, 2, this.editStore["persons"][index + 1], this.editStore["persons"][index]);
   }
 
-  remove(index: number) {
+  remove(index: number): void {
     this.editStore["persons"].splice(index, 1);
   }
 
-  add() {
+  add(): void {
     this.editStore["persons"].push({name: `Person ${this.editStore["persons"].length + 1}`});
   }
 
-  submit() {
+  async submit(): Promise<void> {
     this.progressService.open(_.size(this.fields));
     let reParse = false;
     let reload = false;
-    MyPromise.eachSeries(this.fields, (field: any, key: string) => {
-      this.progressService.next(`Saving ${key}...`);
-      if (JSON.stringify(this.editStore[key]) == JSON.stringify(this.datastoreService.settings[key]))
-        return null;
-      if (field.reParse) reParse = true;
-      if (field.reload) reload = true;
-      return this.requestService.save<SettingEntity>(SettingEntity, new SettingEntity({
-        _id: key,
-        value: this.editStore[key]
-      })).then(() => {
+    try {
+      for (let key in this.fields) {
+        let field = this.fields[key];
+        this.progressService.next(`Saving ${key}...`);
+        if (JSON.stringify(this.editStore[key]) == JSON.stringify(this.datastoreService.settings[key]))
+          continue;
+        if (field.reParse) reParse = true;
+        if (field.reload) reload = true;
+        await this.requestService.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]}));
         this.datastoreService.settings[key] = this.editStore[key];
-      });
-    }).then(() => {
+      }
       this.progressService.close();
       if (reParse)
-        return this.datastoreService.reParse();
-      return null;
-    }).then(() => {
+        await this.datastoreService.reParse();
       if (reload)
-        return this.datastoreService.reload({getContent: false});
-      return null;
-    }).catch(err => alert(err));
+        await this.datastoreService.reload({getContent: false});
+    } catch (err) {
+      alert(err);
+    }
   }
 
 }

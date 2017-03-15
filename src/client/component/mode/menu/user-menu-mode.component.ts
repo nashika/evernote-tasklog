@@ -32,49 +32,39 @@ export class UserMenuModeComponent extends BaseComponent {
     });
   }
 
-  ready(): Promise<void> {
-    return super.ready().then(() => {
-      return this.reload();
-    }).then(() => {
-      return this.requestService.loadAuth();
-    }).then(loadGlobalUser => {
-      if (!loadGlobalUser) return Promise.resolve();
-      let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
-      return this.select(globalUser);
-    }).then(() => {
-      //this.$root.reload(true);
-    });
+  async ready(): Promise<void> {
+    await super.ready();
+    await this.reload();
+    let loadGlobalUser = await this.requestService.loadAuth();
+    if (!loadGlobalUser) return;
+    let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
+    await this.select(globalUser);
   }
 
-  reload(): Promise<void> {
-    return this.requestService.find<GlobalUserEntity>(GlobalUserEntity).then(globalUsers => {
-      this.globalUsers = globalUsers;
-    });
+  async reload(): Promise<void> {
+    this.globalUsers = await this.requestService.find<GlobalUserEntity>(GlobalUserEntity);
   }
 
-  select(globalUser: GlobalUserEntity): Promise<void> {
-    return this.requestService.changeAuth(globalUser).then(() => {
-      this.datastoreService.globalUser = globalUser;
-    }).then(() => {
-      this.datastoreService.lastUpdateCount = 0;
-      this.$root.interval();
-    });
+  async select(globalUser: GlobalUserEntity): Promise<void> {
+    await this.requestService.changeAuth(globalUser);
+    this.datastoreService.globalUser = globalUser;
+    this.datastoreService.lastUpdateCount = 0;
+    this.$root.interval();
   }
 
-  add(sandbox: boolean): Promise<void> {
+  async add(sandbox: boolean): Promise<void> {
     let token = prompt(`Input developer token (${sandbox ? "sandbox" : "production"})`);
-    return this.requestService.tokenAuth(sandbox, token).then(globalUser => {
-      this.datastoreService.globalUser = globalUser;
-      return this.reload();
-    }).catch(err => {
+    try {
+      this.datastoreService.globalUser = await this.requestService.tokenAuth(sandbox, token);
+      await this.reload();
+    } catch (err) {
       alert(`Add user failed. err="${err}"`);
-    });
+    }
   }
 
-  logout(): Promise<void> {
-    return this.requestService.logoutAuth().then(() => {
-      this.select(null);
-    });
+  async logout(): Promise<void> {
+    await this.requestService.logoutAuth();
+    await this.select(null);
   }
 
 }

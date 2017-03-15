@@ -43,22 +43,19 @@ export class NotesModeComponent extends BaseComponent {
     });
   }
 
-  ready(): Promise<void> {
-    return super.ready().then(() => {
-      this.reload();
-    });
+  async ready(): Promise<void> {
+    await super.ready();
+    await this.reload();
   }
 
-  reload(): Promise<void> {
-    return this.datastoreService.reload({getContent: true}).then(() => {
-      this.notes = this.datastoreService.notes;
-      this.reloadTimeLogs(this.datastoreService.timeLogs);
-      this.reloadProfitLogs(this.datastoreService.profitLogs);
-      return Promise.resolve();
-    });
+  async reload(): Promise<void> {
+    await this.datastoreService.reload({getContent: true});
+    this.notes = this.datastoreService.notes;
+    this.reloadTimeLogs(this.datastoreService.timeLogs);
+    this.reloadProfitLogs(this.datastoreService.profitLogs);
   }
 
-  reloadTimeLogs(timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}}) {
+  private reloadTimeLogs(timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}}) {
     this.notesSpentTimes = {};
     let personsHash: {[person: string]: boolean} = {};
     for (var noteGuid in timeLogs) {
@@ -84,7 +81,7 @@ export class NotesModeComponent extends BaseComponent {
     this.existPersons = Object.keys(personsHash);
   }
 
-  reloadProfitLogs(profitLogs: {[noteGuid: string]: {[person: string]: ProfitLogEntity}}) {
+  private reloadProfitLogs(profitLogs: {[noteGuid: string]: {[person: string]: ProfitLogEntity}}) {
     this.notesProfits = {};
     for (var noteGuid in profitLogs) {
       var noteProfitLog = profitLogs[noteGuid];

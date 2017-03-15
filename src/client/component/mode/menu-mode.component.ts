@@ -34,8 +34,8 @@ export class MenuModeComponent extends BaseComponent {
     });
   }
 
-  reload(): Promise<void> {
-    return this.datastoreService.reload({getContent: false});
+  async reload(): Promise<void> {
+    await this.datastoreService.reload({getContent: false});
   }
 
 }

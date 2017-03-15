@@ -15,8 +15,7 @@ export class BaseComponent extends Vue {
     };
   }
 
-  ready(): Promise<void> {
-    return Promise.resolve();
+  async ready(): Promise<void> {
   }
 
 }

@@ -194,7 +194,7 @@ export class DatastoreService extends BaseClientService {
     }
   }
 
-  private getTimeLogs(params: IDatastoreServiceParams): Promise<void> {
+  private async getTimeLogs(params: IDatastoreServiceParams): Promise<void> {
     this.progressService.next("Getting time logs.");
     let guids: string[] = [];
     for (let noteGuid in this.notes) {
@@ -202,60 +202,50 @@ export class DatastoreService extends BaseClientService {
       guids.push(note.guid);
     }
     let options = this.makeTimeLogFindOptions(_.merge({}, params, {noteGuids: guids}));
-    return this.requestService.find<TimeLogEntity>(TimeLogEntity, options).then(timeLogs => {
-      this.timeLogs = {};
-      for (var timeLog of timeLogs) {
-        if (!this.timeLogs[timeLog.noteGuid])
-          this.timeLogs[timeLog.noteGuid] = {};
-        this.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
-      }
-    });
+    let timeLogs = await this.requestService.find<TimeLogEntity>(TimeLogEntity, options);
+    this.timeLogs = {};
+    for (var timeLog of timeLogs) {
+      if (!this.timeLogs[timeLog.noteGuid])
+        this.timeLogs[timeLog.noteGuid] = {};
+      this.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+    }
   }
 
-  private getProfitLogs(): Promise<void> {
+  private async getProfitLogs(): Promise<void> {
     this.progressService.next("Getting profit logs.");
     let guids: string[] = [];
     for (let noteGuid in this.notes) {
       let note = this.notes[noteGuid];
       guids.push(note.guid);
     }
-    return this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {query: {noteGuid: {$in: guids}}}).then(profitLogs => {
-      this.profitLogs = {};
-      for (let profitLog of profitLogs) {
-        if (!this.profitLogs[profitLog.noteGuid])
-          this.profitLogs[profitLog.noteGuid] = {};
-        this.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog;
-      }
-    });
+    let profitLogs = await this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {query: {noteGuid: {$in: guids}}});
+    this.profitLogs = {};
+    for (let profitLog of profitLogs) {
+      if (!this.profitLogs[profitLog.noteGuid])
+        this.profitLogs[profitLog.noteGuid] = {};
+      this.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog;
+    }
   }
 
-  reParse(): Promise<void> {
+  async reParse(): Promise<void> {
     this.progressService.open(2);
     this.progressService.next("Re Parse notes...");
-    return this.requestService.reParseNote().then(() => {
-      this.progressService.next("Done.");
-      this.progressService.close();
-    }).catch(err => {
-      this.progressService.close();
-      throw err;
-    });
+    await this.requestService.reParseNote();
+    this.progressService.next("Done.");
+    this.progressService.close();
   }
 
-  countNotes(params: IDatastoreServiceParams): Promise<number> {
+  async countNotes(params: IDatastoreServiceParams): Promise<number> {
     let options = this.makeNoteFindOptions(params);
-    return this.requestService.count(NoteEntity, options).then(count => {
-      return count;
-    });
+    return await this.requestService.count(NoteEntity, options);
   }
 
-  countTimeLogs(params: IDatastoreServiceParams): Promise<number> {
+  async countTimeLogs(params: IDatastoreServiceParams): Promise<number> {
     let options = this.makeTimeLogFindOptions(params);
-    return this.requestService.count(TimeLogEntity, options).then(count => {
-      return count;
-    });
+    return await this.requestService.count(TimeLogEntity, options);
   }
 
-  getPrevNote(note: NoteEntity, minStepMinute: number): Promise<NoteEntity> {
+  async getPrevNote(note: NoteEntity, minStepMinute: number): Promise<NoteEntity> {
     let prevNote: NoteEntity;
     prevNote = _.find(this.noteArchives, (searchNote: NoteEntity) => {
       return searchNote.guid == note.guid && searchNote.updateSequenceNum < note.updateSequenceNum;
@@ -266,7 +256,7 @@ export class DatastoreService extends BaseClientService {
       archive: true,
       content: true,
     };
-    return this.requestService.findOne<NoteEntity>(NoteEntity, options);
+    return await this.requestService.findOne<NoteEntity>(NoteEntity, options);
   }
 
   protected makeNoteFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {

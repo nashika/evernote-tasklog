@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="evernote-tasklog" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="bin/evernote-tasklog.js" working-dir="$PROJECT_DIR$">
+    <profiling v8-profiler-path="" />
+    <EXTENSION ID="com.jetbrains.nodejs.run.NodeJSProfilingRunConfigurationExtension">
+      <profiling v8-profiler-path="" />
+    </EXTENSION>
+    <method />
+  </configuration>
+</component>

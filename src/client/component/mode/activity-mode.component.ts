@@ -12,7 +12,6 @@ import {container} from "../../inversify.config";
 import {DatastoreService} from "../../service/datastore.service";
 import {AppComponent} from "../app.component";
 import {NoteEntity} from "../../../common/entity/note.entity";
-import {MyPromise} from "../../../common/util/my-promise";
 
 let template = require("./activity-mode.component.jade");
 
@@ -52,30 +51,26 @@ export class ActivityModeComponent extends BaseComponent {
     });
   }
 
-  ready(): Promise<void> {
-    return super.ready().then(() => {
-      return this.reload();
-    });
+  async ready(): Promise<void> {
+    await super.ready();
+    await this.reload();
   }
 
-  reload(): Promise<void> {
+  async reload(): Promise<void> {
     let start = moment(this.date).startOf("day");
     let end = moment(this.date).endOf("day");
     this.modifies = {};
-    return this.datastoreService.reload({start: start, end: end, archive: true, archiveMinStepMinute: 10}).then(() => {
-      return MyPromise.eachSeries(this.datastoreService.noteArchives, (note: NoteEntity) => {
-        return this.datastoreService.getPrevNote(note, 10).then(prevNote => {
-          let modify: IActivityModifyData = {};
-          modify.prevNote = prevNote;
-          let oldText = this.makeDiffText(modify.prevNote);
-          let newText = this.makeDiffText(note);
-          modify.diffPatch = diff.createPatch("Note Content", oldText, newText, "", "", {context: 0});
-          modify.diffHtml = diff2html.Diff2Html.getPrettyHtml(modify.diffPatch);
-          Vue.set(this.modifies, note._id, modify);
-          return Promise.resolve();
-        });
-      });
-    });
+    await this.datastoreService.reload({start: start, end: end, archive: true, archiveMinStepMinute: 10});
+    for (let note of this.datastoreService.noteArchives) {
+      let prevNote = await this.datastoreService.getPrevNote(note, 10);
+      let modify: IActivityModifyData = {};
+      modify.prevNote = prevNote;
+      let oldText = this.makeDiffText(modify.prevNote);
+      let newText = this.makeDiffText(note);
+      modify.diffPatch = diff.createPatch("Note Content", oldText, newText, "", "", {context: 0});
+      modify.diffHtml = diff2html.Diff2Html.getPrettyHtml(modify.diffPatch);
+      Vue.set(this.modifies, note._id, modify);
+    }
   }
 
   private makeDiffText(note: NoteEntity): string {

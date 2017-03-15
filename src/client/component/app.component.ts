@@ -39,17 +39,15 @@ export class AppComponent extends BaseComponent {
     }
   }
 
-  ready(): Promise<void> {
-    return super.ready().then(() => {
-      setInterval(() => this.interval(), 5000);
-    });
+  async ready(): Promise<void> {
+    await super.ready();
+    setInterval(() => this.interval(), 5000);
   }
 
-  interval() {
-    this.datastoreService.checkUpdateCount().then(isUpdated => {
-      if (isUpdated)
-        this.reload();
-    });
+  async interval(): Promise<void> {
+    let isUpdated = await this.datastoreService.checkUpdateCount();
+    if (isUpdated)
+      this.reload();
   }
 
   reload() {
