@@ -1,5 +1,4 @@
 import Component from "vue-class-component";
-import _ = require("lodash");
 
 import {BaseComponent} from "./base.component";
 import {ProgressService} from "../service/progress.service";
@@ -16,23 +15,12 @@ let template = require("./progress-modal.component.jade");
 })
 export class ProgressModalComponent extends BaseComponent {
 
-  progressService: ProgressService;
-  show: boolean;
-  value: number;
-  completeCount: number;
-  allCount: number;
-  message: string;
-
-  data(): any {
-    return _.assign(super.data(), {
-      progressService: container.get(ProgressService),
-      show: false,
-      value: 0,
-      completeCount: 0,
-      allCount: 0,
-      message: "",
-    });
-  }
+  progressService: ProgressService = container.get(ProgressService);
+  show: boolean = false;
+  value: number = 0;
+  completeCount: number = 0;
+  allCount: number = 0;
+  message: string = "";
 
   async mounted(): Promise<void> {
     await super.mounted();

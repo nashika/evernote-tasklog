@@ -39,25 +39,16 @@ let fields: {[fieldName: string]: {[key: string]: any}} = {
 })
 export class SettingsModeComponent extends BaseComponent {
 
-  datastoreService: DatastoreService;
-  requestService: RequestService;
-  progressService: ProgressService;
+  datastoreService: DatastoreService = container.get(DatastoreService);
+  requestService: RequestService = container.get(RequestService);
+  progressService: ProgressService = container.get(ProgressService);
   editStore: {[key: string]: any};
-  fields: {[field: string]: {[key: string]: any}};
-
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-      requestService: container.get(RequestService),
-      progressService: container.get(ProgressService),
-      editStore: {
-        persons: [],
-      },
-      fields: fields,
-    });
-  }
+  fields: {[field: string]: {[key: string]: any}} = fields;
 
   async mounted(): Promise<void> {
+    this.editStore = {
+      persons: [],
+    };
     await super.mounted();
     await this.reload();
     this.editStore = _.cloneDeep(this.datastoreService.settings);

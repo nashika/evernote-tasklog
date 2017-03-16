@@ -1,5 +1,4 @@
 import Component from "vue-class-component";
-import _ = require("lodash");
 
 import {MenuModeComponent} from "../menu-mode.component";
 import {BaseComponent} from "../../base.component";
@@ -22,30 +21,16 @@ export class DataInfoMenuModeComponent extends BaseComponent {
   $root: AppComponent;
   $parent: MenuModeComponent;
 
-  datastoreService: DatastoreService;
+  datastoreService: DatastoreService = container.get(DatastoreService);
 
-  noteCount: number;
-  allNoteCount: number;
-  loadedNoteCount: number;
-  allLoadedNoteCount: number;
-  timeLogCount: number;
-  allTimeLogCount: number;
-  profitLogCount: number;
-  allProfitLogCount: number;
-
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-      noteCount: 0,
-      allNoteCount: 0,
-      loadedNoteCount: 0,
-      allLoadedNoteCount: 0,
-      timeLogCount: 0,
-      allTimeLogCount: 0,
-      profitLogCount: 0,
-      allProfitLogCount: 0,
-    });
-  }
+  noteCount: number = 0;
+  allNoteCount: number = 0;
+  loadedNoteCount: number = 0;
+  allLoadedNoteCount: number = 0;
+  timeLogCount: number = 0;
+  allTimeLogCount: number = 0;
+  profitLogCount: number = 0;
+  allProfitLogCount: number = 0;
 
   async mounted(): Promise<void> {
     await super.mounted();

@@ -27,15 +27,13 @@ let template = require("./app.component.jade");
 })
 export class AppComponent extends BaseComponent {
 
-  datastoreService: DatastoreService;
+  datastoreService: DatastoreService = container.get(DatastoreService);
 
-  mode: string;
+  mode: string = "menu";
+  lastUpdateCount: number = 0;
 
   data(): any {
     return {
-      datastoreService: container.get(DatastoreService),
-      mode: "menu",
-      lastUpdateCount: 0,
     }
   }
 

@@ -1,5 +1,4 @@
 import Component from "vue-class-component";
-import _ = require("lodash");
 import moment = require("moment");
 
 import {BaseComponent} from "../base.component";
@@ -33,30 +32,17 @@ export class TimelineModeComponent extends BaseComponent {
 
   template = template;
 
-  datastoreService: DatastoreService;
-  timeline: any;
-  timelineItems: any;
-  timelineGroups: any;
-  start: moment.Moment;
-  end: moment.Moment;
-  startView: moment.Moment;
-  endView: moment.Moment;
+  datastoreService: DatastoreService = container.get(DatastoreService);
+  timeline: any = null;
+  timelineItems: any = null;
+  timelineGroups: any = null;
+  start: moment.Moment = moment().startOf("day");
+  end: moment.Moment = moment().endOf("day");
+  startView: moment.Moment = moment().startOf("day");
+  endView: moment.Moment = moment().endOf("day");
 
   constructor() {
     super();
-  }
-
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-      timeline: null,
-      timelineItems: null,
-      timelineGroups: null,
-      start: moment().startOf("day"),
-      end: moment().endOf("day"),
-      startView: moment().startOf("day"),
-      endView: moment().endOf("day"),
-    });
   }
 
   async mounted(): Promise<void> {

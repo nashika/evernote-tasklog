@@ -1,5 +1,4 @@
 import Component from "vue-class-component";
-import _ = require("lodash");
 
 import {BaseComponent} from "../base.component";
 import {AppComponent} from "../app.component";
@@ -26,12 +25,10 @@ export class MenuModeComponent extends BaseComponent {
 
   $parent: AppComponent;
 
-  datastoreService: DatastoreService;
+  datastoreService: DatastoreService = container.get(DatastoreService);
 
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-    });
+  async mounted(): Promise<void> {
+    await this.reload();
   }
 
   async reload(): Promise<void> {

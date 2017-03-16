@@ -19,18 +19,10 @@ export class UserMenuModeComponent extends BaseComponent {
   $root: AppComponent;
   $parent: MenuModeComponent;
 
-  datastoreService: DatastoreService;
-  requestService: RequestService;
+  datastoreService: DatastoreService = container.get(DatastoreService);
+  requestService: RequestService = container.get(RequestService);
 
-  globalUsers: GlobalUserEntity[];
-
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-      requestService: container.get(RequestService),
-      globalUsers: null,
-    });
-  }
+  globalUsers: GlobalUserEntity[] = null;
 
   async mounted(): Promise<void> {
     await super.mounted();

@@ -1,5 +1,4 @@
 import Component from "vue-class-component";
-import _ = require("lodash");
 
 import {BaseComponent} from "../base.component";
 import {DatastoreService} from "../../service/datastore.service";
@@ -22,25 +21,14 @@ export class NotesModeComponent extends BaseComponent {
 
   $root: AppComponent;
 
-  datastoreService: DatastoreService;
-  notes: {[guid:string]: NoteEntity};
-  notesSpentTimes: {[noteGuid: string]: {[person: string]: number}};
-  notesProfits: {[noteGuid: string]: {[person: string]: number}};
-  existPersons: string[];
+  datastoreService: DatastoreService = container.get(DatastoreService);
+  notes: {[guid:string]: NoteEntity} = {};
+  notesSpentTimes: {[noteGuid: string]: {[person: string]: number}} = {};
+  notesProfits: {[noteGuid: string]: {[person: string]: number}} = {};
+  existPersons: string[] = [];
 
   constructor() {
     super();
-  }
-
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-      notes: {},
-      notesSpentTimes: {},
-      notesProfits: {},
-      existPersons: [],
-      isReady: false,
-    });
   }
 
   async mounted(): Promise<void> {

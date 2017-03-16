@@ -1,5 +1,4 @@
 import Component from "vue-class-component";
-import _ = require("lodash");
 
 import {BaseComponent} from "./base.component";
 import {AppComponent} from "./app.component";
@@ -26,16 +25,9 @@ export class NavigationComponent extends BaseComponent {
 
   mode: string;
 
-  datastoreService: DatastoreService;
+  datastoreService: DatastoreService = container.get(DatastoreService);
 
-  navCollapse: boolean;
-
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-      navCollapse: true,
-    });
-  }
+  navCollapse: boolean = true;
 
   reload() {
     this.navCollapse = true;

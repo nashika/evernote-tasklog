@@ -21,13 +21,7 @@ export class NoteFilterMenuModeComponent extends BaseComponent {
   $root: AppComponent;
   $parent: MenuModeComponent;
 
-  datastoreService: DatastoreService;
-
-  data(): any {
-    return _.assign(super.data(), {
-      datastoreService: container.get(DatastoreService),
-    });
-  }
+  datastoreService: DatastoreService = container.get(DatastoreService);
 
   getNotebookOptions(notebooks: {[guid: string]: NotebookEntity}): {value: string, label: string}[] {
     return _.map(notebooks, (notebook: NotebookEntity) => {

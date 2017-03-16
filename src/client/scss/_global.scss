@@ -4,6 +4,10 @@ html {
 
 body {
   min-height: 100vh;
+
+  > section.app {
+    min-height: 100vh;
+  }
 }
 
 .vis-item .vis-item-overflow {
