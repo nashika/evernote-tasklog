@@ -19,6 +19,7 @@ import {TagTable} from "../table/tag.table";
 import {NotebookEntity} from "../../common/entity/notebook.entity";
 import {BaseServerService} from "./base-server.service";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
+import {SettingService} from "./setting.service";
 
 let logger = getLogger("system");
 
@@ -37,7 +38,8 @@ export class SyncService extends BaseServerService {
   private userTimers: {[_id: string]: IUserTimerData};
 
   constructor(protected tableService: TableService,
-              protected evernoteClientService: EvernoteClientService) {
+              protected evernoteClientService: EvernoteClientService,
+              protected settingService: SettingService) {
     super();
     this.userTimers = {};
   }
@@ -51,6 +53,10 @@ export class SyncService extends BaseServerService {
   }
 
   async sync(globalUser: GlobalUserEntity, manual: boolean): Promise<void> {
+    if (!this.settingService.getUser(globalUser).persons) {
+      logger.warn(`No persons setting, sync process stopped.`);
+      return;
+    }
     let userTimerData = this.userTimers[globalUser._id];
     clearTimeout(userTimerData.timer);
     let syncStateTable = this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser);
@@ -64,13 +70,13 @@ export class SyncService extends BaseServerService {
     logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
     userTimerData.updateCount = localSyncState.updateCount;
     userTimerData.interval = manual ? this.Class.startInterval : Math.min(Math.round(userTimerData.interval * 1.5), this.Class.maxInterval);
-    userTimerData.timer = setTimeout(() => this.sync(globalUser, false), userTimerData.interval);
+    userTimerData.timer = setTimeout(() => this.sync(globalUser, false).catch(err => logger.error(err)), userTimerData.interval);
     logger.info(`Next auto reload will run after ${userTimerData.interval} msec.`);
     if (!manual) await this.autoGetNoteContent(globalUser, userTimerData.interval);
   }
 
   updateCount(globalUser: GlobalUserEntity): number {
-    return this.userTimers[globalUser._id] ? this.userTimers[globalUser._id].updateCount : 0;
+    return globalUser && this.userTimers[globalUser._id] ? this.userTimers[globalUser._id].updateCount : 0;
   }
 
   private async getSyncChunk(globalUser: GlobalUserEntity, localSyncState: SyncStateEntity): Promise<void> {

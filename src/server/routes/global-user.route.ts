@@ -8,6 +8,7 @@ import {BaseMultiRoute} from "./base-multi.route";
 import {GlobalUserTable} from "../table/global-user.table";
 import {Code403Error} from "./base.route";
 import {SessionService} from "../service/session.service";
+import {UserEntity} from "../../common/entity/user.entity";
 
 @injectable()
 export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUserTable> {
@@ -55,15 +56,19 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
     return this.sessionService.clear(req);
   }
 
-  private checkToken(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
-    return this.evernoteClientService.getUserFromToken(token, sandbox).then(user => {
-      let result = new GlobalUserEntity();
-      result._id = sandbox ? `sandbox-${user.username}` : user.username;
-      result.sandbox = sandbox;
-      result.username = user.username;
-      result.token = token;
-      return result;
-    }).catch(err => Promise.reject(new Code403Error(err)));
+  private async checkToken(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
+    let user: UserEntity;
+    try {
+      user = await this.evernoteClientService.getUserFromToken(token, sandbox);
+    } catch (err) {
+      throw new Code403Error(err);
+    }
+    let result = new GlobalUserEntity();
+    result._id = sandbox ? `sandbox-${user.username}` : user.username;
+    result.sandbox = sandbox;
+    result.username = user.username;
+    result.token = token;
+    return result;
   }
 
 }
