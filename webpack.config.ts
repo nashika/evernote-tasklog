@@ -1,4 +1,7 @@
+import * as path from "path";
+
 import webpack = require("webpack");
+
 let UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
 let webpackConfig:webpack.Configuration = {
@@ -6,7 +9,7 @@ let webpackConfig:webpack.Configuration = {
     app: "./src/client/app",
   },
   output: {
-    path: "public/dist",
+    path: path.join(__dirname, "./dist"),
     publicPath: "/dist/",
     filename: "[name].bundle.js",
   },

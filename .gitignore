@@ -1,10 +1,10 @@
 /.idea/workspace.xml
 /.idea/libraries/Generated_files.xml
 /db/**/*.db
+/dist
 /logs/*
 /npm-debug.log
 /node_modules
-/public/dist
 /src/**/*.js
 /src/**/*.js.map
 /*.js

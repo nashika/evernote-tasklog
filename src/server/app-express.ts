@@ -36,7 +36,7 @@ app.use(session({
     filename: path.join(__dirname, `../../db/session.db`),
   }),
 }));
-app.use(express.static(path.join(__dirname, "../../public")));
+app.use("/dist", express.static(path.join(__dirname, "../../dist")));
 for (let route of container.getAll<BaseRoute>(BaseRoute))
   app.use(route.getBasePath(), route.getRouter());
 
