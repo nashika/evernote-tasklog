@@ -6,7 +6,7 @@ let webpackConfig:webpack.Configuration = {
     app: "./src/client/app",
   },
   output: {
-    path: "/public/dist",
+    path: "public/dist",
     publicPath: "/dist/",
     filename: "[name].bundle.js",
   },
