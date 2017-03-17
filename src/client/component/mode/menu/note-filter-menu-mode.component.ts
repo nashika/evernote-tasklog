@@ -12,9 +12,6 @@ let template = require("./note-filter-menu-mode.component.jade");
 
 @Component({
   template: template,
-  components: {
-    //vSelect: VueStrap.select,
-  },
 })
 export class NoteFilterMenuModeComponent extends BaseComponent {
 

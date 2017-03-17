@@ -9,21 +9,11 @@ let template = require("./navigation.component.jade");
 
 @Component({
   template: template,
-  components: {},
-  props: {
-    mode: {
-      type: String,
-      required: true,
-      twoWay: true,
-    },
-  },
 })
 export class NavigationComponent extends BaseComponent {
 
   $root: AppComponent;
   $parent: AppComponent;
-
-  mode: string;
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
@@ -32,11 +22,6 @@ export class NavigationComponent extends BaseComponent {
   reload() {
     this.navCollapse = true;
     this.$root.reload();
-  }
-
-  changeMode(mode: string) {
-    this.datastoreService.clear();
-    this.mode = mode;
   }
 
 }

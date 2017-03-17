@@ -29,19 +29,16 @@ export class AppComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
-  mode: string = "menu";
+  isReady = false;
   lastUpdateCount: number = 0;
-
-  data(): any {
-    return {
-    }
-  }
 
   async created(): Promise<void> {
   }
 
   async mounted(): Promise<void> {
     await super.mounted();
+    await this.datastoreService.initialize();
+    this.isReady = true;
     setInterval(() => this.interval(), 5000);
   }
 
@@ -52,7 +49,7 @@ export class AppComponent extends BaseComponent {
   }
 
   reload() {
-    //this.$broadcast("reload");
+    (<any>this.$refs.main).reload();
   }
 
 }

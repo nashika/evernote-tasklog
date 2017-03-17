@@ -67,7 +67,18 @@ export class DatastoreService extends BaseClientService {
     this.clear();
   }
 
+  async initialize(): Promise<void> {
+    this.globalUser = await this.requestService.loadAuth();
+  }
+
+  async changeUser(globalUser: GlobalUserEntity): Promise<void> {
+    await this.requestService.changeAuth(globalUser);
+    this.globalUser = await this.requestService.loadAuth();
+    this.clear();
+  }
+
   clear(): void {
+    this.lastUpdateCount = 0;
     this.persons = [];
     this.notebooks = {};
     this.stacks = [];
@@ -89,6 +100,7 @@ export class DatastoreService extends BaseClientService {
 
   async reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (!this.globalUser) return;
+    if (this.progressService.isActive) return;
     this.progressService.open(params.getContent ? 12 : params.archive ? 9 : 7);
     try {
       await this.getUser();
@@ -259,7 +271,7 @@ export class DatastoreService extends BaseClientService {
     return await this.requestService.findOne<NoteEntity>(NoteEntity, options);
   }
 
-  protected makeNoteFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
+  private makeNoteFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
     let options: INoteEntityFindOptions = {query: {$and: []}};
     if (params.start)
       options.query.$and.push({updated: {$gte: params.start.valueOf()}});
@@ -292,9 +304,9 @@ export class DatastoreService extends BaseClientService {
       options.content = true;
     }
     return options;
-  };
+  }
 
-  protected makeTimeLogFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
+  private makeTimeLogFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
     let options:IMultiEntityFindOptions = {query: {$and: []}};
     // set date query
     if (params.start)
@@ -309,6 +321,6 @@ export class DatastoreService extends BaseClientService {
       if (params.noteGuids.length > 0)
         _.merge(options.query, {noteGuid: {$in: params.noteGuids}});
     return options;
-  };
+  }
 
 }

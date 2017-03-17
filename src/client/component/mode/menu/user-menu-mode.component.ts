@@ -1,5 +1,4 @@
 import Component from "vue-class-component";
-import _ = require("lodash");
 
 import {MenuModeComponent} from "../menu-mode.component";
 import {BaseComponent} from "../../base.component";
@@ -27,10 +26,6 @@ export class UserMenuModeComponent extends BaseComponent {
   async mounted(): Promise<void> {
     await super.mounted();
     await this.reload();
-    let loadGlobalUser = await this.requestService.loadAuth();
-    if (!loadGlobalUser) return;
-    let globalUser = _.find(this.globalUsers, {"_id": loadGlobalUser._id});
-    await this.select(globalUser);
   }
 
   async reload(): Promise<void> {
@@ -38,10 +33,8 @@ export class UserMenuModeComponent extends BaseComponent {
   }
 
   async select(globalUser: GlobalUserEntity): Promise<void> {
-    await this.requestService.changeAuth(globalUser);
-    this.datastoreService.globalUser = globalUser;
-    this.datastoreService.lastUpdateCount = 0;
-    this.$root.interval();
+    await this.datastoreService.changeUser(globalUser);
+    await this.$parent.reload();
   }
 
   async add(sandbox: boolean): Promise<void> {

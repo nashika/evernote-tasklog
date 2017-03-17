@@ -17,9 +17,6 @@ let template = require("./menu-mode.component.jade");
     "note-filter-menu-component": NoteFilterMenuModeComponent,
     "data-info-menu-component": DataInfoMenuModeComponent,
   },
-  /*events: {
-    reload: "reload",
-  },*/
 })
 export class MenuModeComponent extends BaseComponent {
 
@@ -32,7 +29,8 @@ export class MenuModeComponent extends BaseComponent {
   }
 
   async reload(): Promise<void> {
-    await this.datastoreService.reload({getContent: false});
+    if (this.datastoreService.globalUser)
+      await this.datastoreService.reload({getContent: false});
   }
 
 }

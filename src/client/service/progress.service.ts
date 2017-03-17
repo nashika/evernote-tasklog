@@ -6,6 +6,8 @@ import {ProgressModalComponent} from "../component/progress-modal.component";
 @injectable()
 export class ProgressService extends BaseClientService {
 
+  isActive: boolean = false;
+
   private $component: ProgressModalComponent;
 
   register($component: ProgressModalComponent) {
@@ -13,6 +15,7 @@ export class ProgressService extends BaseClientService {
   }
 
   open(allCount: number): void {
+    this.isActive = true;
     this.$component.allCount = allCount;
     this.$component.completeCount = 0;
     this.set("processing...", 0);
@@ -21,6 +24,7 @@ export class ProgressService extends BaseClientService {
 
   close(): void {
     (<any>this.$component.$refs.modal).hide();
+    this.isActive = false;
   }
 
   set(message: string, value: number = null): void {
