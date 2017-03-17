@@ -16,11 +16,11 @@ export class ProgressService extends BaseClientService {
     this.$component.allCount = allCount;
     this.$component.completeCount = 0;
     this.set("processing...", 0);
-    this.$component.show = true;
+    (<any>this.$component.$refs.modal).show();
   }
 
   close(): void {
-    this.$component.show = false;
+    (<any>this.$component.$refs.modal).hide();
   }
 
   set(message: string, value: number = null): void {

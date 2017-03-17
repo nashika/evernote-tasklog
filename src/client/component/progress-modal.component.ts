@@ -8,15 +8,10 @@ let template = require("./progress-modal.component.jade");
 
 @Component({
   template: template,
-  components: {
-    //modal: VueStrap.modal,
-    //progressbar: VueStrap.progressbar,
-  },
 })
 export class ProgressModalComponent extends BaseComponent {
 
   progressService: ProgressService = container.get(ProgressService);
-  show: boolean = false;
   value: number = 0;
   completeCount: number = 0;
   allCount: number = 0;
