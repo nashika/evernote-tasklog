@@ -12,7 +12,7 @@ section.activity-mode
       .header
         popover(trigger="hover", placement="bottom", title="Info", :content="detail(note)")
           h1
-            a(href="evernote:///view/{{datastoreService.user.id}}/{{datastoreService.user.shardId}}/{{note.guid}}/{{note.guid}}/")
+            a(:href="'evernote:///view/' + datastoreService.user.id + '/' + datastoreService.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
               | {{moment(note.updated).format('HH:mm')}} {{note.title}}
             span.label.label-danger(v-if="modifies[note._id] && !modifies[note._id].prevNote") #[i.fa.fa-plus] New
             span.label.label-primary #[i.fa.fa-book] {{notebookName(note)}}
