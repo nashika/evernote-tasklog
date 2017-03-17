@@ -1,11 +1,11 @@
-section.notes-mode
-  table.table.table-bordered.table-striped.table-hover.table-condensed
+section.notes-mode.p-3
+  table.table.table-bordered.table-striped.table-hover.table-sm.table-striped
     tr
       th Title
       th(v-for="person in existPersons") {{person}}
       th Total
     tr(v-for="note in notes")
-      td: a(href="evernote:///view/{{datastoreService.user.id}}/{{datastoreService.user.shardId}}/{{note.guid}}/{{note.guid}}/") {{note.title}}
+      td: a(:href="'evernote:///view/' + datastoreService.user.id + '/' + datastoreService.user.shardId + '/' + note.guid + '/' + note.guid + '/'") {{note.title}}
       td.text-right(v-for="person in existPersons.concat(['$total'])")
         div(v-if="notesSpentTimes[note.guid] && notesSpentTimes[note.guid][person]")
           small ({{Math.round(notesSpentTimes[note.guid][person] / notesSpentTimes[note.guid]['$total'] * 100)}}%)&nbsp;
