@@ -1,16 +1,16 @@
-section.activity-mode
+section.activity-mode.p-3
   .header
     .row
       .col-md-3
-        button.btn.btn-default.btn-block(@click="changeDate(false)") Prev Date
+        button.btn.btn-secondary.btn-block(@click="changeDate(false)") Prev Date
       .col-md-6
         h1 {{moment(date).format('YYYY/MM/DD')}}
       .col-md-3
-        button.btn.btn-default.btn-block(@click="changeDate(true)") Next Date
+        button.btn.btn-secondary.btn-block(@click="changeDate(true)") Next Date
   .body
     section.activity-mode-item(v-for="note in datastoreService.noteArchives")
       .header
-        popover(trigger="hover", placement="bottom", title="Info", :content="detail(note)")
+        b-popover(placement="bottom", triggers="hover", title="Info", :content="detail(note)")
           h1
             a(:href="'evernote:///view/' + datastoreService.user.id + '/' + datastoreService.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
               | {{moment(note.updated).format('HH:mm')}} {{note.title}}
