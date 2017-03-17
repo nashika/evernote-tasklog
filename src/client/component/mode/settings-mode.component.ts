@@ -28,27 +28,16 @@ let fields: {[fieldName: string]: {[key: string]: any}} = {
 
 @Component<SettingsModeComponent>({
   template: template,
-  components: {
-    //tabs: VueStrap.tabset,
-    //tabGroup: VueStrap.tabGroup,
-    //tab: VueStrap.tab,
-  },
-  /*events: {
-    "reload": "reload",
-  },*/
 })
 export class SettingsModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
   requestService: RequestService = container.get(RequestService);
   progressService: ProgressService = container.get(ProgressService);
-  editStore: {[key: string]: any};
+  editStore: {[key: string]: any} = null;
   fields: {[field: string]: {[key: string]: any}} = fields;
 
   async mounted(): Promise<void> {
-    this.editStore = {
-      persons: [],
-    };
     await super.mounted();
     await this.reload();
     this.editStore = _.cloneDeep(this.datastoreService.settings);

@@ -17,10 +17,7 @@ export class NavigationComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
-  navCollapse: boolean = true;
-
   reload() {
-    this.navCollapse = true;
     this.$root.reload();
   }
 
