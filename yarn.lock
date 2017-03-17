@@ -908,9 +908,9 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
-bootstrap-vue@0.10.0-alpha.1:
-  version "0.10.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/bootstrap-vue/-/bootstrap-vue-0.10.0-alpha.1.tgz#be28dd739c99ce11dec48444db678afc904976c1"
+bootstrap-vue@0.10.0-alpha.2:
+  version "0.10.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/bootstrap-vue/-/bootstrap-vue-0.10.0-alpha.2.tgz#dd43509301d4d43b9bb1142489617139aa5512a6"
   dependencies:
     bootstrap "^4.0.0-"
     tether latest
@@ -4918,9 +4918,9 @@ source-list-map@^0.1.7, source-list-map@~0.1.7:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106"
 
-source-map-support@0.4.12, source-map-support@^0.4.11, source-map-support@^0.4.2:
-  version "0.4.12"
-  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.12.tgz#f47d02bf01efaf0c160d3a37d038401b92b1867e"
+source-map-support@0.4.13, source-map-support@^0.4.11, source-map-support@^0.4.2:
+  version "0.4.13"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.13.tgz#9782e6f7deb424d5f173327a1879eb46453bdcd4"
   dependencies:
     source-map "^0.5.6"
 
@@ -5496,6 +5496,10 @@ void-elements@~2.0.1:
 vue-class-component@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-5.0.0.tgz#6cc52502fa40a05100ffc4cf2dfa3a3f849b8e0b"
+
+vue-router@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-2.3.0.tgz#a25c8359e8ca989d22ce79f64322eb0ad0c8670f"
 
 vue@2.2.4, vue@^2.2.3:
   version "2.2.4"

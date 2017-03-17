@@ -13,3 +13,10 @@ body {
 .vis-item .vis-item-overflow {
   overflow: visible;
 }
+
+
+
+// monky patches
+.navbar-fixed-bottom {
+  @extend .fixed-bottom;
+}

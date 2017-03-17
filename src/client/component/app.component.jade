@@ -1,8 +1,4 @@
 section.app
-  menu-mode-component("v-if"="mode == 'menu'")
-  timeline-mode-component("v-if"="mode == 'timeline'")
-  notes-mode-component("v-if"="mode == 'notes'")
-  activity-mode-component("v-if"="mode == 'activity'")
-  settings-mode-component("v-if"="mode == 'settings'")
-  navigation-component("v-if"="mode != 'auth'", :mode.sync="mode")
+  router-view
+  navigation-component(:mode.sync="mode")
   progress-modal-component

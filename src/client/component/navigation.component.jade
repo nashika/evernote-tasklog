@@ -1,22 +1,15 @@
-mixin item(name, icon, label, needLogin)
-  li(v-if=needLogin ? "datastoreService.globalUser" : "true", :class="{active: mode == '#{name}'}")
-    a(@click="changeMode('#{name}')") #[span.fa(class="fa-#{icon}")] #{label}
+mixin item(to, icon, label, needLogin)
+  b-nav-item(to=to, :disabled=needLogin ? "!datastoreService.globalUser" : "false") #[span.fa(class="fa-#{icon}")] #{label}
 
-nav.navbar.fixed-bottom.navbar-inverse.bg-inverse
-  .container-fluid
-    .navbar-header
-      button.navbar-toggle.collapsed(type="button", @click="navCollapse = !navCollapse")
-        span.sr-only Toggle Navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
-      a.navbar-brand(href="/#/") #[span.fa.fa-tasks] Evernote Tasklog
-    .collapse.navbar-collapse(collapse="navCollapse")
-      ul.nav.navbar-nav(@click="navCollapse = true")
-        +item("menu", "th-large", "Menu", false)
-        +item("timeline", "clock-o", "Timeline", true)
-        +item("notes", "files-o", "Notes", true)
-        +item("activity", "history", "Activity", true)
-        +item("settings", "gear", "Settings", true)
-      form.navbar-form.navbar-right
-        button.btn.btn-primary(type="button", @click="reload()") Reload
+b-navbar(toggleable, type="inverse", variant="inverse", fixed="bottom")
+  b-nav-toggle(target="nav-collapse")
+  router-link.navbar-brand(to="/") #[span.fa.fa-tasks] Evernote Tasklog
+  b-collapse(is-nav, id="nav-collapse")
+    b-nav.mr-auto(is-nav-bar)
+      +item("/", "th-large", "Menu", false)
+      +item("/timeline", "clock-o", "Timeline", true)
+      +item("/notes", "files-o", "Notes", true)
+      +item("/activity", "history", "Activity", true)
+      +item("/settings", "gear", "Settings", true)
+    form.form-inline
+      button.btn.btn-primary(type="button", @click="reload()") Reload
