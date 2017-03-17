@@ -8,6 +8,5 @@ section.note-filter
     .form-group
       label.col-sm-3.control-label Stack
       .col-sm-9
-        b-form-select(:options="getStackOptions(datastoreService.stacks)", multiple,
-        :value.sync="datastoreService.filterParams.stacks", search, clear-button)
+        b-form-select(:options="getStackOptions(datastoreService.stacks)", v-model="datastoreService.filterParams.stacks")
   button.btn.btn-primary.btn-lg.btn-block(type="button", @click="$parent.reload()") #[span.fa.fa-refresh] Reload

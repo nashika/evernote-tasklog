@@ -23,15 +23,15 @@ export class NoteFilterMenuModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
-  getNotebookOptions(notebooks: {[guid: string]: NotebookEntity}): {value: string, label: string}[] {
+  getNotebookOptions(notebooks: {[guid: string]: NotebookEntity}): {value: string, text: string}[] {
     return _.map(notebooks, (notebook: NotebookEntity) => {
-      return {value: notebook.guid, label: notebook.name};
+      return {value: notebook.guid, text: notebook.name};
     });
   }
 
-  getStackOptions(stacks: string[]): {value: string, label: string}[] {
+  getStackOptions(stacks: string[]): {value: string, text: string}[] {
     return _.map(stacks, (stack: string) => {
-      return {value: stack, label: stack};
+      return {value: stack, text: stack};
     });
   }
 
