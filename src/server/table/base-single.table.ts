@@ -16,7 +16,7 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
     let instance = await this.sequelizeModel.findOne({where: {id: 1}});
     this.message("load", ["local"], this.EntityClass.params.name, false, null);
     if (instance)
-      return new (<any>this.EntityClass)(instance.toJSON());
+      return this.prepareLoadEntity(instance);
     else
       return new (<any>this.EntityClass)(_.cloneDeep(this.EntityClass.params.defaultDoc));
   }
@@ -24,7 +24,7 @@ export abstract class BaseSingleTable<T extends BaseSingleEntity> extends BaseTa
   async save(entity: T): Promise<void> {
     entity.id = 1;
     this.message("upsert", ["local"], this.EntityClass.params.name, true);
-    await this.sequelizeModel.upsert(entity);
+    await this.sequelizeModel.upsert(this.prepareSaveEntity(entity));
     this.message("upsert", ["local"], this.EntityClass.params.name, false);
   }
 

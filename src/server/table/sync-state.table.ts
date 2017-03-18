@@ -4,17 +4,19 @@ import sequelize = require("sequelize");
 import {SyncStateEntity} from "../../common/entity/sync-state.entity";
 import {BaseSingleEvernoteTable} from "./base-single-evernote.table";
 import {EvernoteClientService} from "../service/evernote-client.service";
-import {ISequelizeInstance} from "./base.table";
+import {IBaseTableParams} from "./base.table";
 
 @injectable()
 export class SyncStateTable extends BaseSingleEvernoteTable<SyncStateEntity> {
 
-  protected fields: sequelize.DefineAttributes = {
-    updateCount: {type: sequelize.INTEGER, allowNull: false},
-  };
-
-  protected options: sequelize.DefineOptions<ISequelizeInstance<SyncStateEntity>> = {
-    indexes: [],
+  static params: IBaseTableParams = {
+    fields: {
+      updateCount: {type: sequelize.INTEGER, allowNull: false},
+    },
+    options: {
+      indexes: [],
+    },
+    jsonFields: [],
   };
 
   constructor(protected evernoteClientService: EvernoteClientService) {

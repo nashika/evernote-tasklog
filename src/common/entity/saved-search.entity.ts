@@ -1,10 +1,10 @@
 import {BaseMultiEvernoteEntity} from "./base-multi-evernote.entity";
 import {IBaseMultiEntityParams} from "./base-multi.entity";
 
-export class SearchEntity extends BaseMultiEvernoteEntity {
+export class SavedSearchEntity extends BaseMultiEvernoteEntity {
 
   static params: IBaseMultiEntityParams = {
-    name: "search",
+    name: "savedSearch",
     titleField: "name",
     requireUser: true,
     archive: false,
@@ -18,5 +18,10 @@ export class SearchEntity extends BaseMultiEvernoteEntity {
       order: [],
     },
   };
+
+  guid: string;
+  name: string;
+  query: string;
+  updateSequenceNum: number;
 
 }

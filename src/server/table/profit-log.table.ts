@@ -4,20 +4,23 @@ import sequelize = require("sequelize");
 import {BaseMultiTable} from "./base-multi.table";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
-import {ISequelizeInstance} from "./base.table";
+import {IBaseTableParams} from "./base.table";
 
 @injectable()
 export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity> {
 
-  protected fields: sequelize.DefineAttributes = {
-    noteGuid: {type: sequelize.STRING, allowNull: false},
-    comment: {type: sequelize.TEXT, allowNull: true},
-    profit: {type: sequelize.INTEGER, allowNull: false},
+  static params: IBaseTableParams = {
+    fields: {
+      noteGuid: {type: sequelize.STRING, allowNull: false},
+      comment: {type: sequelize.TEXT, allowNull: true},
+      profit: {type: sequelize.INTEGER, allowNull: false},
+    },
+    options: {
+      indexes: [],
+    },
+    jsonFields: [],
   };
 
-  protected options: sequelize.DefineOptions<ISequelizeInstance<ProfitLogEntity>> = {
-    indexes: [],
-  };
 
   async parse(note: NoteEntity, lines: string[]): Promise<void> {
     let profitLogs: ProfitLogEntity[] = [];

@@ -15,14 +15,20 @@ export interface ISequelizeInstance<T extends BaseEntity> extends sequelize.Inst
 export interface ISequelizeModel<T extends BaseEntity> extends sequelize.Model<ISequelizeInstance<T>, T> {
 }
 
+export interface IBaseTableParams {
+  fields: sequelize.DefineAttributes,
+  options: sequelize.DefineOptions<ISequelizeInstance<BaseEntity>>,
+  jsonFields: string[],
+}
+
 @injectable()
 export abstract class BaseTable<T extends BaseEntity> {
+
+  static params: IBaseTableParams;
 
   EntityClass: typeof BaseEntity;
 
   protected name: string;
-  protected fields: sequelize.DefineAttributes;
-  protected options: sequelize.DefineOptions<ISequelizeInstance<T>>;
   protected archiveName: string;
   protected archiveFields: sequelize.DefineAttributes;
   protected archiveOptions: sequelize.DefineOptions<ISequelizeInstance<T>>;
@@ -46,13 +52,16 @@ export abstract class BaseTable<T extends BaseEntity> {
     }
     this.globalUser = globalUser;
     this.sequelizeDatabase = database;
-    this.sequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.name, this.fields, this.options);
+    this.sequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.name, this.Class.params.fields, this.Class.params.options);
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
       this.archiveFields = {};
-      this.archiveFields["originalId"] = {type: sequelize.INTEGER, allowNull: false, comment: "Original ID"};
-      _.each(this.fields, (field, name) => this.archiveFields[name] = _.cloneDeep(field));
-      this.archiveOptions = _.cloneDeep(this.options);
+      //this.archiveFields["originalId"] = {type: sequelize.INTEGER, allowNull: false, comment: "Original ID"};
+      _.each(this.Class.params.fields, (field, name) => {
+        this.archiveFields[name] = _.cloneDeep(field);
+        (<sequelize.DefineAttributeColumnOptions>this.archiveFields[name]).unique = false;
+      });
+      this.archiveOptions = _.cloneDeep(this.Class.params.options);
       this.archiveOptions.indexes = _.union([{unique: false, fields: ["originalId"]}], this.archiveOptions.indexes);
       this.archiveSequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.archiveName, this.archiveFields, this.archiveOptions);
     }
@@ -61,6 +70,22 @@ export abstract class BaseTable<T extends BaseEntity> {
   protected message(action: string, options: string[], name: string, isStart: boolean, dispData: Object = null) {
     let message = `${_.startCase(action)} ${_.join(options, " ")} ${name} was ${isStart ? "started" : "finished"}. ${dispData ? " " + JSON.stringify(dispData) : ""}`;
     logger.trace(message);
+  }
+
+  protected prepareSaveEntity(entity: T): any {
+    let result: any = _.cloneDeep(entity);
+    for (let jsonField of this.Class.params.jsonFields) {
+      result[jsonField] = JSON.stringify(_.get(entity, jsonField));
+    }
+    return result;
+  }
+
+  protected prepareLoadEntity(instance: ISequelizeInstance<T>): T {
+    let data: any = instance.toJSON();
+    for (let jsonField of this.Class.params.jsonFields) {
+      data[jsonField] = JSON.parse(data[jsonField]);
+    }
+    return new (<any>this.EntityClass)(data);
   }
 
 }

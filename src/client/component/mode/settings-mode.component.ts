@@ -78,7 +78,7 @@ export class SettingsModeComponent extends BaseComponent {
           continue;
         if (field.reParse) reParse = true;
         if (field.reload) reload = true;
-        await this.requestService.save<SettingEntity>(SettingEntity, new SettingEntity({_id: key, value: this.editStore[key]}));
+        await this.requestService.save<SettingEntity>(SettingEntity, new SettingEntity({key: key, value: this.editStore[key]}));
         this.datastoreService.settings[key] = this.editStore[key];
       }
       this.progressService.close();

@@ -9,7 +9,7 @@ export class GlobalUserEntity extends BaseMultiEntity {
     archive: false,
     default: {
       where: {},
-      order: [["username", "ASC"]],
+      order: [["key", "ASC"]],
       limit: 500,
     },
     append: {
@@ -18,6 +18,7 @@ export class GlobalUserEntity extends BaseMultiEntity {
     },
   };
 
+  key: string;
   sandbox: boolean;
   username: string;
   token: string;

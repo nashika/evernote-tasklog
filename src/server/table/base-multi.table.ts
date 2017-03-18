@@ -19,7 +19,7 @@ export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
     this.message("find", ["local"], this.EntityClass.params.name, true, {query: options});
     let instance: ISequelizeInstance<T> = await this.sequelizeModel.findOne(options);
     this.message("find", ["local"], this.EntityClass.params.name, false, {query: options});
-    return instance ? new (<any>this.EntityClass)(instance.toJSON()) : null;
+    return instance ? this.prepareLoadEntity(instance) : null;
   }
 
   async findAll(options: IMyFindEntityOptions = null): Promise<T[]> {
@@ -28,7 +28,7 @@ export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
     this.message("find", ["local"], this.EntityClass.params.name, true, {options: options});
     let instances: ISequelizeInstance<T>[] = await model.findAll(options);
     this.message("find", ["local"], this.EntityClass.params.name, false, {"length": instances.length, options: options});
-    return _.map(instances, instance => new (<any>this.EntityClass)(instance.toJSON()));
+    return _.map(instances, instance => this.prepareLoadEntity(instance));
   }
 
   async count(options: IMyCountEntityOptions = {}): Promise<number> {
@@ -47,26 +47,32 @@ export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
     return result;
   }
 
-  async save(entities: T|T[]): Promise<void> {
-    if (!entities) return Promise.resolve();
+  async save(entities: T|T[]): Promise<T | T[]> {
+    if (!entities) return;
     let arrEntities: T[] = _.castArray(entities);
-    if (arrEntities.length == 0) return Promise.resolve();
+    if (arrEntities.length == 0) return;
     this.message("save", ["local"], this.EntityClass.params.name, true, {"docs.count": arrEntities.length});
     for (let entity of arrEntities) {
       this.message("upsert", ["local"], this.EntityClass.params.name, true, {id: entity.id, title: _.get(entity, this.EntityClass.params.titleField)});
-      await this.sequelizeModel.upsert(entity, {}).then(() => {
-        this.message("upsert", ["local"], this.EntityClass.params.name, false, {id: entity.id});
-      });
+      let savedEntity = await this.sequelizeModel.create(this.prepareSaveEntity(entity));
+      this.message("upsert", ["local"], this.EntityClass.params.name, false, {id: entity.id});
     }
     this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});
+    if (!this.EntityClass.params.archive) return;
+    for (let entity of arrEntities) {
+      this.message("upsert", ["local", "archive"], this.EntityClass.params.name, true, {id: entity.id, title: _.get(entity, this.EntityClass.params.titleField)});
+      await this.archiveSequelizeModel.upsert(this.prepareSaveEntity(entity));
+      this.message("upsert", ["local", "archive"], this.EntityClass.params.name, false, {id: entity.id});
+    }
+    this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});
+
   }
 
   async remove(options: IMyDestroyEntityOptions): Promise<void> {
     if (!options) return;
     this.message("remove", ["local"], this.EntityClass.params.name, true, {query: options});
-    return await this.sequelizeModel.destroy(options).then(numRemoved => {
-      this.message("remove", ["local"], this.EntityClass.params.name, false, {query: options, numRemoved: numRemoved});
-    });
+    let numRemoved = await this.sequelizeModel.destroy(options);
+    this.message("remove", ["local"], this.EntityClass.params.name, false, {query: options, numRemoved: numRemoved});
   }
 
 }

@@ -23,6 +23,7 @@ export class EvernoteClientService extends BaseServerService {
   }
 
   async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
+    if (this.clients[globalUser.id]) return;
     this.clients[globalUser.id] = new evernote.Evernote.Client({
       token: globalUser.token,
       sandbox: globalUser.sandbox,

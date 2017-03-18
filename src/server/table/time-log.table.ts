@@ -5,22 +5,24 @@ import {BaseMultiTable} from "./base-multi.table";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {SettingService} from "../service/setting.service";
-import {ISequelizeInstance} from "./base.table";
+import {IBaseTableParams} from "./base.table";
 
 @injectable()
 export class TimeLogTable extends BaseMultiTable<TimeLogEntity> {
 
-  protected fields: sequelize.DefineAttributes = {
-    noteGuid: {type: sequelize.STRING, allowNull: false},
-    comment: {type: sequelize.TEXT, allowNull: true},
-    allDay: {type: sequelize.BOOLEAN, allowNull: false},
-    date: {type: sequelize.BIGINT, allowNull: false},
-    person: {type: sequelize.STRING, allowNull: false},
-    spentTime: {type: sequelize.INTEGER, allowNull: true},
-  };
-
-  protected options: sequelize.DefineOptions<ISequelizeInstance<TimeLogEntity>> = {
-    indexes: [],
+  static params: IBaseTableParams = {
+    fields: {
+      noteGuid: {type: sequelize.STRING, allowNull: false},
+      comment: {type: sequelize.TEXT, allowNull: true},
+      allDay: {type: sequelize.BOOLEAN, allowNull: false},
+      date: {type: sequelize.BIGINT, allowNull: false},
+      person: {type: sequelize.STRING, allowNull: false},
+      spentTime: {type: sequelize.INTEGER, allowNull: true},
+    },
+    options: {
+      indexes: [],
+    },
+    jsonFields: [],
   };
 
   constructor(protected settingService: SettingService) {

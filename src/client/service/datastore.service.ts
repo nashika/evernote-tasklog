@@ -137,10 +137,10 @@ export class DatastoreService extends BaseClientService {
 
   private async getSettings(): Promise<void> {
     this.progressService.next("Getting settings data.");
-    let settings = await this.requestService.find<SettingEntity>(SettingEntity);
-    let result: {[key: string]: any} = {};
-    for (let setting of settings) result[setting.key] = setting.value;
-    this.settings = result;
+    let settingEntities = await this.requestService.find<SettingEntity>(SettingEntity);
+    let settings: {[key: string]: any} = {};
+    for (let settingEntity of settingEntities) settings[settingEntity.key] = settingEntity.value;
+    this.settings = settings;
   }
 
   private async checkSettings(): Promise<void> {

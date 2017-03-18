@@ -10,7 +10,7 @@ import {TableService} from "../service/table.service";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {EvernoteClientService} from "../service/evernote-client.service";
-import {ISequelizeInstance} from "./base.table";
+import {IBaseTableParams} from "./base.table";
 import {IMyFindEntityOptions} from "../../common/entity/base-multi.entity";
 
 export interface IMyFindNoteEntityOptions extends IMyFindEntityOptions {
@@ -20,22 +20,24 @@ export interface IMyFindNoteEntityOptions extends IMyFindEntityOptions {
 @injectable()
 export class NoteTable extends BaseMultiEvernoteTable<NoteEntity> {
 
-  protected fields: sequelize.DefineAttributes = {
-    guid: {type: sequelize.STRING, allowNull: false},
-    title: {type: sequelize.STRING, allowNull: false},
-    content: {type: sequelize.TEXT, allowNull: true},
-    contentHash: {type: sequelize.TEXT, allowNull: false},
-    created: {type: sequelize.BIGINT, allowNull: true},
-    updated: {type: sequelize.BIGINT, allowNull: true},
-    deleted: {type: sequelize.BIGINT, allowNull: true},
-    active: {type: sequelize.BOOLEAN, allowNull: false},
-    updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},
-    notebookGuid: {type: sequelize.STRING, allowNull: true},
-    tagGuids: {type: sequelize.TEXT, allowNull: true},
-  };
-
-  protected options: sequelize.DefineOptions<ISequelizeInstance<NoteEntity>> = {
-    indexes: [],
+  static params: IBaseTableParams = {
+    fields: {
+      guid: {type: sequelize.STRING, allowNull: false, unique: true},
+      title: {type: sequelize.STRING, allowNull: false},
+      content: {type: sequelize.TEXT, allowNull: true},
+      contentHash: {type: sequelize.TEXT, allowNull: false},
+      created: {type: sequelize.BIGINT, allowNull: true},
+      updated: {type: sequelize.BIGINT, allowNull: true},
+      deleted: {type: sequelize.BIGINT, allowNull: true},
+      active: {type: sequelize.BOOLEAN, allowNull: false},
+      updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},
+      notebookGuid: {type: sequelize.STRING, allowNull: true},
+      tagGuids: {type: sequelize.TEXT, allowNull: true},
+    },
+    options: {
+      indexes: [],
+    },
+    jsonFields: ["contentHash", "tagGuids"],
   };
 
   constructor(protected tableService: TableService,
@@ -61,7 +63,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity> {
     this.message("load", ["remote"], "note", true, {guid: guid});
     let note = await this.evernoteClientService.getNote(this.globalUser, guid);
     lastNote = note;
-    await this.saveByGuid(note, true);
+    await this.save(note);
     await this.parseNote(lastNote);
     this.message("load", ["remote"], "note", false, {guid: lastNote.guid, title: lastNote.title});
     return lastNote;

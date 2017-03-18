@@ -9,13 +9,15 @@ import {GlobalUserTable} from "../table/global-user.table";
 import {Code403Error} from "./base.route";
 import {SessionService} from "../service/session.service";
 import {UserEntity} from "../../common/entity/user.entity";
+import {MainService} from "../service/main.service";
 
 @injectable()
 export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUserTable> {
 
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService,
-              protected sessionService: SessionService) {
+              protected sessionService: SessionService,
+              protected mainService: MainService) {
     super(tableService, sessionService);
   }
 
@@ -34,24 +36,23 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
   }
 
   async change(req: Request, _res: Response): Promise<void> {
-    let globalUser: GlobalUserEntity = new GlobalUserEntity(req.body);
+    let globalUserEntity: GlobalUserEntity = new GlobalUserEntity(req.body);
     let session = this.sessionService.get(req);
-    session.globalUser = globalUser;
+    session.globalUser = globalUserEntity;
     await this.sessionService.save(req);
   }
 
   async auth(req: Request, _res: Response): Promise<GlobalUserEntity> {
-    let result: GlobalUserEntity;
+    let globalUserEntity: GlobalUserEntity;
     let session = this.sessionService.get(req);
     let sandbox: boolean = !!req.body.sandbox;
     let token: string = req.body.token;
-    result = await this.checkToken(sandbox, token);
-    let oldUser = await this.getTable(req).findOne({where: {sandbox: result.sandbox, username: result.username}});
-    if (oldUser) result.id = oldUser.id;
-    await this.getTable(req).save(result);
-    session.globalUser = result;
+    globalUserEntity = await this.checkToken(sandbox, token);
+    await this.getTable(req).save(globalUserEntity);
+    await this.mainService.initializeUser(globalUserEntity);
+    session.globalUser = globalUserEntity;
     await this.sessionService.save(req);
-    return result;
+    return globalUserEntity;
   }
 
   logout(req: Request, _res: Response): Promise<void> {
@@ -59,17 +60,18 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
   }
 
   private async checkToken(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
-    let user: UserEntity;
+    let userEntity: UserEntity;
     try {
-      user = await this.evernoteClientService.getUserFromToken(token, sandbox);
+      userEntity = await this.evernoteClientService.getUserFromToken(token, sandbox);
     } catch (err) {
       throw new Code403Error(err);
     }
-    let result = new GlobalUserEntity();
-    result.sandbox = sandbox;
-    result.username = user.username;
-    result.token = token;
-    return result;
+    let globalUserEntity = new GlobalUserEntity();
+    globalUserEntity.key = (sandbox ? "s_" : "") + userEntity.username;
+    globalUserEntity.sandbox = sandbox;
+    globalUserEntity.username = userEntity.username;
+    globalUserEntity.token = token;
+    return globalUserEntity;
   }
 
 }

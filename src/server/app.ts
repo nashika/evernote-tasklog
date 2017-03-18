@@ -81,6 +81,7 @@ mainService.initializeGlobal().then(() => {
   logger.info(`Server address is http://localhost:${port}/`);
 }).catch(err => {
   logger.error(`Initialize web server failed. err=${err}`);
+  if (err.stack) logger.error(err.stack);
 });
 
 // app executed from electron then call electron window
