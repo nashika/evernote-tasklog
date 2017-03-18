@@ -22,11 +22,6 @@ interface TimelineItem {
 
 @Component<TimelineModeComponent>({
   template: template,
-  components: {},
-  /*events: {
-    "reload": "reload",
-    //this.$on("resize", this.onResize);
-  },*/
 })
 export class TimelineModeComponent extends BaseComponent {
 

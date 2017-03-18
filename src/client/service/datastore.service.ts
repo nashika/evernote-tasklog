@@ -52,7 +52,7 @@ export class DatastoreService extends BaseClientService {
   timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}};
   profitLogs: {[noteGuid: string]: {[_id: string]: ProfitLogEntity}};
   settings: {[key: string]: any};
-  filterParams: {notebookGuids: string[], stacks: string[]} = null;
+  filterParams: {notebookGuids: string[]} = null;
 
   constructor(protected requestService: RequestService,
               protected progressService: ProgressService) {
@@ -62,7 +62,6 @@ export class DatastoreService extends BaseClientService {
     this.user = null;
     this.filterParams = {
       notebookGuids: [],
-      stacks: [],
     };
     this.clear();
   }
@@ -287,14 +286,6 @@ export class DatastoreService extends BaseClientService {
       if (this.filterParams.notebookGuids && this.filterParams.notebookGuids.length > 0)
         for (var notebookGuid of this.filterParams.notebookGuids)
           notebooksHash[notebookGuid] = true;
-      // check stacks
-      if (this.filterParams.stacks && this.filterParams.stacks.length > 0)
-        for (var stack of this.filterParams.stacks)
-          for (let notebookGuid in this.notebooks) {
-            var notebook = this.notebooks[notebookGuid];
-            if (stack == notebook.stack)
-              notebooksHash[notebook.guid] = true;
-          }
       // set notebooks query
       if (_.size(notebooksHash) > 0)
         options.query.$and.push({notebookGuid: {$in: _.keys(notebooksHash)}});
