@@ -9,13 +9,13 @@ export class NotebookEntity extends BaseMultiEvernoteEntity {
     requireUser: true,
     archive: false,
     default: {
-      query: {},
-      sort: {stack: 1, name: 1},
+      where: {},
+      order: [["stack", "ASC"], ["name", "ASC"]],
       limit: 500,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
 

@@ -11,7 +11,9 @@ export abstract class BaseEntity {
 
   static params:IBaseEntityParams;
 
-  _id: string;
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
 
   constructor(data: any = {}) {
     for (let key of _.keys(data)) {

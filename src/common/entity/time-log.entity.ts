@@ -8,13 +8,13 @@ export class TimeLogEntity extends BaseMultiEntity {
     requireUser: true,
     archive: false,
     default: {
-      query: {},
-      sort: {updated: -1},
+      where: {},
+      order: [["updated", "DESC"]],
       limit: 2000,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
 

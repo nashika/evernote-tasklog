@@ -1,10 +1,10 @@
 import {Request, Response, Router} from "express";
 
-import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
+import {BaseMultiEntity, IMyFindEntityOptions, IMyCountEntityOptions} from "../../common/entity/base-multi.entity";
 import {BaseMultiTable} from "../table/base-multi.table";
 import {BaseTableRoute} from "./base-table.route";
 
-export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends BaseMultiTable<T1, IMultiEntityFindOptions>> extends BaseTableRoute<T2> {
+export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends BaseMultiTable<T1>> extends BaseTableRoute<T2> {
 
   getRouter(): Router {
     let _router = Router();
@@ -15,13 +15,13 @@ export abstract class BaseMultiRoute<T1 extends BaseMultiEntity, T2 extends Base
   }
 
   async index(req: Request, _res: Response): Promise<T1[]> {
-    let options: IMultiEntityFindOptions = req.body;
-    let entities = await this.getTable(req).find(options);
+    let options: IMyFindEntityOptions = req.body;
+    let entities = await this.getTable(req).findAll(options);
     return entities;
   }
 
   async count(req: Request, _res: Response): Promise<number> {
-    let options: IMultiEntityFindOptions = req.body;
+    let options: IMyCountEntityOptions = req.body;
     let count = await this.getTable(req).count(options);
     return count;
   }

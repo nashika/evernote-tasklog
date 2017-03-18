@@ -4,8 +4,9 @@ import {BaseTable} from "../table/base.table";
 import {BaseEntityRoute} from "./base-entity.route";
 import {TableService} from "../service/table.service";
 import {SessionService} from "../service/session.service";
+import {BaseEntity} from "../../common/entity/base.entity";
 
-export abstract class BaseTableRoute<T extends BaseTable> extends BaseEntityRoute {
+export abstract class BaseTableRoute<T extends BaseTable<BaseEntity>> extends BaseEntityRoute {
 
   constructor(protected tableService: TableService,
               protected sessionService: SessionService) {

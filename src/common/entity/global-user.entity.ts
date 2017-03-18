@@ -8,13 +8,13 @@ export class GlobalUserEntity extends BaseMultiEntity {
     requireUser: false,
     archive: false,
     default: {
-      query: {},
-      sort: {username: 1},
+      where: {},
+      order: [["username", "ASC"]],
       limit: 500,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
 

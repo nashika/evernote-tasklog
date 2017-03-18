@@ -1,9 +1,12 @@
 import _ = require("lodash");
 
-import {BaseTable} from "./base.table";
-import {BaseMultiEntity, IMultiEntityFindOptions, INedbQuery} from "../../common/entity/base-multi.entity";
+import {BaseTable, ISequelizeInstance} from "./base.table";
+import {
+  BaseMultiEntity, IMyFindEntityOptions, IMyCountEntityOptions,
+  IMyDestroyEntityOptions
+} from "../../common/entity/base-multi.entity";
 
-export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityFindOptions> extends BaseTable {
+export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
 
   EntityClass: typeof BaseMultiEntity;
 
@@ -11,89 +14,58 @@ export class BaseMultiTable<T1 extends BaseMultiEntity, T2 extends IMultiEntityF
     return <typeof BaseMultiTable>this.constructor;
   }
 
-  async findOne(query: INedbQuery): Promise<T1> {
-    query = this.parseFindQuery(query);
-    this.message("find", ["local"], this.EntityClass.params.name, true, {query: query});
-    return await new Promise<T1>((resolve, reject) => {
-      this.datastore.findOne(query, (err, doc) => {
-        this.message("find", ["local"], this.EntityClass.params.name, false, {query: query}, err);
-        if (err) return reject(err);
-        resolve(new (<any>this.EntityClass)(doc));
-      });
-    });
+  async findOne(options: IMyFindEntityOptions = {}): Promise<T> {
+    options = this.parseOptions(options);
+    this.message("find", ["local"], this.EntityClass.params.name, true, {query: options});
+    let instance: ISequelizeInstance<T> = await this.sequelizeModel.findOne(options);
+    this.message("find", ["local"], this.EntityClass.params.name, false, {query: options});
+    return instance ? new (<any>this.EntityClass)(instance.toJSON()) : null;
   }
 
-  async find(options: T2 = <any>{}): Promise<T1[]> {
-    options = this.parseFindOptions(options);
-    let datastore = options.archive ? this.archiveDatastore : this.datastore;
+  async findAll(options: IMyFindEntityOptions = null): Promise<T[]> {
+    options = this.parseOptions(options);
+    let model = options.archive ? this.archiveSequelizeModel : this.sequelizeModel;
     this.message("find", ["local"], this.EntityClass.params.name, true, {options: options});
-    return await new Promise<T1[]>((resolve, reject) => {
-      datastore.find(options.query).sort(options.sort).limit(options.limit).exec((err, docs) => {
-        this.message("find", ["local"], this.EntityClass.params.name, false, {"docs.length": docs.length, options: options}, err);
-        if (err) return reject(err);
-        resolve(_.map(docs, doc => new (<any>this.EntityClass)(doc)));
-      });
-    });
+    let instances: ISequelizeInstance<T>[] = await model.findAll(options);
+    this.message("find", ["local"], this.EntityClass.params.name, false, {"length": instances.length, options: options});
+    return _.map(instances, instance => new (<any>this.EntityClass)(instance.toJSON()));
   }
 
-  async count(options: T2 = <any>{}): Promise<number> {
-    options = this.parseFindOptions(options);
-    let datastore = options.archive ? this.archiveDatastore : this.datastore;
+  async count(options: IMyCountEntityOptions = {}): Promise<number> {
+    options = this.parseOptions(options);
+    let model = options.archive ? this.archiveSequelizeModel : this.sequelizeModel;
     this.message("count", ["local"], this.EntityClass.params.name, true, options);
-    return await new Promise<number>((resolve, reject) => {
-      datastore.count(options.query, (err, count) => {
-        this.message("count", ["local"], this.EntityClass.params.name, false, {count: count}, err);
-        if (err) return reject(err);
-        resolve(count);
-      });
-    });
+    let count = await model.count(options);
+    this.message("count", ["local"], this.EntityClass.params.name, false, {count: count});
+    return count;
   }
 
-  private parseFindOptions(options: T2): T2 {
-    let result: T2 = <any>{};
-    // Detect options has query only or has some parameters.
-    result.query = this.parseFindQuery(options.query);
-    result.sort = options.sort || _.cloneDeep(this.EntityClass.params.default.sort);
-    result.limit = options.limit || this.EntityClass.params.default.limit;
-    result.archive = options.archive;
-    // Merge default append parameters.
-    _.merge(result.sort, this.EntityClass.params.append.sort);
+  private parseOptions(options: any): any {
+    let result: any = options || <any>_.cloneDeep(this.EntityClass.params.default);
+    result.where = _.merge(result.where || {}, this.EntityClass.params.append.where || {});
+    result.order = _.concat(result.order || [], this.EntityClass.params.append.order || []);
     return result;
   }
 
-  private parseFindQuery(query: INedbQuery): INedbQuery {
-    let result: INedbQuery = query || _.cloneDeep(this.EntityClass.params.default.query);
-    _.merge(result, this.EntityClass.params.append.query);
-    return result;
-  }
-
-  async save(entities: T1|T1[]): Promise<void> {
+  async save(entities: T|T[]): Promise<void> {
     if (!entities) return Promise.resolve();
-    let arrEntities: T1[] = _.castArray(entities);
+    let arrEntities: T[] = _.castArray(entities);
     if (arrEntities.length == 0) return Promise.resolve();
     this.message("save", ["local"], this.EntityClass.params.name, true, {"docs.count": arrEntities.length});
     for (let entity of arrEntities) {
-      this.message("upsert", ["local"], this.EntityClass.params.name, true, {_id: entity._id, title: _.get(entity, this.EntityClass.params.titleField)});
-      await new Promise<void>((resolve, reject) => {
-        this.datastore.update({_id: entity._id}, entity, {upsert: true}, (err, numReplaced) => {
-          this.message("upsert", ["local"], this.EntityClass.params.name, false, {_id: entity._id, numReplaced: numReplaced}, err);
-          if (err) return reject(err);
-          resolve();
-        });
+      this.message("upsert", ["local"], this.EntityClass.params.name, true, {id: entity.id, title: _.get(entity, this.EntityClass.params.titleField)});
+      await this.sequelizeModel.upsert(entity, {}).then(() => {
+        this.message("upsert", ["local"], this.EntityClass.params.name, false, {id: entity.id});
       });
     }
     this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});
   }
 
-  async remove(query: Object): Promise<void> {
-    if (!query) return Promise.resolve();
-    this.message("remove", ["local"], this.EntityClass.params.name, true, {query: query});
-    return await new Promise<void>((resolve, reject) => {
-      this.datastore.remove(query, {multi: true}, (err, numRemoved) => {
-        this.message("remove", ["local"], this.EntityClass.params.name, false, {query: query, numRemoved: numRemoved}, err);
-        if (err) return reject(err);
-        resolve();
-      });
+  async remove(options: IMyDestroyEntityOptions): Promise<void> {
+    if (!options) return;
+    this.message("remove", ["local"], this.EntityClass.params.name, true, {query: options});
+    return await this.sequelizeModel.destroy(options).then(numRemoved => {
+      this.message("remove", ["local"], this.EntityClass.params.name, false, {query: options, numRemoved: numRemoved});
     });
   }
 

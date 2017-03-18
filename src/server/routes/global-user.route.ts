@@ -30,7 +30,7 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
 
   async load(req: Request, _res: Response): Promise<GlobalUserEntity> {
     let session = this.sessionService.get(req);
-    return session.globalUser && session.globalUser._id ? session.globalUser : null;
+    return session.globalUser && session.globalUser.id ? session.globalUser : null;
   }
 
   async change(req: Request, _res: Response): Promise<void> {
@@ -46,6 +46,8 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
     let sandbox: boolean = !!req.body.sandbox;
     let token: string = req.body.token;
     result = await this.checkToken(sandbox, token);
+    let oldUser = await this.getTable(req).findOne({where: {sandbox: result.sandbox, username: result.username}});
+    if (oldUser) result.id = oldUser.id;
     await this.getTable(req).save(result);
     session.globalUser = result;
     await this.sessionService.save(req);
@@ -64,7 +66,6 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
       throw new Code403Error(err);
     }
     let result = new GlobalUserEntity();
-    result._id = sandbox ? `sandbox-${user.username}` : user.username;
     result.sandbox = sandbox;
     result.username = user.username;
     result.token = token;

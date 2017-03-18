@@ -79,7 +79,7 @@ export class TimelineModeComponent extends BaseComponent {
         let note: NoteEntity = notes[timeLog.noteGuid];
         if (!note) continue;
         let timelineItem: TimelineItem = {
-          id: timeLog._id,
+          id: String(timeLog.id),
           group: timeLog.person,
           content: `<a href="evernote:///view/${this.datastoreService.user["id"]}/${this.datastoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
           start: moment(timeLog.date).toDate(),

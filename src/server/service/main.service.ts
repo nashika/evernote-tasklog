@@ -25,7 +25,7 @@ export class MainService extends BaseServerService {
 
   async initializeGlobal(): Promise<void> {
     await this.tableService.initializeGlobal();
-    let globalUsers = await this.tableService.getGlobalTable<GlobalUserTable>(GlobalUserEntity).find();
+    let globalUsers = await this.tableService.getGlobalTable<GlobalUserTable>(GlobalUserEntity).findAll();
     for (let globalUser of globalUsers) {
       await this.initializeUser(globalUser);
     }
@@ -39,7 +39,7 @@ export class MainService extends BaseServerService {
     let remoteUser = await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
     await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
     await this.syncService.sync(globalUser, true);
-    logger.info(`Init user finished. user:${globalUser._id} data was initialized.`);
+    logger.info(`Init user finished. user:${globalUser.id} data was initialized.`);
   }
 
 }

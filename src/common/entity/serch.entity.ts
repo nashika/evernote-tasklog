@@ -9,13 +9,13 @@ export class SearchEntity extends BaseMultiEvernoteEntity {
     requireUser: true,
     archive: false,
     default: {
-      query: {},
-      sort: {updated: -1},
+      where: {},
+      order: [["updated", "DESC"]],
       limit: 500,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
 

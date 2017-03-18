@@ -1,12 +1,23 @@
 import {injectable} from "inversify";
+import sequelize = require("sequelize");
 
 import {BaseMultiTable} from "./base-multi.table";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
-import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
+import {ISequelizeInstance} from "./base.table";
 
 @injectable()
-export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, IMultiEntityFindOptions> {
+export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity> {
+
+  protected fields: sequelize.DefineAttributes = {
+    noteGuid: {type: sequelize.STRING, allowNull: false},
+    comment: {type: sequelize.TEXT, allowNull: true},
+    profit: {type: sequelize.INTEGER, allowNull: false},
+  };
+
+  protected options: sequelize.DefineOptions<ISequelizeInstance<ProfitLogEntity>> = {
+    indexes: [],
+  };
 
   async parse(note: NoteEntity, lines: string[]): Promise<void> {
     let profitLogs: ProfitLogEntity[] = [];
@@ -21,7 +32,7 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity, IMultiEntity
         }));
       }
     }
-    await this.remove({noteGuid: note.guid});
+    await this.remove({where: {noteGuid: note.guid}});
     await this.save(profitLogs);
   }
 

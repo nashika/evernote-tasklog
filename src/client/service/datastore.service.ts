@@ -2,7 +2,7 @@ import _ = require("lodash");
 import {injectable} from "inversify";
 import moment = require("moment");
 
-import {NoteEntity, INoteEntityFindOptions} from "../../common/entity/note.entity";
+import {NoteEntity} from "../../common/entity/note.entity";
 import {UserEntity} from "../../common/entity/user.entity";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
@@ -12,8 +12,9 @@ import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
 import {SettingEntity} from "../../common/entity/setting.entity";
-import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
 import {TagEntity} from "../../common/entity/tag.entity";
+import {IMyFindNoteEntityOptions} from "../../server/table/note.table";
+import {IMyFindEntityOptions} from "../../common/entity/base-multi.entity";
 
 interface IDatastoreServiceParams {
   start?: moment.Moment,
@@ -138,7 +139,7 @@ export class DatastoreService extends BaseClientService {
     this.progressService.next("Getting settings data.");
     let settings = await this.requestService.find<SettingEntity>(SettingEntity);
     let result: {[key: string]: any} = {};
-    for (let setting of settings) result[setting._id] = setting.value;
+    for (let setting of settings) result[setting.key] = setting.value;
     this.settings = result;
   }
 
@@ -218,7 +219,7 @@ export class DatastoreService extends BaseClientService {
     for (var timeLog of timeLogs) {
       if (!this.timeLogs[timeLog.noteGuid])
         this.timeLogs[timeLog.noteGuid] = {};
-      this.timeLogs[timeLog.noteGuid][timeLog._id] = timeLog;
+      this.timeLogs[timeLog.noteGuid][timeLog.id] = timeLog;
     }
   }
 
@@ -229,12 +230,12 @@ export class DatastoreService extends BaseClientService {
       let note = this.notes[noteGuid];
       guids.push(note.guid);
     }
-    let profitLogs = await this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {query: {noteGuid: {$in: guids}}});
+    let profitLogs = await this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {where: {noteGuid: {$in: guids}}});
     this.profitLogs = {};
     for (let profitLog of profitLogs) {
       if (!this.profitLogs[profitLog.noteGuid])
         this.profitLogs[profitLog.noteGuid] = {};
-      this.profitLogs[profitLog.noteGuid][profitLog._id] = profitLog;
+      this.profitLogs[profitLog.noteGuid][profitLog.id] = profitLog;
     }
   }
 
@@ -262,23 +263,27 @@ export class DatastoreService extends BaseClientService {
       return searchNote.guid == note.guid && searchNote.updateSequenceNum < note.updateSequenceNum;
     });
     if (prevNote) return Promise.resolve(prevNote);
-    let options: INoteEntityFindOptions = {
-      query: {guid: note.guid, updateSequenceNum: {$lt: note.updateSequenceNum}, updated: {$lt: note.updated - minStepMinute * 60 * 1000}},
+    let options: IMyFindNoteEntityOptions = {
+      where: {
+        guid: note.guid,
+        updateSequenceNum: {$lt: note.updateSequenceNum},
+        updated: {$lt: note.updated - minStepMinute * 60 * 1000}
+      },
       archive: true,
-      content: true,
+      includeContent: true,
     };
     return await this.requestService.findOne<NoteEntity>(NoteEntity, options);
   }
 
-  private makeNoteFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
-    let options: INoteEntityFindOptions = {query: {$and: []}};
+  private makeNoteFindOptions(params: IDatastoreServiceParams): IMyFindNoteEntityOptions {
+    let options: IMyFindNoteEntityOptions = {where: {$and: []}};
     if (params.start)
-      options.query.$and.push({updated: {$gte: params.start.valueOf()}});
+      (<any>options.where.$and).push({updated: {$gte: params.start.valueOf()}});
     if (params.end)
-      options.query.$and.push({updated: {$lte: params.end.valueOf()}});
+      (<any>options.where.$and).push({updated: {$lte: params.end.valueOf()}});
     // set hasContent query
     if (params.hasContent)
-      options.query.$and.push({content: {$ne: null}});
+      (<any>options.where.$and).push({content: {$ne: null}});
     // set noFilter
     if (!params.noFilter) {
       // check notebooks
@@ -288,29 +293,29 @@ export class DatastoreService extends BaseClientService {
           notebooksHash[notebookGuid] = true;
       // set notebooks query
       if (_.size(notebooksHash) > 0)
-        options.query.$and.push({notebookGuid: {$in: _.keys(notebooksHash)}});
+        (<any>options.where.$and).push({notebookGuid: {$in: _.keys(notebooksHash)}});
     }
     if (params.archive) {
       options.archive = true;
-      options.content = true;
+      options.includeContent = true;
     }
     return options;
   }
 
-  private makeTimeLogFindOptions(params: IDatastoreServiceParams): IMultiEntityFindOptions {
-    let options:IMultiEntityFindOptions = {query: {$and: []}};
+  private makeTimeLogFindOptions(params: IDatastoreServiceParams): IMyFindEntityOptions {
+    let options: IMyFindEntityOptions = {where: {$and: []}};
     // set date query
     if (params.start)
-      options.query.$and.push({date: {$gte: params.start.valueOf()}});
+      (<any>options.where.$and).push({date: {$gte: params.start.valueOf()}});
     if (params.end)
-      options.query.$and.push({date: {$lte: params.end.valueOf()}});
+      (<any>options.where.$and).push({date: {$lte: params.end.valueOf()}});
     // set noFilter query
     if (params.noFilter) {
     }
     // set note guids query
     if (params.noteGuids)
       if (params.noteGuids.length > 0)
-        _.merge(options.query, {noteGuid: {$in: params.noteGuids}});
+        _.merge(options.where, {noteGuid: {$in: params.noteGuids}});
     return options;
   }
 

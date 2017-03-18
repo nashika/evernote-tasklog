@@ -22,12 +22,6 @@ interface IActivityModifyData {
 
 @Component<ActivityModeComponent>({
   template: template,
-  components: {
-    //popover: vueStrap.popover,
-  },
-  /*events: {
-    "reload": "reload",
-  },*/
 })
 export class ActivityModeComponent extends BaseComponent {
 
@@ -36,7 +30,7 @@ export class ActivityModeComponent extends BaseComponent {
   datastoreService: DatastoreService = container.get(DatastoreService);
 
   date: Date = new Date();
-  modifies: {[_id: string]: IActivityModifyData} = {};
+  modifies: {[id: string]: IActivityModifyData} = {};
 
   constructor() {
     super();
@@ -64,7 +58,7 @@ export class ActivityModeComponent extends BaseComponent {
       let newText = this.makeDiffText(note);
       modify.diffPatch = diff.createPatch("Note Content", oldText, newText, "", "", {context: 0});
       modify.diffHtml = diff2html.Diff2Html.getPrettyHtml(modify.diffPatch);
-      Vue.set(this.modifies, note._id, modify);
+      Vue.set(this.modifies, String(note.id), modify);
     }
   }
 

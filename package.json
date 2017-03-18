@@ -45,8 +45,10 @@
     "nedb-session-store": "1.1.1",
     "pluralize": "4.0.0",
     "reflect-metadata": "0.1.10",
+    "sequelize": "3.30.2",
     "serve-favicon": "2.4.1",
-    "source-map-support": "0.4.13"
+    "source-map-support": "0.4.13",
+    "sqlite": "2.3.0"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.0",
@@ -66,6 +68,7 @@
     "@types/nedb": "1.8.0",
     "@types/node": "7.0.8",
     "@types/pluralize": "0.0.27",
+    "@types/sequelize": "^4.0.46",
     "@types/serve-static": "1.7.31",
     "@types/source-map-support": "0.2.28",
     "@types/superagent": "2.0.36",

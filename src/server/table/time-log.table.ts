@@ -1,13 +1,27 @@
 import {injectable} from "inversify";
+import sequelize = require("sequelize");
 
 import {BaseMultiTable} from "./base-multi.table";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
-import {IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
 import {SettingService} from "../service/setting.service";
+import {ISequelizeInstance} from "./base.table";
 
 @injectable()
-export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFindOptions> {
+export class TimeLogTable extends BaseMultiTable<TimeLogEntity> {
+
+  protected fields: sequelize.DefineAttributes = {
+    noteGuid: {type: sequelize.STRING, allowNull: false},
+    comment: {type: sequelize.TEXT, allowNull: true},
+    allDay: {type: sequelize.BOOLEAN, allowNull: false},
+    date: {type: sequelize.BIGINT, allowNull: false},
+    person: {type: sequelize.STRING, allowNull: false},
+    spentTime: {type: sequelize.INTEGER, allowNull: true},
+  };
+
+  protected options: sequelize.DefineOptions<ISequelizeInstance<TimeLogEntity>> = {
+    indexes: [],
+  };
 
   constructor(protected settingService: SettingService) {
     super();
@@ -49,7 +63,7 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity, IMultiEntityFind
           timeLogs.push(timeLog);
       }
     }
-    await this.remove({noteGuid: note.guid});
+    await this.remove({where: {noteGuid: note.guid}});
     await this.save(timeLogs);
   }
 

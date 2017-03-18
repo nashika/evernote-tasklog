@@ -8,16 +8,17 @@ export class SettingEntity extends BaseMultiEntity {
     requireUser: true,
     archive: false,
     default: {
-      query: {},
-      sort: {updated: -1},
+      where: {},
+      order: [],
       limit: 500,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
 
+  key: string;
   value: any;
 
 }

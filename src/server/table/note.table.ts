@@ -1,7 +1,8 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
+import sequelize = require("sequelize");
 
-import {NoteEntity, INoteEntityFindOptions} from "../../common/entity/note.entity";
+import {NoteEntity} from "../../common/entity/note.entity";
 import {BaseMultiEvernoteTable} from "./base-multi-evernote.table";
 import {TimeLogTable} from "./time-log.table";
 import {ProfitLogTable} from "./profit-log.table";
@@ -9,18 +10,42 @@ import {TableService} from "../service/table.service";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {EvernoteClientService} from "../service/evernote-client.service";
+import {ISequelizeInstance} from "./base.table";
+import {IMyFindEntityOptions} from "../../common/entity/base-multi.entity";
+
+export interface IMyFindNoteEntityOptions extends IMyFindEntityOptions {
+  includeContent?: boolean;
+}
 
 @injectable()
-export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, INoteEntityFindOptions> {
+export class NoteTable extends BaseMultiEvernoteTable<NoteEntity> {
+
+  protected fields: sequelize.DefineAttributes = {
+    guid: {type: sequelize.STRING, allowNull: false},
+    title: {type: sequelize.STRING, allowNull: false},
+    content: {type: sequelize.TEXT, allowNull: true},
+    contentHash: {type: sequelize.TEXT, allowNull: false},
+    created: {type: sequelize.BIGINT, allowNull: true},
+    updated: {type: sequelize.BIGINT, allowNull: true},
+    deleted: {type: sequelize.BIGINT, allowNull: true},
+    active: {type: sequelize.BOOLEAN, allowNull: false},
+    updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},
+    notebookGuid: {type: sequelize.STRING, allowNull: true},
+    tagGuids: {type: sequelize.TEXT, allowNull: true},
+  };
+
+  protected options: sequelize.DefineOptions<ISequelizeInstance<NoteEntity>> = {
+    indexes: [],
+  };
 
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService) {
     super();
   }
 
-  async find(options: INoteEntityFindOptions): Promise<NoteEntity[]> {
-    let notes = await super.find(options);
-    if (options.content) {
+  async findAll(options: IMyFindNoteEntityOptions): Promise<NoteEntity[]> {
+    let notes = await super.findAll(options);
+    if (options.includeContent) {
       return notes;
     } else {
       return _.map(notes, (note: NoteEntity) => {
@@ -43,11 +68,11 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity, INoteEntityFin
   }
 
   async reParseNotes(query = {}): Promise<void> {
-    let options: INoteEntityFindOptions = {};
-    options.query = query;
+    let options: IMyFindNoteEntityOptions = {};
+    options.where = query;
     options.limit = 0;
-    options.content = true;
-    let notes = await this.find(options);
+    options.includeContent = true;
+    let notes = await this.findAll(options);
     for (let note of notes) {
       await this.parseNote(note);
     }

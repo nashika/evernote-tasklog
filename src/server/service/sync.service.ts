@@ -49,7 +49,7 @@ export class SyncService extends BaseServerService {
   }
 
   async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
-    this.userTimers[globalUser._id] = {};
+    this.userTimers[globalUser.id] = {};
   }
 
   async sync(globalUser: GlobalUserEntity, manual: boolean): Promise<void> {
@@ -57,7 +57,7 @@ export class SyncService extends BaseServerService {
       logger.warn(`No persons setting, sync process stopped.`);
       return;
     }
-    let userTimerData = this.userTimers[globalUser._id];
+    let userTimerData = this.userTimers[globalUser.id];
     clearTimeout(userTimerData.timer);
     let syncStateTable = this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser);
     let localSyncState: SyncStateEntity = await syncStateTable.findOne();
@@ -76,7 +76,7 @@ export class SyncService extends BaseServerService {
   }
 
   updateCount(globalUser: GlobalUserEntity): number {
-    return globalUser && this.userTimers[globalUser._id] ? this.userTimers[globalUser._id].updateCount : 0;
+    return globalUser && this.userTimers[globalUser.id] ? this.userTimers[globalUser.id].updateCount : 0;
   }
 
   private async getSyncChunk(globalUser: GlobalUserEntity, localSyncState: SyncStateEntity): Promise<void> {
@@ -107,7 +107,7 @@ export class SyncService extends BaseServerService {
     let numNote: number = Math.ceil(interval / (60 * 1000));
     let noteTable = this.tableService.getUserTable<NoteTable>(NoteEntity, globalUser);
     logger.info(`Auto get note content was started. Number of note is ${numNote}.`);
-    let notes = await noteTable.find({query: {content: null}, sort: {updated: -1}, limit: numNote});
+    let notes = await noteTable.findAll({where: {content: null}, order: [["updated", "DESC"]], limit: numNote});
     for (let note of notes) {
       await noteTable.loadRemote(note.guid);
     }

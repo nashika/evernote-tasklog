@@ -4,7 +4,7 @@ import {injectable} from "inversify";
 
 import {BaseClientService} from "./base-client.service";
 import {BaseEntity} from "../../common/entity/base.entity";
-import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
+import {BaseMultiEntity, IMyFindEntityOptions} from "../../common/entity/base-multi.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {BaseSingleEntity} from "../../common/entity/base-single.entity";
@@ -12,19 +12,19 @@ import {BaseSingleEntity} from "../../common/entity/base-single.entity";
 @injectable()
 export class RequestService extends BaseClientService {
 
-  async find<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMultiEntityFindOptions = {}): Promise<T[]> {
+  async find<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMyFindEntityOptions = {}): Promise<T[]> {
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
     return _.map(res.body, doc => new (<any>EntityClass)(doc));
   }
 
-  async findOne<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMultiEntityFindOptions = {}): Promise<T> {
+  async findOne<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMyFindEntityOptions = {}): Promise<T> {
     options.limit = 1;
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
     let results: T[] = _.map(res.body, doc => new (<any>EntityClass)(doc));
     return results[0] || null;
   }
 
-  async count(EntityClass: typeof BaseMultiEntity, options: IMultiEntityFindOptions): Promise<number> {
+  async count(EntityClass: typeof BaseMultiEntity, options: IMyFindEntityOptions): Promise<number> {
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}/count`).send(options);
     return res.body;
   }
