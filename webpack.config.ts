@@ -5,6 +5,7 @@ import webpack = require("webpack");
 let UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
 
 let webpackConfig:webpack.Configuration = {
+  target: "web",
   entry: {
     app: "./src/client/app",
   },
@@ -16,7 +17,7 @@ let webpackConfig:webpack.Configuration = {
   resolve: {
     extensions: [".ts", ".js"],
     alias: {
-      vue: 'vue/dist/vue.js'
+      vue: "vue/dist/vue.js",
     },
   },
   module: {
@@ -40,8 +41,9 @@ let webpackConfig:webpack.Configuration = {
     },
     mangle: {
       keep_fnames: true,
-    }}),
-  ] : [],
+    },
+    sourceMap: true,
+  })] : [],
   devtool: "source-map",
   devServer: {
     contentBase: "./public",
