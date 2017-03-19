@@ -10,7 +10,7 @@ import {TableService} from "../service/table.service";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {EvernoteClientService} from "../service/evernote-client.service";
-import {IBaseTableParams} from "./base.table";
+import {IBaseTableParams, ISequelizeInstance} from "./base.table";
 import {IMyFindEntityOptions} from "../../common/entity/base.entity";
 
 export interface IMyFindNoteEntityOptions extends IMyFindEntityOptions {
@@ -35,7 +35,27 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
       notebookGuid: {type: sequelize.STRING},
       tagGuids: {type: sequelize.TEXT},
       resources: {type: sequelize.TEXT},
-      //attributes: {type: sequelize.TEXT},
+      "attributes__subjectDate": {type: sequelize.BIGINT},
+      "attributes__latitude": {type: sequelize.DOUBLE},
+      "attributes__longitude": {type: sequelize.DOUBLE},
+      "attributes__altitude": {type: sequelize.DOUBLE},
+      "attributes__author": {type: sequelize.STRING},
+      "attributes__source": {type: sequelize.STRING},
+      "attributes__sourceURL": {type: sequelize.STRING},
+      "attributes__sourceApplication": {type: sequelize.STRING},
+      "attributes__shareDate": {type: sequelize.BIGINT},
+      "attributes__reminderOrder": {type: sequelize.BIGINT},
+      "attributes__reminderDoneTime": {type: sequelize.BIGINT},
+      "attributes__reminderTime": {type: sequelize.BIGINT},
+      "attributes__placeName": {type: sequelize.STRING},
+      "attributes__contentClass": {type: sequelize.STRING},
+      "attributes__applicationData": {type: sequelize.TEXT},
+      "attributes__classifications": {type: sequelize.TEXT},
+      "attributes__creatorId": {type: sequelize.INTEGER},
+      "attributes__lastEditorId": {type: sequelize.INTEGER},
+      "attributes__sharedWithBusiness": {type: sequelize.BOOLEAN},
+      "attributes__conflictSourceNoteGuid": {type: sequelize.STRING},
+      "attributes__noteTitleQuality": {type: sequelize.INTEGER},
       tagNames: {type: sequelize.TEXT},
       sharedNotes: {type: sequelize.TEXT},
       restrictions: {type: sequelize.TEXT},
@@ -44,7 +64,7 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
     options: {
       indexes: [],
     },
-    jsonFields: ["contentHash", "tagGuids", "resources", /*"attributes", */"tagNames", "sharedNotes", "restrictions", "limits"],
+    jsonFields: ["contentHash", "tagGuids", "resources", "attributes__applicationData", "tagNames", "sharedNotes", "restrictions", "limits"],
   };
 
   constructor(protected tableService: TableService,
@@ -63,6 +83,23 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
         return note;
       });
     }
+  }
+
+  protected prepareSaveEntity(entity: NoteEntity): any {
+    _.each(entity.attributes || {}, (value, key) => {
+      _.set(entity, `attributes__${key}`, value);
+    });
+    delete entity.attributes;
+    return super.prepareSaveEntity(entity);
+  }
+
+  protected prepareLoadEntity(instance: ISequelizeInstance<NoteEntity>): NoteEntity {
+    let entity = super.prepareLoadEntity(instance);
+    _(_.keys(entity)).filter(key => _.includes(key, "__")).each(key => {
+      _.set(entity, key.replace("__", "."), _.get(entity, key));
+      _.unset(entity, key);
+    });
+    return entity;
   }
 
   async loadRemote(guid: string): Promise<NoteEntity> {
