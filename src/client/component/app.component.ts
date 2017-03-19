@@ -10,6 +10,8 @@ import {TimelineModeComponent} from "./mode/timeline-mode.component";
 import {container} from "../inversify.config";
 import {ActivityModeComponent} from "./mode/activity-mode.component";
 import {DatastoreService} from "../service/datastore.service";
+import {router} from "../app";
+let Push = require("push.js");
 
 let template = require("./app.component.jade");
 
@@ -44,8 +46,17 @@ export class AppComponent extends BaseComponent {
 
   async interval(): Promise<void> {
     let isUpdated = await this.datastoreService.checkUpdateCount();
-    if (isUpdated)
+    if (isUpdated) {
       this.reload();
+      Push.create("Evernote Tasklog", {
+        body: "Note was updated, check activity.",
+        link: "#/activity",
+        onClick: function (this: any) {
+          router.push("activity");
+          this.close();
+        },
+      });
+    }
   }
 
   reload() {

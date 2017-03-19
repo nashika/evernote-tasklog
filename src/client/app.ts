@@ -31,7 +31,7 @@ const routes = [
   {path: "/activity", component: ActivityModeComponent},
   {path: "/settings", component: SettingsModeComponent},
 ];
-const router = new VueRouter({routes});
+export const router = new VueRouter({routes});
 
 let AppComponent = container.get("Newable<AppComponent>");
 new (<any>AppComponent)({router}).$mount("#app");
