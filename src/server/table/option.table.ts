@@ -18,7 +18,8 @@ export class OptionTable extends BaseTable<OptionEntity> {
   };
 
   async findValueByKey(key: string): Promise<any> {
-    return (await this.findByPrimary(key)).value;
+    let entity = await this.findByPrimary(key);
+    return entity ? entity.value : null;
   }
 
   async saveValueByKey(key: string, value: any): Promise<void> {
