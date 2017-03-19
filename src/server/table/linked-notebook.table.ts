@@ -11,10 +11,16 @@ export class LinkedNotebookTable extends BaseMultiEvernoteTable<LinkedNotebookEn
   static params: IBaseTableParams = {
     fields: {
       guid: {type: sequelize.STRING, primaryKey: true},
-      name: {type: sequelize.STRING, allowNull: false},
+      shareName: {type: sequelize.STRING},
+      username: {type: sequelize.STRING},
+      shareId: {type: sequelize.STRING},
+      sharedNotebookGlobalId: {type: sequelize.STRING},
+      uri: {type: sequelize.STRING},
       updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},
-      defaultNotebook: {type: sequelize.BOOLEAN, allowNull: false},
-      stack: {type: sequelize.STRING, allowNull: true},
+      noteStoreUrl: {type: sequelize.STRING},
+      webApiUrlPrefix: {type: sequelize.STRING},
+      stack: {type: sequelize.STRING},
+      businessId: {type: sequelize.INTEGER},
     },
     options: {
       indexes: [],

@@ -60,10 +60,10 @@ export abstract class BaseTable<T extends BaseEntity> {
       let addIndexes: sequelize.DefineIndexesOptions[] = [];
       _.each(this.Class.params.fields, (field: sequelize.DefineAttributeColumnOptions, name) => {
         field = _.cloneDeep(field);
-        field.primaryKey = false;
-        field.unique = false;
         if (field.primaryKey || field.unique)
           addIndexes.push({unique: false, fields: [name]});
+        field.primaryKey = false;
+        field.unique = false;
         this.archiveFields[name] = field;
       });
       this.archiveOptions = _.cloneDeep(this.Class.params.options);
@@ -88,7 +88,7 @@ export abstract class BaseTable<T extends BaseEntity> {
   protected prepareLoadEntity(instance: ISequelizeInstance<T>): T {
     let data: any = instance.toJSON();
     for (let jsonField of this.Class.params.jsonFields) {
-      data[jsonField] = JSON.parse(data[jsonField]);
+      data[jsonField] = data[jsonField] ? JSON.parse(data[jsonField]) : null;
     }
     return new (<any>this.EntityClass)(data);
   }

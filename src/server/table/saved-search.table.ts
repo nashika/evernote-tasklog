@@ -12,13 +12,15 @@ export class SavedSearchTable extends BaseMultiEvernoteTable<SavedSearchEntity> 
     fields: {
       guid: {type: sequelize.STRING, primaryKey: true},
       name: {type: sequelize.STRING, allowNull: false},
-      query: {type: sequelize.STRING, allowNull: true},
+      query: {type: sequelize.STRING},
+      format: {type: sequelize.INTEGER},
       updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},
+      scope: {type: sequelize.TEXT},
     },
     options: {
       indexes: [],
     },
-    jsonFields: [],
+    jsonFields: ["scope"],
   };
 
 }

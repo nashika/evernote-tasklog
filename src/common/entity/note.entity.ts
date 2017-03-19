@@ -20,11 +20,21 @@ export class NoteEntity extends BaseMultiEvernoteEntity {
   };
 
   title: string;
-  notebookGuid: string;
-  tagGuids: string[];
+  content: string;
+  contentHash: Object;
+  contentLength: number;
   created: number;
   updated: number;
-  content: string;
+  deleted: number;
+  active: boolean;
+  notebookGuid: string;
+  tagGuids: string[];
+  resources: Object[];
+  attributes: Object;
+  tagNames: string[];
+  sharedNotes: Object[];
+  restrictions: any;
+  limits: any;
 
   hasContent: boolean;
 

@@ -14,12 +14,22 @@ export class NotebookTable extends BaseMultiEvernoteTable<NotebookEntity> {
       name: {type: sequelize.STRING, allowNull: false},
       updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},
       defaultNotebook: {type: sequelize.BOOLEAN, allowNull: false},
-      stack: {type: sequelize.STRING, allowNull: true},
+      serviceCreated: {type: sequelize.BIGINT},
+      serviceUpdated: {type: sequelize.BIGINT},
+      publishing: {type: sequelize.TEXT},
+      published: {type: sequelize.BOOLEAN},
+      stack: {type: sequelize.STRING},
+      sharedNotebookIds: {type: sequelize.TEXT},
+      sharedNotebooks: {type: sequelize.TEXT},
+      businessNotebooks: {type: sequelize.TEXT},
+      contact: {type: sequelize.TEXT},
+      restrictions: {type: sequelize.TEXT},
+      recipientSettings: {type: sequelize.TEXT},
     },
     options: {
       indexes: [],
     },
-    jsonFields: [],
+    jsonFields: ["publishing", "sharedNotebookIds", "sharedNotebooks", "businessNotebooks", "contact", "restrictions", "recipientSettings"],
   };
 
 }

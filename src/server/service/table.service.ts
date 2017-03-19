@@ -37,11 +37,11 @@ export class TableService extends BaseServerService {
   async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
     if (this.userTables[globalUser.key]) return;
     this.userTables[globalUser.key] = {};
-    let database = this.getDatabase(globalUser.username);
+    let database = this.getDatabase(globalUser.key);
     for (let table of container.getAll<BaseTable<BaseEntity>>(BaseTable)) {
       if (!table.EntityClass.params.requireUser) continue;
       this.userTables[globalUser.key][table.EntityClass.params.name] = table;
-      table.initialize(this.getDatabase(globalUser.username), globalUser);
+      table.initialize(database, globalUser);
     }
     await database.sync();
   }

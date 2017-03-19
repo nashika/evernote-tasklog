@@ -21,6 +21,17 @@ export class NotebookEntity extends BaseMultiEvernoteEntity {
   };
 
   name: string;
+  defaultNotebook: boolean;
+  serviceCreated: number;
+  serviceUpdated: number;
+  publishing: Object;
+  published: boolean;
   stack: string;
+  sharedNotebookIds: number[];
+  sharedNotebooks: Object[];
+  businessNotebooks: Object;
+  contact: Object;
+  restrictions: Object;
+  recipientSettings: Object;
 
 }

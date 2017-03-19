@@ -6,7 +6,7 @@ export class LinkedNotebookEntity extends BaseMultiEvernoteEntity {
   static params:IBaseMultiEntityParams = {
     name: "linkedNotebook",
     primaryKey: "guid",
-    displayField: "name",
+    displayField: "shareName",
     requireUser: true,
     archive: false,
     default: {
@@ -19,5 +19,15 @@ export class LinkedNotebookEntity extends BaseMultiEvernoteEntity {
       order: [],
     },
   };
+
+  shareName: string;
+  username: string;
+  shareId: string;
+  sharedNotebookGlobalId: string;
+  uri: string;
+  noteStoreUrl: string;
+  webApiUrlPrefix: string;
+  stack: string;
+  businessId: number;
 
 }

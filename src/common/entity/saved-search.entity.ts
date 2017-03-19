@@ -22,5 +22,7 @@ export class SavedSearchEntity extends BaseMultiEvernoteEntity {
 
   name: string;
   query: string;
+  format: number;
+  scope: Object;
 
 }
