@@ -70,7 +70,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity> {
     this.message("load", ["remote"], "note", true, {guid: guid});
     let note = await this.evernoteClientService.getNote(this.globalUser, guid);
     lastNote = note;
-    await this.save(note);
+    await this.save(note, true);
     await this.parseNote(lastNote);
     this.message("load", ["remote"], "note", false, {guid: lastNote.guid, title: lastNote.title});
     return lastNote;

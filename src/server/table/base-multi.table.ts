@@ -47,7 +47,7 @@ export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
     return result;
   }
 
-  async save(entity: T): Promise<T> {
+  async save(entity: T, archive: boolean = false): Promise<T> {
     if (!entity) return null;
     this.message("save", ["local"], this.EntityClass.params.name, true, {primaryKey: entity.primaryKey, displayField: entity.displayField});
     let savedInstance: ISequelizeInstance<T>;
@@ -58,7 +58,7 @@ export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
     savedInstance = await this.sequelizeModel.build(this.prepareSaveEntity(entity), {isNewRecord: !oldInstance}).save();
     let savedEntity = this.prepareLoadEntity(savedInstance);
     this.message("save", ["local"], this.EntityClass.params.name, false, {primaryKey: entity.primaryKey, displayField: entity.displayField});
-    if (this.EntityClass.params.archive) {
+    if (this.EntityClass.params.archive && archive) {
       this.message("save", ["local", "archive"], this.EntityClass.params.name, true, {primaryKey: entity.primaryKey, displayField: entity.displayField});
       await this.archiveSequelizeModel.create(this.prepareSaveEntity(savedEntity));
       this.message("save", ["local", "archive"], this.EntityClass.params.name, false, {primaryKey: entity.primaryKey, displayField: entity.displayField});
@@ -68,11 +68,11 @@ export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
 
   async saveAll(entities: T[]): Promise<T[]> {
     if (!entities || entities.length == 0) return [];
-    this.message("saveAll", ["local"], this.EntityClass.params.name, true, {"docs.count": entities.length});
+    this.message("saveAll", ["local"], this.EntityClass.params.name, true, {"count": entities.length});
     let saveEntities: T[] = [];
     for (let entity of entities)
       saveEntities.push(await this.save(entity));
-    this.message("saveAll", ["local"], this.EntityClass.params.name, false, {"docs.count": entities.length});
+    this.message("saveAll", ["local"], this.EntityClass.params.name, false, {"count": entities.length});
     return saveEntities;
   }
 

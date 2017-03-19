@@ -30,7 +30,7 @@ export class ActivityModeComponent extends BaseComponent {
   datastoreService: DatastoreService = container.get(DatastoreService);
 
   date: Date = new Date();
-  modifies: {[archiveId: number]: IActivityModifyData} = {};
+  modifies: {[archiveId: string]: IActivityModifyData} = {};
 
   constructor() {
     super();

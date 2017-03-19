@@ -20,7 +20,7 @@ export class RequestService extends BaseClientService {
   async findOne<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMyFindEntityOptions = {}): Promise<T> {
     options.limit = 1;
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
-    let results: T[] = _.map(res.body, doc => new (<any>EntityClass)(doc));
+    let results: T[] = _.map(res.body, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
 

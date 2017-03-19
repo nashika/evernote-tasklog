@@ -14,12 +14,12 @@ section.activity-mode.p-3
           h1
             a(:href="'evernote:///view/' + datastoreService.user.id + '/' + datastoreService.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
               | {{moment(note.updated).format('HH:mm')}} {{note.title}}
-            span.label.label-danger(v-if="modifies[note._id] && !modifies[note._id].prevNote") #[i.fa.fa-plus] New
+            span.label.label-danger(v-if="modifies[note._id] && !modifies[note.archiveId].prevNote") #[i.fa.fa-plus] New
             span.label.label-primary #[i.fa.fa-book] {{notebookName(note)}}
             span.label.label-default(v-for="tagName in tagNames(note)") #[i.fa.fa-tag] {{tagName}}
       .body
-        div(v-if="modifies[note._id]")
-          div(v-html="modifies[note._id].diffHtml")
+        div(v-if="modifies[note.archiveId]")
+          div(v-html="modifies[note.archiveId].diffHtml")
           //pre {{modifies[note._id].diffPatch}}
         div(v-else)
           i.fa.fa-spinner.fa-pulse
