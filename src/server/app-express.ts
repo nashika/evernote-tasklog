@@ -5,37 +5,41 @@ import express = require("express");
 import cookieParser = require("cookie-parser");
 import session = require("express-session");
 import bodyParser = require("body-parser");
+import * as sequelize from "sequelize";
 
 import {BaseRoute} from "./routes/base.route";
 import {container} from "./inversify.config";
 
-let NedbStore = require("nedb-session-store")(session);
 let app: express.Express = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
-//app.use(logger("dev"));
+// session store setup
+let sessionDatabase = new sequelize("", "", "", {dialect: "sqlite", storage: path.join(__dirname, "../../db/_session.db"), logging: false});
+let SequelizeStore = require("connect-session-sequelize")(session.Store);
+let sequelizeStore = new SequelizeStore({
+  db: sessionDatabase,
+  checkExpirationInterval: 15 * 60 * 1000,
+  expiration: 7 * 24 * 60 * 60 * 1000,
+});
+sequelizeStore.sync();
+let sessionMiddleware  = session({
+  cookie: {
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  },
+  store: sequelizeStore,
+  name: "realestate2.connect.sid",
+  secret: "keyboard cat",
+  resave: false,
+  saveUninitialized: false,
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-app.use(session({
-  name: "evernote-tasklog.connect.sid",
-  secret: "mysecret",
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    path: "/",
-    httpOnly: true,
-    maxAge: 30 * 24 * 3600 * 1000,
-  },
-  store: new NedbStore({
-    filename: path.join(__dirname, `../../db/session.db`),
-  }),
-}));
+app.use(sessionMiddleware);
 app.use("/dist", express.static(path.join(__dirname, "../../dist")));
 for (let route of container.getAll<BaseRoute>(BaseRoute))
   app.use(route.getBasePath(), route.getRouter());

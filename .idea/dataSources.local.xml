@@ -19,5 +19,11 @@
       <secret-storage>master_key</secret-storage>
       <auth-required>false</auth-required>
     </data-source>
+    <data-source name="_session.db" uuid="79d8f6cf-ab32-4dce-9cfd-2ebcb7b8cd14">
+      <database-info product="SQLite" version="3.16.1" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <secret-storage>master_key</secret-storage>
+      <auth-required>false</auth-required>
+    </data-source>
   </component>
 </project>
