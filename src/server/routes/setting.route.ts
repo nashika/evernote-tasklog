@@ -18,8 +18,8 @@ export class SettingRoute extends BaseMultiRoute<SettingEntity, SettingTable> {
   }
 
   async save(req: Request, res: Response): Promise<boolean> {
-    let session = this.sessionService.get(req);
     let result = await super.save(req, res);
+    let session = this.sessionService.get(req);
     await this.settingService.initializeUser(session.globalUser);
     return result;
   }

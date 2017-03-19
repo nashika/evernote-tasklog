@@ -39,7 +39,7 @@ export class MainService extends BaseServerService {
     let remoteUser = await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
     await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
     await this.syncService.sync(globalUser, true);
-    logger.info(`Init user finished. user:${globalUser.id} data was initialized.`);
+    logger.info(`Init user finished. user:${globalUser.key} data was initialized.`);
   }
 
 }

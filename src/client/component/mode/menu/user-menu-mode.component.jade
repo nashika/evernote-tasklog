@@ -24,10 +24,10 @@ section.user-info
             td None
             td
               button.btn.btn-danger.btn-sm.btn-block(v-if="datastoreService.globalUser", type="button", @click="logout()") #[span.fa.fa-sign-out] Logout
-          tr(v-for="globalUser in globalUsers", :class="{'table-success': datastoreService.globalUser && datastoreService.globalUser._id == globalUser._id}")
+          tr(v-for="globalUser in globalUsers", :class="{'table-success': datastoreService.globalUser && datastoreService.globalUser.key == globalUser.key}")
             td {{globalUser.username}} {{globalUser.sandbox ? "(Sandbox)" : ""}}
             td
-              button.btn.btn-primary.btn-sm.btn-block(v-if="!datastoreService.globalUser || datastoreService.globalUser._id != globalUser._id", @click="select(globalUser)") Change
+              button.btn.btn-primary.btn-sm.btn-block(v-if="!datastoreService.globalUser || datastoreService.globalUser.key != globalUser.key", @click="select(globalUser)") Change
     section.add-user
       h1.h3 Add User
       button.btn.btn-primary.btn-block(@click="add(false)") Add Production User

@@ -4,7 +4,8 @@ export class GlobalUserEntity extends BaseMultiEntity {
 
   static params: IBaseMultiEntityParams = {
     name: "globalUser",
-    titleField: "username",
+    primaryKey: "key",
+    displayField: "username",
     requireUser: false,
     archive: false,
     default: {

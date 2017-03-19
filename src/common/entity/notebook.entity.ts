@@ -5,7 +5,8 @@ export class NotebookEntity extends BaseMultiEvernoteEntity {
 
   static params:IBaseMultiEntityParams = {
     name: "notebook",
-    titleField: "name",
+    primaryKey: "guid",
+    displayField: "name",
     requireUser: true,
     archive: false,
     default: {

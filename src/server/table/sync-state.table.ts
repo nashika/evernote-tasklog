@@ -11,6 +11,7 @@ export class SyncStateTable extends BaseSingleEvernoteTable<SyncStateEntity> {
 
   static params: IBaseTableParams = {
     fields: {
+      id: {type: sequelize.INTEGER, primaryKey: true},
       updateCount: {type: sequelize.INTEGER, allowNull: false},
     },
     options: {

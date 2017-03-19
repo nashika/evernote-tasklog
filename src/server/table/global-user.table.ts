@@ -10,7 +10,7 @@ export class GlobalUserTable extends BaseMultiTable<GlobalUserEntity> {
 
   static params: IBaseTableParams = {
     fields: {
-      key: {type: sequelize.STRING, allowNull: false, unique: true},
+      key: {type: sequelize.STRING, primaryKey: true},
       sandbox: {type: sequelize.BOOLEAN, allowNull: false},
       username: {type: sequelize.STRING, allowNull: false},
       token: {type: sequelize.STRING, allowNull: false},

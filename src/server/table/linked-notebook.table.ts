@@ -10,7 +10,7 @@ export class LinkedNotebookTable extends BaseMultiEvernoteTable<LinkedNotebookEn
 
   static params: IBaseTableParams = {
     fields: {
-      guid: {type: sequelize.STRING, allowNull: false},
+      guid: {type: sequelize.STRING, primaryKey: true},
       name: {type: sequelize.STRING, allowNull: false},
       updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},
       defaultNotebook: {type: sequelize.BOOLEAN, allowNull: false},

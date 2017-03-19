@@ -4,7 +4,8 @@ export class TimeLogEntity extends BaseMultiEntity {
 
   static params:IBaseMultiEntityParams = {
     name: "timeLog",
-    titleField: "comment",
+    primaryKey: "id",
+    displayField: "comment",
     requireUser: true,
     archive: false,
     default: {
@@ -18,6 +19,7 @@ export class TimeLogEntity extends BaseMultiEntity {
     },
   };
 
+  id: number;
   noteGuid: string;
   comment: string;
   allDay: boolean;

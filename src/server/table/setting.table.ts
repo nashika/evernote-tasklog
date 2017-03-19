@@ -10,7 +10,7 @@ export class SettingTable extends BaseMultiTable<SettingEntity> {
 
   static params: IBaseTableParams = {
     fields: {
-      key: {type: sequelize.STRING, allowNull: false, unique: true},
+      key: {type: sequelize.STRING, primaryKey: true},
       value: {type: sequelize.TEXT, allowNull: false},
     }, options: {
       indexes: [],

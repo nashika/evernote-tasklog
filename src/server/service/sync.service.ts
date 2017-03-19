@@ -49,8 +49,8 @@ export class SyncService extends BaseServerService {
   }
 
   async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
-    if (this.userTimers[globalUser.id]) return;
-    this.userTimers[globalUser.id] = {};
+    if (this.userTimers[globalUser.key]) return;
+    this.userTimers[globalUser.key] = {};
   }
 
   async sync(globalUser: GlobalUserEntity, manual: boolean): Promise<void> {
@@ -58,7 +58,7 @@ export class SyncService extends BaseServerService {
       logger.warn(`No persons setting, sync process stopped.`);
       return;
     }
-    let userTimerData = this.userTimers[globalUser.id];
+    let userTimerData = this.userTimers[globalUser.key];
     clearTimeout(userTimerData.timer);
     let syncStateTable = this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser);
     let localSyncState: SyncStateEntity = await syncStateTable.findOne();
@@ -77,7 +77,7 @@ export class SyncService extends BaseServerService {
   }
 
   updateCount(globalUser: GlobalUserEntity): number {
-    return globalUser && this.userTimers[globalUser.id] ? this.userTimers[globalUser.id].updateCount : 0;
+    return globalUser && this.userTimers[globalUser.key] ? this.userTimers[globalUser.key].updateCount : 0;
   }
 
   private async getSyncChunk(globalUser: GlobalUserEntity, localSyncState: SyncStateEntity): Promise<void> {
@@ -89,15 +89,15 @@ export class SyncService extends BaseServerService {
     let savedSearchTable = this.tableService.getUserTable<SavedSearchTable>(SavedSearchEntity, globalUser);
     let linkedNotebookTable = this.tableService.getUserTable<LinkedNotebookTable>(LinkedNotebookEntity, globalUser);
     let lastSyncChunk: evernote.Evernote.SyncChunk = await this.evernoteClientService.getFilteredSyncChunk(globalUser, localSyncState.updateCount);
-    await noteTable.save(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
+    await noteTable.saveAll(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
     await noteTable.removeByGuid(lastSyncChunk.expungedNotes);
-    await notebookTable.save(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
+    await notebookTable.saveAll(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));
     await notebookTable.removeByGuid(lastSyncChunk.expungedNotebooks);
-    await tagTable.save(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
+    await tagTable.saveAll(_.map(lastSyncChunk.tags, tag => new TagEntity(tag)));
     await tagTable.removeByGuid(lastSyncChunk.expungedTags);
-    await savedSearchTable.save(_.map(lastSyncChunk.searches, search => new SavedSearchEntity(search)));
+    await savedSearchTable.saveAll(_.map(lastSyncChunk.searches, search => new SavedSearchEntity(search)));
     await savedSearchTable.removeByGuid(lastSyncChunk.expungedSearches);
-    await linkedNotebookTable.save(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
+    await linkedNotebookTable.saveAll(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
     await linkedNotebookTable.removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
     localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
     await syncStateTable.save(localSyncState);

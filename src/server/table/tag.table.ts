@@ -10,7 +10,7 @@ export class TagTable extends BaseMultiEvernoteTable<TagEntity> {
 
   static params: IBaseTableParams = {
     fields: {
-      guid: {type: sequelize.STRING, allowNull: false, unique: true},
+      guid: {type: sequelize.STRING, primaryKey: true},
       name: {type: sequelize.STRING, allowNull: false},
       parentGuid: {type: sequelize.STRING, allowNull: true},
       updateSequenceNum: {type: sequelize.INTEGER, allowNull: false},

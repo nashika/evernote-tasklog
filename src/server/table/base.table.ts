@@ -56,13 +56,18 @@ export abstract class BaseTable<T extends BaseEntity> {
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
       this.archiveFields = {};
-      //this.archiveFields["originalId"] = {type: sequelize.INTEGER, allowNull: false, comment: "Original ID"};
-      _.each(this.Class.params.fields, (field, name) => {
-        this.archiveFields[name] = _.cloneDeep(field);
-        (<sequelize.DefineAttributeColumnOptions>this.archiveFields[name]).unique = false;
+      this.archiveFields["archiveId"] = {type: sequelize.INTEGER, primaryKey: true};
+      let addIndexes: sequelize.DefineIndexesOptions[] = [];
+      _.each(this.Class.params.fields, (field: sequelize.DefineAttributeColumnOptions, name) => {
+        field = _.cloneDeep(field);
+        field.primaryKey = false;
+        field.unique = false;
+        if (field.primaryKey || field.unique)
+          addIndexes.push({unique: false, fields: [name]});
+        this.archiveFields[name] = field;
       });
       this.archiveOptions = _.cloneDeep(this.Class.params.options);
-      this.archiveOptions.indexes = _.union([{unique: false, fields: ["originalId"]}], this.archiveOptions.indexes);
+      this.archiveOptions.indexes = _.union(addIndexes, this.archiveOptions.indexes);
       this.archiveSequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.archiveName, this.archiveFields, this.archiveOptions);
     }
   }

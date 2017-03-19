@@ -5,7 +5,8 @@ export class TagEntity extends BaseMultiEvernoteEntity {
 
   static params:IBaseMultiEntityParams = {
     name: "tag",
-    titleField: "name",
+    primaryKey: "guid",
+    displayField: "name",
     requireUser: true,
     archive: false,
     default: {

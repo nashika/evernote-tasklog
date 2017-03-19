@@ -4,7 +4,8 @@ export class ProfitLogEntity extends BaseMultiEntity {
 
   static params:IBaseMultiEntityParams = {
     name: "profitLog",
-    titleField: "comment",
+    primaryKey: "id",
+    displayField: "comment",
     requireUser: true,
     archive: false,
     default: {
@@ -18,6 +19,7 @@ export class ProfitLogEntity extends BaseMultiEntity {
     },
   };
 
+  id: number;
   noteGuid: string;
   comment: string;
   profit: number;

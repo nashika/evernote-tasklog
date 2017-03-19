@@ -11,6 +11,7 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity> {
 
   static params: IBaseTableParams = {
     fields: {
+      id: {type: sequelize.INTEGER, primaryKey: true},
       noteGuid: {type: sequelize.STRING, allowNull: false},
       comment: {type: sequelize.TEXT, allowNull: true},
       profit: {type: sequelize.INTEGER, allowNull: false},
@@ -28,7 +29,7 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity> {
       let matches: string[];
       if (matches = line.match(/(.*)[@＠][\\￥$＄](.+)/i)) {
         profitLogs.push(new ProfitLogEntity({
-          _id: undefined,
+          id: undefined,
           noteGuid: note.guid,
           comment: matches[1],
           profit: parseInt(matches[2].replace(/,/g, '')),
@@ -36,7 +37,7 @@ export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity> {
       }
     }
     await this.remove({where: {noteGuid: note.guid}});
-    await this.save(profitLogs);
+    await this.saveAll(profitLogs);
   }
 
 }

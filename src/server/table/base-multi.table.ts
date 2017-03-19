@@ -47,25 +47,33 @@ export class BaseMultiTable<T extends BaseMultiEntity> extends BaseTable<T> {
     return result;
   }
 
-  async save(entities: T|T[]): Promise<T | T[]> {
-    if (!entities) return;
-    let arrEntities: T[] = _.castArray(entities);
-    if (arrEntities.length == 0) return;
-    this.message("save", ["local"], this.EntityClass.params.name, true, {"docs.count": arrEntities.length});
-    for (let entity of arrEntities) {
-      this.message("upsert", ["local"], this.EntityClass.params.name, true, {id: entity.id, title: _.get(entity, this.EntityClass.params.titleField)});
-      let savedEntity = await this.sequelizeModel.create(this.prepareSaveEntity(entity));
-      this.message("upsert", ["local"], this.EntityClass.params.name, false, {id: entity.id});
+  async save(entity: T): Promise<T> {
+    if (!entity) return null;
+    this.message("save", ["local"], this.EntityClass.params.name, true, {primaryKey: entity.primaryKey, displayField: entity.displayField});
+    let savedInstance: ISequelizeInstance<T>;
+    let oldInstance: ISequelizeInstance<T>;
+    if (entity.primaryKey) {
+      oldInstance = await this.sequelizeModel.findByPrimary(entity.primaryKey);
     }
-    this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});
-    if (!this.EntityClass.params.archive) return;
-    for (let entity of arrEntities) {
-      this.message("upsert", ["local", "archive"], this.EntityClass.params.name, true, {id: entity.id, title: _.get(entity, this.EntityClass.params.titleField)});
-      await this.archiveSequelizeModel.upsert(this.prepareSaveEntity(entity));
-      this.message("upsert", ["local", "archive"], this.EntityClass.params.name, false, {id: entity.id});
+    savedInstance = await this.sequelizeModel.build(this.prepareSaveEntity(entity), {isNewRecord: !oldInstance}).save();
+    let savedEntity = this.prepareLoadEntity(savedInstance);
+    this.message("save", ["local"], this.EntityClass.params.name, false, {primaryKey: entity.primaryKey, displayField: entity.displayField});
+    if (this.EntityClass.params.archive) {
+      this.message("save", ["local", "archive"], this.EntityClass.params.name, true, {primaryKey: entity.primaryKey, displayField: entity.displayField});
+      await this.archiveSequelizeModel.create(this.prepareSaveEntity(savedEntity));
+      this.message("save", ["local", "archive"], this.EntityClass.params.name, false, {primaryKey: entity.primaryKey, displayField: entity.displayField});
     }
-    this.message("save", ["local"], this.EntityClass.params.name, false, {"docs.count": arrEntities.length});
+    return savedEntity;
+  }
 
+  async saveAll(entities: T[]): Promise<T[]> {
+    if (!entities || entities.length == 0) return [];
+    this.message("saveAll", ["local"], this.EntityClass.params.name, true, {"docs.count": entities.length});
+    let saveEntities: T[] = [];
+    for (let entity of entities)
+      saveEntities.push(await this.save(entity));
+    this.message("saveAll", ["local"], this.EntityClass.params.name, false, {"docs.count": entities.length});
+    return saveEntities;
   }
 
   async remove(options: IMyDestroyEntityOptions): Promise<void> {

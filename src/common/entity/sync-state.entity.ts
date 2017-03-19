@@ -5,7 +5,8 @@ export class SyncStateEntity extends BaseSingleEvernoteEntity {
 
   static params:IBaseSingleEntityParams = {
     name: "syncState",
-    titleField: "name",
+    primaryKey: "id",
+    displayField: "updateCount",
     requireUser: true,
     archive: false,
     defaultDoc: {updateCount: 0},

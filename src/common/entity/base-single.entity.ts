@@ -8,6 +8,8 @@ export abstract class BaseSingleEntity extends BaseEntity {
 
   static params: IBaseSingleEntityParams;
 
+  id: number;
+
   constructor(data: any) {
     super(data);
     this.id = 1;

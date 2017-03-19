@@ -11,6 +11,7 @@ export class UserTable extends BaseSingleEvernoteTable<UserEntity> {
 
   static params: IBaseTableParams = {
     fields: {
+      id: {type: sequelize.INTEGER, primaryKey: true},
       username: {type: sequelize.STRING, allowNull: false},
       email: {type: sequelize.STRING, allowNull: true},
       name: {type: sequelize.STRING, allowNull: true},

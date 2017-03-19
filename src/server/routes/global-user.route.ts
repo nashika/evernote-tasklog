@@ -32,7 +32,7 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
 
   async load(req: Request, _res: Response): Promise<GlobalUserEntity> {
     let session = this.sessionService.get(req);
-    return session.globalUser && session.globalUser.id ? session.globalUser : null;
+    return session.globalUser && session.globalUser.key ? session.globalUser : null;
   }
 
   async change(req: Request, _res: Response): Promise<void> {

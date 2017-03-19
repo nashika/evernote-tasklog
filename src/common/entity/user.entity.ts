@@ -5,13 +5,13 @@ export class UserEntity extends BaseSingleEvernoteEntity {
 
   static params:IBaseSingleEntityParams = {
     name: "user",
-    titleField: "name",
+    primaryKey: "id",
+    displayField: "username",
     requireUser: true,
     archive: false,
     defaultDoc: {},
   };
 
-  id: number;
   username: string;
   shardId: string;
 

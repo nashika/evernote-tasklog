@@ -35,7 +35,7 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity> {
       let matches: string[];
       if (matches = line.match(/(.*)[@＠](\d{2,4}[\/\-]\d{1,2}[\/\-]\d{1,2}.+)/)) {
         let timeLog: TimeLogEntity = new TimeLogEntity({
-          _id: undefined,
+          id: undefined,
           noteGuid: note.guid,
           comment: matches[1],
           allDay: true,
@@ -66,7 +66,7 @@ export class TimeLogTable extends BaseMultiTable<TimeLogEntity> {
       }
     }
     await this.remove({where: {noteGuid: note.guid}});
-    await this.save(timeLogs);
+    await this.saveAll(timeLogs);
   }
 
 }

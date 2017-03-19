@@ -5,7 +5,8 @@ export class SavedSearchEntity extends BaseMultiEvernoteEntity {
 
   static params: IBaseMultiEntityParams = {
     name: "savedSearch",
-    titleField: "name",
+    primaryKey: "guid",
+    displayField: "name",
     requireUser: true,
     archive: false,
     default: {
@@ -19,9 +20,7 @@ export class SavedSearchEntity extends BaseMultiEvernoteEntity {
     },
   };
 
-  guid: string;
   name: string;
   query: string;
-  updateSequenceNum: number;
 
 }

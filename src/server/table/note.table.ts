@@ -22,7 +22,7 @@ export class NoteTable extends BaseMultiEvernoteTable<NoteEntity> {
 
   static params: IBaseTableParams = {
     fields: {
-      guid: {type: sequelize.STRING, allowNull: false, unique: true},
+      guid: {type: sequelize.STRING, primaryKey: true},
       title: {type: sequelize.STRING, allowNull: false},
       content: {type: sequelize.TEXT, allowNull: true},
       contentHash: {type: sequelize.TEXT, allowNull: false},

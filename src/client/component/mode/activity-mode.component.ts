@@ -30,7 +30,7 @@ export class ActivityModeComponent extends BaseComponent {
   datastoreService: DatastoreService = container.get(DatastoreService);
 
   date: Date = new Date();
-  modifies: {[id: string]: IActivityModifyData} = {};
+  modifies: {[archiveId: number]: IActivityModifyData} = {};
 
   constructor() {
     super();
@@ -58,7 +58,7 @@ export class ActivityModeComponent extends BaseComponent {
       let newText = this.makeDiffText(note);
       modify.diffPatch = diff.createPatch("Note Content", oldText, newText, "", "", {context: 0});
       modify.diffHtml = diff2html.Diff2Html.getPrettyHtml(modify.diffPatch);
-      Vue.set(this.modifies, String(note.id), modify);
+      Vue.set(this.modifies, String(note.archiveId), modify);
     }
   }
 
