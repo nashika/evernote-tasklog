@@ -4,12 +4,12 @@ import {injectable} from "inversify";
 import {TableService} from "./table.service";
 import {SettingService} from "./setting.service";
 import {EvernoteClientService} from "./evernote-client.service";
-import {UserTable} from "../table/user.table";
-import {UserEntity} from "../../common/entity/user.entity";
 import {BaseServerService} from "./base-server.service";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {GlobalUserTable} from "../table/global-user.table";
 import {SyncService} from "./sync.service";
+import {OptionTable} from "../table/option.table";
+import {OptionEntity} from "../../common/entity/option.entity";
 
 let logger = getLogger("system");
 
@@ -36,8 +36,8 @@ export class MainService extends BaseServerService {
     await this.tableService.initializeUser(globalUser);
     await this.settingService.initializeUser(globalUser);
     await this.syncService.initializeUser(globalUser);
-    let remoteUser = await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).loadRemote()
-    await this.tableService.getUserTable<UserTable>(UserEntity, globalUser).save(remoteUser);
+    let remoteUser = await this.evernoteClientService.getUser(globalUser);
+    await this.tableService.getUserTable<OptionTable>(OptionEntity, globalUser).saveValueByKey("user", remoteUser);
     await this.syncService.sync(globalUser, true);
     logger.info(`Init user finished. user:${globalUser.key} data was initialized.`);
   }

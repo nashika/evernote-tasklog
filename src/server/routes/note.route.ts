@@ -1,14 +1,14 @@
 import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 
-import {BaseMultiRoute} from "./base-multi.route";
+import {BaseEntityRoute} from "./base-entity.route";
 import {NoteTable} from "../table/note.table";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {TableService} from "../service/table.service";
 import {SessionService} from "../service/session.service";
 
 @injectable()
-export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
+export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
 
   constructor(protected tableService: TableService,
               protected sessionService: SessionService) {

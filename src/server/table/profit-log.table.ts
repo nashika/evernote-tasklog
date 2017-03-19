@@ -1,13 +1,13 @@
 import {injectable} from "inversify";
 import sequelize = require("sequelize");
 
-import {BaseMultiTable} from "./base-multi.table";
+import {BaseTable} from "./base.table";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {IBaseTableParams} from "./base.table";
 
 @injectable()
-export class ProfitLogTable extends BaseMultiTable<ProfitLogEntity> {
+export class ProfitLogTable extends BaseTable<ProfitLogEntity> {
 
   static params: IBaseTableParams = {
     fields: {

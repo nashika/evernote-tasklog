@@ -1,12 +1,12 @@
 import {injectable} from "inversify";
 import sequelize = require("sequelize");
 
-import {BaseMultiTable} from "./base-multi.table";
+import {BaseTable} from "./base.table";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {IBaseTableParams} from "./base.table";
 
 @injectable()
-export class GlobalUserTable extends BaseMultiTable<GlobalUserEntity> {
+export class GlobalUserTable extends BaseTable<GlobalUserEntity> {
 
   static params: IBaseTableParams = {
     fields: {

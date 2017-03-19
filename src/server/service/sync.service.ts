@@ -5,8 +5,6 @@ import {injectable} from "inversify";
 
 import {TableService} from "./table.service";
 import {EvernoteClientService} from "./evernote-client.service";
-import {SyncStateEntity} from "../../common/entity/sync-state.entity";
-import {SyncStateTable} from "../table/sync-state.table";
 import {NoteTable} from "../table/note.table";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {NotebookTable} from "../table/notebook.table";
@@ -20,6 +18,8 @@ import {NotebookEntity} from "../../common/entity/notebook.entity";
 import {BaseServerService} from "./base-server.service";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {SettingService} from "./setting.service";
+import {OptionTable} from "../table/option.table";
+import {OptionEntity} from "../../common/entity/option.entity";
 
 let logger = getLogger("system");
 
@@ -60,14 +60,16 @@ export class SyncService extends BaseServerService {
     }
     let userTimerData = this.userTimers[globalUser.key];
     clearTimeout(userTimerData.timer);
-    let syncStateTable = this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser);
-    let localSyncState: SyncStateEntity = await syncStateTable.findOne();
-    let remoteSyncState: SyncStateEntity = await syncStateTable.loadRemote();
+    let optionTable = this.tableService.getUserTable<OptionTable>(OptionEntity, globalUser);
+    let localSyncState: evernote.Evernote.SyncState = await optionTable.findValueByKey("syncState");
+    if (!localSyncState) localSyncState = <any>{updateCount: 0};
+    let remoteSyncState = await this.evernoteClientService.getSyncState(globalUser);
     // Sync process
     logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
     while (localSyncState.updateCount < remoteSyncState.updateCount) {
       await this.getSyncChunk(globalUser, localSyncState);
     }
+    await optionTable.saveValueByKey("syncState", remoteSyncState);
     logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
     userTimerData.updateCount = localSyncState.updateCount;
     userTimerData.interval = manual ? this.Class.startInterval : Math.min(Math.round(userTimerData.interval * 1.5), this.Class.maxInterval);
@@ -80,9 +82,9 @@ export class SyncService extends BaseServerService {
     return globalUser && this.userTimers[globalUser.key] ? this.userTimers[globalUser.key].updateCount : 0;
   }
 
-  private async getSyncChunk(globalUser: GlobalUserEntity, localSyncState: SyncStateEntity): Promise<void> {
+  private async getSyncChunk(globalUser: GlobalUserEntity, localSyncState: evernote.Evernote.SyncState): Promise<void> {
     logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
-    let syncStateTable = this.tableService.getUserTable<SyncStateTable>(SyncStateEntity, globalUser);
+    let optionTable = this.tableService.getUserTable<OptionTable>(OptionEntity, globalUser);
     let noteTable = this.tableService.getUserTable<NoteTable>(NoteEntity, globalUser);
     let notebookTable = this.tableService.getUserTable<NotebookTable>(NotebookEntity, globalUser);
     let tagTable = this.tableService.getUserTable<TagTable>(TagEntity, globalUser);
@@ -100,7 +102,7 @@ export class SyncService extends BaseServerService {
     await linkedNotebookTable.saveAll(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
     await linkedNotebookTable.removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
     localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
-    await syncStateTable.save(localSyncState);
+    await optionTable.saveValueByKey("syncState", localSyncState);
     logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
   }
 

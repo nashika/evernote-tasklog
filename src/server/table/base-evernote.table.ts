@@ -1,10 +1,10 @@
 import _ = require("lodash");
 
-import {BaseMultiTable} from "./base-multi.table";
-import {BaseMultiEvernoteEntity} from "../../common/entity/base-multi-evernote.entity";
-import {IMyWhereEntityOptions} from "../../common/entity/base-multi.entity";
+import {BaseTable} from "./base.table";
+import {BaseEvernoteEntity} from "../../common/entity/base-evernote.entity";
+import {IMyWhereEntityOptions} from "../../common/entity/base.entity";
 
-export class BaseMultiEvernoteTable<T extends BaseMultiEvernoteEntity> extends BaseMultiTable<T> {
+export class BaseEvernoteTable<T extends BaseEvernoteEntity> extends BaseTable<T> {
 
   async removeByGuid(query: string|string[]): Promise<void> {
     if (!query) return;

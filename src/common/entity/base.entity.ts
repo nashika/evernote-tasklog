@@ -1,4 +1,5 @@
 import _ = require("lodash");
+import sequelize = require("sequelize");
 
 export interface IBaseEntityParams {
   name: string;
@@ -6,7 +7,29 @@ export interface IBaseEntityParams {
   displayField: string;
   requireUser: boolean;
   archive: boolean;
+  default: IMyFindEntityOptions;
+  append: IMyFindEntityOptions;
 }
+
+export interface IMyFindEntityOptions extends sequelize.FindOptions {
+  where?: IMyWhereEntityOptions;
+  order?: TMyOrderEntityOptions;
+  archive?: boolean;
+}
+
+export interface IMyCountEntityOptions extends sequelize.CountOptions {
+  where?: IMyWhereEntityOptions;
+  archive?: boolean;
+}
+
+export interface IMyDestroyEntityOptions extends sequelize.DestroyOptions {
+  where?: IMyWhereEntityOptions;
+}
+
+export interface IMyWhereEntityOptions extends sequelize.WhereOptions {
+}
+
+export type TMyOrderEntityOptions = [string, "ASC" | "DESC"][];
 
 export abstract class BaseEntity {
 

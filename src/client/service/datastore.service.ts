@@ -1,9 +1,9 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
 import moment = require("moment");
+import {Evernote} from "evernote";
 
 import {NoteEntity} from "../../common/entity/note.entity";
-import {UserEntity} from "../../common/entity/user.entity";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {NotebookEntity} from "../../common/entity/notebook.entity";
@@ -11,10 +11,10 @@ import {BaseClientService} from "./base-client.service";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
-import {SettingEntity} from "../../common/entity/setting.entity";
 import {TagEntity} from "../../common/entity/tag.entity";
 import {IMyFindNoteEntityOptions} from "../../server/table/note.table";
-import {IMyFindEntityOptions} from "../../common/entity/base-multi.entity";
+import {OptionEntity} from "../../common/entity/option.entity";
+import {IMyFindEntityOptions} from "../../common/entity/base.entity";
 
 interface IDatastoreServiceParams {
   start?: moment.Moment,
@@ -43,7 +43,7 @@ export class DatastoreService extends BaseClientService {
 
   lastUpdateCount: number;
   globalUser: GlobalUserEntity;
-  user: UserEntity;
+  user: Evernote.User;
   persons: Object[];
   notebooks: {[guid: string]: NotebookEntity};
   stacks: string[];
@@ -132,14 +132,14 @@ export class DatastoreService extends BaseClientService {
   private async getUser(): Promise<void> {
     this.progressService.next("Getting user data.");
     if (this.user) return;
-    this.user = await this.requestService.load<UserEntity>(UserEntity);
+    this.user = await this.requestService.loadOption("user");
   }
 
   private async getSettings(): Promise<void> {
     this.progressService.next("Getting settings data.");
-    let settingEntities = await this.requestService.find<SettingEntity>(SettingEntity);
+    let settingEntities = await this.requestService.find<OptionEntity>(OptionEntity, {where: {key: {$like: "settings.%"}}});
     let settings: {[key: string]: any} = {};
-    for (let settingEntity of settingEntities) settings[settingEntity.key] = settingEntity.value;
+    for (let settingEntity of settingEntities) settings[settingEntity.key.replace("settings.", "")] = settingEntity.value;
     this.settings = settings;
   }
 

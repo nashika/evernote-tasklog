@@ -1,8 +1,8 @@
-import {BaseMultiEntity, IBaseMultiEntityParams} from "./base-multi.entity";
+import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
-export class TimeLogEntity extends BaseMultiEntity {
+export class TimeLogEntity extends BaseEntity {
 
-  static params:IBaseMultiEntityParams = {
+  static params:IBaseEntityParams = {
     name: "timeLog",
     primaryKey: "id",
     displayField: "comment",

@@ -3,35 +3,40 @@ import _ = require("lodash");
 import {injectable} from "inversify";
 
 import {BaseClientService} from "./base-client.service";
-import {BaseEntity} from "../../common/entity/base.entity";
-import {BaseMultiEntity, IMyFindEntityOptions} from "../../common/entity/base-multi.entity";
+import {BaseEntity, IMyFindEntityOptions} from "../../common/entity/base.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
-import {BaseSingleEntity} from "../../common/entity/base-single.entity";
+import {OptionEntity} from "../../common/entity/option.entity";
 
 @injectable()
 export class RequestService extends BaseClientService {
 
-  async find<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMyFindEntityOptions = {}): Promise<T[]> {
+  async find<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IMyFindEntityOptions = {}): Promise<T[]> {
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
     return _.map(res.body, doc => new (<any>EntityClass)(doc));
   }
 
-  async findOne<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMyFindEntityOptions = {}): Promise<T> {
+  async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IMyFindEntityOptions = {}): Promise<T> {
     options.limit = 1;
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
     let results: T[] = _.map(res.body, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
 
-  async count(EntityClass: typeof BaseMultiEntity, options: IMyFindEntityOptions): Promise<number> {
+  async count(EntityClass: typeof BaseEntity, options: IMyFindEntityOptions): Promise<number> {
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}/count`).send(options);
     return res.body;
   }
 
-  async load<T extends BaseSingleEntity>(EntityClass: typeof BaseSingleEntity): Promise<T> {
-    let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send();
-    return new (<any>EntityClass)(res.body);
+  async loadOption(key: string): Promise<any> {
+    let options: IMyFindEntityOptions = {where: {key: key}};
+    let optionEntity = await this.findOne<OptionEntity>(OptionEntity, options);
+    return optionEntity ? optionEntity.value : null;
+  }
+
+  async saveOption(key: string, value: any): Promise<void> {
+    let optionEntity = new OptionEntity({key: key, value: value})
+    await this.save<OptionEntity>(OptionEntity, optionEntity);
   }
 
   async save<T extends BaseEntity>(EntityClass: typeof BaseEntity, entity: T): Promise<void> {

@@ -2,9 +2,9 @@ import {injectable} from "inversify";
 
 import {BaseServerService} from "./base-server.service";
 import {TableService} from "./table.service";
-import {SettingTable} from "../table/setting.table";
-import {SettingEntity} from "../../common/entity/setting.entity";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
+import {OptionTable} from "../table/option.table";
+import {OptionEntity} from "../../common/entity/option.entity";
 
 export interface IUserSetting {
   persons: Array<{name: string}>;
@@ -23,9 +23,11 @@ export class SettingService extends BaseServerService {
 
   async initializeUser(globalUser: GlobalUserEntity): Promise<void> {
     this.userSettings[globalUser.key] = <any>{};
-    let settingEntities = await this.tableService.getUserTable<SettingTable>(SettingEntity, globalUser).findAll();
-    for (let settingEntity of settingEntities)
-      this.userSettings[globalUser.key][settingEntity.key] = settingEntity.value;
+    let optionEntities = await this.tableService.getUserTable<OptionTable>(OptionEntity, globalUser).findAll({
+      where: {key: {$like: "settings.%"}}
+    });
+    for (let optionEntity of optionEntities)
+      this.userSettings[globalUser.key][optionEntity.key.replace("settings.", "")] = optionEntity.value;
   }
 
   getUser(globalUser: GlobalUserEntity): IUserSetting {

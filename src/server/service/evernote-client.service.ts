@@ -3,9 +3,7 @@ import evernote = require("evernote");
 import {getLogger} from "log4js";
 
 import {BaseServerService} from "./base-server.service";
-import {UserEntity} from "../../common/entity/user.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
-import {SyncStateEntity} from "../../common/entity/sync-state.entity";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 
 let logger = getLogger("system");
@@ -30,26 +28,26 @@ export class EvernoteClientService extends BaseServerService {
     });
   }
 
-  async getUser(globalUser: GlobalUserEntity): Promise<UserEntity> {
+  async getUser(globalUser: GlobalUserEntity): Promise<evernote.Evernote.User> {
     let userStore: evernote.Evernote.UserStoreClient = this.clients[globalUser.key].getUserStore();
     this.mes_(true, "user", {userId: globalUser.key});
-    return await new Promise<UserEntity>((resolve, reject) => {
+    return await new Promise<evernote.Evernote.User>((resolve, reject) => {
       userStore.getUser((err, user) => {
         this.mes_(false, "user", {userId: globalUser.key}, err);
         if (err) return reject(err);
-        resolve(new UserEntity(user));
+        resolve(user);
       });
     });
   }
 
-  async getSyncState(globalUser: GlobalUserEntity): Promise<SyncStateEntity> {
+  async getSyncState(globalUser: GlobalUserEntity): Promise<evernote.Evernote.SyncState> {
     let noteStore: evernote.Evernote.NoteStoreClient = this.clients[globalUser.key].getNoteStore();
     this.mes_(true, "syncState", {});
-    return await new Promise<SyncStateEntity>((resolve, reject) => {
+    return await new Promise<evernote.Evernote.SyncState>((resolve, reject) => {
       noteStore.getSyncState((err, syncState) => {
         this.mes_(false, "syncState", {updateCount: syncState && syncState.updateCount}, err);
         if (err) return reject(err);
-        resolve(new SyncStateEntity(syncState));
+        resolve(syncState);
       });
     });
   }
@@ -84,16 +82,16 @@ export class EvernoteClientService extends BaseServerService {
     });
   }
 
-  async getUserFromToken(token: string, sandbox: boolean): Promise<UserEntity> {
+  async getUserFromToken(token: string, sandbox: boolean): Promise<evernote.Evernote.User> {
     let client = new evernote.Evernote.Client({
       token: token,
       sandbox: sandbox,
     });
     let userStore: evernote.Evernote.UserStoreClient = client.getUserStore();
-    return await new Promise<UserEntity>((resolve, reject) => {
+    return await new Promise<evernote.Evernote.User>((resolve, reject) => {
       userStore.getUser((err, user) => {
         if (err) return reject(err);
-        resolve(new UserEntity(user));
+        resolve(user);
       });
     });
   }

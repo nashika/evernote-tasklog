@@ -1,8 +1,8 @@
-import {BaseMultiEntity, IBaseMultiEntityParams} from "./base-multi.entity";
+import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
-export class GlobalUserEntity extends BaseMultiEntity {
+export class GlobalUserEntity extends BaseEntity {
 
-  static params: IBaseMultiEntityParams = {
+  static params: IBaseEntityParams = {
     name: "globalUser",
     primaryKey: "key",
     displayField: "username",

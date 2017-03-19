@@ -1,15 +1,15 @@
 import {injectable} from "inversify";
 import {Request, Response} from "express";
 
-import {SettingEntity} from "../../common/entity/setting.entity";
-import {SettingTable} from "../table/setting.table";
-import {BaseMultiRoute} from "./base-multi.route";
+import {OptionEntity} from "../../common/entity/option.entity";
+import {OptionTable} from "../table/option.table";
+import {BaseEntityRoute} from "./base-entity.route";
 import {TableService} from "../service/table.service";
 import {SessionService} from "../service/session.service";
 import {SettingService} from "../service/setting.service";
 
 @injectable()
-export class SettingRoute extends BaseMultiRoute<SettingEntity, SettingTable> {
+export class OptionRoute extends BaseEntityRoute<OptionEntity, OptionTable> {
 
   constructor(protected tableService: TableService,
               protected sessionService: SessionService,

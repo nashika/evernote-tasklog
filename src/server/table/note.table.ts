@@ -3,7 +3,7 @@ import {injectable} from "inversify";
 import sequelize = require("sequelize");
 
 import {NoteEntity} from "../../common/entity/note.entity";
-import {BaseMultiEvernoteTable} from "./base-multi-evernote.table";
+import {BaseEvernoteTable} from "./base-evernote.table";
 import {TimeLogTable} from "./time-log.table";
 import {ProfitLogTable} from "./profit-log.table";
 import {TableService} from "../service/table.service";
@@ -11,14 +11,14 @@ import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {EvernoteClientService} from "../service/evernote-client.service";
 import {IBaseTableParams} from "./base.table";
-import {IMyFindEntityOptions} from "../../common/entity/base-multi.entity";
+import {IMyFindEntityOptions} from "../../common/entity/base.entity";
 
 export interface IMyFindNoteEntityOptions extends IMyFindEntityOptions {
   includeContent?: boolean;
 }
 
 @injectable()
-export class NoteTable extends BaseMultiEvernoteTable<NoteEntity> {
+export class NoteTable extends BaseEvernoteTable<NoteEntity> {
 
   static params: IBaseTableParams = {
     fields: {

@@ -1,9 +1,9 @@
-import {BaseMultiEntity, IBaseMultiEntityParams} from "./base-multi.entity";
+import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
-export class SettingEntity extends BaseMultiEntity {
+export class OptionEntity extends BaseEntity {
 
-  static params: IBaseMultiEntityParams = {
-    name: "setting",
+  static params: IBaseEntityParams = {
+    name: "option",
     primaryKey: "key",
     displayField: "key",
     requireUser: true,

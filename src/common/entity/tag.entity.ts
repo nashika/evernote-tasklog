@@ -1,9 +1,9 @@
-import {BaseMultiEvernoteEntity} from "./base-multi-evernote.entity";
-import {IBaseMultiEntityParams} from "./base-multi.entity";
+import {BaseEvernoteEntity} from "./base-evernote.entity";
+import {IBaseEntityParams} from "./base.entity";
 
-export class TagEntity extends BaseMultiEvernoteEntity {
+export class TagEntity extends BaseEvernoteEntity {
 
-  static params:IBaseMultiEntityParams = {
+  static params:IBaseEntityParams = {
     name: "tag",
     primaryKey: "guid",
     displayField: "name",

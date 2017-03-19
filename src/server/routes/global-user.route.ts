@@ -1,18 +1,18 @@
 import {Router, Request, Response} from "express";
 import {injectable} from "inversify";
+import {Evernote} from "evernote";
 
 import {TableService} from "../service/table.service";
 import {EvernoteClientService} from "../service/evernote-client.service";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
-import {BaseMultiRoute} from "./base-multi.route";
+import {BaseEntityRoute} from "./base-entity.route";
 import {GlobalUserTable} from "../table/global-user.table";
 import {Code403Error} from "./base.route";
 import {SessionService} from "../service/session.service";
-import {UserEntity} from "../../common/entity/user.entity";
 import {MainService} from "../service/main.service";
 
 @injectable()
-export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUserTable> {
+export class GlobalUserRoute extends BaseEntityRoute<GlobalUserEntity, GlobalUserTable> {
 
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService,
@@ -60,16 +60,16 @@ export class GlobalUserRoute extends BaseMultiRoute<GlobalUserEntity, GlobalUser
   }
 
   private async checkToken(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
-    let userEntity: UserEntity;
+    let user: Evernote.User;
     try {
-      userEntity = await this.evernoteClientService.getUserFromToken(token, sandbox);
+      user = await this.evernoteClientService.getUserFromToken(token, sandbox);
     } catch (err) {
       throw new Code403Error(err);
     }
     let globalUserEntity = new GlobalUserEntity();
-    globalUserEntity.key = (sandbox ? "s_" : "") + userEntity.username;
+    globalUserEntity.key = (sandbox ? "s_" : "") + user.username;
     globalUserEntity.sandbox = sandbox;
-    globalUserEntity.username = userEntity.username;
+    globalUserEntity.username = user.username;
     globalUserEntity.token = token;
     return globalUserEntity;
   }

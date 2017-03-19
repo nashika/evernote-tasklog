@@ -4,7 +4,6 @@ import Vue = require("vue");
 
 import {BaseComponent} from "../base.component";
 import {DatastoreService} from "../../service/datastore.service";
-import {SettingEntity} from "../../../common/entity/setting.entity";
 import {ProgressService} from "../../service/progress.service";
 import {RequestService} from "../../service/request.service";
 import {container} from "../../inversify.config";
@@ -78,7 +77,7 @@ export class SettingsModeComponent extends BaseComponent {
           continue;
         if (field.reParse) reParse = true;
         if (field.reload) reload = true;
-        await this.requestService.save<SettingEntity>(SettingEntity, new SettingEntity({key: key, value: this.editStore[key]}));
+        await this.requestService.saveOption(`settings.${key}`, this.editStore[key]);
         this.datastoreService.settings[key] = this.editStore[key];
       }
       this.progressService.close();

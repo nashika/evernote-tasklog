@@ -2,11 +2,11 @@ import {injectable} from "inversify";
 import sequelize = require("sequelize");
 
 import {TagEntity} from "../../common/entity/tag.entity";
-import {BaseMultiEvernoteTable} from "./base-multi-evernote.table";
+import {BaseEvernoteTable} from "./base-evernote.table";
 import {IBaseTableParams} from "./base.table";
 
 @injectable()
-export class TagTable extends BaseMultiEvernoteTable<TagEntity> {
+export class TagTable extends BaseEvernoteTable<TagEntity> {
 
   static params: IBaseTableParams = {
     fields: {
