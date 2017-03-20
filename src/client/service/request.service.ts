@@ -3,7 +3,7 @@ import _ = require("lodash");
 import {injectable} from "inversify";
 
 import {BaseClientService} from "./base-client.service";
-import {BaseEntity, IMyFindEntityOptions} from "../../common/entity/base.entity";
+import {BaseEntity, IFindEntityOptions} from "../../common/entity/base.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {OptionEntity} from "../../common/entity/option.entity";
@@ -11,25 +11,25 @@ import {OptionEntity} from "../../common/entity/option.entity";
 @injectable()
 export class RequestService extends BaseClientService {
 
-  async find<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IMyFindEntityOptions = {}): Promise<T[]> {
+  async find<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T[]> {
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
     return _.map(res.body, doc => new (<any>EntityClass)(doc));
   }
 
-  async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IMyFindEntityOptions = {}): Promise<T> {
+  async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T> {
     options.limit = 1;
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
     let results: T[] = _.map(res.body, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
 
-  async count(EntityClass: typeof BaseEntity, options: IMyFindEntityOptions): Promise<number> {
+  async count(EntityClass: typeof BaseEntity, options: IFindEntityOptions): Promise<number> {
     let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}/count`).send(options);
     return res.body;
   }
 
   async loadOption(key: string): Promise<any> {
-    let options: IMyFindEntityOptions = {where: {key: key}};
+    let options: IFindEntityOptions = {where: {key: key}};
     let optionEntity = await this.findOne<OptionEntity>(OptionEntity, options);
     return optionEntity ? optionEntity.value : null;
   }

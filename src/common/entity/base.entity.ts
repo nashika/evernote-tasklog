@@ -7,29 +7,29 @@ export interface IBaseEntityParams {
   displayField: string;
   requireUser: boolean;
   archive: boolean;
-  default: IMyFindEntityOptions;
-  append: IMyFindEntityOptions;
+  default: IFindEntityOptions;
+  append: IFindEntityOptions;
 }
 
-export interface IMyFindEntityOptions extends sequelize.FindOptions {
-  where?: IMyWhereEntityOptions;
-  order?: TMyOrderEntityOptions;
+export interface IFindEntityOptions extends sequelize.FindOptions {
+  where?: IWhereEntityOptions;
+  order?: TOrderEntityOptions;
   archive?: boolean;
 }
 
-export interface IMyCountEntityOptions extends sequelize.CountOptions {
-  where?: IMyWhereEntityOptions;
+export interface ICountEntityOptions extends sequelize.CountOptions {
+  where?: IWhereEntityOptions;
   archive?: boolean;
 }
 
-export interface IMyDestroyEntityOptions extends sequelize.DestroyOptions {
-  where?: IMyWhereEntityOptions;
+export interface IDestroyEntityOptions extends sequelize.DestroyOptions {
+  where?: IWhereEntityOptions;
 }
 
-export interface IMyWhereEntityOptions extends sequelize.WhereOptions {
+export interface IWhereEntityOptions extends sequelize.WhereOptions {
 }
 
-export type TMyOrderEntityOptions = [string, "ASC" | "DESC"][];
+export type TOrderEntityOptions = [string, "ASC" | "DESC"][];
 
 export abstract class BaseEntity {
 

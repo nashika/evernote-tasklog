@@ -4,8 +4,8 @@ import {getLogger} from "log4js";
 import sequelize = require("sequelize");
 
 import {
-  BaseEntity, IMyDestroyEntityOptions, IMyCountEntityOptions,
-  IMyFindEntityOptions
+  BaseEntity, IDestroyEntityOptions, ICountEntityOptions,
+  IFindEntityOptions
 } from "../../common/entity/base.entity";
 import {container} from "../inversify.config";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
@@ -76,7 +76,7 @@ export abstract class BaseTable<T extends BaseEntity> {
   }
 
 
-  async findOne(options: IMyFindEntityOptions = {}): Promise<T> {
+  async findOne(options: IFindEntityOptions = {}): Promise<T> {
     options = this.parseOptions(options);
     this.message("find", ["local"], this.EntityClass.params.name, true, {query: options});
     let instance: ISequelizeInstance<T> = await this.sequelizeModel.findOne(options);
@@ -88,7 +88,7 @@ export abstract class BaseTable<T extends BaseEntity> {
     return await this.findOne({where: {[this.EntityClass.params.primaryKey]: primaryKey}});
   }
 
-  async findAll(options: IMyFindEntityOptions = null): Promise<T[]> {
+  async findAll(options: IFindEntityOptions = null): Promise<T[]> {
     options = this.parseOptions(options);
     let model = options.archive ? this.archiveSequelizeModel : this.sequelizeModel;
     this.message("find", ["local"], this.EntityClass.params.name, true, {options: options});
@@ -97,7 +97,7 @@ export abstract class BaseTable<T extends BaseEntity> {
     return _.map(instances, instance => this.prepareLoadEntity(instance));
   }
 
-  async count(options: IMyCountEntityOptions = {}): Promise<number> {
+  async count(options: ICountEntityOptions = {}): Promise<number> {
     options = this.parseOptions(options);
     let model = options.archive ? this.archiveSequelizeModel : this.sequelizeModel;
     this.message("count", ["local"], this.EntityClass.params.name, true, options);
@@ -142,7 +142,7 @@ export abstract class BaseTable<T extends BaseEntity> {
     return saveEntities;
   }
 
-  async remove(options: IMyDestroyEntityOptions): Promise<void> {
+  async remove(options: IDestroyEntityOptions): Promise<void> {
     if (!options) return;
     this.message("remove", ["local"], this.EntityClass.params.name, true, {query: options});
     let numRemoved = await this.sequelizeModel.destroy(options);

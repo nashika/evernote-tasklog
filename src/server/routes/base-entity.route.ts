@@ -2,7 +2,7 @@ import _ = require("lodash");
 import {Request, Response, Router} from "express";
 
 import {BaseRoute} from "./base.route";
-import {BaseEntity, IMyFindEntityOptions, IMyCountEntityOptions} from "../../common/entity/base.entity";
+import {BaseEntity, IFindEntityOptions, ICountEntityOptions} from "../../common/entity/base.entity";
 import {container} from "../inversify.config";
 import {SessionService} from "../service/session.service";
 import {TableService} from "../service/table.service";
@@ -45,13 +45,13 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
   }
 
   async index(req: Request, _res: Response): Promise<T1[]> {
-    let options: IMyFindEntityOptions = req.body;
+    let options: IFindEntityOptions = req.body;
     let entities = await this.getTable(req).findAll(options);
     return entities;
   }
 
   async count(req: Request, _res: Response): Promise<number> {
-    let options: IMyCountEntityOptions = req.body;
+    let options: ICountEntityOptions = req.body;
     let count = await this.getTable(req).count(options);
     return count;
   }

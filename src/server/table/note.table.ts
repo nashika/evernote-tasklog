@@ -11,9 +11,9 @@ import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {EvernoteClientService} from "../service/evernote-client.service";
 import {IBaseTableParams, ISequelizeInstance} from "./base.table";
-import {IMyFindEntityOptions} from "../../common/entity/base.entity";
+import {IFindEntityOptions} from "../../common/entity/base.entity";
 
-export interface IMyFindNoteEntityOptions extends IMyFindEntityOptions {
+export interface IFindNoteEntityOptions extends IFindEntityOptions {
   includeContent?: boolean;
 }
 
@@ -72,7 +72,7 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
     super();
   }
 
-  async findAll(options: IMyFindNoteEntityOptions): Promise<NoteEntity[]> {
+  async findAll(options: IFindNoteEntityOptions): Promise<NoteEntity[]> {
     let notes = await super.findAll(options);
     if (options.includeContent) {
       return notes;
@@ -114,7 +114,7 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
   }
 
   async reParseNotes(query = {}): Promise<void> {
-    let options: IMyFindNoteEntityOptions = {};
+    let options: IFindNoteEntityOptions = {};
     options.where = query;
     options.limit = 0;
     options.includeContent = true;

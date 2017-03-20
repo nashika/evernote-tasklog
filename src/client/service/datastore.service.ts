@@ -12,9 +12,9 @@ import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
 import {TagEntity} from "../../common/entity/tag.entity";
-import {IMyFindNoteEntityOptions} from "../../server/table/note.table";
+import {IFindNoteEntityOptions} from "../../server/table/note.table";
 import {OptionEntity} from "../../common/entity/option.entity";
-import {IMyFindEntityOptions} from "../../common/entity/base.entity";
+import {IFindEntityOptions} from "../../common/entity/base.entity";
 
 interface IDatastoreServiceParams {
   start?: moment.Moment,
@@ -263,7 +263,7 @@ export class DatastoreService extends BaseClientService {
       return searchNote.guid == note.guid && searchNote.updateSequenceNum < note.updateSequenceNum;
     });
     if (prevNote) return Promise.resolve(prevNote);
-    let options: IMyFindNoteEntityOptions = {
+    let options: IFindNoteEntityOptions = {
       where: {
         guid: note.guid,
         updateSequenceNum: {$lt: note.updateSequenceNum},
@@ -275,8 +275,8 @@ export class DatastoreService extends BaseClientService {
     return await this.requestService.findOne<NoteEntity>(NoteEntity, options);
   }
 
-  private makeNoteFindOptions(params: IDatastoreServiceParams): IMyFindNoteEntityOptions {
-    let options: IMyFindNoteEntityOptions = {where: {$and: []}};
+  private makeNoteFindOptions(params: IDatastoreServiceParams): IFindNoteEntityOptions {
+    let options: IFindNoteEntityOptions = {where: {$and: []}};
     if (params.start)
       (<any>options.where.$and).push({updated: {$gte: params.start.valueOf()}});
     if (params.end)
@@ -302,8 +302,8 @@ export class DatastoreService extends BaseClientService {
     return options;
   }
 
-  private makeTimeLogFindOptions(params: IDatastoreServiceParams): IMyFindEntityOptions {
-    let options: IMyFindEntityOptions = {where: {$and: []}};
+  private makeTimeLogFindOptions(params: IDatastoreServiceParams): IFindEntityOptions {
+    let options: IFindEntityOptions = {where: {$and: []}};
     // set date query
     if (params.start)
       (<any>options.where.$and).push({date: {$gte: params.start.valueOf()}});
