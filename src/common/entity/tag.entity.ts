@@ -11,7 +11,7 @@ export class TagEntity extends BaseEvernoteEntity {
     archive: false,
     default: {
       where: {},
-      order: [["updated", "DESC"]],
+      order: [["name", "ASC"]],
       limit: 500,
     },
     append: {

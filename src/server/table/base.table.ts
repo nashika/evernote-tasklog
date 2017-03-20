@@ -77,7 +77,7 @@ export abstract class BaseTable<T extends BaseEntity> {
 
 
   async findOne(options: IFindEntityOptions = {}): Promise<T> {
-    options = this.parseOptions(options);
+    options = this.parseFindOptions(options);
     this.message("find", ["local"], this.EntityClass.params.name, true, {query: options});
     let instance: ISequelizeInstance<T> = await this.sequelizeModel.findOne(options);
     this.message("find", ["local"], this.EntityClass.params.name, false, {query: options});
@@ -89,7 +89,7 @@ export abstract class BaseTable<T extends BaseEntity> {
   }
 
   async findAll(options: IFindEntityOptions = null): Promise<T[]> {
-    options = this.parseOptions(options);
+    options = this.parseFindOptions(options);
     let model = options.archive ? this.archiveSequelizeModel : this.sequelizeModel;
     this.message("find", ["local"], this.EntityClass.params.name, true, {options: options});
     let instances: ISequelizeInstance<T>[] = await model.findAll(options);
@@ -97,8 +97,8 @@ export abstract class BaseTable<T extends BaseEntity> {
     return _.map(instances, instance => this.prepareLoadEntity(instance));
   }
 
-  async count(options: ICountEntityOptions = {}): Promise<number> {
-    options = this.parseOptions(options);
+  async count(options: ICountEntityOptions = null): Promise<number> {
+    options = this.parseCountOptions(options);
     let model = options.archive ? this.archiveSequelizeModel : this.sequelizeModel;
     this.message("count", ["local"], this.EntityClass.params.name, true, options);
     let count = await model.count(options);
@@ -106,11 +106,20 @@ export abstract class BaseTable<T extends BaseEntity> {
     return count;
   }
 
-  private parseOptions(options: any): any {
-    let result: any = options || <any>_.cloneDeep(this.EntityClass.params.default);
-    result.where = _.merge(result.where || {}, this.EntityClass.params.append.where || {});
-    result.order = _.concat(result.order || [], this.EntityClass.params.append.order || []);
-    return result;
+  private parseFindOptions(options: IFindEntityOptions): IFindEntityOptions {
+    options = options || {};
+    options.where = options.where || _.cloneDeep(this.EntityClass.params.default.where);
+    options.where = _.merge(options.where || {}, this.EntityClass.params.append.where || {});
+    options.order = options.order || _.cloneDeep(this.EntityClass.params.default.order);
+    options.order = _.concat(options.order || [], this.EntityClass.params.append.order || []);
+    return options;
+  }
+
+  private parseCountOptions(options: ICountEntityOptions): ICountEntityOptions {
+    options = options || {};
+    options.where = options.where || _.cloneDeep(this.EntityClass.params.default.where);
+    options.where = _.merge(options.where || {}, this.EntityClass.params.append.where || {});
+    return options;
   }
 
   async save(entity: T, archive: boolean = false): Promise<T> {
