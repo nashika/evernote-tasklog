@@ -151,7 +151,8 @@ export class DatastoreService extends BaseClientService {
 
   private async runSync(): Promise<void> {
     this.progressService.next("Syncing remote server.");
-    await this.requestService.sync();
+    if (await this.checkUpdateCount())
+      await this.requestService.sync();
   }
 
   private async getNotebooks(): Promise<void> {
