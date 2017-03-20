@@ -5474,7 +5474,7 @@ vue-class-component@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-5.0.0.tgz#6cc52502fa40a05100ffc4cf2dfa3a3f849b8e0b"
 
-vue-router@^2.3.0:
+vue-router@2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/vue-router/-/vue-router-2.3.0.tgz#a25c8359e8ca989d22ce79f64322eb0ad0c8670f"
 

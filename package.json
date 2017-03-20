@@ -97,7 +97,7 @@
     "vis": "4.18.1",
     "vue": "2.2.4",
     "vue-class-component": "5.0.0",
-    "vue-router": "^2.3.0",
+    "vue-router": "2.3.0",
     "webpack": "2.2.1",
     "webpack-dev-server": "2.4.2"
   }
