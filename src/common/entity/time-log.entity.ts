@@ -10,7 +10,7 @@ export class TimeLogEntity extends BaseEntity {
     archive: false,
     default: {
       where: {},
-      order: [["updated", "DESC"]],
+      order: [["updatedAt", "DESC"]],
       limit: 2000,
     },
     append: {
