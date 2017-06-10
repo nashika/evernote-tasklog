@@ -1,23 +1,18 @@
-import "font-awesome/css/font-awesome.css";
-import "./scss/style.scss";
-
 import "reflect-metadata";
 import "core-js";
 
 // filters
-import './filter/abbreviate.filter';
-import './filter/filter-by-property.filter';
-import './filter/object-length.filter';
-import './filter/order-object-by.filter';
-import './filter/spent-time.filter';
+import "./filter/abbreviate.filter";
+import "./filter/filter-by-property.filter";
+import "./filter/object-length.filter";
+import "./filter/order-object-by.filter";
+import "./filter/spent-time.filter";
 
 import Vue = require("vue");
 import VueRouter from "vue-router";
 let BootstrapVue = require("bootstrap-vue").default;
 
 Vue.use(VueRouter);
-Vue.use(BootstrapVue);
-
 Vue.use(BootstrapVue);
 
 Vue.component("app-navigation", require("./component/navigation/navigation.component.vue"));

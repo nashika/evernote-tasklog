@@ -8,6 +8,8 @@
 /node_modules
 /src/**/*.js
 /src/**/*.js.map
+/webpack/*.js
+/webpack/*.js.map
 /*.js
 /*.js.map
 !.gitkeep
