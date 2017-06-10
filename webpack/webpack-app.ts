@@ -29,11 +29,6 @@ export function appPartial(): webpack.Configuration {
             scss: "style-loader!css-loader!sass-loader",
           }
         }},
-        //{test: /\.css$/, loaders: ["style-loader", "css-loader"]},
-        //{test: /\.scss$/, loaders: ["style-loader", "css-loader", "sass-loader"]},
-        //{test: /\.(jpg|jpeg|png|gif)$/, loader: "url-loader"},
-        //{test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/, loader: "url-loader", query: {prefix: "dist/fonts/", name:"fonts/[name].[ext]", limit: 10000, mimetype: "application/font-woff"}},
-        //{test: /\.(ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader", query: {name: "fonts/[name].[ext]"}},
       ],
     },
     devtool: "source-map",
