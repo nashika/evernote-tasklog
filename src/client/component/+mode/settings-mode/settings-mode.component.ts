@@ -2,13 +2,11 @@ import Component from "vue-class-component";
 import _ = require("lodash");
 import Vue = require("vue");
 
-import {BaseComponent} from "../base.component";
-import {DatastoreService} from "../../service/datastore.service";
-import {ProgressService} from "../../service/progress.service";
-import {RequestService} from "../../service/request.service";
-import {container} from "../../inversify.config";
-
-let template = require("./settings-mode.component.jade");
+import BaseComponent from "../../base.component";
+import {DatastoreService} from "../../../service/datastore.service";
+import {ProgressService} from "../../../service/progress.service";
+import {RequestService} from "../../../service/request.service";
+import {container} from "../../../inversify.config";
 
 let fields: {[fieldName: string]: {[key: string]: any}} = {
   persons: {
@@ -25,10 +23,8 @@ let fields: {[fieldName: string]: {[key: string]: any}} = {
   },
 };
 
-@Component<SettingsModeComponent>({
-  template: template,
-})
-export class SettingsModeComponent extends BaseComponent {
+@Component({})
+export default class SettingsModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
   requestService: RequestService = container.get(RequestService);

@@ -11,27 +11,26 @@ import './filter/object-length.filter';
 import './filter/order-object-by.filter';
 import './filter/spent-time.filter';
 
-import {container} from "./inversify.config";
 import Vue = require("vue");
 import VueRouter from "vue-router";
 let BootstrapVue = require("bootstrap-vue").default;
+
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 
-import {MenuModeComponent} from "./component/mode/menu-mode.component";
-import {TimelineModeComponent} from "./component/mode/timeline-mode.component";
-import {NotesModeComponent} from "./component/mode/notes-mode.component";
-import {ActivityModeComponent} from "./component/mode/activity-mode.component";
-import {SettingsModeComponent} from "./component/mode/settings-mode.component";
+Vue.use(BootstrapVue);
+
+Vue.component("app-navigation", require("./component/navigation/navigation.component.vue"));
+Vue.component("app-progress", require("./component/progress/progress.component.vue"));
 
 const routes = [
-  {path: "/", component: MenuModeComponent},
-  {path: "/timeline", component: TimelineModeComponent},
-  {path: "/notes", component: NotesModeComponent},
-  {path: "/activity", component: ActivityModeComponent},
-  {path: "/settings", component: SettingsModeComponent},
+  {path: "/", component: require("./component/+mode/menu-mode/menu-mode.component.vue")},
+  {path: "/timeline", component: require("./component/+mode/timeline-mode/timeline-mode.component.vue")},
+  {path: "/notes", component: require("./component/+mode/notes-mode/notes-mode.component.vue")},
+  {path: "/activity", component: require("./component/+mode/activity-mode/activity-mode.component.vue")},
+  {path: "/settings", component: require("./component/+mode/settings-mode/settings-mode.component.vue")},
 ];
 export const router = new VueRouter({routes});
 
-let AppComponent = container.get("Newable<AppComponent>");
+let AppComponent = require("./component/app.component.vue");
 new (<any>AppComponent)({router}).$mount("#app");

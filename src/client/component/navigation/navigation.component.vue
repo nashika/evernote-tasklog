@@ -1,0 +1,19 @@
+<template lang="pug">
+  mixin item(to, icon, label, needLogin)
+    b-nav-item(to=to, :disabled=needLogin ? "!datastoreService.globalUser" : "false") #[span.fa(class="fa-#{icon}")] #{label}
+
+  b-navbar(toggleable, type="inverse", variant="inverse", fixed="bottom")
+    b-nav-toggle(target="nav-collapse")
+    router-link.navbar-brand(to="/") #[span.fa.fa-tasks] Evernote Tasklog
+    b-collapse(is-nav, id="nav-collapse")
+      b-nav.mr-auto(is-nav-bar)
+        +item("/", "th-large", "Menu", false)
+        +item("/timeline", "clock-o", "Timeline", true)
+        +item("/notes", "files-o", "Notes", true)
+        +item("/activity", "history", "Activity", true)
+        +item("/settings", "gear", "Settings", true)
+      form.form-inline
+        button.btn.btn-primary(type="button", @click="reload()") Reload
+</template>
+
+<script lang="ts" src="./navigation.component.ts"></script>

@@ -23,8 +23,13 @@ let webpackConfig:webpack.Configuration = {
   module: {
     loaders: [
       {test: /\.ts$/, loader: "awesome-typescript-loader", exclude: /node_modules/},
-      {test: /\.html$/, loader: "html-loader"},
-      {test: /\.jade$/, loaders: ["raw-loader", "jade-html-loader"]},
+      {test: /\.vue$/, loader: "vue-loader", options: {
+        loaders: {
+          ts: "awesome-typescript-loader",
+          pug: "pug-html-loader",
+          scss: "style-loader!css-loader!sass-loader",
+        }
+      }},
       {test: /\.css$/, loaders: ["style-loader", "css-loader"]},
       {test: /\.scss$/, loaders: ["style-loader", "css-loader", "sass-loader"]},
       {test: /\.(jpg|jpeg|png|gif)$/, loader: "url-loader"},

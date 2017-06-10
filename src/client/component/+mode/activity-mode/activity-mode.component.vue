@@ -1,0 +1,29 @@
+<template lang="pug">
+  section.activity-mode.p-3
+    .header
+      .row
+        .col-md-3
+          button.btn.btn-secondary.btn-block(@click="changeDate(false)") Prev Date
+        .col-md-6
+          h1 {{moment(date).format('YYYY/MM/DD')}}
+        .col-md-3
+          button.btn.btn-secondary.btn-block(@click="changeDate(true)") Next Date
+    .body
+      section.activity-mode-item(v-for="note in datastoreService.noteArchives")
+        .header
+          b-popover(placement="bottom", triggers="hover", title="Info", :content="detail(note)")
+            h1
+              a(:href="'evernote:///view/' + datastoreService.user.id + '/' + datastoreService.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
+                | {{moment(note.updated).format('HH:mm')}} {{note.title}}
+              span.label.label-danger(v-if="modifies[note._id] && !modifies[note.archiveId].prevNote") #[i.fa.fa-plus] New
+              span.label.label-primary #[i.fa.fa-book] {{notebookName(note)}}
+              span.label.label-default(v-for="tagName in tagNames(note)") #[i.fa.fa-tag] {{tagName}}
+        .body
+          div(v-if="modifies[note.archiveId]")
+            div(v-html="modifies[note.archiveId].diffHtml")
+          div(v-else)
+            i.fa.fa-spinner.fa-pulse
+            | &nbsp;Loading...
+</template>
+
+<script lang="ts" src="./activity-mode.component.ts"></script>

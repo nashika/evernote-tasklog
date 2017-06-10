@@ -1,24 +1,19 @@
 import Component from "vue-class-component";
 import _ = require("lodash");
 
-import {MenuModeComponent} from "../menu-mode.component";
-import {BaseComponent} from "../../base.component";
-import {AppComponent} from "../../app.component";
-import {DatastoreService} from "../../../service/datastore.service";
-import {container} from "../../../inversify.config";
+import MenuModeComponent from "../../menu-mode/menu-mode.component";
+import BaseComponent from "../../../base.component";
+import {DatastoreService} from "../../../../service/datastore.service";
+import {container} from "../../../../inversify.config";
 import * as Vue from "vue";
 
-let template = require("./note-filter-menu-mode.component.jade");
-
 @Component({
-  template: template,
   watch: {
     "datastoreService.notebooks": "reload",
   },
 })
-export class NoteFilterMenuModeComponent extends BaseComponent {
+export default class NoteFilterMenuModeComponent extends BaseComponent {
 
-  $root: AppComponent;
   $parent: MenuModeComponent;
 
   datastoreService: DatastoreService = container.get(DatastoreService);

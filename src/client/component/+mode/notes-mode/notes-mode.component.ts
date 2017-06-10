@@ -1,25 +1,14 @@
 import Component from "vue-class-component";
 
-import {BaseComponent} from "../base.component";
-import {DatastoreService} from "../../service/datastore.service";
-import {ProfitLogEntity} from "../../../common/entity/profit-log.entity";
-import {TimeLogEntity} from "../../../common/entity/time-log.entity";
-import {container} from "../../inversify.config";
-import {AppComponent} from "../app.component";
-import {NoteEntity} from "../../../common/entity/note.entity";
+import BaseComponent from "../../base.component";
+import {DatastoreService} from "../../../service/datastore.service";
+import {ProfitLogEntity} from "../../../../common/entity/profit-log.entity";
+import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
+import {container} from "../../../inversify.config";
+import {NoteEntity} from "../../../../common/entity/note.entity";
 
-let template = require("./notes-mode.component.jade");
-
-@Component<NotesModeComponent>({
-  template: template,
-  components: {},
-  /*events: {
-    "reload": "reload",
-  },*/
-})
-export class NotesModeComponent extends BaseComponent {
-
-  $root: AppComponent;
+@Component({})
+export default class NotesModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
   notes: {[guid:string]: NoteEntity} = {};

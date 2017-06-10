@@ -1,21 +1,15 @@
 import Component from "vue-class-component";
 
-import {MenuModeComponent} from "../menu-mode.component";
-import {BaseComponent} from "../../base.component";
-import {container} from "../../../inversify.config";
-import {DatastoreService} from "../../../service/datastore.service";
-import {RequestService} from "../../../service/request.service";
-import {GlobalUserEntity} from "../../../../common/entity/global-user.entity";
-import {AppComponent} from "../../app.component";
+import MenuModeComponent from "../../menu-mode/menu-mode.component";
+import BaseComponent from "../../../base.component";
+import {container} from "../../../../inversify.config";
+import {DatastoreService} from "../../../../service/datastore.service";
+import {RequestService} from "../../../../service/request.service";
+import {GlobalUserEntity} from "../../../../../common/entity/global-user.entity";
 
-let template = require("./user-menu-mode.component.jade");
+@Component({})
+export default class UserMenuModeComponent extends BaseComponent {
 
-@Component({
-  template: template,
-})
-export class UserMenuModeComponent extends BaseComponent {
-
-  $root: AppComponent;
   $parent: MenuModeComponent;
 
   datastoreService: DatastoreService = container.get(DatastoreService);

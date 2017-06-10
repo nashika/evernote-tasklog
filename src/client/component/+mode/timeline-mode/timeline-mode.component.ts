@@ -1,15 +1,13 @@
 import Component from "vue-class-component";
 import moment = require("moment");
 
-import {BaseComponent} from "../base.component";
-import {DatastoreService} from "../../service/datastore.service";
-import {NoteEntity} from "../../../common/entity/note.entity";
-import {abbreviateFilter} from "../../filter/abbreviate.filter";
-import {TimeLogEntity} from "../../../common/entity/time-log.entity";
-import {container} from "../../inversify.config";
+import BaseComponent from "../../base.component";
+import {DatastoreService} from "../../../service/datastore.service";
+import {NoteEntity} from "../../../../common/entity/note.entity";
+import {abbreviateFilter} from "../../../filter/abbreviate.filter";
+import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
+import {container} from "../../../inversify.config";
 import {DataSet, Timeline} from "vis";
-
-let template = require("./timeline-mode.component.jade");
 
 interface TimelineItem {
   id: string,
@@ -20,12 +18,8 @@ interface TimelineItem {
   type: string,
 }
 
-@Component<TimelineModeComponent>({
-  template: template,
-})
-export class TimelineModeComponent extends BaseComponent {
-
-  template = template;
+@Component({})
+export default class TimelineModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
   timeline: any = null;

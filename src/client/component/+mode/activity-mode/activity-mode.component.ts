@@ -6,13 +6,11 @@ import diff = require("diff");
 import htmlToText = require("html-to-text");
 import diff2html = require("diff2html");
 
-import {BaseComponent} from "../base.component";
-import {container} from "../../inversify.config";
-import {DatastoreService} from "../../service/datastore.service";
-import {AppComponent} from "../app.component";
-import {NoteEntity} from "../../../common/entity/note.entity";
-
-let template = require("./activity-mode.component.jade");
+import BaseComponent from "../../base.component";
+import {container} from "../../../inversify.config";
+import {DatastoreService} from "../../../service/datastore.service";
+import AppComponent from "../../app.component";
+import {NoteEntity} from "../../../../common/entity/note.entity";
 
 interface IActivityModifyData {
   prevNote?: NoteEntity;
@@ -20,10 +18,8 @@ interface IActivityModifyData {
   diffHtml?: string;
 }
 
-@Component<ActivityModeComponent>({
-  template: template,
-})
-export class ActivityModeComponent extends BaseComponent {
+@Component({})
+export default class ActivityModeComponent extends BaseComponent {
 
   $root: AppComponent;
 
