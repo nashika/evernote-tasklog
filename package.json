@@ -43,7 +43,7 @@
     "pluralize": "5.0.0",
     "pug": "2.0.0-rc.2",
     "reflect-metadata": "0.1.10",
-    "sequelize": "3.30.2",
+    "sequelize": "4.0.0",
     "serve-favicon": "2.4.3",
     "source-map-support": "0.4.15",
     "sqlite": "2.8.0"

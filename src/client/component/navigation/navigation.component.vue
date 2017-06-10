@@ -1,6 +1,8 @@
 <template lang="pug">
   mixin item(to, icon, label, needLogin)
-    b-nav-item(to=to, :disabled=needLogin ? "!datastoreService.globalUser" : "false") #[span.fa(class="fa-#{icon}")] #{label}
+    b-nav-item(to=to, :disabled=needLogin ? "!datastoreService.globalUser" : "false")
+      span.fa(class="fa-" + icon)
+      | #{label}
 
   b-navbar(toggleable, type="inverse", variant="inverse", fixed="bottom")
     b-nav-toggle(target="nav-collapse")

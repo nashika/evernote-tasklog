@@ -1,5 +1,5 @@
 <template lang="pug">
-  b-modal(id="progress", ref="modal", size="sm", :fade="false", :close-on-backdrop="false", :hide-header="true", :hide-footer="true")
+  b-modal(id="progress", title="Loading", ref="modal", size="sm", :fade="false", :close-on-backdrop="false", :hide-header="true", :hide-footer="true")
     //.progress
       progressbar(:now="value", type="primary", striped)
     .text-center {{value}}% ({{completeCount}} / {{allCount}})
