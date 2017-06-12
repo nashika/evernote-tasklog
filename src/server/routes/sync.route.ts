@@ -1,4 +1,3 @@
-import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 
 import {BaseRoute} from "./base.route";
@@ -17,21 +16,19 @@ export class SyncRoute extends BaseRoute {
     return "/sync";
   }
 
-  getRouter(): Router {
-    let _router = Router();
-    _router.post("/", (req, res) => this.wrap(req, res, this.index));
-    _router.post("/update-count", (req, res) => this.wrap(req, res, this.updateCount));
-    return _router;
+  async connect(socket: SocketIO.Socket): Promise<void> {
+    this.on(socket, "run", this.onRun);
+    this.on(socket, "updateCount", this.onUpdateCount);
   }
 
-  async index(req: Request, _res: Response): Promise<boolean> {
-    let session = this.sessionService.get(req);
+  protected async onRun(socket: SocketIO.Socket): Promise<boolean> {
+    let session = this.sessionService.get(socket);
     await this.syncService.sync(session.globalUser, true);
     return true;
   }
 
-  async updateCount(req: Request, _res: Response): Promise<number> {
-    let session = this.sessionService.get(req);
+  protected async onUpdateCount(socket: SocketIO.Socket): Promise<number> {
+    let session = this.sessionService.get(socket);
     return this.syncService.updateCount(session.globalUser);
   }
 

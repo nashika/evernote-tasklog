@@ -1,4 +1,3 @@
-import {Router, Request, Response} from "express";
 import {injectable} from "inversify";
 import {Evernote} from "evernote";
 
@@ -10,7 +9,6 @@ import {GlobalUserTable} from "../table/global-user.table";
 import {Code403Error} from "./base.route";
 import {SessionService} from "../service/session.service";
 import {MainService} from "../service/main.service";
-import {SocketIoServerService} from "../service/socket-io-server-service";
 
 @injectable()
 export class GlobalUserRoute extends BaseEntityRoute<GlobalUserEntity, GlobalUserTable> {
@@ -18,46 +16,43 @@ export class GlobalUserRoute extends BaseEntityRoute<GlobalUserEntity, GlobalUse
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService,
               protected sessionService: SessionService,
-              protected mainService: MainService,
-              protected socketIoServerService: SocketIoServerService) {
+              protected mainService: MainService) {
     super(tableService, sessionService);
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
     await super.connect(socket);
-    await this.on(socket, "/load", this.load);
-    _router.post("/change", (req, res) => this.wrap(req, res, this.change));
-    _router.post("/auth", (req, res) => this.wrap(req, res, this.auth));
-    _router.post("/logout", (req, res) => this.wrap(req, res, this.logout));
+    await this.on(socket, "load", this.onLoad);
+    await this.on(socket, "change", this.onChange);
+    await this.on(socket, "auth", this.onAuth);
+    await this.on(socket, "logout", this.onLogout);
   }
 
-  async load(): Promise<GlobalUserEntity> {
-    let session = this.sessionService.get(req);
+  protected async onLoad(socket: SocketIO.Socket): Promise<GlobalUserEntity> {
+    let session = this.sessionService.get(socket);
     return session.globalUser && session.globalUser.key ? session.globalUser : null;
   }
 
-  async change(req: Request, _res: Response): Promise<void> {
-    let globalUserEntity: GlobalUserEntity = new GlobalUserEntity(req.body);
-    let session = this.sessionService.get(req);
+  protected async onChange(socket: SocketIO.Socket, data: Object): Promise<void> {
+    let globalUserEntity: GlobalUserEntity = new GlobalUserEntity(data);
+    let session = this.sessionService.get(socket);
     session.globalUser = globalUserEntity;
-    await this.sessionService.save(req);
+    await this.sessionService.save(socket);
   }
 
-  async auth(req: Request, _res: Response): Promise<GlobalUserEntity> {
+  protected async onAuth(socket: SocketIO.Socket, sandbox: boolean, token: string): Promise<GlobalUserEntity> {
     let globalUserEntity: GlobalUserEntity;
-    let session = this.sessionService.get(req);
-    let sandbox: boolean = !!req.body.sandbox;
-    let token: string = req.body.token;
+    let session = this.sessionService.get(socket);
     globalUserEntity = await this.checkToken(sandbox, token);
-    await this.getTable(req).save(globalUserEntity);
+    await this.getTable(socket).save(globalUserEntity);
     await this.mainService.initializeUser(globalUserEntity);
     session.globalUser = globalUserEntity;
-    await this.sessionService.save(req);
+    await this.sessionService.save(socket);
     return globalUserEntity;
   }
 
-  logout(req: Request, _res: Response): Promise<void> {
-    return this.sessionService.clear(req);
+  protected async onLogout(socket: SocketIO.Socket): Promise<void> {
+    await this.sessionService.clear(socket);
   }
 
   private async checkToken(sandbox: boolean, token: string): Promise<GlobalUserEntity> {

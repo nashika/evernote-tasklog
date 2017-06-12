@@ -7,8 +7,8 @@ import session = require("express-session");
 import bodyParser = require("body-parser");
 import * as sequelize from "sequelize";
 
-import {BaseRoute} from "./routes/base.route";
 import {container} from "./inversify.config";
+import {SocketIoServerService} from "./service/socket-io-server-service";
 
 let app: express.Express = express();
 
@@ -41,6 +41,12 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(sessionMiddleware);
 app.use("/dist", express.static(path.join(__dirname, "../../dist")));
+
+container.get<SocketIoServerService>(SocketIoServerService).sessionMiddleware = sessionMiddleware;
+
+app.get("/", function (_req, res) {
+  res.render("index");
+});
 
 // catch 404 and forward to error handler
 app.use((_req: express.Request, _res: express.Response, next: Function) => {

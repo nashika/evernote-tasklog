@@ -23,11 +23,11 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
   }
 
   getBasePath(): string {
-    return "/" + _.kebabCase(this.EntityClass.params.name);
+    return _.kebabCase(this.EntityClass.params.name);
   }
 
-  getTable(req: Request): T2 {
-    let session = this.sessionService.get(req);
+  getTable(socket: SocketIO.Socket): T2 {
+    let session = this.sessionService.get(socket);
     if (this.EntityClass.params.requireUser) {
       return <T2>this.tableService.getUserTable(this.EntityClass, session.globalUser);
     } else {
@@ -36,25 +36,24 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
-    this.on(socket, "list", this.list);
-    this.on(socket, "count", this.count);
-    this.on(socket, "save", this.save);
+    this.on(socket, "list", this.onList);
+    this.on(socket, "count", this.onCount);
+    this.on(socket, "save", this.onSave);
   }
 
-  protected async list(options: IFindEntityOptions): Promise<T1[]> {
-    let entities = await this.getTable(req).findAll(options);
+  protected async onList(socket: SocketIO.Socket, options: IFindEntityOptions): Promise<T1[]> {
+    let entities = await this.getTable(socket).findAll(options);
     return entities;
   }
 
-  protected async count(req: Request, _res: Response): Promise<number> {
-    let options: ICountEntityOptions = req.body;
-    let count = await this.getTable(req).count(options);
+  protected async onCount(socket: SocketIO.Socket, options: ICountEntityOptions): Promise<number> {
+    let count = await this.getTable(socket).count(options);
     return count;
   }
 
-  protected async save(req: Request, _res: Response): Promise<boolean> {
-    let entity: T1 = new (<any>this.EntityClass)(req.body);
-    await this.getTable(req).save(entity);
+  protected async onSave(socket: SocketIO.Socket, data: Object): Promise<boolean> {
+    let entity: T1 = new (<any>this.EntityClass)(data);
+    await this.getTable(socket).save(entity);
     return true;
   }
 

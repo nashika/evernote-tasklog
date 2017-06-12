@@ -21,7 +21,6 @@ import {TableService} from "./service/table.service";
 
 import {BaseRoute} from "./routes/base.route";
 import {GlobalUserRoute} from "./routes/global-user.route";
-import {IndexRoute} from "./routes/index.route";
 import {NoteRoute} from "./routes/note.route";
 import {NotebookRoute} from "./routes/notebook.route";
 import {OptionRoute} from "./routes/option.route";
@@ -61,7 +60,6 @@ container.bind<SocketIoServerService>(SocketIoServerService).toSelf().inSingleto
 container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
 container.bind<TableService>(TableService).toSelf().inSingletonScope();
 
-container.bind<BaseRoute>(BaseRoute).to(IndexRoute).whenTargetNamed("index");
 container.bind<BaseRoute>(BaseRoute).to(GlobalUserRoute).whenTargetNamed("globalUser");
 container.bind<BaseRoute>(BaseRoute).to(NoteRoute).whenTargetNamed("note");
 container.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");

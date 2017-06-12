@@ -1,4 +1,3 @@
-import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 
 import {BaseEntityRoute} from "./base-entity.route";
@@ -15,22 +14,19 @@ export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
     super(tableService, sessionService);
   }
 
-  getRouter(): Router {
-    let _router = super.getRouter();
-    _router.post("/get-content", (req, res) => this.wrap(req, res, this.getContent));
-    _router.post("/re-parse", (req, res) => this.wrap(req, res, this.reParse));
-    return _router;
+  async connect(socket: SocketIO.Socket): Promise<void> {
+    this.on(socket, "getContent", this.onGetContent);
+    this.on(socket, "reParse", this.onReParse);
   }
 
-  async getContent(req: Request, _res: Response): Promise<NoteEntity> {
-    let guid: string = req.body && req.body.guid;
-    if (!guid) return Promise.resolve(null);
-    let note = await this.getTable(req).loadRemote(guid);
+  protected async onGetContent(socket: SocketIO.Socket, guid: string): Promise<NoteEntity> {
+    if (!guid) return null;
+    let note = await this.getTable(socket).loadRemote(guid);
     return note;
   }
 
-  async reParse(req: Request, _res: Response): Promise<boolean> {
-    await this.getTable(req).reParseNotes(req.body);
+  protected async onReParse(socket: SocketIO.Socket, query: Object): Promise<boolean> {
+    await this.getTable(socket).reParseNotes(query);
     return true;
   }
 

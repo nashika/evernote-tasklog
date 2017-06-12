@@ -1,5 +1,4 @@
 import {injectable} from "inversify";
-import {Request, Response} from "express";
 
 import {OptionEntity} from "../../common/entity/option.entity";
 import {OptionTable} from "../table/option.table";
@@ -17,9 +16,9 @@ export class OptionRoute extends BaseEntityRoute<OptionEntity, OptionTable> {
     super(tableService, sessionService);
   }
 
-  async save(req: Request, res: Response): Promise<boolean> {
-    let result = await super.save(req, res);
-    let session = this.sessionService.get(req);
+  protected async onSave(socket: SocketIO.Socket, data: Object): Promise<boolean> {
+    let result = await super.onSave(socket, data);
+    let session = this.sessionService.get(socket);
     await this.settingService.initializeUser(session.globalUser);
     return result;
   }

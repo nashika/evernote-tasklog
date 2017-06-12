@@ -2,7 +2,6 @@ import {injectable} from "inversify";
 import {Evernote} from "evernote";
 
 import {BaseServerService} from "./base-server.service";
-import {Request} from "express";
 import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 
 export interface ISession {
@@ -13,20 +12,20 @@ export interface ISession {
 @injectable()
 export class SessionService extends BaseServerService {
 
-  get(req: Request): ISession {
-    if (!req.session["evernote"])
-      req.session["evernote"] = {};
-    return req.session["evernote"];
+  get(socket: SocketIO.Socket): ISession {
+    if (!socket.handshake.session["evernote"])
+      socket.handshake.session["evernote"] = {};
+    return socket.handshake.session["evernote"];
   }
 
-  async clear(req: Request): Promise<void> {
-    req.session["evernote"] = null;
-    await this.save(req);
+  async clear(socket: SocketIO.Socket): Promise<void> {
+    socket.handshake.session["evernote"] = null;
+    await this.save(socket);
   }
 
-  async save(req: Request): Promise<void> {
+  async save(socket: SocketIO.Socket): Promise<void> {
     await new Promise<void>((resolve, reject) => {
-      req.session.save(err => {
+      socket.handshake.session.save(err => {
         if (err) reject(err);
         resolve();
       });

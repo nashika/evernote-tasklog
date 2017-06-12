@@ -30,7 +30,8 @@ export abstract class BaseRoute {
 
   abstract async connect(_socket: SocketIO.Socket): Promise<void>;
 
-  protected on(socket: SocketIO.Socket, event: string, func: (...args: any[]) => Promise<any>) {
+  protected on(socket: SocketIO.Socket, action: string, func: (...args: any[]) => Promise<any>) {
+    let event = this.getBasePath() + "::" + action;
     socket.on(event, (...args: any[]) => {
       let ack: (data: any) => void = _.last(args);
       let funcArgs: any[] = _.initial(args);

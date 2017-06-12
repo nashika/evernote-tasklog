@@ -10,7 +10,8 @@ import "./filter/spent-time.filter";
 
 import Vue = require("vue");
 import VueRouter from "vue-router";
-let BootstrapVue = require("bootstrap-vue").default;
+import BootstrapVue = require("bootstrap-vue");
+//let BootstrapVue = require("bootstrap-vue").default;
 
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
