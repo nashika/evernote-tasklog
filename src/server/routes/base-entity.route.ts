@@ -1,5 +1,4 @@
 import _ = require("lodash");
-import {Request, Response, Router} from "express";
 
 import {BaseRoute} from "./base.route";
 import {BaseEntity, IFindEntityOptions, ICountEntityOptions} from "../../common/entity/base.entity";
@@ -36,27 +35,24 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
     }
   }
 
-  getRouter(): Router {
-    let _router = Router();
-    _router.post("/", (req, res) => this.wrap(req, res, this.index));
-    _router.post("/count", (req, res) => this.wrap(req, res, this.count));
-    _router.post("/save", (req, res) => this.wrap(req, res, this.save));
-    return _router;
+  async connect(socket: SocketIO.Socket): Promise<void> {
+    this.on(socket, "list", this.list);
+    this.on(socket, "count", this.count);
+    this.on(socket, "save", this.save);
   }
 
-  async index(req: Request, _res: Response): Promise<T1[]> {
-    let options: IFindEntityOptions = req.body;
+  protected async list(options: IFindEntityOptions): Promise<T1[]> {
     let entities = await this.getTable(req).findAll(options);
     return entities;
   }
 
-  async count(req: Request, _res: Response): Promise<number> {
+  protected async count(req: Request, _res: Response): Promise<number> {
     let options: ICountEntityOptions = req.body;
     let count = await this.getTable(req).count(options);
     return count;
   }
 
-  async save(req: Request, _res: Response): Promise<boolean> {
+  protected async save(req: Request, _res: Response): Promise<boolean> {
     let entity: T1 = new (<any>this.EntityClass)(req.body);
     await this.getTable(req).save(entity);
     return true;

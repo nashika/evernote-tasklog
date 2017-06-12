@@ -41,8 +41,6 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(sessionMiddleware);
 app.use("/dist", express.static(path.join(__dirname, "../../dist")));
-for (let route of container.getAll<BaseRoute>(BaseRoute))
-  app.use(route.getBasePath(), route.getRouter());
 
 // catch 404 and forward to error handler
 app.use((_req: express.Request, _res: express.Response, next: Function) => {

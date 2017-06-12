@@ -15,6 +15,7 @@ import {EvernoteClientService} from "./service/evernote-client.service";
 import {MainService} from "./service/main.service";
 import {SessionService} from "./service/session.service";
 import {SettingService} from "./service/setting.service";
+import {SocketIoServerService} from "./service/socket-io-server-service";
 import {SyncService} from "./service/sync.service";
 import {TableService} from "./service/table.service";
 
@@ -56,6 +57,7 @@ container.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingleto
 container.bind<MainService>(MainService).toSelf().inSingletonScope();
 container.bind<SessionService>(SessionService).toSelf().inSingletonScope();
 container.bind<SettingService>(SettingService).toSelf().inSingletonScope();
+container.bind<SocketIoServerService>(SocketIoServerService).toSelf().inSingletonScope();
 container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
 container.bind<TableService>(TableService).toSelf().inSingletonScope();
 

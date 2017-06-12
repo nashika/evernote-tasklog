@@ -76,7 +76,7 @@ server.on('listening', onListening);
 
 // main logic
 let mainService: MainService = container.get<MainService>(MainService);
-mainService.initializeGlobal().then(() => {
+mainService.initializeGlobal(server).then(() => {
   logger.info(`Initialize web server finished.`);
   logger.info(`Server address is http://localhost:${port}/`);
 }).catch(err => {

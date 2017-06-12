@@ -10,6 +10,7 @@ import {GlobalUserTable} from "../table/global-user.table";
 import {Code403Error} from "./base.route";
 import {SessionService} from "../service/session.service";
 import {MainService} from "../service/main.service";
+import {SocketIoServerService} from "../service/socket-io-server-service";
 
 @injectable()
 export class GlobalUserRoute extends BaseEntityRoute<GlobalUserEntity, GlobalUserTable> {
@@ -17,20 +18,20 @@ export class GlobalUserRoute extends BaseEntityRoute<GlobalUserEntity, GlobalUse
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService,
               protected sessionService: SessionService,
-              protected mainService: MainService) {
+              protected mainService: MainService,
+              protected socketIoServerService: SocketIoServerService) {
     super(tableService, sessionService);
   }
 
-  getRouter(): Router {
-    let _router = super.getRouter();
-    _router.post("/load", (req, res) => this.wrap(req, res, this.load));
+  async connect(socket: SocketIO.Socket): Promise<void> {
+    await super.connect(socket);
+    await this.on(socket, "/load", this.load);
     _router.post("/change", (req, res) => this.wrap(req, res, this.change));
     _router.post("/auth", (req, res) => this.wrap(req, res, this.auth));
     _router.post("/logout", (req, res) => this.wrap(req, res, this.logout));
-    return _router;
   }
 
-  async load(req: Request, _res: Response): Promise<GlobalUserEntity> {
+  async load(): Promise<GlobalUserEntity> {
     let session = this.sessionService.get(req);
     return session.globalUser && session.globalUser.key ? session.globalUser : null;
   }

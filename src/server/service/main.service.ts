@@ -1,3 +1,5 @@
+import {Server} from "http";
+
 import {getLogger} from "log4js";
 import {injectable} from "inversify";
 
@@ -10,6 +12,7 @@ import {GlobalUserTable} from "../table/global-user.table";
 import {SyncService} from "./sync.service";
 import {OptionTable} from "../table/option.table";
 import {OptionEntity} from "../../common/entity/option.entity";
+import {SocketIoServerService} from "./socket-io-server-service";
 
 let logger = getLogger("system");
 
@@ -17,14 +20,16 @@ let logger = getLogger("system");
 export class MainService extends BaseServerService {
 
   constructor(protected tableService: TableService,
+              protected socketIoServerService: SocketIoServerService,
               protected settingService: SettingService,
               protected syncService: SyncService,
               protected evernoteClientService: EvernoteClientService) {
     super();
   }
 
-  async initializeGlobal(): Promise<void> {
+  async initializeGlobal(server: Server): Promise<void> {
     await this.tableService.initializeGlobal();
+    await this.socketIoServerService.initializeGlobal(server);
     let globalUsers = await this.tableService.getGlobalTable<GlobalUserTable>(GlobalUserEntity).findAll();
     for (let globalUser of globalUsers) {
       await this.initializeUser(globalUser);
