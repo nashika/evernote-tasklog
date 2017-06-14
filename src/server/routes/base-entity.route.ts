@@ -23,7 +23,7 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
   }
 
   getBasePath(): string {
-    return _.kebabCase(this.EntityClass.params.name);
+    return this.EntityClass.params.name;
   }
 
   getTable(socket: SocketIO.Socket): T2 {
@@ -36,12 +36,12 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
-    this.on(socket, "list", this.onList);
+    this.on(socket, "find", this.onFind);
     this.on(socket, "count", this.onCount);
     this.on(socket, "save", this.onSave);
   }
 
-  protected async onList(socket: SocketIO.Socket, options: IFindEntityOptions): Promise<T1[]> {
+  protected async onFind(socket: SocketIO.Socket, options: IFindEntityOptions): Promise<T1[]> {
     let entities = await this.getTable(socket).findAll(options);
     return entities;
   }

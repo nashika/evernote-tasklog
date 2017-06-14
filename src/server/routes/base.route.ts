@@ -1,8 +1,7 @@
 import _ = require("lodash");
-import log4js = require("log4js");
 import {injectable} from "inversify";
 
-let logger = log4js.getLogger("system");
+import {logger} from "../logger";
 
 export class CodeError extends Error {
   code: number;
@@ -35,10 +34,12 @@ export abstract class BaseRoute {
     socket.on(event, (...args: any[]) => {
       let ack: (data: any) => void = _.last(args);
       let funcArgs: any[] = _.initial(args);
-      (<Promise<any>>func.call(this, ...funcArgs)).then(data => {
+      logger.info(`Request from id="${socket.id}", event="${event}", args=${JSON.stringify(funcArgs)}}`);
+      (<Promise<any>>func.call(this, socket, ...funcArgs)).then(data => {
         ack(data);
       }).catch(err => {
-        logger.error(err);
+        logger.error(`Error occurred in socket.io request. id="${socket.id}", event="${event}", args="${JSON.stringify(funcArgs)}".\n${err.stack || err}`);
+        ack({$$err: true, $$errMessage: err.toString()});
       });
     });
   }

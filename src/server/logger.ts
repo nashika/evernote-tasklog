@@ -27,3 +27,5 @@ log4js.configure({
     "system": "TRACE"
   },
 });
+
+export var logger = log4js.getLogger("system");

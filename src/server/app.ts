@@ -17,7 +17,7 @@ import {Server} from "http";
 import _ = require("lodash");
 import commander = require("commander");
 
-import "./log4js";
+import "./logger";
 import {container} from "./inversify.config";
 import {MainService} from "./service/main.service";
 

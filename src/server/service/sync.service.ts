@@ -79,7 +79,7 @@ export class SyncService extends BaseServerService {
   }
 
   updateCount(globalUser: GlobalUserEntity): number {
-    return globalUser && this.userTimers[globalUser.key] ? this.userTimers[globalUser.key].updateCount : 0;
+    return globalUser && this.userTimers[globalUser.key] ? _.toInteger(this.userTimers[globalUser.key].updateCount) : 0;
   }
 
   private async getSyncChunk(globalUser: GlobalUserEntity, localSyncState: evernote.Evernote.SyncState): Promise<void> {
