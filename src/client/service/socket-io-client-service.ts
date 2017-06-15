@@ -33,13 +33,14 @@ export class SocketIoClientService extends BaseClientService {
   }
 
   async request<T = any>(event: string, ...params: any[]): Promise<T> {
-    return await new Promise<T>((resolve) => {
-      this.socket.emit(event, ...params, (data: T) => {
-        if (data && (<any>data).$$errOccurred === true)
-          throw (<any>data).$$errMessage;
-        resolve(data)
-      });
+    logger.debug(`socket.io request started, event="${event}", params=${JSON.stringify(params)}`);
+    let data = await new Promise<T>((resolve) => {
+      this.socket.emit(event, ...params, (data: T) => resolve(data));
     });
+    logger.debug(`socket.io request finished, event="${event}", params=${JSON.stringify(params)}`);
+    if (data && (<any>data).$$errOccurred === true)
+      throw (<any>data).$$errMessage;
+    return data;
   }
 
 }

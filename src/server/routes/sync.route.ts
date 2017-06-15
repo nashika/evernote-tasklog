@@ -13,7 +13,7 @@ export class SyncRoute extends BaseRoute {
   }
 
   getBasePath(): string {
-    return "/sync";
+    return "sync";
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {

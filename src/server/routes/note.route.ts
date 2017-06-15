@@ -15,6 +15,7 @@ export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
+    await super.connect(socket);
     this.on(socket, "getContent", this.onGetContent);
     this.on(socket, "reParse", this.onReParse);
   }

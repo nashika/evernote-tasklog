@@ -22,7 +22,7 @@ export class RequestService extends BaseClientService {
 
   async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T> {
     options.limit = 1;
-    let datas = await this.socketIoClientService.request(`$EntityClass.params.name}::find`, options);
+    let datas = await this.socketIoClientService.request(`${EntityClass.params.name}::find`, options);
     let results: T[] = _.map(datas, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
