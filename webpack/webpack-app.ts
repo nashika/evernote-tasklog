@@ -1,6 +1,7 @@
 import * as webpack from "webpack";
 
 import {root} from "./webpack-helpers";
+import {configLoader} from "../src/common/util/config-loader";
 
 export function appPartial(): webpack.Configuration {
   return {
@@ -35,6 +36,10 @@ export function appPartial(): webpack.Configuration {
     plugins: [
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.ProgressPlugin(),
+      new webpack.DefinePlugin({
+        "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+        "config.loader.app": JSON.stringify(configLoader.app),
+      }),
       new webpack.DllReferencePlugin({
         context: '.',
         manifest: require(root("./dist/js-vendor/app-vendor-manifest.json")),

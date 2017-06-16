@@ -1,0 +1,17 @@
+{
+  "*": {
+    "host": "localhost",
+    "port": 3000,
+    "logLevel": "trace"
+  },
+  "development": {
+  },
+  "production*": {
+    "host": null,
+    "logLevel": "info"
+  },
+  "production-pre": {
+  },
+  "production": {
+  }
+}
