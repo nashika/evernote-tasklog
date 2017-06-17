@@ -14,23 +14,14 @@ import http = require("http");
 import "reflect-metadata";
 import {getLogger} from "log4js";
 import {Server} from "http";
-import _ = require("lodash");
-import commander = require("commander");
 
 import "./logger";
 import {container} from "./inversify.config";
+import {configLoader} from "../common/util/config-loader";
 import {MainService} from "./service/main.service";
 
 let logger = getLogger("system");
-let pjson = require("../../package");
-
-commander
-  .version(pjson.version)
-  .option("-p --port <n>", "set HTTP server port number.", parseInt)
-  .parse(process.argv);
-
-let port: number = _.get<number>(commander, "port");
-port = port || 3000;
+let port: number = configLoader.app.port;
 
 // Event listener for HTTP server "error" event.
 var onError = (error: any) => {

@@ -1,6 +1,9 @@
 import "reflect-metadata";
 import "core-js";
 
+import {configLoader} from "../common/util/config-loader";
+configLoader.isBrowser = true;
+
 // filters
 import "./filter/abbreviate.filter";
 import "./filter/filter-by-property.filter";

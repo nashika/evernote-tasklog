@@ -33,6 +33,9 @@ export function appPartial(): webpack.Configuration {
       ],
     },
     devtool: "source-map",
+    node: {
+      fs: "empty",
+    },
     plugins: [
       new webpack.NoEmitOnErrorsPlugin(),
       new webpack.ProgressPlugin(),

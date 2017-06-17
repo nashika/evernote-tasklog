@@ -10,7 +10,8 @@ declare namespace config {
 }
 
 export interface IAppConfig {
-  port: string;
+  baseUrl: string;
+  port: number;
   logLevel: string;
 }
 
@@ -37,14 +38,18 @@ class ConfigLoader {
         try {
           jsonData = JSON.parse(fs.readFileSync(path.join(__dirname, `../../../config/${configName}.config.json`), "utf8"));
         } catch (err) {
-          throw new Error(`/config/${configName}.config.json ファイルの読込に失敗しました`);
+          throw new Error(`Cannot to read /config/${configName}.config.json`);
         }
-        let env = process.env.NODE_ENV || "development";
-        if (!jsonData[env])
-          throw new Error(`/config/${configName}.config.json に ${env} の環境に対する定義が記述されていません`);
-        let targetConfig = jsonData[env];
-        let allConfig = jsonData["all"] || {};
-        this.caches[configName] = _.defaults(targetConfig, allConfig);
+        let targetEnvName: string = process.env.NODE_ENV || "development";
+        if (!jsonData[targetEnvName])
+          throw new Error(`/config/${configName}.config.json has no "${targetEnvName}" setting.`);
+        let targetEnvConfig: Object = {};
+        for (let envName in jsonData) {
+          let envConfig = jsonData[envName];
+          if (new RegExp("^" + envName.replace("*", ".*") + "$").test(targetEnvName))
+            _.merge(targetEnvConfig, envConfig);
+        }
+        this.caches[configName] = targetEnvConfig;
       }
     }
     return this.caches[configName];

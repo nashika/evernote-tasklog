@@ -4,6 +4,7 @@ import Socket = SocketIOClient.Socket;
 
 import {BaseClientService} from "./base-client.service";
 import {logger} from "../logger";
+import {configLoader} from "../../common/util/config-loader";
 
 @injectable()
 export class SocketIoClientService extends BaseClientService {
@@ -13,7 +14,7 @@ export class SocketIoClientService extends BaseClientService {
   constructor() {
     super();
     logger.debug("socket.io client connection started.");
-    this.socket = socketIo.connect();
+    this.socket = socketIo.connect(configLoader.app.baseUrl);
     this.on(this, "connect", this.onConnect);
     this.on(this, "disconnect", this.onDisconnect);
   }

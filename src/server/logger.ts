@@ -1,6 +1,8 @@
 import path = require("path");
 import log4js = require("log4js");
 
+import {configLoader} from "../common/util/config-loader";
+
 log4js.configure({
   appenders: [
     {
@@ -24,7 +26,7 @@ log4js.configure({
     },
   ],
   levels: {
-    "system": "TRACE"
+    "system": configLoader.app.logLevel,
   },
 });
 
