@@ -13,7 +13,6 @@
         +item("/timeline", "clock-o", "Timeline", true)
         +item("/notes", "files-o", "Notes", true)
         +item("/activity", "history", "Activity", true)
-        +item("/settings", "gear", "Settings", true)
       form.form-inline
         button.btn.btn-primary(type="button", @click="reload()") Reload
 </template>

@@ -1,33 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal">
-    <data-source name="_global.db" uuid="9c27dee6-6441-4ac4-bfba-ea14456954b5">
-      <database-info product="SQLite" version="3.8.11" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
-      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
-      <secret-storage>master_key</secret-storage>
-      <auth-required>false</auth-required>
-      <introspection-schemas>*:</introspection-schemas>
-    </data-source>
-    <data-source name="higashinakatsu.db" uuid="9887a815-e389-498d-971f-15994707ab21">
+    <data-source name="higashinakatsu.db" uuid="53f371c2-9f28-4ac2-a5f1-96cbc67dadc0">
       <database-info product="SQLite" version="3.16.1" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
       <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
       <secret-storage>master_key</secret-storage>
       <auth-required>false</auth-required>
-      <introspection-schemas>*:</introspection-schemas>
+      <introspection-schemas>*:main</introspection-schemas>
     </data-source>
-    <data-source name="s_info219.db" uuid="dcbd56e8-fff2-491e-bab0-9d10544625d9">
+    <data-source name="_global.db" uuid="7855407d-9a35-4202-916c-70df70d4fbec">
       <database-info product="SQLite" version="3.16.1" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
       <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
       <secret-storage>master_key</secret-storage>
       <auth-required>false</auth-required>
-      <introspection-schemas>*:</introspection-schemas>
-    </data-source>
-    <data-source name="_session.db" uuid="79d8f6cf-ab32-4dce-9cfd-2ebcb7b8cd14">
-      <database-info product="SQLite" version="3.16.1" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
-      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
-      <secret-storage>master_key</secret-storage>
-      <auth-required>false</auth-required>
-      <introspection-schemas>*:</introspection-schemas>
+      <introspection-schemas>*:main</introspection-schemas>
     </data-source>
   </component>
 </project>

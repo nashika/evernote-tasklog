@@ -1,5 +1,6 @@
 import Component from "vue-class-component";
 import moment = require("moment");
+import {DataSet, Timeline} from "vis";
 
 import BaseComponent from "../../base.component";
 import {DatastoreService} from "../../../service/datastore.service";
@@ -7,7 +8,7 @@ import {NoteEntity} from "../../../../common/entity/note.entity";
 import {abbreviateFilter} from "../../../filter/abbreviate.filter";
 import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
 import {container} from "../../../inversify.config";
-import {DataSet, Timeline} from "vis";
+import {configLoader} from "../../../../common/util/config-loader";
 
 interface TimelineItem {
   id: string,
@@ -43,8 +44,7 @@ export default class TimelineModeComponent extends BaseComponent {
     if (this.timeline) this.timeline.destroy();
     this.timelineGroups = new DataSet();
     this.timelineItems = new DataSet();
-    if (!this.datastoreService.settings || !this.datastoreService.settings["persons"]) return;
-    for (let person of this.datastoreService.settings["persons"])
+    for (let person of configLoader.app.persons)
       this.timelineGroups.add({
         id: person.name,
         content: person.name,
@@ -86,10 +86,10 @@ export default class TimelineModeComponent extends BaseComponent {
     let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
     // set working time
     let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
-    if (this.datastoreService.settings && this.datastoreService.settings["startWorkingTime"] && this.datastoreService.settings["endWorkingTime"])
+    if (configLoader.app.workingTimeStart && configLoader.app.workingTimeEnd)
       hiddenDates = [{
-        start: moment().subtract(1, "days").startOf("day").hour(this.datastoreService.settings["endWorkingTime"]),
-        end: moment().startOf("day").hour(this.datastoreService.settings["startWorkingTime"]),
+        start: moment().subtract(1, "days").startOf("day").hour(configLoader.app.workingTimeEnd),
+        end: moment().startOf("day").hour(configLoader.app.workingTimeStart),
         repeat: "daily",
       }];
     else

@@ -13,7 +13,6 @@ import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
 import {TagEntity} from "../../common/entity/tag.entity";
 import {IFindNoteEntityOptions} from "../../server/table/note.table";
-import {OptionEntity} from "../../common/entity/option.entity";
 import {IFindEntityOptions} from "../../common/entity/base.entity";
 
 interface IDatastoreServiceParams {
@@ -52,7 +51,6 @@ export class DatastoreService extends BaseClientService {
   noteArchives: NoteEntity[];
   timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}};
   profitLogs: {[noteGuid: string]: {[_id: string]: ProfitLogEntity}};
-  settings: {[key: string]: any};
   filterParams: {notebookGuids: string[]} = null;
 
   constructor(protected requestService: RequestService,
@@ -79,7 +77,6 @@ export class DatastoreService extends BaseClientService {
 
   clear(): void {
     this.lastUpdateCount = 0;
-    this.persons = [];
     this.notebooks = {};
     this.stacks = [];
     this.tags = {};
@@ -87,7 +84,6 @@ export class DatastoreService extends BaseClientService {
     this.noteArchives = [];
     this.timeLogs = {};
     this.profitLogs = {};
-    this.settings = {};
   }
 
   async checkUpdateCount(): Promise<boolean> {
@@ -104,8 +100,6 @@ export class DatastoreService extends BaseClientService {
     this.progressService.open(params.getContent ? 12 : params.archive ? 9 : 7);
     try {
       await this.getUser();
-      await this.getSettings();
-      await this.checkSettings();
       await this.runSync();
       await this.getNotebooks();
       await this.getTags();
@@ -133,20 +127,6 @@ export class DatastoreService extends BaseClientService {
     this.progressService.next("Getting user data.");
     if (this.user) return;
     this.user = await this.requestService.loadOption("user");
-  }
-
-  private async getSettings(): Promise<void> {
-    this.progressService.next("Getting settings data.");
-    let settingEntities = await this.requestService.find<OptionEntity>(OptionEntity, {where: {key: {$like: "settings.%"}}});
-    let settings: {[key: string]: any} = {};
-    for (let settingEntity of settingEntities) settings[settingEntity.key.replace("settings.", "")] = settingEntity.value;
-    this.settings = settings;
-  }
-
-  private async checkSettings(): Promise<void> {
-    this.progressService.next("Checking settings data.");
-    if (!this.settings["persons"] || this.settings["persons"].length == 0)
-      throw new TerminateResult(`This app need persons setting. Please switch "Settings Page" and set your persons data.`);
   }
 
   private async runSync(): Promise<void> {

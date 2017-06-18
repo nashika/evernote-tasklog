@@ -13,6 +13,13 @@ export interface IAppConfig {
   baseUrl: string;
   port: number;
   logLevel: string;
+  persons: IPersonConfig[];
+  workingTimeStart: number;
+  workingTimeEnd: number;
+}
+
+export interface IPersonConfig {
+  name: string;
 }
 
 class ConfigLoader {
