@@ -7,7 +7,6 @@ export class NotebookEntity extends BaseEvernoteEntity {
     name: "notebook",
     primaryKey: "guid",
     displayField: "name",
-    requireUser: true,
     archive: false,
     default: {
       where: {},

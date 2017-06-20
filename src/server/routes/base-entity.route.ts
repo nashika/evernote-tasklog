@@ -26,13 +26,8 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
     return this.EntityClass.params.name;
   }
 
-  getTable(socket: SocketIO.Socket): T2 {
-    let session = this.sessionService.get(socket);
-    if (this.EntityClass.params.requireUser) {
-      return <T2>this.tableService.getUserTable(this.EntityClass, session.globalUser);
-    } else {
-      return <T2>this.tableService.getGlobalTable(this.EntityClass);
-    }
+  getTable(): T2 {
+    return <T2>this.tableService.getTable(this.EntityClass);
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
@@ -41,19 +36,19 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
     this.on(socket, "save", this.onSave);
   }
 
-  protected async onFind(socket: SocketIO.Socket, options: IFindEntityOptions): Promise<T1[]> {
-    let entities = await this.getTable(socket).findAll(options);
+  protected async onFind(_socket: SocketIO.Socket, options: IFindEntityOptions): Promise<T1[]> {
+    let entities = await this.getTable().findAll(options);
     return entities;
   }
 
-  protected async onCount(socket: SocketIO.Socket, options: ICountEntityOptions): Promise<number> {
-    let count = await this.getTable(socket).count(options);
+  protected async onCount(_socket: SocketIO.Socket, options: ICountEntityOptions): Promise<number> {
+    let count = await this.getTable().count(options);
     return count;
   }
 
-  protected async onSave(socket: SocketIO.Socket, data: Object): Promise<boolean> {
+  protected async onSave(_socket: SocketIO.Socket, data: Object): Promise<boolean> {
     let entity: T1 = new (<any>this.EntityClass)(data);
-    await this.getTable(socket).save(entity);
+    await this.getTable().save(entity);
     return true;
   }
 

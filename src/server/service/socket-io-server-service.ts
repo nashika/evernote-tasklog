@@ -17,7 +17,7 @@ export class SocketIoServerService extends BaseServerService {
 
   private io: SocketIO.Server;
 
-  async initializeGlobal(server: HttpServer): Promise<void> {
+  async initialize(server: HttpServer): Promise<void> {
     this.io = socketIo(server);
     this.io.sockets.on("connect", socket => this.connect(socket));
     this.io.use(expressSocketIoSession(this.sessionMiddleware, {autoSave: true}));

@@ -7,7 +7,6 @@ export class TagEntity extends BaseEvernoteEntity {
     name: "tag",
     primaryKey: "guid",
     displayField: "name",
-    requireUser: true,
     archive: false,
     default: {
       where: {},

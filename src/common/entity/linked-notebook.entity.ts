@@ -7,7 +7,6 @@ export class LinkedNotebookEntity extends BaseEvernoteEntity {
     name: "linkedNotebook",
     primaryKey: "guid",
     displayField: "shareName",
-    requireUser: true,
     archive: false,
     default: {
       where: {},

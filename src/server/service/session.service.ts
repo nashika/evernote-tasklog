@@ -2,10 +2,8 @@ import {injectable} from "inversify";
 import {Evernote} from "evernote";
 
 import {BaseServerService} from "./base-server.service";
-import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 
 export interface ISession {
-  globalUser: GlobalUserEntity;
   user: Evernote.User;
 }
 

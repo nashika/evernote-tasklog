@@ -5,7 +5,6 @@ export interface IBaseEntityParams {
   name: string;
   primaryKey: string;
   displayField: string;
-  requireUser: boolean;
   archive: boolean;
   default: IFindEntityOptions;
   append: IFindEntityOptions;

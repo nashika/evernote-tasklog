@@ -6,7 +6,6 @@ export class ProfitLogEntity extends BaseEntity {
     name: "profitLog",
     primaryKey: "id",
     displayField: "comment",
-    requireUser: true,
     archive: false,
     default: {
       where: {},

@@ -6,7 +6,6 @@ export class OptionEntity extends BaseEntity {
     name: "option",
     primaryKey: "key",
     displayField: "key",
-    requireUser: true,
     archive: false,
     default: {
       where: {},

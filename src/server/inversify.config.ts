@@ -1,7 +1,6 @@
 import {Container} from "inversify";
 
 import {BaseEntity} from "../common/entity/base.entity";
-import {GlobalUserEntity} from "../common/entity/global-user.entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook.entity";
 import {NoteEntity} from "../common/entity/note.entity";
 import {NotebookEntity} from "../common/entity/notebook.entity";
@@ -14,13 +13,11 @@ import {TimeLogEntity} from "../common/entity/time-log.entity";
 import {EvernoteClientService} from "./service/evernote-client.service";
 import {MainService} from "./service/main.service";
 import {SessionService} from "./service/session.service";
-import {SettingService} from "./service/setting.service";
 import {SocketIoServerService} from "./service/socket-io-server-service";
 import {SyncService} from "./service/sync.service";
 import {TableService} from "./service/table.service";
 
 import {BaseRoute} from "./routes/base.route";
-import {GlobalUserRoute} from "./routes/global-user.route";
 import {NoteRoute} from "./routes/note.route";
 import {NotebookRoute} from "./routes/notebook.route";
 import {OptionRoute} from "./routes/option.route";
@@ -30,7 +27,6 @@ import {TagRoute} from "./routes/tag.route";
 import {TimeLogRoute} from "./routes/time-log.route";
 
 import {BaseTable} from "./table/base.table";
-import {GlobalUserTable} from "./table/global-user.table";
 import {LinkedNotebookTable} from "./table/linked-notebook.table";
 import {NoteTable} from "./table/note.table";
 import {NotebookTable} from "./table/notebook.table";
@@ -42,7 +38,6 @@ import {TimeLogTable} from "./table/time-log.table";
 
 export var container = new Container();
 
-container.bind<BaseEntity>(BaseEntity).toConstructor(GlobalUserEntity).whenTargetNamed("globalUser");
 container.bind<BaseEntity>(BaseEntity).toConstructor(LinkedNotebookEntity).whenTargetNamed("linkedNotebook");
 container.bind<BaseEntity>(BaseEntity).toConstructor(NoteEntity).whenTargetNamed("note");
 container.bind<BaseEntity>(BaseEntity).toConstructor(NotebookEntity).whenTargetNamed("notebook");
@@ -55,12 +50,10 @@ container.bind<BaseEntity>(BaseEntity).toConstructor(TimeLogEntity).whenTargetNa
 container.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingletonScope();
 container.bind<MainService>(MainService).toSelf().inSingletonScope();
 container.bind<SessionService>(SessionService).toSelf().inSingletonScope();
-container.bind<SettingService>(SettingService).toSelf().inSingletonScope();
 container.bind<SocketIoServerService>(SocketIoServerService).toSelf().inSingletonScope();
 container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
 container.bind<TableService>(TableService).toSelf().inSingletonScope();
 
-container.bind<BaseRoute>(BaseRoute).to(GlobalUserRoute).whenTargetNamed("globalUser");
 container.bind<BaseRoute>(BaseRoute).to(NoteRoute).whenTargetNamed("note");
 container.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");
 container.bind<BaseRoute>(BaseRoute).to(OptionRoute).whenTargetNamed("option");
@@ -70,7 +63,6 @@ container.bind<BaseRoute>(BaseRoute).to(TagRoute).whenTargetNamed("tag");
 container.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 
 container.bind<BaseTable<LinkedNotebookEntity>>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linkedNotebook");
-container.bind<BaseTable<GlobalUserEntity>>(BaseTable).to(GlobalUserTable).whenTargetNamed("globalUser");
 container.bind<BaseTable<NoteEntity>>(BaseTable).to(NoteTable).whenTargetNamed("note");
 container.bind<BaseTable<NotebookEntity>>(BaseTable).to(NotebookTable).whenTargetNamed("notebook");
 container.bind<BaseTable<ProfitLogEntity>>(BaseTable).to(ProfitLogTable).whenTargetNamed("profitLog");

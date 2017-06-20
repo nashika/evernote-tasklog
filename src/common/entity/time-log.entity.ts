@@ -6,7 +6,6 @@ export class TimeLogEntity extends BaseEntity {
     name: "timeLog",
     primaryKey: "id",
     displayField: "comment",
-    requireUser: true,
     archive: false,
     default: {
       where: {},

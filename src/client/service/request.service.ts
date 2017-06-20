@@ -4,7 +4,6 @@ import {injectable} from "inversify";
 import {BaseClientService} from "./base-client.service";
 import {BaseEntity, IFindEntityOptions} from "../../common/entity/base.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
-import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {OptionEntity} from "../../common/entity/option.entity";
 import {SocketIoClientService} from "./socket-io-client-service";
 
@@ -63,25 +62,6 @@ export class RequestService extends BaseClientService {
 
   async reParseNote(): Promise<void> {
     await this.socketIoClientService.request(`note::reParse`);
-  }
-
-  async loadAuth(): Promise<GlobalUserEntity> {
-    let data = await this.socketIoClientService.request(`globalUser::load`);
-    return data ? new GlobalUserEntity(data) : null;
-  }
-
-  async changeAuth(globalUser: GlobalUserEntity): Promise<void> {
-    await this.socketIoClientService.request(`globalUser::change`, globalUser);
-  }
-
-  async tokenAuth(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
-    if (!token) return Promise.reject<GlobalUserEntity>("No Token");
-    let res = await this.socketIoClientService.request(`globalUser::auth`, sandbox, token);
-    return new GlobalUserEntity(res.body);
-  }
-
-  async logoutAuth(): Promise<void> {
-    await this.socketIoClientService.request(`globalUser::logout`);
   }
 
 }

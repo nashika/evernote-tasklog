@@ -20,14 +20,14 @@ export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
     this.on(socket, "reParse", this.onReParse);
   }
 
-  protected async onGetContent(socket: SocketIO.Socket, guid: string): Promise<NoteEntity> {
+  protected async onGetContent(_socket: SocketIO.Socket, guid: string): Promise<NoteEntity> {
     if (!guid) return null;
-    let note = await this.getTable(socket).loadRemote(guid);
+    let note = await this.getTable().loadRemote(guid);
     return note;
   }
 
-  protected async onReParse(socket: SocketIO.Socket, query: Object): Promise<boolean> {
-    await this.getTable(socket).reParseNotes(query);
+  protected async onReParse(_socket: SocketIO.Socket, query: Object): Promise<boolean> {
+    await this.getTable().reParseNotes(query);
     return true;
   }
 

@@ -7,7 +7,6 @@ export class SavedSearchEntity extends BaseEvernoteEntity {
     name: "savedSearch",
     primaryKey: "guid",
     displayField: "name",
-    requireUser: true,
     archive: false,
     default: {
       where: {},

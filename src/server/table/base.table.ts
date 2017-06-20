@@ -8,7 +8,6 @@ import {
   IFindEntityOptions
 } from "../../common/entity/base.entity";
 import {container} from "../inversify.config";
-import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 
 let logger = getLogger("system");
 
@@ -35,7 +34,6 @@ export abstract class BaseTable<T extends BaseEntity> {
   protected archiveName: string;
   protected archiveFields: sequelize.DefineAttributes;
   protected archiveOptions: sequelize.DefineOptions<ISequelizeInstance<T>>;
-  protected globalUser: GlobalUserEntity;
   protected sequelizeDatabase: sequelize.Sequelize;
   protected sequelizeModel: ISequelizeModel<T> = null;
   protected archiveSequelizeModel: ISequelizeModel<T> = null;
@@ -49,12 +47,8 @@ export abstract class BaseTable<T extends BaseEntity> {
     this.EntityClass = <any>container.getNamed(BaseEntity, this.name);
   }
 
-  initialize(database: sequelize.Sequelize, globalUser: GlobalUserEntity = null) {
-    if (this.EntityClass.params.requireUser && !globalUser) {
-      throw Error(`need username.`);
-    }
-    this.globalUser = globalUser;
-    this.sequelizeDatabase = database;
+  initialize(database: sequelize.Sequelize) {
+   this.sequelizeDatabase = database;
     this.sequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.name, this.Class.params.fields, this.Class.params.options);
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);

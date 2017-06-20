@@ -13,6 +13,9 @@ export interface IAppConfig {
   baseUrl: string;
   port: number;
   logLevel: string;
+  dbName: string;
+  sandbox: boolean;
+  token: string;
   persons: IPersonConfig[];
   workingTimeStart: number;
   workingTimeEnd: number;

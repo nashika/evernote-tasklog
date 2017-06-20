@@ -7,7 +7,6 @@ export class NoteEntity extends BaseEvernoteEntity {
     name: "note",
     primaryKey: "guid",
     displayField: "title",
-    requireUser: true,
     archive: true,
     default: {
       where: {},

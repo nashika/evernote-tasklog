@@ -103,10 +103,9 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
   }
 
   async loadRemote(guid: string): Promise<NoteEntity> {
-    let lastNote: NoteEntity = null;
     this.message("load", ["remote"], "note", true, {guid: guid});
-    let note = await this.evernoteClientService.getNote(this.globalUser, guid);
-    lastNote = note;
+    let note = await this.evernoteClientService.getNote(guid);
+    let lastNote: NoteEntity = note;
     await this.save(note, true);
     await this.parseNote(lastNote);
     this.message("load", ["remote"], "note", false, {guid: lastNote.guid, title: lastNote.title});
@@ -133,8 +132,8 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
     for (var line of content.split('<>')) {
       lines.push(line.replace(/<[^>]*>/g, ''));
     }
-    await this.tableService.getUserTable<TimeLogTable>(TimeLogEntity, this.globalUser).parse(note, lines);
-    await this.tableService.getUserTable<ProfitLogTable>(ProfitLogEntity, this.globalUser).parse(note, lines);
+    await this.tableService.getTable<TimeLogTable>(TimeLogEntity).parse(note, lines);
+    await this.tableService.getTable<ProfitLogTable>(ProfitLogEntity).parse(note, lines);
     this.message("parse", ["local"], "note", false, {guid: note.guid, title: note.title});
   }
 

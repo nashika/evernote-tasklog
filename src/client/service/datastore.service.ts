@@ -8,7 +8,6 @@ import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {NotebookEntity} from "../../common/entity/notebook.entity";
 import {BaseClientService} from "./base-client.service";
-import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
 import {TagEntity} from "../../common/entity/tag.entity";
@@ -41,7 +40,6 @@ export class TerminateResult {
 export class DatastoreService extends BaseClientService {
 
   lastUpdateCount: number;
-  globalUser: GlobalUserEntity;
   user: Evernote.User;
   persons: Object[];
   notebooks: {[guid: string]: NotebookEntity};
@@ -57,21 +55,10 @@ export class DatastoreService extends BaseClientService {
               protected progressService: ProgressService) {
     super();
     this.lastUpdateCount = 0;
-    this.globalUser = null;
     this.user = null;
     this.filterParams = {
       notebookGuids: [],
     };
-    this.clear();
-  }
-
-  async initialize(): Promise<void> {
-    this.globalUser = await this.requestService.loadAuth();
-  }
-
-  async changeUser(globalUser: GlobalUserEntity): Promise<void> {
-    await this.requestService.changeAuth(globalUser);
-    this.globalUser = await this.requestService.loadAuth();
     this.clear();
   }
 
@@ -95,7 +82,6 @@ export class DatastoreService extends BaseClientService {
   }
 
   async reload(params: IDatastoreServiceParams = {}): Promise<void> {
-    if (!this.globalUser) return;
     if (this.progressService.isActive) return;
     this.progressService.open(params.getContent ? 12 : params.archive ? 9 : 7);
     try {

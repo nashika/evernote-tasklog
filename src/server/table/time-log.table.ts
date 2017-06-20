@@ -3,8 +3,8 @@ import sequelize = require("sequelize");
 
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
-import {SettingService} from "../service/setting.service";
 import {IBaseTableParams, BaseTable} from "./base.table";
+import {configLoader} from "../../common/util/config-loader";
 
 @injectable()
 export class TimeLogTable extends BaseTable<TimeLogEntity> {
@@ -23,10 +23,6 @@ export class TimeLogTable extends BaseTable<TimeLogEntity> {
     },
     jsonFields: [],
   };
-
-  constructor(protected settingService: SettingService) {
-    super();
-  }
 
   async parse(note: NoteEntity, lines: string[]): Promise<void> {
     let timeLogs: TimeLogEntity[] = [];
@@ -49,7 +45,7 @@ export class TimeLogTable extends BaseTable<TimeLogEntity> {
         timeLog.date = (new Date(dateText + ' ' + timeText)).getTime();
         if (timeText) timeLog.allDay = false;
         // parse person
-        for (let person of this.settingService.getUser(this.globalUser).persons) {
+        for (let person of configLoader.app.persons) {
           if (attributesText.indexOf(person.name) != -1)
             timeLog.person = person.name;
         }

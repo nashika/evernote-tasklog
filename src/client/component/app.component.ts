@@ -19,7 +19,6 @@ export default class AppComponent extends BaseComponent {
 
   async mounted(): Promise<void> {
     await super.mounted();
-    await this.datastoreService.initialize();
     this.isReady = true;
     setInterval(() => this.interval(), 5000);
   }

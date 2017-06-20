@@ -21,15 +21,13 @@ export class SyncRoute extends BaseRoute {
     this.on(socket, "updateCount", this.onUpdateCount);
   }
 
-  protected async onRun(socket: SocketIO.Socket): Promise<boolean> {
-    let session = this.sessionService.get(socket);
-    await this.syncService.sync(session.globalUser, true);
+  protected async onRun(_socket: SocketIO.Socket): Promise<boolean> {
+    await this.syncService.sync(true);
     return true;
   }
 
-  protected async onUpdateCount(socket: SocketIO.Socket): Promise<number> {
-    let session = this.sessionService.get(socket);
-    return this.syncService.updateCount(session.globalUser);
+  protected async onUpdateCount(_socket: SocketIO.Socket): Promise<number> {
+    return this.syncService.updateCount;
   }
 
 }
