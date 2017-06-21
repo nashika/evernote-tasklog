@@ -16,18 +16,25 @@ export class TableService extends BaseServerService {
   private tables: {[tableName: string]: BaseTable<BaseEntity>};
 
   async initialize(): Promise<void> {
-    let filePath = path.join(__dirname, "../../../db/", configLoader.app.dbName + ".db");
-    this.database = new sequelize("", "", null, {
-      dialect: "sqlite",
-      storage: filePath,
-      logging: false
-    });
+    let database = this.getDatabase();
     this.tables = {};
     for (let table of container.getAll<BaseTable<BaseEntity>>(BaseTable)) {
       this.tables[table.EntityClass.params.name] = table;
-      table.initialize(this.database);
+      table.initialize(database);
     }
-    await this.database.sync();
+    await database.sync();
+  }
+
+  getDatabase(): sequelize.Sequelize {
+    if (!this.database) {
+      let filePath = path.join(__dirname, "../../../db/", configLoader.app.dbName + ".db");
+      this.database = new sequelize("", "", null, {
+        dialect: "sqlite",
+        storage: filePath,
+        logging: false
+      });
+    }
+    return this.database;
   }
 
   getTable<T extends BaseTable<BaseEntity>>(EntityClass: typeof BaseEntity): T {

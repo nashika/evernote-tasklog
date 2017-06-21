@@ -5,10 +5,10 @@ import express = require("express");
 import cookieParser = require("cookie-parser");
 import session = require("express-session");
 import bodyParser = require("body-parser");
-import * as sequelize from "sequelize";
 
 import {container} from "./inversify.config";
 import {SocketIoServerService} from "./service/socket-io-server-service";
+import {TableService} from "./service/table.service";
 
 let app: express.Express = express();
 
@@ -17,10 +17,9 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
 // session store setup
-let sessionDatabase = new sequelize("", "", "", {dialect: "sqlite", storage: path.join(__dirname, "../../db/_session.db"), logging: false});
 let SequelizeStore = require("connect-session-sequelize")(session.Store);
 let sequelizeStore = new SequelizeStore({
-  db: sessionDatabase,
+  db: container.get<TableService>(TableService).getDatabase(),
   checkExpirationInterval: 15 * 60 * 1000,
   expiration: 7 * 24 * 60 * 60 * 1000,
 });
