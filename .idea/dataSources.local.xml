@@ -8,7 +8,7 @@
       <auth-required>false</auth-required>
       <introspection-schemas>*:main</introspection-schemas>
     </data-source>
-    <data-source name="_global.db" uuid="7855407d-9a35-4202-916c-70df70d4fbec">
+    <data-source name="_session.db" uuid="e8575cc8-39da-4543-9be1-4b1ffb77abc2">
       <database-info product="SQLite" version="3.16.1" jdbc-version="2.1" driver-name="SQLiteJDBC" driver-version="native" />
       <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
       <secret-storage>master_key</secret-storage>

@@ -54,7 +54,6 @@ export class DatastoreService extends BaseClientService {
   constructor(protected requestService: RequestService,
               protected progressService: ProgressService) {
     super();
-    this.lastUpdateCount = 0;
     this.user = null;
     this.filterParams = {
       notebookGuids: [],
@@ -73,20 +72,11 @@ export class DatastoreService extends BaseClientService {
     this.profitLogs = {};
   }
 
-  async checkUpdateCount(): Promise<boolean> {
-    let updateCount = await this.requestService.getUpdateCount();
-    if (this.lastUpdateCount == updateCount)
-      return false;
-    this.lastUpdateCount = updateCount;
-    return true;
-  }
-
   async reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (this.progressService.isActive) return;
-    this.progressService.open(params.getContent ? 12 : params.archive ? 9 : 7);
+    this.progressService.open(params.getContent ? 9 : params.archive ? 6 : 3);
     try {
       await this.getUser();
-      await this.runSync();
       await this.getNotebooks();
       await this.getTags();
       if (params.getContent) {
@@ -115,12 +105,7 @@ export class DatastoreService extends BaseClientService {
     this.user = await this.requestService.loadOption("user");
   }
 
-  private async runSync(): Promise<void> {
-    this.progressService.next("Syncing remote server.");
-    await this.requestService.sync();
-  }
-
-  private async getNotebooks(): Promise<void> {
+ private async getNotebooks(): Promise<void> {
     this.progressService.next("Getting notebooks data.");
     let notebooks = await this.requestService.find<NotebookEntity>(NotebookEntity);
     this.notebooks = _.keyBy(notebooks, "guid");

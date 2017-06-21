@@ -3,9 +3,9 @@
     .container
       h1.my-3 #[span.fa.fa-tasks] Evernote Tasklog
       .row
-        .col-md-6(v-if="datastoreService.globalUser")
+        .col-md-6
           app-note-filter-menu-mode
-        .col-md-6(v-if="datastoreService.globalUser")
+        .col-md-6
           app-data-info-menu-mode
 </template>
 

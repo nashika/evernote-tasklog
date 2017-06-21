@@ -50,11 +50,6 @@ export class RequestService extends BaseClientService {
     await this.socketIoClientService.request(`sync::run`);
   }
 
-  async getUpdateCount(): Promise<number> {
-    let data = await this.socketIoClientService.request(`sync::updateCount`);
-    return data;
-  }
-
   async getNoteContent(guid: string): Promise<NoteEntity> {
     let data = await this.socketIoClientService.request(`note::getContent`, {guid: guid});
     return data ? new NoteEntity(data) : null;

@@ -9,6 +9,8 @@ import {configLoader} from "../../common/util/config-loader";
 @injectable()
 export class SocketIoClientService extends BaseClientService {
 
+  lastUpdateCount: number = 0;
+
   private socket: Socket;
 
   constructor() {
@@ -17,6 +19,7 @@ export class SocketIoClientService extends BaseClientService {
     this.socket = socketIo.connect(configLoader.app.baseUrl);
     this.on(this, "connect", this.onConnect);
     this.on(this, "disconnect", this.onDisconnect);
+    this.on(this, "sync::updateCount", this.onUpdateCount);
   }
 
   on(me: Object, event: string, func: Function) {
@@ -31,6 +34,11 @@ export class SocketIoClientService extends BaseClientService {
 
   private async onDisconnect(): Promise<void> {
     logger.debug("socket.io client disconnected.");
+  }
+
+  private async onUpdateCount(updateCount: number): Promise<void> {
+    logger.info(`Update count from server, updateCount=${updateCount}`);
+    this.lastUpdateCount;
   }
 
   async request<T = any>(event: string, ...params: any[]): Promise<T> {

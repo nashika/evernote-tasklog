@@ -1,6 +1,6 @@
 <template lang="pug">
   mixin item(to, icon, label, needLogin)
-    b-nav-item(to=to, :disabled=needLogin ? "!datastoreService.globalUser" : "false")
+    b-nav-item(to=to)
       span.fa(class="fa-" + icon)
       | #{label}
 

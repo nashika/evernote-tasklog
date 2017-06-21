@@ -18,6 +18,7 @@ import {BaseServerService} from "./base-server.service";
 import {OptionTable} from "../table/option.table";
 import {OptionEntity} from "../../common/entity/option.entity";
 import {logger} from "../logger";
+import {SocketIoServerService} from "./socket-io-server-service";
 
 @injectable()
 export class SyncService extends BaseServerService {
@@ -31,7 +32,8 @@ export class SyncService extends BaseServerService {
   private interval: number;
 
   constructor(protected tableService: TableService,
-              protected evernoteClientService: EvernoteClientService) {
+              protected evernoteClientService: EvernoteClientService,
+              protected socketIoServerService: SocketIoServerService) {
     super();
   }
 
@@ -56,7 +58,8 @@ export class SyncService extends BaseServerService {
     this.interval = manual ? this.Class.startInterval : Math.min(Math.round(this.interval * 1.5), this.Class.maxInterval);
     this.timer = setTimeout(() => this.sync(false).catch(err => logger.error(err)), this.interval);
     logger.info(`Next auto reload will run after ${this.interval} msec.`);
-    if (!manual) await this.autoGetNoteContent(this.interval);
+    await this.autoGetNoteContent(this.interval);
+    this.socketIoServerService.emitAll("sync::updateCount", this.updateCount);
   }
 
   private async getSyncChunk(localSyncState: evernote.Evernote.SyncState): Promise<void> {
