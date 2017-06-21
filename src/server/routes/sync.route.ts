@@ -1,14 +1,12 @@
 import {injectable} from "inversify";
 
 import {BaseRoute} from "./base.route";
-import {SessionService} from "../service/session.service";
 import {SyncService} from "../service/sync.service";
 
 @injectable()
 export class SyncRoute extends BaseRoute {
 
-  constructor(protected sessionService: SessionService,
-              protected syncService: SyncService) {
+  constructor(protected syncService: SyncService) {
     super();
   }
 

@@ -95,7 +95,7 @@ export class DatastoreService extends BaseClientService {
       alert(err);
       this.progressService.close();
       if (!(err instanceof TerminateResult))
-        throw new Error(`HTTP request error. err=${err}`);
+        throw err;
     }
     this.progressService.close();
   }

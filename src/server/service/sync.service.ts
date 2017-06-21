@@ -28,6 +28,8 @@ export class SyncService extends BaseServerService {
 
   public updateCount: number = 0;
 
+  private nextLockPromise: Promise<void>;
+  private lockResolves: Array<() => void>;
   private timer: any;
   private interval: number;
 
@@ -35,14 +37,32 @@ export class SyncService extends BaseServerService {
               protected evernoteClientService: EvernoteClientService,
               protected socketIoServerService: SocketIoServerService) {
     super();
+    this.lockResolves = [];
   }
 
   get Class(): typeof SyncService {
     return <typeof SyncService>this.constructor;
   }
 
+  async lock(): Promise<void> {
+    let next = this.nextLockPromise;
+    this.nextLockPromise = new Promise<void>(resolve => {
+      this.lockResolves.push(resolve);
+    });
+    logger.debug(`sync lock count=${this.lockResolves.length}`);
+    if (this.lockResolves.length >= 2) return next;
+  }
+
+  async unlock(): Promise<void> {
+    if (this.lockResolves.length < 1) throw Error("Unlock need to lock first.");
+    logger.debug(`sync unlock count=${this.lockResolves.length}`);
+    let resolve = this.lockResolves.shift();
+    resolve();
+  }
+
   async sync(manual: boolean): Promise<void> {
     clearTimeout(this.timer);
+    await this.lock();
     let optionTable = this.tableService.getTable<OptionTable>(OptionEntity);
     let localSyncState: evernote.Evernote.SyncState = await optionTable.findValueByKey("syncState");
     if (!localSyncState) localSyncState = <any>{updateCount: 0};
@@ -60,6 +80,7 @@ export class SyncService extends BaseServerService {
     logger.info(`Next auto reload will run after ${this.interval} msec.`);
     await this.autoGetNoteContent(this.interval);
     this.socketIoServerService.emitAll("sync::updateCount", this.updateCount);
+    await this.unlock();
   }
 
   private async getSyncChunk(localSyncState: evernote.Evernote.SyncState): Promise<void> {
