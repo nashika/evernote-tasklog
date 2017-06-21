@@ -51,7 +51,7 @@ export class RequestService extends BaseClientService {
   }
 
   async getNoteContent(guid: string): Promise<NoteEntity> {
-    let data = await this.socketIoClientService.request(`note::getContent`, {guid: guid});
+    let data = await this.socketIoClientService.request(`note::getContent`, guid);
     return data ? new NoteEntity(data) : null;
   }
 
