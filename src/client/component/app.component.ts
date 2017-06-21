@@ -5,13 +5,11 @@ import {container} from "../inversify.config";
 import {DatastoreService} from "../service/datastore.service";
 import {router} from "../app";
 import {SocketIoClientService} from "../service/socket-io-client-service";
+import {logger} from "../logger";
+
 let Push = require("push.js");
 
-@Component({
-  watch: {
-    "socketIoClientService.lastUpdateCount": "checkUpdateCount",
-  },
-})
+@Component({})
 export default class AppComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
@@ -22,12 +20,14 @@ export default class AppComponent extends BaseComponent {
 
   async mounted(): Promise<void> {
     await super.mounted();
+    this.socketIoClientService.on(this, "sync::updateCount", this.checkUpdateCount);
     this.isReady = true;
   }
 
-  async checkUpdateCount(): Promise<void> {
-    if (this.lastUpdateCount < this.socketIoClientService.lastUpdateCount) {
-      this.lastUpdateCount = this.socketIoClientService.lastUpdateCount;
+  async checkUpdateCount(updateCount: number): Promise<void> {
+    logger.debug(`Update count from server, updateCount=${updateCount}`);
+    if (this.lastUpdateCount < updateCount) {
+      this.lastUpdateCount = updateCount;
       this.reload();
       Push.create("Evernote Tasklog", {
         body: "Note was updated, check activity.",

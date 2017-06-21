@@ -74,9 +74,10 @@ export class DatastoreService extends BaseClientService {
 
   async reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (this.progressService.isActive) return;
-    this.progressService.open(params.getContent ? 9 : params.archive ? 6 : 3);
+    this.progressService.open(params.getContent ? 10 : params.archive ? 7 : 4);
     try {
       await this.getUser();
+      await this.runSync();
       await this.getNotebooks();
       await this.getTags();
       if (params.getContent) {
@@ -105,7 +106,12 @@ export class DatastoreService extends BaseClientService {
     this.user = await this.requestService.loadOption("user");
   }
 
- private async getNotebooks(): Promise<void> {
+  private async runSync(): Promise<void> {
+    this.progressService.next("Syncing remote server.");
+    await this.requestService.sync();
+  }
+
+  private async getNotebooks(): Promise<void> {
     this.progressService.next("Getting notebooks data.");
     let notebooks = await this.requestService.find<NotebookEntity>(NotebookEntity);
     this.notebooks = _.keyBy(notebooks, "guid");

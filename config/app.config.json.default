@@ -1,10 +1,20 @@
 {
   "*": {
-    "host": "localhost",
     "port": 3000,
-    "logLevel": "trace"
+    "logLevel": "trace",
+    "dbName": "db",
+    "sandbox": false,
+    "token": "",
+    "persons": [
+      {"name": "Alpha"},
+      {"name": "Beta"},
+      {"name": "Gamma"}
+    ],
+    "workingTimeStart": 9,
+    "workingTimeEnd": 19
   },
   "development": {
+    "baseUrl": "http://localhost:3000"
   },
   "production*": {
     "host": null,
