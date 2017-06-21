@@ -13,6 +13,12 @@ export function appDllPartial(): webpack.Configuration {
       filename: "[name]-vendor.bundle.js",
       library: "[name]_lib",
     },
+    resolve: {
+      alias: {
+        vis: "vis/dist/vis-timeline-graph2d.min.js",
+        vue: "vue/dist/vue.js",
+      },
+    },
     node: {
       fs: "empty",
     },

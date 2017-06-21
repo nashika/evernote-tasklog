@@ -17,6 +17,7 @@ export function appPartial(): webpack.Configuration {
     resolve: {
       extensions: [".ts", ".js"],
       alias: {
+        vis: "vis/dist/vis-timeline-graph2d.min.js",
         vue: "vue/dist/vue.js",
       },
     },
