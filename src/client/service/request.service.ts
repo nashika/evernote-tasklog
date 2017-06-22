@@ -56,7 +56,7 @@ export class RequestService extends BaseClientService {
   }
 
   async reParseNote(): Promise<void> {
-    await this.socketIoClientService.request(`note::reParse`);
+    await this.socketIoClientService.request(`note::reParse`, {});
   }
 
 }
