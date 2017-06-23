@@ -23,7 +23,7 @@ export class TimeLogEntity extends BaseEntity {
   comment: string;
   allDay: boolean;
   date: number;
-  person: string;
+  personId: number;
   spentTime: number;
 
 }

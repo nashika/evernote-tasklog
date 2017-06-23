@@ -15,7 +15,7 @@ export class TimeLogTable extends BaseTable<TimeLogEntity> {
       comment: {type: sequelize.TEXT, allowNull: true},
       allDay: {type: sequelize.BOOLEAN, allowNull: false},
       date: {type: sequelize.BIGINT, allowNull: false},
-      person: {type: sequelize.STRING, allowNull: false},
+      personId: {type: sequelize.INTEGER, allowNull: false},
       spentTime: {type: sequelize.INTEGER, allowNull: true},
     },
     options: {
@@ -35,7 +35,7 @@ export class TimeLogTable extends BaseTable<TimeLogEntity> {
           comment: matches[1],
           allDay: true,
           date: null,
-          person: null,
+          personId: 0,
           spentTime: null,
         });
         let attributesText: string = matches[2];
@@ -47,7 +47,7 @@ export class TimeLogTable extends BaseTable<TimeLogEntity> {
         // parse person
         for (let person of configLoader.app.persons) {
           if (attributesText.indexOf(person.name) != -1)
-            timeLog.person = person.name;
+            timeLog.personId = person.id;
         }
         // parse spent time
         if (matches = attributesText.match(/\d+h\d+m|\d+m|\d+h|\d+\.\d+h/i)) {
@@ -56,7 +56,7 @@ export class TimeLogTable extends BaseTable<TimeLogEntity> {
           let spentMinute: number = (matches = spentTimeText.match(/(\d+\.?\d*)m/)) ? parseFloat(matches[1]) : 0;
           timeLog.spentTime = Math.round(spentHour * 60 + spentMinute);
         }
-        if (timeLog.date && timeLog.person)
+        if (timeLog.date && timeLog.personId)
           timeLogs.push(timeLog);
       }
     }

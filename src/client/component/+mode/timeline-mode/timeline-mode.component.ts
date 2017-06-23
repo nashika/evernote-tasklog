@@ -12,7 +12,7 @@ import {configLoader} from "../../../../common/util/config-loader";
 
 interface TimelineItem {
   id: string,
-  group: string,
+  group: number | string,
   content: string,
   start: Date,
   end?: Date,
@@ -46,7 +46,7 @@ export default class TimelineModeComponent extends BaseComponent {
     this.timelineItems = new DataSet();
     for (let person of configLoader.app.persons)
       this.timelineGroups.add({
-        id: person.name,
+        id: person.id,
         content: person.name,
       });
     this.timelineGroups.add({
@@ -74,7 +74,7 @@ export default class TimelineModeComponent extends BaseComponent {
         if (!note) continue;
         let timelineItem: TimelineItem = {
           id: String(timeLog.id),
-          group: timeLog.person,
+          group: timeLog.personId,
           content: `<a href="evernote:///view/${this.datastoreService.user["id"]}/${this.datastoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
           start: moment(timeLog.date).toDate(),
           end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,

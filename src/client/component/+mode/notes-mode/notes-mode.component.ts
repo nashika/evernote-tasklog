@@ -1,4 +1,5 @@
 import Component from "vue-class-component";
+import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";
 import {DatastoreService} from "../../../service/datastore.service";
@@ -6,15 +7,16 @@ import {ProfitLogEntity} from "../../../../common/entity/profit-log.entity";
 import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
 import {container} from "../../../inversify.config";
 import {NoteEntity} from "../../../../common/entity/note.entity";
+import {configLoader, IPersonConfig} from "../../../../common/util/config-loader";
 
 @Component({})
 export default class NotesModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
-  notes: {[guid:string]: NoteEntity} = {};
-  notesSpentTimes: {[noteGuid: string]: {[person: string]: number}} = {};
-  notesProfits: {[noteGuid: string]: {[person: string]: number}} = {};
-  existPersons: string[] = [];
+  notes: { [guid: string]: NoteEntity } = {};
+  notesSpentTimes: { [noteGuid: string]: { [person: string]: number } } = {};
+  notesProfits: { [noteGuid: string]: { [person: string]: number } } = {};
+  existPersons: IPersonConfig[];
 
   constructor() {
     super();
@@ -32,9 +34,9 @@ export default class NotesModeComponent extends BaseComponent {
     this.reloadProfitLogs(this.datastoreService.profitLogs);
   }
 
-  private reloadTimeLogs(timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}}) {
+  private reloadTimeLogs(timeLogs: { [noteGuid: string]: { [_id: string]: TimeLogEntity } }) {
     this.notesSpentTimes = {};
-    let personsHash: {[person: string]: boolean} = {};
+    let personsHash: { [person: string]: boolean } = {};
     for (var noteGuid in timeLogs) {
       var noteTimeLog = timeLogs[noteGuid];
       for (var timeLogId in noteTimeLog) {
@@ -42,23 +44,23 @@ export default class NotesModeComponent extends BaseComponent {
         if (!this.notesSpentTimes[timeLog.noteGuid])
           this.notesSpentTimes[timeLog.noteGuid] = {$total: 0};
         this.notesSpentTimes[timeLog.noteGuid]["$total"] += timeLog.spentTime;
-        if (!this.notesSpentTimes[timeLog.noteGuid][timeLog.person])
-          this.notesSpentTimes[timeLog.noteGuid][timeLog.person] = 0;
-        this.notesSpentTimes[timeLog.noteGuid][timeLog.person] += timeLog.spentTime;
+        if (!this.notesSpentTimes[timeLog.noteGuid][timeLog.personId])
+          this.notesSpentTimes[timeLog.noteGuid][timeLog.personId] = 0;
+        this.notesSpentTimes[timeLog.noteGuid][timeLog.personId] += timeLog.spentTime;
         if (!this.notesSpentTimes["$total"])
           this.notesSpentTimes["$total"] = {$total: 0};
         this.notesSpentTimes["$total"]["$total"] += timeLog.spentTime;
-        if (!this.notesSpentTimes["$total"][timeLog.person])
-          this.notesSpentTimes["$total"][timeLog.person] = 0;
-        this.notesSpentTimes["$total"][timeLog.person] += timeLog.spentTime;
+        if (!this.notesSpentTimes["$total"][timeLog.personId])
+          this.notesSpentTimes["$total"][timeLog.personId] = 0;
+        this.notesSpentTimes["$total"][timeLog.personId] += timeLog.spentTime;
         if (timeLog.spentTime > 0)
-          personsHash[timeLog.person] = true;
+          personsHash[timeLog.personId] = true;
       }
     }
-    this.existPersons = Object.keys(personsHash);
+    this.existPersons = _.filter(configLoader.app.persons, person => _.has(personsHash, person.id));
   }
 
-  private reloadProfitLogs(profitLogs: {[noteGuid: string]: {[person: string]: ProfitLogEntity}}) {
+  private reloadProfitLogs(profitLogs: { [noteGuid: string]: { [person: string]: ProfitLogEntity } }) {
     this.notesProfits = {};
     for (var noteGuid in profitLogs) {
       var noteProfitLog = profitLogs[noteGuid];
@@ -72,15 +74,15 @@ export default class NotesModeComponent extends BaseComponent {
         this.notesProfits["$total"]["$total"] += profitLog.profit;
       }
       for (var person of this.existPersons) {
-        if (!this.notesSpentTimes[noteGuid] || !this.notesSpentTimes[noteGuid][person] || !this.notesSpentTimes[noteGuid]["$total"])
-          this.notesProfits[noteGuid][person] = null;
+        if (!this.notesSpentTimes[noteGuid] || !this.notesSpentTimes[noteGuid][person.id] || !this.notesSpentTimes[noteGuid]["$total"])
+          this.notesProfits[noteGuid][person.id] = null;
         else
-          this.notesProfits[noteGuid][person] = Math.round(this.notesProfits[noteGuid]["$total"] * this.notesSpentTimes[noteGuid][person] / this.notesSpentTimes[noteGuid]["$total"]);
-        if (!this.notesProfits["$total"][person])
-          this.notesProfits["$total"][person] = 0;
-        this.notesProfits["$total"][person] += this.notesProfits[noteGuid][person];
+          this.notesProfits[noteGuid][person.id] = Math.round(this.notesProfits[noteGuid]["$total"] * this.notesSpentTimes[noteGuid][person.id] / this.notesSpentTimes[noteGuid]["$total"]);
+        if (!this.notesProfits["$total"][person.id])
+          this.notesProfits["$total"][person.id] = 0;
+        this.notesProfits["$total"][person.id] += this.notesProfits[noteGuid][person.id];
       }
     }
-  };
+  }
 
 }

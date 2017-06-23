@@ -22,6 +22,7 @@ export interface IAppConfig {
 }
 
 export interface IPersonConfig {
+  id: number;
   name: string;
 }
 
