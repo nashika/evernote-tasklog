@@ -15,21 +15,21 @@
             | {{Math.round(notesProfits[note.guid][person.id])}}
         td.text-right
           div(v-if="notesSpentTimes[note.guid] && notesSpentTimes[note.guid]['$total']")
-            | {{notesSpentTimes[note.guid][person.id] | spentTime}}
+            | {{notesSpentTimes[note.guid]['$total'] | spentTime}}
           div(v-if="notesProfits[note.guid] && notesProfits[note.guid]['$total']")
             | {{Math.round(notesProfits[note.guid]['$total'])}}
       tr
         th Total
         td.text-right(v-for="person in existPersons")
-          div(v-if="notesSpentTimes['$total'] && notesSpentTimes['$total'][person]")
-            small ({{Math.round(notesSpentTimes['$total'][person] / notesSpentTimes['$total']['$total'] * 100)}}%)&nbsp;
-            | {{notesSpentTimes['$total'][person] | spentTime}}
-          div(v-if="notesProfits['$total'] && notesProfits['$total'][person]")
-            | {{Math.round(notesProfits['$total'][person])}}
+          div(v-if="notesSpentTimes['$total'] && notesSpentTimes['$total'][person.id]")
+            small ({{Math.round(notesSpentTimes['$total'][person.id] / notesSpentTimes['$total']['$total'] * 100)}}%)&nbsp;
+            | {{notesSpentTimes['$total'][person.id] | spentTime}}
+          div(v-if="notesProfits['$total'] && notesProfits['$total'][person.id]")
+            | {{Math.round(notesProfits['$total'][person.id])}}
         td.text-right
           div(v-if="notesSpentTimes['$total'] && notesSpentTimes['$total']['$total']")
             | {{notesSpentTimes['$total']['$total'] | spentTime}}
-          div(v-if="notesProfits['$total'] && notesProfits['$total'][person]")
+          div(v-if="notesProfits['$total'] && notesProfits['$total']['$total']")
             | {{Math.round(notesProfits['$total']['$total'])}}
 </template>
 

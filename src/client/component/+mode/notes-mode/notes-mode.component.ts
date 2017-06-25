@@ -20,6 +20,7 @@ export default class NotesModeComponent extends BaseComponent {
 
   constructor() {
     super();
+    this.existPersons = [];
   }
 
   async mounted(): Promise<void> {
