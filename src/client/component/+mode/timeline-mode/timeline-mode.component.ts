@@ -96,7 +96,7 @@ export default class TimelineModeComponent extends BaseComponent {
       hiddenDates = [];
     this.timeline = new Timeline(container, this.timelineItems, this.timelineGroups, <any>{
       margin: {item: 5},
-      height: window.innerHeight - 56,
+      height: window.innerHeight - 57,
       orientation: {axis: "both", item: "top"},
       start: this.startView.toDate(),
       end: this.endView.toDate(),

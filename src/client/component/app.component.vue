@@ -1,8 +1,14 @@
 <template lang="pug">
   section.app
-    router-view(v-if="isReady", ref="main")
     app-navigation
     app-progress
+    router-view(v-if="isReady", ref="main")
 </template>
+
+<style lang="scss">
+  section.app {
+    padding-top: 56px;
+  }
+</style>
 
 <script lang="ts" src="./app.component.ts"></script>
