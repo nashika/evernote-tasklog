@@ -13,10 +13,6 @@ body {
 
 
 // monky patches
-.navbar-fixed-bottom {
-  @extend .fixed-bottom;
-}
-
 .modal.show {
   display: block;
 }
