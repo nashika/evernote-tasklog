@@ -16,4 +16,8 @@ export default class NavigationComponent extends BaseComponent {
     this.$root.reload();
   }
 
+  toggleMenu() {
+    this.$emit('toggle-menu', true);
+  }
+
 }

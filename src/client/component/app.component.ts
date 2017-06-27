@@ -17,6 +17,7 @@ export default class AppComponent extends BaseComponent {
 
   lastUpdateCount: number = 0;
   isReady: boolean = false;
+  showMenu: boolean = false;
 
   async mounted(): Promise<void> {
     await super.mounted();
@@ -42,6 +43,10 @@ export default class AppComponent extends BaseComponent {
 
   reload() {
     (<any>this.$refs.main).reload();
+  }
+
+  toggleMenu() {
+    this.showMenu = !this.showMenu;
   }
 
 }

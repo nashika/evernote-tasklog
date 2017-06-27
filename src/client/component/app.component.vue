@@ -1,7 +1,8 @@
 <template lang="pug">
   section.app
-    app-navigation
+    app-navigation(:showMenu="showMenu", @toggle-menu="toggleMenu")
     app-progress
+    app-menu(:showMenu="showMenu", @toggle-menu="toggleMenu")
     router-view(v-if="isReady", ref="main")
 </template>
 

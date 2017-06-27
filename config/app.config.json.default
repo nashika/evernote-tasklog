@@ -6,9 +6,9 @@
     "sandbox": false,
     "token": "",
     "persons": [
-      {"name": "Alpha"},
-      {"name": "Beta"},
-      {"name": "Gamma"}
+      {"id": 1, "name": "Alpha"},
+      {"id": 2, "name": "Beta"},
+      {"id": 3, "name": "Gamma"}
     ],
     "workingTimeStart": 9,
     "workingTimeEnd": 19
