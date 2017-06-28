@@ -19,6 +19,7 @@ let BootstrapVue = require("bootstrap-vue").default;
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 
+Vue.component("app-filter", require("./component/filter/filter.component.vue"));
 Vue.component("app-navigation", require("./component/navigation/navigation.component.vue"));
 Vue.component("app-progress", require("./component/progress/progress.component.vue"));
 
