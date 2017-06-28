@@ -45,8 +45,4 @@ export default class AppComponent extends BaseComponent {
     (<any>this.$refs.main).reload();
   }
 
-  toggleMenu() {
-    this.showMenu = !this.showMenu;
-  }
-
 }

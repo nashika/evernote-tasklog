@@ -19,12 +19,11 @@ let BootstrapVue = require("bootstrap-vue").default;
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 
-Vue.component("app-menu", require("./component/menu/menu.component.vue"));
 Vue.component("app-navigation", require("./component/navigation/navigation.component.vue"));
 Vue.component("app-progress", require("./component/progress/progress.component.vue"));
 
 const routes = [
-  {path: "/", component: require("./component/+mode/menu-mode/menu-mode.component.vue")},
+  {path: "/", redirect: "/timeline"},
   {path: "/timeline", component: require("./component/+mode/timeline-mode/timeline-mode.component.vue")},
   {path: "/notes", component: require("./component/+mode/notes-mode/notes-mode.component.vue")},
   {path: "/activity", component: require("./component/+mode/activity-mode/activity-mode.component.vue")},
