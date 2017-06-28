@@ -2,9 +2,9 @@ import Component from "vue-class-component";
 import * as Vue from "vue";
 import * as _ from "lodash";
 
-import BaseComponent from "../base.component";
-import {container} from "../../inversify.config";
-import {DatastoreService} from "../../service/datastore.service";
+import BaseComponent from "../../base.component";
+import {container} from "../../../inversify.config";
+import {DatastoreService} from "../../../service/datastore.service";
 
 @Component({
   watch: {
@@ -13,7 +13,7 @@ import {DatastoreService} from "../../service/datastore.service";
     "datastoreService.filterParams.stacks": "reloadCounts",
   },
 })
-export default class FilterNavigationComponent extends BaseComponent {
+export default class FilterModalComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 

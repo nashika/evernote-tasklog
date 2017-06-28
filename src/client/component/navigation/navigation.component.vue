@@ -10,9 +10,13 @@
         +item("/timeline", "clock-o", "Timeline")
         +item("/notes", "files-o", "Notes")
         +item("/activity", "history", "Activity")
+        +item("/attendance", "vcard", "Attendance")
       b-button.mr-3(variant="outline-secondary", @click="$root.$emit('show::modal', 'filter-modal')")
         i.fa.fa-filter
         span.hidden-sm-down &nbsp;Filter
+      b-button.mr-3(variant="outline-warning", @click="$root.$emit('show::modal', 'person-modal')")
+        i.fa.fa-user
+        span.hidden-sm-down &nbsp;Person
       b-button(variant="outline-primary", @click="reload()")
         i.fa.fa-refresh
         span.hidden-sm-down &nbsp;Reload

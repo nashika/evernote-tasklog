@@ -40,4 +40,4 @@
           button.btn.btn-primary.btn-block(type="button", @click="reParse()") #[span.fa.fa-industry] Re Parse Notes
 </template>
 
-<script lang="ts" src="./filter.component.ts"></script>
+<script lang="ts" src="./filter-modal.component.ts"></script>

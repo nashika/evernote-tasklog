@@ -5,4 +5,4 @@
     .text-left {{progressService.message}}
 </template>
 
-<script lang="ts" src="./progress.component.ts"></script>
+<script lang="ts" src="./progress-modal.component.ts"></script>

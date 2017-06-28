@@ -1,8 +1,9 @@
 <template lang="pug">
   section.app
     app-navigation
-    app-filter
-    app-progress
+    app-filter-modal
+    app-person-modal
+    app-progress-modal
     router-view(v-if="isReady", ref="main")
 </template>
 
