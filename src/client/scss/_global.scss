@@ -9,10 +9,3 @@ body {
 .vis-item .vis-item-overflow {
   overflow: visible;
 }
-
-
-
-// monky patches
-.modal.show {
-  display: block;
-}
