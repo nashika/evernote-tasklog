@@ -15,20 +15,23 @@ export class RequestService extends BaseClientService {
   }
 
   async find<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T[]> {
-    let datas = await this.socketIoClientService.request(`${EntityClass.params.name}::find`, options);
+    let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
     return _.map(datas, data => new (<any>EntityClass)(data));
   }
 
   async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T> {
     options.limit = 1;
-    let datas = await this.socketIoClientService.request(`${EntityClass.params.name}::find`, options);
+    let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
     let results: T[] = _.map(datas, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
 
   async count(EntityClass: typeof BaseEntity, options: IFindEntityOptions): Promise<number> {
-    let data = await this.socketIoClientService.request(`${EntityClass.params.name}::count`, options);
-    return data;
+    return await this.socketIoClientService.request<number>(`${EntityClass.params.name}::count`, options);
+  }
+
+  async save<T extends BaseEntity>(EntityClass: typeof BaseEntity, entity: T): Promise<void> {
+    await this.socketIoClientService.request(`${EntityClass.params.name}::save`, entity);
   }
 
   async loadOption(key: string): Promise<any> {
@@ -42,8 +45,12 @@ export class RequestService extends BaseClientService {
     await this.save<OptionEntity>(OptionEntity, optionEntity);
   }
 
-  async save<T extends BaseEntity>(EntityClass: typeof BaseEntity, entity: T): Promise<void> {
-    await this.socketIoClientService.request(`${EntityClass.params.name}::save`, entity);
+  async loadSession(key: string): Promise<any> {
+    return await this.socketIoClientService.request("session::load", key);
+  }
+
+  async saveSession(key: string, value: any): Promise<void> {
+    return await this.socketIoClientService.request("session::save", key, value);
   }
 
   async sync(): Promise<void> {

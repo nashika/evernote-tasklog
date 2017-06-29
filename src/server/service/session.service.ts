@@ -10,19 +10,13 @@ export interface ISession {
 @injectable()
 export class SessionService extends BaseServerService {
 
-  get(socket: SocketIO.Socket): ISession {
-    if (!socket.handshake.session["evernote"])
-      socket.handshake.session["evernote"] = {};
-    return socket.handshake.session["evernote"];
+  load(socket: SocketIO.Socket, key: string): ISession {
+    return socket.handshake.session[key];
   }
 
-  async clear(socket: SocketIO.Socket): Promise<void> {
-    socket.handshake.session["evernote"] = null;
-    await this.save(socket);
-  }
-
-  async save(socket: SocketIO.Socket): Promise<void> {
+  async save(socket: SocketIO.Socket, key: string, value: any): Promise<void> {
     await new Promise<void>((resolve, reject) => {
+      socket.handshake.session[key] = value;
       socket.handshake.session.save(err => {
         if (err) reject(err);
         resolve();
