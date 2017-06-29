@@ -20,7 +20,9 @@ export class AttendanceTable extends BaseTable<AttendanceEntity> {
       departureMinute: {type: sequelize.INTEGER, validate: {min: 0, max: 59}},
       restMinute: {type: sequelize.INTEGER, validate: {min: 0, max: 24 * 60}},
     }, options: {
-      indexes: [],
+      indexes: [
+        {unique: true, fields: ["personId", "year", "month", "day"]},
+      ],
     },
     jsonFields: [],
   };

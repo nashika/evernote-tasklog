@@ -5,7 +5,7 @@ export class AttendanceEntity extends BaseEntity {
   static params: IBaseEntityParams = {
     name: "attendance",
     primaryKey: "id",
-    displayField: "key",
+    displayField: "id",
     archive: false,
     default: {
       where: {},

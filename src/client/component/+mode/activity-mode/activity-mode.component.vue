@@ -1,5 +1,5 @@
 <template lang="pug">
-  section.activity-mode.p-3
+  section#activity-mode.p-3
     .header
       .row
         .col-md-3
@@ -29,7 +29,7 @@
 <style lang="scss">
   @import "../../../scss/lib";
 
-  section.activity-mode {
+  section#activity-mode {
 
     > .header {
       h1 {

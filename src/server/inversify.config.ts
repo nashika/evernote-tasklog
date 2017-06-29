@@ -69,7 +69,7 @@ container.bind<BaseRoute>(BaseRoute).to(SyncRoute).whenTargetNamed("sync");
 container.bind<BaseRoute>(BaseRoute).to(TagRoute).whenTargetNamed("tag");
 container.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 
-container.bind<BaseTable<AttendanceEntity>>(AttendanceTable).to(AttendanceTable).whenTargetNamed("attendance");
+container.bind<BaseTable<AttendanceEntity>>(BaseTable).to(AttendanceTable).whenTargetNamed("attendance");
 container.bind<BaseTable<LinkedNotebookEntity>>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linkedNotebook");
 container.bind<BaseTable<NoteEntity>>(BaseTable).to(NoteTable).whenTargetNamed("note");
 container.bind<BaseTable<NotebookEntity>>(BaseTable).to(NotebookTable).whenTargetNamed("notebook");

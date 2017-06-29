@@ -29,6 +29,7 @@ const routes = [
   {path: "/timeline", component: require("./component/+mode/timeline-mode/timeline-mode.component.vue")},
   {path: "/notes", component: require("./component/+mode/notes-mode/notes-mode.component.vue")},
   {path: "/activity", component: require("./component/+mode/activity-mode/activity-mode.component.vue")},
+  {path: "/attendance", component: require("./component/+mode/attendance-mode/attendance-mode.component.vue")},
 ];
 export const router = new VueRouter({routes});
 

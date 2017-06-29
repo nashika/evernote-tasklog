@@ -1,5 +1,5 @@
 <template lang="pug">
-  section.notes-mode.p-3
+  section#notes-mode.p-3
     table.table.table-bordered.table-striped.table-hover.table-sm.table-striped
       tr
         th Title

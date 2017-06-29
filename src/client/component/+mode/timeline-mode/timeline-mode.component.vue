@@ -1,5 +1,5 @@
 <template lang="pug">
-  section.timeline-mode
+  section#timeline-mode
     #timeline
 </template>
 
