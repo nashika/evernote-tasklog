@@ -29,10 +29,10 @@ let sessionMiddleware  = session({
     maxAge: 7 * 24 * 60 * 60 * 1000,
   },
   store: sequelizeStore,
-  name: "realestate2.connect.sid",
+  name: "evernote-tasklog.connect.sid",
   secret: "keyboard cat",
-  resave: false,
-  saveUninitialized: false,
+  resave: true,
+  saveUninitialized: true,
 });
 
 app.use(bodyParser.json());

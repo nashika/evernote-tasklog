@@ -21,7 +21,7 @@ export default class PersonModalComponent extends BaseComponent {
     action: {label: "Action"},
   };
 
-  async mounted(): Promise<void> {
+  async shown(): Promise<void> {
     this.currentPersonId = this.datastoreService.currentPersonId;
   }
 

@@ -74,7 +74,7 @@ export class DatastoreService extends BaseClientService {
 
   async initialize(): Promise<void> {
     this.user = await this.requestService.loadOption("user");
-    this.currentPersonId = await this.requestService.loadSession("currentPersonId");
+    this.currentPersonId = _.toInteger(await this.requestService.loadSession("currentPersonId"));
   }
 
   async reload(params: IDatastoreServiceParams = {}): Promise<void> {

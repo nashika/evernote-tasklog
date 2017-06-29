@@ -1,5 +1,5 @@
 <template lang="pug">
-  b-modal(id="person-modal", title="Person")
+  b-modal(id="person-modal", title="Person", @shown="shown()")
     b-table(striped, hover, :items="persons", :fields="fields")
       template(slot="action", scope="item")
         template(v-if="currentPersonId == item.item.id")
