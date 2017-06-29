@@ -1,6 +1,7 @@
 import {Container} from "inversify";
 
 import {BaseEntity} from "../common/entity/base.entity";
+import {AttendanceEntity} from "../common/entity/attendance.entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook.entity";
 import {NoteEntity} from "../common/entity/note.entity";
 import {NotebookEntity} from "../common/entity/notebook.entity";
@@ -18,6 +19,7 @@ import {SyncService} from "./service/sync.service";
 import {TableService} from "./service/table.service";
 
 import {BaseRoute} from "./routes/base.route";
+import {AttendanceRoute} from "./routes/attendance.route";
 import {NoteRoute} from "./routes/note.route";
 import {NotebookRoute} from "./routes/notebook.route";
 import {OptionRoute} from "./routes/option.route";
@@ -28,6 +30,7 @@ import {TagRoute} from "./routes/tag.route";
 import {TimeLogRoute} from "./routes/time-log.route";
 
 import {BaseTable} from "./table/base.table";
+import {AttendanceTable} from "./table/attendance.table";
 import {LinkedNotebookTable} from "./table/linked-notebook.table";
 import {NoteTable} from "./table/note.table";
 import {NotebookTable} from "./table/notebook.table";
@@ -39,6 +42,7 @@ import {TimeLogTable} from "./table/time-log.table";
 
 export var container = new Container();
 
+container.bind<BaseEntity>(BaseEntity).toConstructor(AttendanceEntity).whenTargetNamed("attendance");
 container.bind<BaseEntity>(BaseEntity).toConstructor(LinkedNotebookEntity).whenTargetNamed("linkedNotebook");
 container.bind<BaseEntity>(BaseEntity).toConstructor(NoteEntity).whenTargetNamed("note");
 container.bind<BaseEntity>(BaseEntity).toConstructor(NotebookEntity).whenTargetNamed("notebook");
@@ -55,6 +59,7 @@ container.bind<SocketIoServerService>(SocketIoServerService).toSelf().inSingleto
 container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
 container.bind<TableService>(TableService).toSelf().inSingletonScope();
 
+container.bind<BaseRoute>(BaseRoute).to(AttendanceRoute).whenTargetNamed("attendance");
 container.bind<BaseRoute>(BaseRoute).to(NoteRoute).whenTargetNamed("note");
 container.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");
 container.bind<BaseRoute>(BaseRoute).to(OptionRoute).whenTargetNamed("option");
@@ -64,6 +69,7 @@ container.bind<BaseRoute>(BaseRoute).to(SyncRoute).whenTargetNamed("sync");
 container.bind<BaseRoute>(BaseRoute).to(TagRoute).whenTargetNamed("tag");
 container.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 
+container.bind<BaseTable<AttendanceEntity>>(AttendanceTable).to(AttendanceTable).whenTargetNamed("attendance");
 container.bind<BaseTable<LinkedNotebookEntity>>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linkedNotebook");
 container.bind<BaseTable<NoteEntity>>(BaseTable).to(NoteTable).whenTargetNamed("note");
 container.bind<BaseTable<NotebookEntity>>(BaseTable).to(NotebookTable).whenTargetNamed("notebook");
