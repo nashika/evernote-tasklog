@@ -41,7 +41,7 @@ export class DatastoreService extends BaseClientService {
 
   lastUpdateCount: number;
   user: Evernote.User;
-  persons: Object[];
+  currentPersonId: number;
   notebooks: {[guid: string]: NotebookEntity};
   stacks: string[];
   tags: {[guid: string]: TagEntity};
@@ -72,11 +72,15 @@ export class DatastoreService extends BaseClientService {
     this.profitLogs = {};
   }
 
+  async initialize(): Promise<void> {
+    this.user = await this.requestService.loadOption("user");
+    this.currentPersonId = await this.requestService.loadSession("currentPersonId");
+  }
+
   async reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (this.progressService.isActive) return;
-    this.progressService.open(params.getContent ? 10 : params.archive ? 7 : 4);
+    this.progressService.open(params.getContent ? 9 : params.archive ? 6 : 3);
     try {
-      await this.getUser();
       await this.runSync();
       await this.getNotebooks();
       await this.getTags();
@@ -98,12 +102,6 @@ export class DatastoreService extends BaseClientService {
         throw err;
     }
     this.progressService.close();
-  }
-
-  private async getUser(): Promise<void> {
-    this.progressService.next("Getting user data.");
-    if (this.user) return;
-    this.user = await this.requestService.loadOption("user");
   }
 
   private async runSync(): Promise<void> {
