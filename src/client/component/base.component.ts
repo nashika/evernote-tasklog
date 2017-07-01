@@ -1,4 +1,4 @@
-import Vue = require("vue");
+import Vue from "vue";
 import _ = require("lodash");
 import moment = require("moment");
 import AppComponent from "./app.component";

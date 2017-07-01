@@ -1,4 +1,4 @@
-import Vue = require("vue");
+import Vue from "vue";
 
 Vue.filter("spentTime", function (input: any): string {
   if (input === undefined) return "";

@@ -1,5 +1,5 @@
-import Vue = require("vue");
 import _ = require("lodash");
+import Vue from "vue";
 
 var checkItemMatches = (item: {[key: string]: any}, props: {[key: string]: string}): boolean => {
   for (var prop in props) {

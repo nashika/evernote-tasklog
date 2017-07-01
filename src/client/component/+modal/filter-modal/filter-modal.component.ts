@@ -1,5 +1,5 @@
 import Component from "vue-class-component";
-import * as Vue from "vue";
+import Vue from "vue";
 import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";

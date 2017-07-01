@@ -16,7 +16,6 @@ export function appDllPartial(): webpack.Configuration {
     resolve: {
       alias: {
         vis: "vis/dist/vis-timeline-graph2d.min.js",
-        vue: "vue/dist/vue.js",
       },
     },
     node: {
