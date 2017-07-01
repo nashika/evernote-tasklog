@@ -14,11 +14,10 @@ export class AttendanceTable extends BaseTable<AttendanceEntity> {
       year: {type: sequelize.INTEGER, allowNull: false, validate: {min: 1, max: 9999}},
       month: {type: sequelize.INTEGER, allowNull: false, validate: {min: 1, max: 12}},
       day: {type: sequelize.INTEGER, allowNull: false, validate: {min: 1, max: 31}},
-      arrivalHour: {type: sequelize.INTEGER, validate: {min: 0, max: 23}},
-      arrivalMinute: {type: sequelize.INTEGER, validate: {min: 0, max: 59}},
-      departureHour: {type: sequelize.INTEGER, validate: {min: 0, max: 23}},
-      departureMinute: {type: sequelize.INTEGER, validate: {min: 0, max: 59}},
-      restMinute: {type: sequelize.INTEGER, validate: {min: 0, max: 24 * 60}},
+      arrivalTime: {type: sequelize.INTEGER, validate: {min: 0, max: 24 * 60}},
+      departureTime: {type: sequelize.INTEGER, validate: {min: 0, max: 24 * 60}},
+      restTime: {type: sequelize.INTEGER, validate: {min: 0, max: 24 * 60}},
+      remarks: {type: sequelize.TEXT},
     }, options: {
       indexes: [
         {unique: true, fields: ["personId", "year", "month", "day"]},

@@ -23,10 +23,9 @@ export class AttendanceEntity extends BaseEntity {
   year: number;
   month: number;
   day: number;
-  arrivalHour: number;
-  arrivalMinute: number;
-  departureHour: number;
-  departureMinute: number;
-  restMinute: number;
+  arrivalTime: number;
+  departureTime: number;
+  restTime: number;
+  remarks: string;
 
 }

@@ -11,6 +11,9 @@ import {DatastoreService} from "../../../service/datastore.service";
 import {ProgressService} from "../../../service/progress.service";
 
 @Component({
+  components: {
+    "app-timepicker-attendance-mode": require("./timepicker-attendance-mode.component.vue").default,
+  },
   watch: {
     "personId": "reload",
   },
@@ -78,7 +81,10 @@ export default class AttendanceModeComponent extends BaseComponent {
         attendance.year = this.year;
         attendance.month = this.month;
         attendance.day = i;
+        attendance.arrivalTime = null;
+        attendance.departureTime = null;
         attendance.restMinute = 60;
+        attendance.remarks = "";
       }
       this.attendances.push(attendance);
     }
