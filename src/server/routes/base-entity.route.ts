@@ -34,6 +34,7 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
     this.on(socket, "find", this.onFind);
     this.on(socket, "count", this.onCount);
     this.on(socket, "save", this.onSave);
+    this.on(socket, "remove", this.onRemove);
   }
 
   protected async onFind(_socket: SocketIO.Socket, options: IFindEntityOptions): Promise<T1[]> {
@@ -49,6 +50,12 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
   protected async onSave(_socket: SocketIO.Socket, data: Object): Promise<boolean> {
     let entity: T1 = new (<any>this.EntityClass)(data);
     await this.getTable().save(entity);
+    return true;
+  }
+
+  protected async onRemove(_socket: SocketIO.Socket, id: number | string): Promise<boolean> {
+    if (!id) throw Error();
+    await this.getTable().remove({where: {[this.EntityClass.params.primaryKey]: id}});
     return true;
   }
 

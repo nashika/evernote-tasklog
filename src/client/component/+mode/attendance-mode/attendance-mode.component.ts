@@ -53,6 +53,22 @@ export default class AttendanceModeComponent extends BaseComponent {
     },
   };
 
+  get strYear(): string {
+    return _.toString(this.year);
+  }
+
+  set strYear(value: string) {
+    this.year = _.toInteger(value);
+  }
+
+  get strMonth(): string {
+    return _.toString(this.month);
+  }
+
+  set strMonth(value: string) {
+    this.month = _.toInteger(value);
+  }
+
   get lastDayOfMonth(): number {
     return moment().year(this.year).month(this.month - 1).endOf("month").date();
   }
@@ -70,10 +86,11 @@ export default class AttendanceModeComponent extends BaseComponent {
     this.personId = this.datastoreService.currentPersonId;
     this.year = moment().year();
     this.month = moment().month() + 1;
-    await this.reload();
+    //await this.reload();
   }
 
   async reload(): Promise<void> {
+    console.log("reload");
     this.attendances = [];
     this.createFlags = [];
     this.progressService.open(1);
@@ -94,6 +111,12 @@ export default class AttendanceModeComponent extends BaseComponent {
         attendance.restTime = 60;
         attendance.remarks = "";
       }
+      if (moment({year: this.year, month: this.month - 1, date: i}).day() == 6)
+        Vue.set(attendance, "_rowVariant", "info");
+      if (moment({year: this.year, month: this.month - 1, date: i}).day() == 0)
+        Vue.set(attendance, "_rowVariant", "danger");
+      if (moment().year() == this.year && moment().month() + 1 == this.month && moment().date() == i)
+        Vue.set(attendance, "_rowVariant", "warning");
       this.attendances.push(attendance);
     }
     this.updateFlags = _.fill(Array(this.lastDayOfMonth - 1), false);
@@ -101,7 +124,21 @@ export default class AttendanceModeComponent extends BaseComponent {
   }
 
   changeRow(index: number): void {
+    Vue.set(this.attendances[index], "_rowVariant", "success");
     Vue.set(this.updateFlags, index, true);
+  }
+
+  async save(attendance: AttendanceEntity): Promise<void> {
+    attendance.personId = this.personId;
+    attendance.year = this.year;
+    attendance.month = this.month;
+    await this.requestService.save(AttendanceEntity, attendance);
+    await this.reload();
+  }
+
+  async remove(attendance: AttendanceEntity): Promise<void> {
+    await this.requestService.remove(AttendanceEntity, attendance.id);
+    await this.reload();
   }
 
 }

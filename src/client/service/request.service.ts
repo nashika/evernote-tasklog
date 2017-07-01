@@ -34,6 +34,10 @@ export class RequestService extends BaseClientService {
     await this.socketIoClientService.request(`${EntityClass.params.name}::save`, entity);
   }
 
+  async remove(EntityClass: typeof BaseEntity, id: number | string): Promise<void> {
+    await this.socketIoClientService.request(`${EntityClass.params.name}::remove`, id);
+  }
+
   async loadOption(key: string): Promise<any> {
     let options: IFindEntityOptions = {where: {key: key}};
     let optionEntity = await this.findOne<OptionEntity>(OptionEntity, options);
