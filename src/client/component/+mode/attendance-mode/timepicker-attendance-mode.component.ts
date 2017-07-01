@@ -27,6 +27,7 @@ export default class TimepickerAttendanceModeComponent extends BaseComponent {
     if (this.hour && this.minute)
       value = _.toInteger(this.hour) * 60 + _.toInteger(this.minute);
     this.$emit("input", value);
+    //this.$emit("change");
   }
 
 }

@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import moment = require("moment");
 import * as _ from "lodash";
+import Vue from "vue";
 
 import BaseComponent from "../../base.component";
 import {AttendanceEntity} from "../../../../common/entity/attendance.entity";
@@ -25,6 +26,8 @@ export default class AttendanceModeComponent extends BaseComponent {
   progressService: ProgressService = container.get(ProgressService);
 
   attendances: AttendanceEntity[] = [];
+  updateFlags: boolean[] = [];
+  createFlags: boolean[] = [];
   personId: number = 0;
   year: number = 0;
   month: number = 0;
@@ -42,13 +45,16 @@ export default class AttendanceModeComponent extends BaseComponent {
     rest: {
       label: "Rest",
     },
+    remarks: {
+      label: "Remarks",
+    },
     action: {
       label: "Action",
     },
   };
 
   get lastDayOfMonth(): number {
-    return moment().year(this.year).month(this.month).endOf("month").date();
+    return moment().year(this.year).month(this.month - 1).endOf("month").date();
   }
 
   get persons(): IPersonConfig[] {
@@ -68,14 +74,16 @@ export default class AttendanceModeComponent extends BaseComponent {
   }
 
   async reload(): Promise<void> {
+    this.attendances = [];
+    this.createFlags = [];
     this.progressService.open(1);
     this.progressService.next("Request from server.");
     let requestAttendances = await this.requestService.find<AttendanceEntity>(AttendanceEntity, {
       where: {personId: this.personId, year: this.year, month: this.month}
     });
-    this.attendances = [];
     for (let i = 1; i <= this.lastDayOfMonth; i++) {
       let attendance = _.find(requestAttendances, {day: i});
+      this.createFlags.push(!!attendance);
       if (!attendance) {
         attendance = new AttendanceEntity();
         attendance.year = this.year;
@@ -83,12 +91,17 @@ export default class AttendanceModeComponent extends BaseComponent {
         attendance.day = i;
         attendance.arrivalTime = null;
         attendance.departureTime = null;
-        attendance.restMinute = 60;
+        attendance.restTime = 60;
         attendance.remarks = "";
       }
       this.attendances.push(attendance);
     }
+    this.updateFlags = _.fill(Array(this.lastDayOfMonth - 1), false);
     this.progressService.close();
+  }
+
+  changeRow(index: number): void {
+    Vue.set(this.updateFlags, index, true);
   }
 
 }
