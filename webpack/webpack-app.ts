@@ -57,6 +57,7 @@ export function appPartial(): webpack.Configuration {
       historyApiFallback: true,
       inline: true,
       open: true,
+      openPage: "",
       proxy: {
         "**": {
           target: "http://localhost:3000",
