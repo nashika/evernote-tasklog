@@ -1,51 +1,45 @@
 import Component from "vue-class-component";
 
-import {BaseComponent} from "./base.component";
-import {NavigationComponent} from "./navigation.component";
-import {MenuModeComponent} from "./mode/menu-mode.component";
-import {SettingsModeComponent} from "./mode/settings-mode.component";
-import {ProgressModalComponent} from "./progress-modal.component";
-import {NotesModeComponent} from "./mode/notes-mode.component";
-import {TimelineModeComponent} from "./mode/timeline-mode.component";
+import BaseComponent from "./base.component";
 import {container} from "../inversify.config";
-import {ActivityModeComponent} from "./mode/activity-mode.component";
 import {DatastoreService} from "../service/datastore.service";
+import {router} from "../app";
+import {SocketIoClientService} from "../service/socket-io-client-service";
+import {logger} from "../logger";
 
-let template = require("./app.component.jade");
+let Push = require("push.js");
 
-@Component({
-  template: template,
-  components: {
-    "menu-mode-component": MenuModeComponent,
-    "timeline-mode-component": TimelineModeComponent,
-    "notes-mode-component": NotesModeComponent,
-    "activity-mode-component": ActivityModeComponent,
-    "settings-mode-component": SettingsModeComponent,
-    "navigation-component": NavigationComponent,
-    "progress-modal-component": ProgressModalComponent,
-  },
-})
-export class AppComponent extends BaseComponent {
+@Component({})
+export default class AppComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
+  socketIoClientService: SocketIoClientService = container.get(SocketIoClientService);
 
-  isReady = false;
   lastUpdateCount: number = 0;
-
-  async created(): Promise<void> {
-  }
+  isReady: boolean = false;
+  showMenu: boolean = false;
 
   async mounted(): Promise<void> {
     await super.mounted();
     await this.datastoreService.initialize();
+    this.socketIoClientService.on(this, "sync::updateCount", this.checkUpdateCount);
     this.isReady = true;
-    setInterval(() => this.interval(), 5000);
   }
 
-  async interval(): Promise<void> {
-    let isUpdated = await this.datastoreService.checkUpdateCount();
-    if (isUpdated)
+  async checkUpdateCount(updateCount: number): Promise<void> {
+    logger.debug(`Update count from server, updateCount=${updateCount}`);
+    if (this.lastUpdateCount < updateCount) {
+      this.lastUpdateCount = updateCount;
       this.reload();
+      Push.create("Evernote Tasklog", {
+        body: "Note was updated, check activity.",
+        link: "#/activity",
+        onClick: function (this: any) {
+          router.push("activity");
+          this.close();
+        },
+      });
+    }
   }
 
   reload() {

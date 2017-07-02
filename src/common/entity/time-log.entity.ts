@@ -1,28 +1,29 @@
-import {BaseMultiEntity, IBaseMultiEntityParams} from "./base-multi.entity";
+import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
-export class TimeLogEntity extends BaseMultiEntity {
+export class TimeLogEntity extends BaseEntity {
 
-  static params:IBaseMultiEntityParams = {
+  static params: IBaseEntityParams = {
     name: "timeLog",
-    titleField: "comment",
-    requireUser: true,
+    primaryKey: "id",
+    displayField: "comment",
     archive: false,
     default: {
-      query: {},
-      sort: {updated: -1},
+      where: {},
+      order: [["updatedAt", "DESC"]],
       limit: 2000,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
 
+  id: number;
   noteGuid: string;
   comment: string;
   allDay: boolean;
   date: number;
-  person: string;
+  personId: number;
   spentTime: number;
 
 }

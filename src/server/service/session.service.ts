@@ -1,32 +1,23 @@
 import {injectable} from "inversify";
+import {Evernote} from "evernote";
 
 import {BaseServerService} from "./base-server.service";
-import {Request} from "express";
-import {UserEntity} from "../../common/entity/user.entity";
-import {GlobalUserEntity} from "../../common/entity/global-user.entity";
 
 export interface ISession {
-  globalUser: GlobalUserEntity;
-  user: UserEntity;
+  user: Evernote.User;
 }
 
 @injectable()
 export class SessionService extends BaseServerService {
 
-  get(req: Request): ISession {
-    if (!req.session["evernote"])
-      req.session["evernote"] = {};
-    return req.session["evernote"];
+  load(socket: SocketIO.Socket, key: string): ISession {
+    return socket.handshake.session[key];
   }
 
-  async clear(req: Request): Promise<void> {
-    req.session["evernote"] = null;
-    await this.save(req);
-  }
-
-  async save(req: Request): Promise<void> {
+  async save(socket: SocketIO.Socket, key: string, value: any): Promise<void> {
     await new Promise<void>((resolve, reject) => {
-      req.session.save(err => {
+      socket.handshake.session[key] = value;
+      socket.handshake.session.save(err => {
         if (err) reject(err);
         resolve();
       });

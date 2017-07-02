@@ -1,11 +1,16 @@
+/.idea/dataSources
 /.idea/workspace.xml
 /.idea/libraries/Generated_files.xml
-/db/**/*.db
+/config/*.json
+/db/*
 /dist
 /logs/*
 /npm-debug.log
 /node_modules
 /src/**/*.js
 /src/**/*.js.map
+/webpack/*.js
+/webpack/*.js.map
 /*.js
 /*.js.map
+!.gitkeep

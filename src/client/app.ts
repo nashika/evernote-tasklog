@@ -1,37 +1,37 @@
-import "font-awesome/css/font-awesome.css";
-import "./scss/style.scss";
-
 import "reflect-metadata";
 import "core-js";
 
-// filters
-import './filter/abbreviate.filter';
-import './filter/filter-by-property.filter';
-import './filter/object-length.filter';
-import './filter/order-object-by.filter';
-import './filter/spent-time.filter';
+import {configLoader} from "../common/util/config-loader";
+configLoader.isBrowser = true;
 
-import {container} from "./inversify.config";
-import Vue = require("vue");
+// filters
+import "./filter/abbreviate.filter";
+import "./filter/filter-by-property.filter";
+import "./filter/object-length.filter";
+import "./filter/order-object-by.filter";
+import "./filter/spent-time.filter";
+
+import Vue from "vue";
 import VueRouter from "vue-router";
 let BootstrapVue = require("bootstrap-vue").default;
+//let BootstrapVue = require("bootstrap-vue").default;
+
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 
-import {MenuModeComponent} from "./component/mode/menu-mode.component";
-import {TimelineModeComponent} from "./component/mode/timeline-mode.component";
-import {NotesModeComponent} from "./component/mode/notes-mode.component";
-import {ActivityModeComponent} from "./component/mode/activity-mode.component";
-import {SettingsModeComponent} from "./component/mode/settings-mode.component";
+Vue.component("app-navigation", require("./component/navigation/navigation.component.vue").default);
+Vue.component("app-filter-modal", require("./component/+modal/filter-modal/filter-modal.component.vue").default);
+Vue.component("app-person-modal", require("./component/+modal/person-modal/person-modal.component.vue").default);
+Vue.component("app-progress-modal", require("./component/+modal/progress-modal/progress-modal.component.vue").default);
 
 const routes = [
-  {path: "/", component: MenuModeComponent},
-  {path: "/timeline", component: TimelineModeComponent},
-  {path: "/notes", component: NotesModeComponent},
-  {path: "/activity", component: ActivityModeComponent},
-  {path: "/settings", component: SettingsModeComponent},
+  {path: "/", redirect: "/attendance"},
+  {path: "/attendance", component: require("./component/+mode/attendance-mode/attendance-mode.component.vue").default},
+  {path: "/timeline", component: require("./component/+mode/timeline-mode/timeline-mode.component.vue").default},
+  {path: "/notes", component: require("./component/+mode/notes-mode/notes-mode.component.vue").default},
+  {path: "/activity", component: require("./component/+mode/activity-mode/activity-mode.component.vue").default},
 ];
-const router = new VueRouter({routes});
+export const router = new VueRouter({routes});
 
-let AppComponent = container.get("Newable<AppComponent>");
+let AppComponent = require("./component/app.component.vue").default;
 new (<any>AppComponent)({router}).$mount("#app");

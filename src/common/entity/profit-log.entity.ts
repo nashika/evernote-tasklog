@@ -1,23 +1,24 @@
-import {BaseMultiEntity, IBaseMultiEntityParams} from "./base-multi.entity";
+import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
-export class ProfitLogEntity extends BaseMultiEntity {
+export class ProfitLogEntity extends BaseEntity {
 
-  static params:IBaseMultiEntityParams = {
+  static params:IBaseEntityParams = {
     name: "profitLog",
-    titleField: "comment",
-    requireUser: true,
+    primaryKey: "id",
+    displayField: "comment",
     archive: false,
     default: {
-      query: {},
-      sort: {updated: -1},
+      where: {},
+      order: [["updatedAt", "DESC"]],
       limit: 2000,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
 
+  id: number;
   noteGuid: string;
   comment: string;
   profit: number;

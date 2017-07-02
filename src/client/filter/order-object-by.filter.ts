@@ -1,4 +1,4 @@
-import Vue = require("vue");
+import Vue from "vue";
 import _ = require("lodash");
 
 Vue.filter("orderObjectBy", function (items: {[key: string]: any}, field: any = "$value", reverse = true) {

@@ -1,66 +1,17 @@
-import * as path from "path";
+import * as webpackMerge from "webpack-merge";
+import * as webpack from "webpack";
 
-import webpack = require("webpack");
+import {appPartial} from "./webpack/webpack-app";
+import {appDllPartial} from "./webpack/webpack-app-dll";
+import {prodPartial} from "./webpack/webpack-production";
 
-let UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
+const env: string = process.env.NODE_ENV || "development";
+const dll: boolean = !!process.env.WEBPACK_DLL;
 
-let webpackConfig:webpack.Configuration = {
-  target: "web",
-  entry: {
-    app: "./src/client/app",
-  },
-  output: {
-    path: path.join(__dirname, "./dist"),
-    publicPath: "/dist/",
-    filename: "[name].bundle.js",
-  },
-  resolve: {
-    extensions: [".ts", ".js"],
-    alias: {
-      vue: "vue/dist/vue.js",
-    },
-  },
-  module: {
-    loaders: [
-      {test: /\.ts$/, loader: "awesome-typescript-loader", exclude: /node_modules/},
-      {test: /\.html$/, loader: "html-loader"},
-      {test: /\.jade$/, loaders: ["raw-loader", "jade-html-loader"]},
-      {test: /\.css$/, loaders: ["style-loader", "css-loader"]},
-      {test: /\.scss$/, loaders: ["style-loader", "css-loader", "sass-loader"]},
-      {test: /\.(jpg|jpeg|png|gif)$/, loader: "url-loader"},
-      {test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/, loader: "url-loader", query: {prefix: "dist/fonts/", name:"fonts/[name].[ext]", limit: 10000, mimetype: "application/font-woff"}},
-      {test: /\.(ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader", query: {name: "fonts/[name].[ext]"}},
-    ],
-  },
-  node: {
-    fs: "empty",
-  },
-  plugins: process.env.NODE_ENV == "production" ? [new UglifyJsPlugin({
-    compress: {
-      warnings: false,
-    },
-    mangle: {
-      keep_fnames: true,
-    },
-    sourceMap: true,
-  })] : [],
-  devtool: "source-map",
-  devServer: {
-    contentBase: "./public",
-    publicPath: "/dist/",
-    host: "localhost",
-    port: 8080,
-    //hot: true,
-    historyApiFallback: true,
-    inline: true,
-    open: true,
-    proxy: {
-      "**": {
-        target: "http://localhost:3000",
-        secure: false,
-      },
-    },
-  },
-};
+let configs: webpack.Configuration[] = [];
+if (!dll)
+  configs.push(webpackMerge({}, appPartial(), env.match(/^production.*$/) ? prodPartial() : {}));
+else
+  configs.push(webpackMerge({}, appDllPartial(), prodPartial()));
 
-export = webpackConfig;
+export default configs;

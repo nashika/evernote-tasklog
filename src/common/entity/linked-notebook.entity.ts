@@ -1,22 +1,32 @@
-import {BaseMultiEvernoteEntity} from "./base-multi-evernote.entity";
-import {IBaseMultiEntityParams} from "./base-multi.entity";
+import {BaseEvernoteEntity} from "./base-evernote.entity";
+import {IBaseEntityParams} from "./base.entity";
 
-export class LinkedNotebookEntity extends BaseMultiEvernoteEntity {
+export class LinkedNotebookEntity extends BaseEvernoteEntity {
 
-  static params:IBaseMultiEntityParams = {
+  static params:IBaseEntityParams = {
     name: "linkedNotebook",
-    titleField: "name",
-    requireUser: true,
+    primaryKey: "guid",
+    displayField: "shareName",
     archive: false,
     default: {
-      query: {},
-      sort: {updated: -1},
+      where: {},
+      order: [["updated", "DESC"]],
       limit: 500,
     },
     append: {
-      query: {},
-      sort: {},
+      where: {},
+      order: [],
     },
   };
+
+  shareName: string;
+  username: string;
+  shareId: string;
+  sharedNotebookGlobalId: string;
+  uri: string;
+  noteStoreUrl: string;
+  webApiUrlPrefix: string;
+  stack: string;
+  businessId: number;
 
 }

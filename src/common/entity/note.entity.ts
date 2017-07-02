@@ -1,34 +1,39 @@
-import {BaseMultiEvernoteEntity} from "./base-multi-evernote.entity";
-import {IBaseMultiEntityParams, IMultiEntityFindOptions} from "./base-multi.entity";
+import {BaseEvernoteEntity} from "./base-evernote.entity";
+import {IBaseEntityParams} from "./base.entity";
 
-export interface INoteEntityFindOptions extends IMultiEntityFindOptions {
-  content?: boolean;
-}
+export class NoteEntity extends BaseEvernoteEntity {
 
-export class NoteEntity extends BaseMultiEvernoteEntity {
-
-  static params:IBaseMultiEntityParams = {
+  static params: IBaseEntityParams = {
     name: "note",
-    titleField: "title",
-    requireUser: true,
+    primaryKey: "guid",
+    displayField: "title",
     archive: true,
     default: {
-      query: {},
-      sort: {updated: -1, updateSequenceNum: -1},
+      where: {},
+      order: [["updated", "DESC"], ["updateSequenceNum", "DESC"]],
       limit: 500,
     },
     append: {
-      query: {deleted: null},
-      sort: {},
+      where: {deleted: null},
     },
   };
 
   title: string;
-  notebookGuid: string;
-  tagGuids: string[];
+  content: string;
+  contentHash: Object;
+  contentLength: number;
   created: number;
   updated: number;
-  content: string;
+  deleted: number;
+  active: boolean;
+  notebookGuid: string;
+  tagGuids: string[];
+  resources: Object[];
+  attributes: Object;
+  tagNames: string[];
+  sharedNotes: Object[];
+  restrictions: any;
+  limits: any;
 
   hasContent: boolean;
 

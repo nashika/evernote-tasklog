@@ -1,4 +1,4 @@
-import Vue = require("vue");
+import Vue from "vue";
 
 export function abbreviateFilter(text: string, len: number = 10, truncation: string = '...') {
   let count = 0;

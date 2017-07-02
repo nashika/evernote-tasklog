@@ -1,4 +1,4 @@
-import Vue = require("vue");
+import Vue from "vue";
 import _ = require("lodash");
 
 var objectLength = function (input: {[key: string]: any}, depth: number = 0): number {

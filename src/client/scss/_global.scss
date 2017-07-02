@@ -4,20 +4,8 @@ html {
 
 body {
   min-height: 100vh;
-
-  > section.app {
-    min-height: 100vh;
-    padding-bottom: 56px;
-  }
 }
 
 .vis-item .vis-item-overflow {
   overflow: visible;
-}
-
-
-
-// monky patches
-.navbar-fixed-bottom {
-  @extend .fixed-bottom;
 }

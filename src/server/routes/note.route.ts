@@ -1,36 +1,39 @@
-import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 
-import {BaseMultiRoute} from "./base-multi.route";
+import {BaseEntityRoute} from "./base-entity.route";
 import {NoteTable} from "../table/note.table";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {TableService} from "../service/table.service";
 import {SessionService} from "../service/session.service";
+import {SyncService} from "../service/sync.service";
 
 @injectable()
-export class NoteRoute extends BaseMultiRoute<NoteEntity, NoteTable> {
+export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
 
   constructor(protected tableService: TableService,
-              protected sessionService: SessionService) {
+              protected sessionService: SessionService,
+              protected syncService: SyncService) {
     super(tableService, sessionService);
   }
 
-  getRouter(): Router {
-    let _router = super.getRouter();
-    _router.post("/get-content", (req, res) => this.wrap(req, res, this.getContent));
-    _router.post("/re-parse", (req, res) => this.wrap(req, res, this.reParse));
-    return _router;
+  async connect(socket: SocketIO.Socket): Promise<void> {
+    await super.connect(socket);
+    this.on(socket, "getContent", this.onGetContent);
+    this.on(socket, "reParse", this.onReParse);
   }
 
-  async getContent(req: Request, _res: Response): Promise<NoteEntity> {
-    let guid: string = req.body && req.body.guid;
-    if (!guid) return Promise.resolve(null);
-    let note = await this.getTable(req).loadRemote(guid);
+  protected async onGetContent(_socket: SocketIO.Socket, guid: string): Promise<NoteEntity> {
+    if (!guid) return null;
+    await this.syncService.lock();
+    let note = await this.getTable().loadRemote(guid);
+    await this.syncService.unlock();
     return note;
   }
 
-  async reParse(req: Request, _res: Response): Promise<boolean> {
-    await this.getTable(req).reParseNotes(req.body);
+  protected async onReParse(_socket: SocketIO.Socket, query: Object): Promise<boolean> {
+    await this.syncService.lock();
+    await this.getTable().reParseNotes(query);
+    await this.syncService.unlock();
     return true;
   }
 

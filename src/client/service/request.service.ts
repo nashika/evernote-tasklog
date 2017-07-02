@@ -1,77 +1,73 @@
-import request = require("superagent");
 import _ = require("lodash");
 import {injectable} from "inversify";
 
 import {BaseClientService} from "./base-client.service";
-import {BaseEntity} from "../../common/entity/base.entity";
-import {BaseMultiEntity, IMultiEntityFindOptions} from "../../common/entity/base-multi.entity";
+import {BaseEntity, IFindEntityOptions} from "../../common/entity/base.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
-import {GlobalUserEntity} from "../../common/entity/global-user.entity";
-import {BaseSingleEntity} from "../../common/entity/base-single.entity";
+import {OptionEntity} from "../../common/entity/option.entity";
+import {SocketIoClientService} from "./socket-io-client-service";
 
 @injectable()
 export class RequestService extends BaseClientService {
 
-  async find<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMultiEntityFindOptions = {}): Promise<T[]> {
-    let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
-    return _.map(res.body, doc => new (<any>EntityClass)(doc));
+  constructor(protected socketIoClientService: SocketIoClientService) {
+    super();
   }
 
-  async findOne<T extends BaseMultiEntity>(EntityClass: typeof BaseMultiEntity, options: IMultiEntityFindOptions = {}): Promise<T> {
+  async find<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T[]> {
+    let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
+    return _.map(datas, data => new (<any>EntityClass)(data));
+  }
+
+  async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T> {
     options.limit = 1;
-    let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send(options);
-    let results: T[] = _.map(res.body, doc => new (<any>EntityClass)(doc));
+    let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
+    let results: T[] = _.map(datas, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
 
-  async count(EntityClass: typeof BaseMultiEntity, options: IMultiEntityFindOptions): Promise<number> {
-    let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}/count`).send(options);
-    return res.body;
-  }
-
-  async load<T extends BaseSingleEntity>(EntityClass: typeof BaseSingleEntity): Promise<T> {
-    let res = await request.post(`/${_.kebabCase(EntityClass.params.name)}`).send();
-    return new (<any>EntityClass)(res.body);
+  async count(EntityClass: typeof BaseEntity, options: IFindEntityOptions): Promise<number> {
+    return await this.socketIoClientService.request<number>(`${EntityClass.params.name}::count`, options);
   }
 
   async save<T extends BaseEntity>(EntityClass: typeof BaseEntity, entity: T): Promise<void> {
-    await request.post(`/${_.kebabCase(EntityClass.params.name)}/save`).send(entity);
+    await this.socketIoClientService.request(`${EntityClass.params.name}::save`, entity);
+  }
+
+  async remove(EntityClass: typeof BaseEntity, id: number | string): Promise<void> {
+    await this.socketIoClientService.request(`${EntityClass.params.name}::remove`, id);
+  }
+
+  async loadOption(key: string): Promise<any> {
+    let options: IFindEntityOptions = {where: {key: key}};
+    let optionEntity = await this.findOne<OptionEntity>(OptionEntity, options);
+    return optionEntity ? optionEntity.value : null;
+  }
+
+  async saveOption(key: string, value: any): Promise<void> {
+    let optionEntity = new OptionEntity({key: key, value: value});
+    await this.save<OptionEntity>(OptionEntity, optionEntity);
+  }
+
+  async loadSession(key: string): Promise<any> {
+    return await this.socketIoClientService.request("session::load", key);
+  }
+
+  async saveSession(key: string, value: any): Promise<void> {
+    return await this.socketIoClientService.request("session::save", key, value);
   }
 
   async sync(): Promise<void> {
-    await request.post(`/sync`);
-  }
-
-  async getUpdateCount(): Promise<number> {
-    return await request.post(`/sync/update-count`).then(res => _.toInteger(res.body));
+    await this.socketIoClientService.request(`sync::run`);
   }
 
   async getNoteContent(guid: string): Promise<NoteEntity> {
-    let res = await request.post(`/note/get-content`).send({guid: guid});
-    return res.body ? new NoteEntity(res.body) : null;
+    let data = await this.socketIoClientService.request(`note::getContent`, guid);
+    return data ? new NoteEntity(data) : null;
   }
 
   async reParseNote(): Promise<void> {
-    await request.post(`/note/re-parse`);
-  }
-
-  async loadAuth(): Promise<GlobalUserEntity> {
-    let res = await request.post(`/global-user/load`);
-    return res.body ? new GlobalUserEntity(res.body) : null;
-  }
-
-  async changeAuth(globalUser: GlobalUserEntity): Promise<void> {
-    await request.post("/global-user/change").send(globalUser);
-  }
-
-  async tokenAuth(sandbox: boolean, token: string): Promise<GlobalUserEntity> {
-    if (!token) return Promise.reject<GlobalUserEntity>("No Token");
-    let res = await request.post(`/global-user/auth`).send({sandbox: sandbox, token: token});
-    return new GlobalUserEntity(res.body);
-  }
-
-  async logoutAuth(): Promise<void> {
-    await request.post(`/global-user/logout`);
+    await this.socketIoClientService.request(`note::reParse`, {});
   }
 
 }

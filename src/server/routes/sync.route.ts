@@ -1,38 +1,26 @@
-import {Request, Response, Router} from "express";
 import {injectable} from "inversify";
 
 import {BaseRoute} from "./base.route";
-import {SessionService} from "../service/session.service";
 import {SyncService} from "../service/sync.service";
 
 @injectable()
 export class SyncRoute extends BaseRoute {
 
-  constructor(protected sessionService: SessionService,
-              protected syncService: SyncService) {
+  constructor(protected syncService: SyncService) {
     super();
   }
 
   getBasePath(): string {
-    return "/sync";
+    return "sync";
   }
 
-  getRouter(): Router {
-    let _router = Router();
-    _router.post("/", (req, res) => this.wrap(req, res, this.index));
-    _router.post("/update-count", (req, res) => this.wrap(req, res, this.updateCount));
-    return _router;
+  async connect(socket: SocketIO.Socket): Promise<void> {
+    this.on(socket, "run", this.onRun);
   }
 
-  async index(req: Request, _res: Response): Promise<boolean> {
-    let session = this.sessionService.get(req);
-    await this.syncService.sync(session.globalUser, true);
+  protected async onRun(_socket: SocketIO.Socket): Promise<boolean> {
+    await this.syncService.sync(true);
     return true;
-  }
-
-  async updateCount(req: Request, _res: Response): Promise<number> {
-    let session = this.sessionService.get(req);
-    return this.syncService.updateCount(session.globalUser);
   }
 
 }
