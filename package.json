@@ -1,6 +1,6 @@
 {
   "name": "evernote-tasklog",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "private": true,
   "description": "Evernote Tasklog is now construction.",
   "main": "./bin/evernote-tasklog",
