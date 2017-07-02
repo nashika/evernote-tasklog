@@ -25,11 +25,11 @@ Vue.component("app-person-modal", require("./component/+modal/person-modal/perso
 Vue.component("app-progress-modal", require("./component/+modal/progress-modal/progress-modal.component.vue").default);
 
 const routes = [
-  {path: "/", redirect: "/timeline"},
+  {path: "/", redirect: "/attendance"},
+  {path: "/attendance", component: require("./component/+mode/attendance-mode/attendance-mode.component.vue").default},
   {path: "/timeline", component: require("./component/+mode/timeline-mode/timeline-mode.component.vue").default},
   {path: "/notes", component: require("./component/+mode/notes-mode/notes-mode.component.vue").default},
   {path: "/activity", component: require("./component/+mode/activity-mode/activity-mode.component.vue").default},
-  {path: "/attendance", component: require("./component/+mode/attendance-mode/attendance-mode.component.vue").default},
 ];
 export const router = new VueRouter({routes});
 

@@ -14,11 +14,11 @@
           .form-group
             label Month
             b-form-input(v-model="strMonth", type="number", min="1", max="12", step="1", @change="reload()")
-      .row.my-2
+      .row.my-2(v-if="todayAttendance && personId == datastoreService.currentPersonId && year == moment().year() && month == moment().month() + 1")
         .col-sm-6
-          b-button(variant="primary", size="lg", block) Arrival
+          b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] Arrival
         .col-sm-6
-          b-button(variant="primary", size="lg", block) Departure
+          b-button(variant="primary", size="lg", block, :disabled="!todayAttendance.arrivalTime || !!todayAttendance.departureTime", @click="departure()") #[i.fa.fa-sign-out] Departure
       b-table(bordered, small, striped, hover, head-variant="inverse", :fields="fields", :items="attendances")
         template(slot="day", scope="data")
           | {{data.item.day}} ({{moment({year: data.item.year, month: data.item.month - 1, day: data.item.day}).format('ddd')}})

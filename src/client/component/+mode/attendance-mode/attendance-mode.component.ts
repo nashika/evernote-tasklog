@@ -26,6 +26,7 @@ export default class AttendanceModeComponent extends BaseComponent {
   progressService: ProgressService = container.get(ProgressService);
 
   attendances: AttendanceEntity[] = [];
+  todayAttendance: AttendanceEntity = null;
   updateFlags: boolean[] = [];
   createFlags: boolean[] = [];
   personId: number = 0;
@@ -93,6 +94,7 @@ export default class AttendanceModeComponent extends BaseComponent {
     console.log("reload");
     this.attendances = [];
     this.createFlags = [];
+    this.todayAttendance = null;
     this.progressService.open(1);
     this.progressService.next("Request from server.");
     let requestAttendances = await this.requestService.find<AttendanceEntity>(AttendanceEntity, {
@@ -115,12 +117,28 @@ export default class AttendanceModeComponent extends BaseComponent {
         Vue.set(attendance, "_rowVariant", "info");
       if (moment({year: this.year, month: this.month - 1, date: i}).day() == 0)
         Vue.set(attendance, "_rowVariant", "danger");
-      if (moment().year() == this.year && moment().month() + 1 == this.month && moment().date() == i)
-        Vue.set(attendance, "_rowVariant", "warning");
+      if (moment().year() == this.year && moment().month() + 1 == this.month && moment().date() == i) {
+        Vue.set(attendance, "_rowVariant", "active");
+        this.todayAttendance = attendance;
+      }
       this.attendances.push(attendance);
     }
     this.updateFlags = _.fill(Array(this.lastDayOfMonth - 1), false);
     this.progressService.close();
+  }
+
+  async arrival(): Promise<void> {
+    this.todayAttendance.arrivalTime = this.currentTime();
+    await this.save(this.todayAttendance);
+  }
+
+  async departure(): Promise<void> {
+    this.todayAttendance.departureTime = this.currentTime();
+    await this.save(this.todayAttendance);
+  }
+
+  private currentTime(): number {
+    return moment().hour() * 60 + moment().minute();
   }
 
   changeRow(index: number): void {

@@ -7,14 +7,14 @@
   b-navbar(toggleable, type="inverse", toggle-breakpoint="xl", variant="inverse", fixed="top")
     b-collapse(is-nav, id="nav-collapse")
       b-nav.mr-auto(is-nav-bar)
+        +item("/attendance", "vcard", "Attendance")
         +item("/timeline", "clock-o", "Timeline")
         +item("/notes", "files-o", "Notes")
         +item("/activity", "history", "Activity")
-        +item("/attendance", "vcard", "Attendance")
-      b-button.mr-3(variant="outline-secondary", @click="$root.$emit('show::modal', 'filter-modal')")
+      b-button.mr-1(variant="outline-secondary", @click="$root.$emit('show::modal', 'filter-modal')")
         i.fa.fa-filter
         span.hidden-sm-down &nbsp;Filter
-      b-button.mr-3(variant="outline-warning", @click="$root.$emit('show::modal', 'person-modal')")
+      b-button.mr-1(variant="outline-warning", @click="$root.$emit('show::modal', 'person-modal')")
         i.fa.fa-user
         span.hidden-sm-down &nbsp;Person
       b-button(variant="outline-primary", @click="reload()")
