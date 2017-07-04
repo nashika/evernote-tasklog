@@ -91,7 +91,6 @@ export default class AttendanceModeComponent extends BaseComponent {
   }
 
   async reload(): Promise<void> {
-    console.log("reload");
     this.attendances = [];
     this.createFlags = [];
     this.todayAttendance = null;
