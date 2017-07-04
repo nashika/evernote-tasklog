@@ -4,7 +4,7 @@
       i.fa(class="fa-" + icon)
       span.hidden-xs-down &nbsp;#{label}
 
-  b-navbar(toggleable, type="inverse", toggle-breakpoint="xl", variant="inverse", fixed="top")
+  b-navbar.hidden-print(toggleable, type="inverse", toggle-breakpoint="xl", variant="inverse", fixed="top")
     b-collapse(is-nav, id="nav-collapse")
       b-nav.mr-auto(is-nav-bar)
         +item("/attendance", "vcard", "Attendance")
