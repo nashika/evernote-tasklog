@@ -14,9 +14,9 @@
       b-button.mr-1(variant="outline-secondary", @click="$root.$emit('show::modal', 'filter-modal')")
         i.fa.fa-filter
         span.hidden-sm-down &nbsp;Filter
-      b-button.mr-1(variant="outline-warning", @click="$root.$emit('show::modal', 'person-modal')")
+      b-button.mr-1(:variant="datastoreService.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$root.$emit('show::modal', 'person-modal')")
         i.fa.fa-user
-        span.hidden-sm-down &nbsp;Person
+        span.hidden-sm-down &nbsp;{{personLabel}}
       b-button(variant="outline-primary", @click="reload()")
         i.fa.fa-refresh
         span.hidden-sm-down &nbsp;Reload

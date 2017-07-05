@@ -9,6 +9,13 @@ export default class NavigationComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
+  get personLabel(): string {
+    if (this.datastoreService.$vm.currentPersonId)
+      return this.datastoreService.currentPerson.name.substr(0, 1);
+    else
+      return "Person";
+  }
+
   reload() {
     this.$root.reload();
   }

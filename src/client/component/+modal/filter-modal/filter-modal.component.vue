@@ -4,13 +4,13 @@
       .col-md-6
         section.notebook-filter
           h1.h3 Notebook
-          div(v-for="stack in datastoreService.stacks")
+          div(v-for="stack in datastoreService.$vm.stacks")
             label.custom-control.custom-checkbox
               input.custom-control-input(type="checkbox", v-model="selectedStacks[stack]", @change="changeStack(stack, $event)")
               span.custom-control-indicator
               span.custom-control-description {{stack || "No Stack"}}
             //b-form-checkbox(v-model="selectedStacks[stack]", @change="changeStack(stack, $event)")
-            div.ml-3(v-for="notebook in datastoreService.notebooks")
+            div.ml-3(v-for="notebook in datastoreService.$vm.notebooks")
               template(v-if="notebook.stack == stack")
                 label.custom-control.custom-checkbox
                   input.custom-control-input(type="checkbox", v-model="selectedNotebooks[notebook.guid]", @change="changeNotebook(notebook.guid)")

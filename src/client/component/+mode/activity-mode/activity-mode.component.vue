@@ -9,11 +9,11 @@
         .col-md-3
           button.btn.btn-secondary.btn-block(@click="changeDate(true)") Next Date
     .body
-      section.activity-mode-item(v-for="note in datastoreService.noteArchives")
+      section.activity-mode-item(v-for="note in datastoreService.$vm.noteArchives")
         .header
           b-popover(placement="bottom", triggers="hover", title="Info", :content="detail(note)")
             h1
-              a(:href="'evernote:///view/' + datastoreService.user.id + '/' + datastoreService.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
+              a(:href="'evernote:///view/' + datastoreService.$vm.user.id + '/' + datastoreService.$vm.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
                 | {{moment(note.updated).format('HH:mm')}} {{note.title}}
               span.label.label-danger(v-if="modifies[note._id] && !modifies[note.archiveId].prevNote") #[i.fa.fa-plus] New
               span.label.label-primary #[i.fa.fa-book] {{notebookName(note)}}

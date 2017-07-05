@@ -23,7 +23,7 @@ export default class PersonModalComponent extends BaseComponent {
   };
 
   async shown(): Promise<void> {
-    this.currentPersonId = this.datastoreService.currentPersonId;
+    this.currentPersonId = this.datastoreService.$vm.currentPersonId;
   }
 
   async hidden(): Promise<void> {
@@ -34,7 +34,7 @@ export default class PersonModalComponent extends BaseComponent {
 
   async select(id: number): Promise<void> {
     this.currentPersonId = id;
-    this.datastoreService.currentPersonId = id;
+    this.datastoreService.$vm.currentPersonId = id;
     this.changed = true;
     await this.requestService.saveSession("currentPersonId", id);
   }

@@ -46,7 +46,7 @@ export default class ActivityModeComponent extends BaseComponent {
     let end = moment(this.date).endOf("day");
     this.modifies = {};
     await this.datastoreService.reload({start: start, end: end, archive: true, archiveMinStepMinute: 10});
-    for (let note of this.datastoreService.noteArchives) {
+    for (let note of this.datastoreService.$vm.noteArchives) {
       let prevNote = await this.datastoreService.getPrevNote(note, 10);
       let modify: IActivityModifyData = {};
       modify.prevNote = prevNote;
@@ -88,11 +88,11 @@ UpdateSequenceNum: ${note.updateSequenceNum}`;
   }
 
   notebookName(note: NoteEntity): string {
-    return this.datastoreService.notebooks[note.notebookGuid].name;
+    return this.datastoreService.$vm.notebooks[note.notebookGuid].name;
   }
 
   tagNames(note: NoteEntity): string[] {
-    return _.map(note.tagGuids, tagGuid => this.datastoreService.tags[tagGuid].name);
+    return _.map(note.tagGuids, tagGuid => this.datastoreService.$vm.tags[tagGuid].name);
   }
 
 }

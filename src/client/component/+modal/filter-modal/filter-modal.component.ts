@@ -42,15 +42,15 @@ export default class FilterModalComponent extends BaseComponent {
   }
 
   async reloadConditions(): Promise<void> {
-    for (let stack of this.datastoreService.stacks)
+    for (let stack of this.datastoreService.$vm.stacks)
       Vue.set(this.selectedStacks, stack, false);
-    for (let notebookGuid in this.datastoreService.notebooks)
-      Vue.set(this.selectedNotebooks, notebookGuid, !!_.find(this.datastoreService.filterParams.notebookGuids, guid => notebookGuid == guid));
+    for (let notebookGuid in this.datastoreService.$vm.notebooks)
+      Vue.set(this.selectedNotebooks, notebookGuid, !!_.find(this.datastoreService.$vm.filterParams.notebookGuids, guid => notebookGuid == guid));
   }
 
   changeStack(stack: string, checked: boolean) {
-    for (let notebookGuid in this.datastoreService.notebooks) {
-      let notebook = this.datastoreService.notebooks[notebookGuid];
+    for (let notebookGuid in this.datastoreService.$vm.notebooks) {
+      let notebook = this.datastoreService.$vm.notebooks[notebookGuid];
       if (notebook.stack == stack)
         Vue.set(this.selectedNotebooks, notebookGuid, checked);
     }
@@ -58,7 +58,7 @@ export default class FilterModalComponent extends BaseComponent {
   }
 
   changeNotebook(_guid: string = null) {
-    this.datastoreService.filterParams.notebookGuids = _.keys(_.pickBy(this.selectedNotebooks));
+    this.datastoreService.$vm.filterParams.notebookGuids = _.keys(_.pickBy(this.selectedNotebooks));
     this.changed = true;
   }
 

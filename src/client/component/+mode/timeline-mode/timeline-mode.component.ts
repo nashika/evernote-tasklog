@@ -54,20 +54,20 @@ export default class TimelineModeComponent extends BaseComponent {
       content: "Update",
     });
     let notes: {[noteGuid: string]: NoteEntity} = {};
-    for (var noteGuid in this.datastoreService.notes) {
-      let note: NoteEntity = this.datastoreService.notes[noteGuid];
+    for (var noteGuid in this.datastoreService.$vm.notes) {
+      let note: NoteEntity = this.datastoreService.$vm.notes[noteGuid];
       notes[note.guid] = note;
       let timelineItem: TimelineItem = {
         id: note.guid,
         group: "updated",
-        content: `<a href="evernote:///view/${this.datastoreService.user.id}/${this.datastoreService.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${abbreviateFilter(note.title, 40)}</a>`,
+        content: `<a href="evernote:///view/${this.datastoreService.$vm.user.id}/${this.datastoreService.$vm.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${abbreviateFilter(note.title, 40)}</a>`,
         start: moment(note.updated).toDate(),
         type: "point",
       };
       this.timelineItems.add(timelineItem);
     }
-    for (let noteGuid in this.datastoreService.timeLogs) {
-      let noteTimeLogs = this.datastoreService.timeLogs[noteGuid];
+    for (let noteGuid in this.datastoreService.$vm.timeLogs) {
+      let noteTimeLogs = this.datastoreService.$vm.timeLogs[noteGuid];
       for (let timeLogId in noteTimeLogs) {
         let timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
         let note: NoteEntity = notes[timeLog.noteGuid];
@@ -75,7 +75,7 @@ export default class TimelineModeComponent extends BaseComponent {
         let timelineItem: TimelineItem = {
           id: String(timeLog.id),
           group: timeLog.personId,
-          content: `<a href="evernote:///view/${this.datastoreService.user["id"]}/${this.datastoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
+          content: `<a href="evernote:///view/${this.datastoreService.$vm.user["id"]}/${this.datastoreService.$vm.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
           start: moment(timeLog.date).toDate(),
           end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
           type: timeLog.spentTime ? 'range' : 'point',
