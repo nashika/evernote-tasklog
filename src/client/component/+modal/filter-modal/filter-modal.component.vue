@@ -1,5 +1,5 @@
 <template lang="pug">
-  b-modal(id="filter-modal", title="Filter")
+  b-modal(id="filter-modal", title="Filter", ok-only, @hidden="hidden()")
     .row
       .col-md-6
         section.notebook-filter
@@ -17,7 +17,6 @@
                   span.custom-control-indicator
                   span.custom-control-description {{notebook.name}}
                 //b-form-checkbox(v-model="selectedNotebooks[notebook.guid]", @change="changeNotebook(notebook.guid)") {{notebook.name}}
-        button.btn.btn-primary.btn-lg.btn-block(type="button", @click="$parent.reload()") #[span.fa.fa-refresh] Reload
       .col-md-6
         section.data-info
           h1.h3 #[span.fa.fa-database] Data Info

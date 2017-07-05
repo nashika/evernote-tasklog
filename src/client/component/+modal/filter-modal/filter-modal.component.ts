@@ -20,6 +20,7 @@ export default class FilterModalComponent extends BaseComponent {
   selectedStacks: {[stack: string]: boolean} = {};
   selectedNotebooks: {[guid: string]: boolean} = {};
 
+  changed: boolean = false;
   noteCount: number = 0;
   allNoteCount: number = 0;
   loadedNoteCount: number = 0;
@@ -32,6 +33,12 @@ export default class FilterModalComponent extends BaseComponent {
   async mounted(): Promise<void> {
     await super.mounted();
     await this.reloadCounts();
+  }
+
+  async hidden(): Promise<void> {
+    if (this.changed)
+      this.$root.reload();
+    this.changed = false;
   }
 
   async reloadConditions(): Promise<void> {
@@ -52,7 +59,7 @@ export default class FilterModalComponent extends BaseComponent {
 
   changeNotebook(_guid: string = null) {
     this.datastoreService.filterParams.notebookGuids = _.keys(_.pickBy(this.selectedNotebooks));
-    console.log(this.datastoreService.filterParams.notebookGuids)
+    this.changed = true;
   }
 
   async reloadCounts(): Promise<void> {
