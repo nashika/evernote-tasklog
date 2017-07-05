@@ -84,13 +84,13 @@ export default class AttendanceModeComponent extends BaseComponent {
 
   async mounted(): Promise<void> {
     await super.mounted();
-    this.personId = this.datastoreService.currentPersonId;
-    this.year = moment().year();
-    this.month = moment().month() + 1;
-    //await this.reload();
+    await this.reload();
   }
 
   async reload(): Promise<void> {
+    if (!this.personId) this.personId = this.datastoreService.currentPersonId;
+    if (!this.year) this.year = moment().year();
+    if (!this.month) this.month = moment().month() + 1;
     this.attendances = [];
     this.createFlags = [];
     this.todayAttendance = null;

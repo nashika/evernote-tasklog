@@ -6,6 +6,8 @@
           b-button(block, variant="danger") Selected
         template(v-else)
           b-button(block, variant="secondary", @click="select(item.item.id)") Select
+    .my-3(v-if="currentPersonId")
+      b-button(block, variant="secondary", @click="select(0)") Unselect Person
 </template>
 
 <script lang="ts" src="./person-modal.component.ts"></script>
