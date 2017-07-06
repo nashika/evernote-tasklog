@@ -1,10 +1,10 @@
 import Component from "vue-class-component";
-import Vue from "vue";
 import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";
 import {container} from "../../../inversify.config";
 import {DatastoreService} from "../../../service/datastore.service";
+import {NotebookEntity} from "../../../../common/entity/notebook.entity";
 
 @Component({
   watch: {
@@ -17,21 +17,26 @@ export default class FilterModalComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
-  selectedStacks: {[stack: string]: boolean} = {};
-  selectedNotebooks: {[guid: string]: boolean} = {};
+  stacks: Array<{ stack: string, selected: boolean }> = null;
+  notebooks: Array<{ guid: string, name: string, selected: boolean }> = null;
 
   changed: boolean = false;
   noteCount: number = 0;
   allNoteCount: number = 0;
   loadedNoteCount: number = 0;
   allLoadedNoteCount: number = 0;
-  timeLogCount: number = 0;
-  allTimeLogCount: number = 0;
-  profitLogCount: number = 0;
-  allProfitLogCount: number = 0;
 
-  async mounted(): Promise<void> {
-    await super.mounted();
+  stackFields = {
+    selected: {label: "Select"},
+    stack: {label: "Stack"},
+  };
+
+  notebookFields = {
+    selected: {label: "Select"},
+    name: {label: "Name"},
+  };
+
+  async shown(): Promise<void> {
     await this.reloadCounts();
   }
 
@@ -41,6 +46,26 @@ export default class FilterModalComponent extends BaseComponent {
     this.changed = false;
   }
 
+  toggleStack(): void {
+    if (!this.stacks) {
+      this.stacks = _(this.datastoreService.$vm.stacks).filter(stack => !!stack).map(stack => {
+        return {stack: stack, selected: false};
+      }).value();
+    } else {
+      this.stacks = null;
+    }
+  }
+
+  toggleNotebook(): void {
+    if (!this.notebooks) {
+      this.notebooks = _(this.datastoreService.$vm.notebooks).map((notebook: NotebookEntity) => {
+        return {guid: notebook.guid, name: notebook.name, selected: false};
+      }).value();
+    } else {
+      this.notebooks = null;
+    }
+  }
+/*
   async reloadConditions(): Promise<void> {
     for (let stack of this.datastoreService.$vm.stacks)
       Vue.set(this.selectedStacks, stack, false);
@@ -61,20 +86,16 @@ export default class FilterModalComponent extends BaseComponent {
     this.datastoreService.$vm.filterParams.notebookGuids = _.keys(_.pickBy(this.selectedNotebooks));
     this.changed = true;
   }
-
+*/
   async reloadCounts(): Promise<void> {
     this.noteCount = null;
     this.allNoteCount = null;
     this.loadedNoteCount = null;
     this.allLoadedNoteCount = null;
-    this.timeLogCount = null;
-    this.allTimeLogCount = null;
     this.noteCount = await this.datastoreService.countNotes({});
     this.allNoteCount = await this.datastoreService.countNotes({noFilter: true});
     this.loadedNoteCount = await this.datastoreService.countNotes({hasContent: true});
     this.allLoadedNoteCount = await this.datastoreService.countNotes({hasContent: true, noFilter: true});
-    this.timeLogCount = await this.datastoreService.countTimeLogs({});
-    this.allTimeLogCount = await this.datastoreService.countTimeLogs({noFilter: true});
   }
 
   async reParse(): Promise<void> {
