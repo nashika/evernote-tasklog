@@ -37,7 +37,7 @@ export default class FilterModalComponent extends BaseComponent {
   };
 
   async shown(): Promise<void> {
-    await this.reloadCounts();
+    await this.reloadCount();
   }
 
   async hidden(): Promise<void> {
@@ -46,7 +46,7 @@ export default class FilterModalComponent extends BaseComponent {
     this.changed = false;
   }
 
-  toggleStack(): void {
+  async toggleStack(): Promise<void> {
     if (!this.stacks) {
       this.stacks = _(this.datastoreService.$vm.stacks).filter(stack => !!stack).map(stack => {
         return {stack: stack, selected: false};
@@ -54,9 +54,10 @@ export default class FilterModalComponent extends BaseComponent {
     } else {
       this.stacks = null;
     }
+    await this.reloadCount();
   }
 
-  toggleNotebook(): void {
+  async toggleNotebook(): Promise<void> {
     if (!this.notebooks) {
       this.notebooks = _(this.datastoreService.$vm.notebooks).map((notebook: NotebookEntity) => {
         return {guid: notebook.guid, name: notebook.name, selected: false};
@@ -64,30 +65,19 @@ export default class FilterModalComponent extends BaseComponent {
     } else {
       this.notebooks = null;
     }
-  }
-/*
-  async reloadConditions(): Promise<void> {
-    for (let stack of this.datastoreService.$vm.stacks)
-      Vue.set(this.selectedStacks, stack, false);
-    for (let notebookGuid in this.datastoreService.$vm.notebooks)
-      Vue.set(this.selectedNotebooks, notebookGuid, !!_.find(this.datastoreService.$vm.filterParams.notebookGuids, guid => notebookGuid == guid));
+    await this.reloadCount();
   }
 
-  changeStack(stack: string, checked: boolean) {
-    for (let notebookGuid in this.datastoreService.$vm.notebooks) {
-      let notebook = this.datastoreService.$vm.notebooks[notebookGuid];
-      if (notebook.stack == stack)
-        Vue.set(this.selectedNotebooks, notebookGuid, checked);
-    }
-    this.changeNotebook();
+  reloadConditions(): void {
+    this.datastoreService.$vm.filterParams = {};
+    this.datastoreService.$vm.filterParams.stacks = _(this.stacks)
+      .filter(stack => stack.selected).map(stack => stack.stack).value();
+    this.datastoreService.$vm.filterParams.notebookGuids = _(this.notebooks)
+      .filter(notebook => notebook.selected).map(notebook => notebook.guid).value();
   }
 
-  changeNotebook(_guid: string = null) {
-    this.datastoreService.$vm.filterParams.notebookGuids = _.keys(_.pickBy(this.selectedNotebooks));
-    this.changed = true;
-  }
-*/
-  async reloadCounts(): Promise<void> {
+  async reloadCount(): Promise<void> {
+    this.reloadConditions();
     this.noteCount = null;
     this.allNoteCount = null;
     this.loadedNoteCount = null;

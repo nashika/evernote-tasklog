@@ -48,7 +48,7 @@ export class DatastoreServiceEventBus extends Vue {
   noteArchives: NoteEntity[] = [];
   timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}} = {};
   profitLogs: {[noteGuid: string]: {[_id: string]: ProfitLogEntity}} = {};
-  filterParams: {notebookGuids: string[]} = {notebookGuids: []};
+  filterParams: {notebookGuids?: string[], stacks?: string[]} = {};
 }
 
 @injectable()
