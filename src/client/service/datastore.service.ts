@@ -16,6 +16,8 @@ import {TagEntity} from "../../common/entity/tag.entity";
 import {IFindNoteEntityOptions} from "../../server/table/note.table";
 import {IFindEntityOptions} from "../../common/entity/base.entity";
 import {configLoader, IPersonConfig} from "../../common/util/config-loader";
+import {SocketIoClientService} from "./socket-io-client-service";
+import {logger} from "../logger";
 
 interface IDatastoreServiceParams {
   start?: moment.Moment,
@@ -57,7 +59,8 @@ export class DatastoreService extends BaseClientService {
   $vm = new DatastoreServiceEventBus();
 
   constructor(protected requestService: RequestService,
-              protected progressService: ProgressService) {
+              protected progressService: ProgressService,
+              protected socketIoClientService: SocketIoClientService) {
     super();
   }
 
@@ -66,17 +69,32 @@ export class DatastoreService extends BaseClientService {
   }
 
   async initialize(): Promise<void> {
+    this.socketIoClientService.on(this, "sync::updateNotebooks", this.syncNotebooks);
+    this.socketIoClientService.on(this, "sync::updateTags", this.syncTags);
     this.$vm.user = await this.requestService.loadOption("user");
     this.$vm.currentPersonId = _.toInteger(await this.requestService.loadSession("currentPersonId"));
+    await this.syncNotebooks();
+    await this.syncTags();
+  }
+
+  private async syncNotebooks(): Promise<void> {
+    logger.debug(`Synchronizing notebooks.`);
+    let notebooks = await this.requestService.find<NotebookEntity>(NotebookEntity);
+    this.$vm.notebooks = _.keyBy(notebooks, "guid");
+    this.$vm.stacks = _(notebooks).map<string>("stack").uniq().value();
+  }
+
+  private async syncTags(): Promise<void> {
+    logger.debug(`Synchronizing tags.`);
+    let tags = await this.requestService.find<TagEntity>(TagEntity);
+    this.$vm.tags = _.keyBy(tags, "guid");
   }
 
   async reload(params: IDatastoreServiceParams = {}): Promise<void> {
     if (this.progressService.isActive) return;
-    this.progressService.open(params.getContent ? 9 : params.archive ? 6 : 3);
+    this.progressService.open(params.getContent ? 7 : params.archive ? 4 : 1);
     try {
       await this.runSync();
-      await this.getNotebooks();
-      await this.getTags();
       if (params.getContent) {
         await this.checkNoteCount(params);
         await this.getNotes(params);
@@ -100,19 +118,6 @@ export class DatastoreService extends BaseClientService {
   private async runSync(): Promise<void> {
     this.progressService.next("Syncing remote server.");
     await this.requestService.sync();
-  }
-
-  private async getNotebooks(): Promise<void> {
-    this.progressService.next("Getting notebooks data.");
-    let notebooks = await this.requestService.find<NotebookEntity>(NotebookEntity);
-    this.$vm.notebooks = _.keyBy(notebooks, "guid");
-    this.$vm.stacks = _(notebooks).map<string>("stack").uniq().value();
-  }
-
-  private async getTags(): Promise<void> {
-    this.progressService.next("Getting tags data.");
-    let tags = await this.requestService.find<TagEntity>(TagEntity);
-    this.$vm.tags = _.keyBy(tags, "guid");
   }
 
   private async checkNoteCount(params: IDatastoreServiceParams): Promise<void> {
