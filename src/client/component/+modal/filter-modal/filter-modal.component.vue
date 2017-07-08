@@ -15,12 +15,12 @@
       b-form-checkbox(:checked="!!stacks", @change="toggleStack()") Filter by stack
       b-table(v-if="stacks", :items="stacks", :fields="stackFields", striped, small)
         template(slot="selected", scope="data")
-          b-form-checkbox(:checked="data.item.selected", @change="reloadCount()")
+          b-form-checkbox(:checked="data.item.selected", @change="toggleStackItem(data.item)")
     .mb-3
       b-form-checkbox(:checked="!!notebooks", @change="toggleNotebook()") Filter by notebook
       b-table(v-if="notebooks", :items="notebooks", :fields="notebookFields", striped, small)
         template(slot="selected", scope="data")
-          b-form-checkbox(:checked="data.item.selected", @change="reloadCount()")
+          b-form-checkbox(:checked="data.item.selected", @change="toggleNotebookItem(data.item)")
 </template>
 
 <script lang="ts" src="./filter-modal.component.ts"></script>

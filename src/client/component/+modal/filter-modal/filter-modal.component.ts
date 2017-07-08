@@ -6,6 +6,17 @@ import {container} from "../../../inversify.config";
 import {DatastoreService} from "../../../service/datastore.service";
 import {NotebookEntity} from "../../../../common/entity/notebook.entity";
 
+interface IStackItem {
+  stack: string;
+  selected: boolean;
+}
+
+interface INotebookItem {
+  guid: string;
+  name: string;
+  selected: boolean;
+}
+
 @Component({
   watch: {
     "datastoreService.notebooks": "reloadConditions",
@@ -17,8 +28,8 @@ export default class FilterModalComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
-  stacks: Array<{ stack: string, selected: boolean }> = null;
-  notebooks: Array<{ guid: string, name: string, selected: boolean }> = null;
+  stacks: IStackItem[] = null;
+  notebooks: INotebookItem[] = null;
 
   changed: boolean = false;
   noteCount: number = 0;
@@ -57,6 +68,11 @@ export default class FilterModalComponent extends BaseComponent {
     await this.reloadCount();
   }
 
+  async toggleStackItem(stack: IStackItem): Promise<void> {
+    stack.selected = !stack.selected;
+    await this.reloadCount();
+  }
+
   async toggleNotebook(): Promise<void> {
     if (!this.notebooks) {
       this.notebooks = _(this.datastoreService.$vm.notebooks).map((notebook: NotebookEntity) => {
@@ -65,6 +81,11 @@ export default class FilterModalComponent extends BaseComponent {
     } else {
       this.notebooks = null;
     }
+    await this.reloadCount();
+  }
+
+  async toggleNotebookItem(notebook: INotebookItem): Promise<void> {
+    notebook.selected = !notebook.selected;
     await this.reloadCount();
   }
 

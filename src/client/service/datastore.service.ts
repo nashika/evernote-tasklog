@@ -200,11 +200,6 @@ export class DatastoreService extends BaseClientService {
     return await this.requestService.count(NoteEntity, options);
   }
 
-  async countTimeLogs(params: IDatastoreServiceParams): Promise<number> {
-    let options = this.makeTimeLogFindOptions(params);
-    return await this.requestService.count(TimeLogEntity, options);
-  }
-
   async getPrevNote(note: NoteEntity, minStepMinute: number): Promise<NoteEntity> {
     let prevNote: NoteEntity;
     prevNote = _.find(this.$vm.noteArchives, (searchNote: NoteEntity) => {
@@ -236,8 +231,13 @@ export class DatastoreService extends BaseClientService {
     if (!params.noFilter) {
       // check notebooks
       var notebooksHash: {[notebookGuid: string]: boolean} = {};
+      if (this.$vm.filterParams.stacks)
+        for (let stack of this.$vm.filterParams.stacks)
+          for (let notebook of _.values(this.$vm.notebooks))
+            if (notebook.stack == stack)
+              notebooksHash[notebook.guid] = true;
       if (this.$vm.filterParams.notebookGuids && this.$vm.filterParams.notebookGuids.length > 0)
-        for (var notebookGuid of this.$vm.filterParams.notebookGuids)
+        for (let notebookGuid of this.$vm.filterParams.notebookGuids)
           notebooksHash[notebookGuid] = true;
       // set notebooks query
       if (_.size(notebooksHash) > 0)
