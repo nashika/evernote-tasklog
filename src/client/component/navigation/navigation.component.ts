@@ -16,8 +16,4 @@ export default class NavigationComponent extends BaseComponent {
       return "Person";
   }
 
-  reload() {
-    this.$root.reload();
-  }
-
 }

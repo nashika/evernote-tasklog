@@ -23,6 +23,7 @@ export default class AppComponent extends BaseComponent {
     await super.mounted();
     await this.datastoreService.initialize();
     this.socketIoClientService.on(this, "sync::updateCount", this.checkUpdateCount);
+    this.$on("reload", () => this.reload());
     this.isReady = true;
   }
 

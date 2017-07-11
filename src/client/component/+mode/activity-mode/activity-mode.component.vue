@@ -24,6 +24,7 @@
           div(v-else)
             i.fa.fa-spinner.fa-pulse
             | &nbsp;Loading...
+    app-floating-action-button(enableReload, enableFilter)
 </template>
 
 <style lang="scss">

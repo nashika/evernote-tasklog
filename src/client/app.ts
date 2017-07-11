@@ -23,6 +23,7 @@ Vue.component("app-navigation", require("./component/navigation/navigation.compo
 Vue.component("app-filter-modal", require("./component/+modal/filter-modal/filter-modal.component.vue").default);
 Vue.component("app-person-modal", require("./component/+modal/person-modal/person-modal.component.vue").default);
 Vue.component("app-progress-modal", require("./component/+modal/progress-modal/progress-modal.component.vue").default);
+Vue.component("app-floating-action-button", require("./component/floating-action-button/floating-action-button.vue").default);
 
 const routes = [
   {path: "/", redirect: "/attendance"},

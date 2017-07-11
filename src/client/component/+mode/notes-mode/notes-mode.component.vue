@@ -31,6 +31,7 @@
             | {{notesSpentTimes['$total']['$total'] | spentTime}}
           div(v-if="notesProfits['$total'] && notesProfits['$total']['$total']")
             | {{Math.round(notesProfits['$total']['$total'])}}
+    app-floating-action-button(enableReload, enableFilter)
 </template>
 
 <script lang="ts" src="./notes-mode.component.ts"></script>
