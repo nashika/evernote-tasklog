@@ -46,11 +46,17 @@ export class DatastoreServiceEventBus extends Vue {
   notebooks: {[guid: string]: NotebookEntity} = {};
   stacks: string[] = [];
   tags: {[guid: string]: TagEntity} = {};
-  notes: {[guid: string]: NoteEntity} = {};
-  noteArchives: NoteEntity[] = [];
-  timeLogs: {[noteGuid: string]: {[_id: string]: TimeLogEntity}} = {};
-  profitLogs: {[noteGuid: string]: {[_id: string]: ProfitLogEntity}} = {};
   filterParams: {notebookGuids?: string[], stacks?: string[]} = {};
+}
+
+type TNotesResult = {[guid: string]: NoteEntity};
+type TTimeLogsResult = {[noteGuid: string]: {[id: number]: TimeLogEntity}};
+type TProfitLogsResult = {[noteGuid: string]: {[id: number]: ProfitLogEntity}};
+
+interface INoteLogsResult {
+  notes: TNotesResult;
+  timeLogs: TTimeLogsResult;
+  profitLogs: TProfitLogsResult;
 }
 
 @injectable()
@@ -90,29 +96,43 @@ export class DatastoreService extends BaseClientService {
     this.$vm.tags = _.keyBy(tags, "guid");
   }
 
-  async reload(params: IDatastoreServiceParams = {}): Promise<void> {
-    if (this.progressService.isActive) return;
-    this.progressService.open(params.getContent ? 7 : params.archive ? 4 : 1);
+  async getNoteLogs(params: IDatastoreServiceParams = {}): Promise<INoteLogsResult> {
+    if (this.progressService.isActive) return null;
+    let result: INoteLogsResult = {notes: null, timeLogs: null, profitLogs: null};
+    this.progressService.open(7);
     try {
       await this.runSync();
-      if (params.getContent) {
-        await this.checkNoteCount(params);
-        await this.getNotes(params);
-        await this.getNoteContents();
-        await this.getTimeLogs(params);
-        await this.getProfitLogs();
-      } else if (params.archive) {
-        await this.checkNoteCount(params);
-        await this.getNotes(params);
-      }
+      await this.checkNoteCount(params);
+      result.notes = await this.getNotes(params);
+      await this.getNoteContents(result.notes);
+      result.timeLogs = await this.getTimeLogs(result.notes, params);
+      result.profitLogs = await this.getProfitLogs(result.notes);
       this.progressService.next("Done.");
     } catch (err) {
       alert(err);
+      if (!(err instanceof TerminateResult)) throw err;
+    } finally {
       this.progressService.close();
-      if (!(err instanceof TerminateResult))
-        throw err;
     }
-    this.progressService.close();
+    return result;
+  }
+
+  async getArchiveLogs(params: IDatastoreServiceParams = {}): Promise<NoteEntity[]> {
+    if (this.progressService.isActive) return null;
+    this.progressService.open(4);
+    let archiveNotes: NoteEntity[];
+    try {
+      await this.runSync();
+      await this.checkNoteCount(params);
+      archiveNotes = await this.getArchiveNotes(params);
+      this.progressService.next("Done.");
+    } catch (err) {
+      alert(err);
+      if (!(err instanceof TerminateResult)) throw err;
+    } finally {
+      this.progressService.close();
+    }
+    return archiveNotes;
   }
 
   private async runSync(): Promise<void> {
@@ -129,8 +149,15 @@ export class DatastoreService extends BaseClientService {
         throw new TerminateResult(`User Canceled`);
   }
 
-  private async getNotes(params: IDatastoreServiceParams): Promise<void> {
+  protected async getNotes(params: IDatastoreServiceParams): Promise<TNotesResult> {
     this.progressService.next("Getting notes.");
+    let options = this.makeNoteFindOptions(params);
+    let notes = await this.requestService.find<NoteEntity>(NoteEntity, options);
+    return _.keyBy(notes, "guid");
+  }
+
+  private async getArchiveNotes(params: IDatastoreServiceParams): Promise<NoteEntity[]> {
+    this.progressService.next("Getting arcguve notes.");
     let options = this.makeNoteFindOptions(params);
     let notes = await this.requestService.find<NoteEntity>(NoteEntity, options);
     if (params.archiveMinStepMinute) {
@@ -142,54 +169,55 @@ export class DatastoreService extends BaseClientService {
         });
       });
     }
-    this.$vm.noteArchives = notes;
-    this.$vm.notes = _.keyBy(notes, "guid");
+    return notes;
   }
 
-  private async getNoteContents(): Promise<void> {
+  private async getNoteContents(notes: TNotesResult): Promise<void> {
     this.progressService.next("Request remote contents.");
     let count = 0;
-    for (let noteGuid in this.$vm.notes) {
-      let note = this.$vm.notes[noteGuid];
-      this.progressService.set(`Request remote contents. ${++count} / ${_.size(this.$vm.notes)}`);
+    for (let noteGuid in notes) {
+      let note = notes[noteGuid];
+      this.progressService.set(`Request remote contents. ${++count} / ${_.size(notes)}`);
       if (!note.hasContent) {
         let note = await this.requestService.getNoteContent(noteGuid);
-        this.$vm.notes[note.guid] = note;
+        notes[note.guid] = note;
       }
     }
   }
 
-  private async getTimeLogs(params: IDatastoreServiceParams): Promise<void> {
+  private async getTimeLogs(notes: TNotesResult, params: IDatastoreServiceParams): Promise<TTimeLogsResult> {
     this.progressService.next("Getting time logs.");
     let guids: string[] = [];
-    for (let noteGuid in this.$vm.notes) {
-      var note = this.$vm.notes[noteGuid];
+    for (let noteGuid in notes) {
+      var note = notes[noteGuid];
       guids.push(note.guid);
     }
     let options = this.makeTimeLogFindOptions(_.merge({}, params, {noteGuids: guids}));
     let timeLogs = await this.requestService.find<TimeLogEntity>(TimeLogEntity, options);
-    this.$vm.timeLogs = {};
+    let result: TTimeLogsResult = {};
     for (var timeLog of timeLogs) {
-      if (!this.$vm.timeLogs[timeLog.noteGuid])
-        this.$vm.timeLogs[timeLog.noteGuid] = {};
-      this.$vm.timeLogs[timeLog.noteGuid][timeLog.id] = timeLog;
+      if (!result[timeLog.noteGuid])
+        result[timeLog.noteGuid] = {};
+      result[timeLog.noteGuid][timeLog.id] = timeLog;
     }
+    return result;
   }
 
-  private async getProfitLogs(): Promise<void> {
+  private async getProfitLogs(notes: TNotesResult): Promise<TProfitLogsResult> {
     this.progressService.next("Getting profit logs.");
     let guids: string[] = [];
-    for (let noteGuid in this.$vm.notes) {
-      let note = this.$vm.notes[noteGuid];
+    for (let noteGuid in notes) {
+      let note = notes[noteGuid];
       guids.push(note.guid);
     }
     let profitLogs = await this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {where: {noteGuid: {$in: guids}}});
-    this.$vm.profitLogs = {};
+    let result: TProfitLogsResult = {};
     for (let profitLog of profitLogs) {
-      if (!this.$vm.profitLogs[profitLog.noteGuid])
-        this.$vm.profitLogs[profitLog.noteGuid] = {};
-      this.$vm.profitLogs[profitLog.noteGuid][profitLog.id] = profitLog;
+      if (!result[profitLog.noteGuid])
+        result[profitLog.noteGuid] = {};
+      result[profitLog.noteGuid][profitLog.id] = profitLog;
     }
+    return result;
   }
 
   async reParse(): Promise<void> {
@@ -205,9 +233,9 @@ export class DatastoreService extends BaseClientService {
     return await this.requestService.count(NoteEntity, options);
   }
 
-  async getPrevNote(note: NoteEntity, minStepMinute: number): Promise<NoteEntity> {
+  async getPrevNote(archiveNotes: NoteEntity[], note: NoteEntity, minStepMinute: number): Promise<NoteEntity> {
     let prevNote: NoteEntity;
-    prevNote = _.find(this.$vm.noteArchives, (searchNote: NoteEntity) => {
+    prevNote = _.find(archiveNotes, (searchNote: NoteEntity) => {
       return searchNote.guid == note.guid && searchNote.updateSequenceNum < note.updateSequenceNum;
     });
     if (prevNote) return Promise.resolve(prevNote);

@@ -27,6 +27,7 @@ export default class ActivityModeComponent extends BaseComponent {
 
   date: Date = new Date();
   modifies: {[archiveId: string]: IActivityModifyData} = {};
+  archiveNotes: NoteEntity[] = [];
 
   constructor() {
     super();
@@ -45,9 +46,10 @@ export default class ActivityModeComponent extends BaseComponent {
     let start = moment(this.date).startOf("day");
     let end = moment(this.date).endOf("day");
     this.modifies = {};
-    await this.datastoreService.reload({start: start, end: end, archive: true, archiveMinStepMinute: 10});
-    for (let note of this.datastoreService.$vm.noteArchives) {
-      let prevNote = await this.datastoreService.getPrevNote(note, 10);
+    this.archiveNotes = await this.datastoreService.getArchiveLogs({start: start, end: end, archive: true, archiveMinStepMinute: 10});
+    if (!this.archiveNotes) return;
+    for (let note of this.archiveNotes) {
+      let prevNote = await this.datastoreService.getPrevNote(this.archiveNotes, note, 10);
       let modify: IActivityModifyData = {};
       modify.prevNote = prevNote;
       let oldText = this.makeDiffText(modify.prevNote);

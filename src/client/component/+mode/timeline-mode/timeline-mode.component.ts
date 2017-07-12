@@ -40,7 +40,8 @@ export default class TimelineModeComponent extends BaseComponent {
   }
 
   async reload(): Promise<void> {
-    await this.datastoreService.reload({start: this.start, end: this.end, getContent: true});
+    let noteLogsResult = await this.datastoreService.getNoteLogs({start: this.start, end: this.end, getContent: true});
+    if (!noteLogsResult) return;
     if (this.timeline) this.timeline.destroy();
     this.timelineGroups = new DataSet();
     this.timelineItems = new DataSet();
@@ -54,8 +55,8 @@ export default class TimelineModeComponent extends BaseComponent {
       content: "Update",
     });
     let notes: {[noteGuid: string]: NoteEntity} = {};
-    for (var noteGuid in this.datastoreService.$vm.notes) {
-      let note: NoteEntity = this.datastoreService.$vm.notes[noteGuid];
+    for (var noteGuid in noteLogsResult.notes) {
+      let note: NoteEntity = noteLogsResult.notes[noteGuid];
       notes[note.guid] = note;
       let timelineItem: TimelineItem = {
         id: note.guid,
@@ -66,8 +67,8 @@ export default class TimelineModeComponent extends BaseComponent {
       };
       this.timelineItems.add(timelineItem);
     }
-    for (let noteGuid in this.datastoreService.$vm.timeLogs) {
-      let noteTimeLogs = this.datastoreService.$vm.timeLogs[noteGuid];
+    for (let noteGuid in noteLogsResult.timeLogs) {
+      let noteTimeLogs = noteLogsResult.timeLogs[noteGuid];
       for (let timeLogId in noteTimeLogs) {
         let timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
         let note: NoteEntity = notes[timeLog.noteGuid];

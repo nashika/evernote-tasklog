@@ -29,10 +29,10 @@ export default class NotesModeComponent extends BaseComponent {
   }
 
   async reload(): Promise<void> {
-    await this.datastoreService.reload({getContent: true});
-    this.notes = this.datastoreService.$vm.notes;
-    this.reloadTimeLogs(this.datastoreService.$vm.timeLogs);
-    this.reloadProfitLogs(this.datastoreService.$vm.profitLogs);
+    let noteLogsResult = await this.datastoreService.getNoteLogs({getContent: true});
+    this.notes = noteLogsResult.notes;
+    this.reloadTimeLogs(noteLogsResult.timeLogs);
+    this.reloadProfitLogs(noteLogsResult.profitLogs);
   }
 
   private reloadTimeLogs(timeLogs: { [noteGuid: string]: { [_id: string]: TimeLogEntity } }) {

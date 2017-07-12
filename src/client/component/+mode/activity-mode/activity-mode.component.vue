@@ -9,7 +9,7 @@
         .col-md-3
           button.btn.btn-secondary.btn-block(@click="changeDate(true)") Next Date
     .body
-      section.activity-mode-item(v-for="note in datastoreService.$vm.noteArchives")
+      section.activity-mode-item(v-for="note in archiveNotes")
         .header
           b-popover(placement="bottom", triggers="hover", title="Info", :content="detail(note)")
             h1
