@@ -10,6 +10,7 @@
       {"id": 2, "name": "Beta"},
       {"id": 3, "name": "Gamma"}
     ],
+    "warningNoteCount": 300,
     "workingTimeStart": 9,
     "workingTimeEnd": 19,
     "defaultFilterParams": {

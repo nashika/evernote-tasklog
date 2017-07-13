@@ -17,6 +17,7 @@ export interface IAppConfig {
   sandbox: boolean;
   token: string;
   persons: IPersonConfig[];
+  warningNoteCount: number;
   workingTimeStart: number;
   workingTimeEnd: number;
   defaultFilterParams: {

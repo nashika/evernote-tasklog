@@ -154,7 +154,7 @@ export class DatastoreService extends BaseClientService {
     this.progressService.next("Checking notes count.");
     let options = this.makeNoteFindOptions(params);
     let count = await this.requestService.count(NoteEntity, options);
-    if (count > 100)
+    if (count > configLoader.app.warningNoteCount)
       if (!window.confirm(`Current query find ${count} notes. It is too many. Continue anyway?`))
         throw new TerminateResult(`User Canceled`);
   }
