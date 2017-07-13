@@ -27,6 +27,7 @@ export default class NotesModeComponent extends BaseComponent {
 
   async mounted(): Promise<void> {
     await super.mounted();
+    this.filterParams = this.datastoreService.makeDefaultNoteFilterParams(configLoader.app.defaultFilterParams.notes);
     await this.reload();
   }
 

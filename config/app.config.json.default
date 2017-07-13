@@ -11,7 +11,12 @@
       {"id": 3, "name": "Gamma"}
     ],
     "workingTimeStart": 9,
-    "workingTimeEnd": 19
+    "workingTimeEnd": 19,
+    "defaultFilterParams": {
+      "timeline": {},
+      "notes": {"stacks": ["StackA", "StackB"], "notebooks": ["NotebookA", "NotebookB"]},
+      "activity": {}
+    }
   },
   "development": {
     "baseUrl": "http://localhost:3000"

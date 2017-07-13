@@ -22,7 +22,7 @@ export default class FilterModalComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
-  noteFilterParams: IDatastoreServiceNoteFilterParams;
+  filterParams: IDatastoreServiceNoteFilterParams;
   stacks: IStackItem[] = null;
   notebooks: INotebookItem[] = null;
 
@@ -42,6 +42,26 @@ export default class FilterModalComponent extends BaseComponent {
     name: {label: "Name"},
   };
 
+  async mounted(): Promise<void> {
+    await super.mounted();
+    this.$root.$on("filter-modal::show", (filterParams: IDatastoreServiceNoteFilterParams) => this.show(filterParams));
+  }
+
+  async show(filterParams: IDatastoreServiceNoteFilterParams): Promise<void> {
+    this.filterParams = filterParams;
+    this.stacks = _(this.datastoreService.$vm.stacks).filter(stack => !!stack).map(stack => {
+      return {stack: stack, selected: !!_.find(this.filterParams.stacks, filterStack => stack == filterStack)};
+    }).value();
+    this.notebooks = _(this.datastoreService.$vm.notebooks).map((notebook: NotebookEntity) => {
+      return {
+        guid: notebook.guid,
+        name: notebook.name,
+        selected: !!_.find(this.filterParams.notebookGuids, notebookGuid => notebook.guid == notebookGuid)
+      };
+    }).value();
+    this.$root.$emit("show::modal", "filter-modal");
+  }
+
   async shown(): Promise<void> {
     await this.reloadCount();
   }
@@ -49,34 +69,12 @@ export default class FilterModalComponent extends BaseComponent {
   async hidden(): Promise<void> {
     if (this.changed)
       this.$root.reload();
-    this.$root.$emit("filter-modal::change", this.noteFilterParams);
+    this.$root.$emit("filter-modal::hide", this.filterParams);
     this.changed = false;
-  }
-
-  async toggleStack(): Promise<void> {
-    if (!this.stacks) {
-      this.stacks = _(this.datastoreService.$vm.stacks).filter(stack => !!stack).map(stack => {
-        return {stack: stack, selected: false};
-      }).value();
-    } else {
-      this.stacks = null;
-    }
-    await this.reloadCount();
   }
 
   async toggleStackItem(stack: IStackItem): Promise<void> {
     stack.selected = !stack.selected;
-    await this.reloadCount();
-  }
-
-  async toggleNotebook(): Promise<void> {
-    if (!this.notebooks) {
-      this.notebooks = _(this.datastoreService.$vm.notebooks).map((notebook: NotebookEntity) => {
-        return {guid: notebook.guid, name: notebook.name, selected: false};
-      }).value();
-    } else {
-      this.notebooks = null;
-    }
     await this.reloadCount();
   }
 
@@ -86,9 +84,9 @@ export default class FilterModalComponent extends BaseComponent {
   }
 
   reloadConditions(): void {
-    this.noteFilterParams = {};
-    this.noteFilterParams.stacks = _(this.stacks).filter(stack => stack.selected).map(stack => stack.stack).value();
-    this.noteFilterParams.notebookGuids = _(this.notebooks).filter(notebook => notebook.selected).map(notebook => notebook.guid).value();
+    this.filterParams = {};
+    this.filterParams.stacks = _(this.stacks).filter(stack => stack.selected).map(stack => stack.stack).value();
+    this.filterParams.notebookGuids = _(this.notebooks).filter(notebook => notebook.selected).map(notebook => notebook.guid).value();
   }
 
   async reloadCount(): Promise<void> {
@@ -97,9 +95,9 @@ export default class FilterModalComponent extends BaseComponent {
     this.allNoteCount = null;
     this.loadedNoteCount = null;
     this.allLoadedNoteCount = null;
-    this.noteCount = await this.datastoreService.countNotes(this.noteFilterParams);
+    this.noteCount = await this.datastoreService.countNotes(this.filterParams);
     this.allNoteCount = await this.datastoreService.countNotes({});
-    let hasContentFilterParams = _.clone(this.noteFilterParams);
+    let hasContentFilterParams = _.clone(this.filterParams);
     hasContentFilterParams.hasContent = true;
     this.loadedNoteCount = await this.datastoreService.countNotes(hasContentFilterParams);
     this.allLoadedNoteCount = await this.datastoreService.countNotes({hasContent: true});

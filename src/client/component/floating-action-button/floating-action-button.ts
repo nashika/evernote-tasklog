@@ -18,11 +18,11 @@ export default class FloatingActionButtonComponent extends BaseComponent {
 
   async mounted(): Promise<void> {
     await super.mounted();
-    this.$root.$on("filter-modal::change", (param: IDatastoreServiceNoteFilterParams) => this.hideFilterModal(param))
+    this.$root.$on("filter-modal::hide", (param: IDatastoreServiceNoteFilterParams) => this.hideFilterModal(param))
   }
 
   showFilterModal() {
-    this.$root.$emit('show::modal', 'filter-modal');
+    this.$root.$emit("filter-modal::show", this.filterParams);
   }
 
   hideFilterModal(param: IDatastoreServiceNoteFilterParams) {

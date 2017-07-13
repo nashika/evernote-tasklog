@@ -8,8 +8,7 @@ import diff2html = require("diff2html");
 
 import BaseComponent from "../../base.component";
 import {container} from "../../../inversify.config";
-import {DatastoreService} from "../../../service/datastore.service";
-import AppComponent from "../../app.component";
+import {DatastoreService, IDatastoreServiceNoteFilterParams} from "../../../service/datastore.service";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 
 interface IActivityModifyData {
@@ -21,10 +20,9 @@ interface IActivityModifyData {
 @Component({})
 export default class ActivityModeComponent extends BaseComponent {
 
-  $root: AppComponent;
-
   datastoreService: DatastoreService = container.get(DatastoreService);
 
+  filterParams: IDatastoreServiceNoteFilterParams = {};
   date: Date = new Date();
   modifies: {[archiveId: string]: IActivityModifyData} = {};
   archiveNotes: NoteEntity[] = [];
@@ -42,11 +40,14 @@ export default class ActivityModeComponent extends BaseComponent {
     await this.reload();
   }
 
-  async reload(): Promise<void> {
-    let start = moment(this.date).startOf("day");
-    let end = moment(this.date).endOf("day");
+  async reload(filterParams: IDatastoreServiceNoteFilterParams = null): Promise<void> {
+    if (filterParams) this.filterParams = filterParams;
+    let noteFilterParams = _.clone(this.filterParams);
+    noteFilterParams.start = moment(this.date).startOf("day");
+    noteFilterParams.end = moment(this.date).endOf("day");
+    noteFilterParams.archiveMinStepMinute = 10;
     this.modifies = {};
-    this.archiveNotes = await this.datastoreService.getArchiveLogs({start: start, end: end, archiveMinStepMinute: 10});
+    this.archiveNotes = await this.datastoreService.getArchiveLogs(noteFilterParams);
     if (!this.archiveNotes) return;
     for (let note of this.archiveNotes) {
       let prevNote = await this.datastoreService.getPrevNote(this.archiveNotes, note, 10);

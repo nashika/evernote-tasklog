@@ -24,7 +24,7 @@
           div(v-else)
             i.fa.fa-spinner.fa-pulse
             | &nbsp;Loading...
-    app-floating-action-button(enableReload, enableFilter)
+    app-floating-action-button(enableReload, enableFilter, :filterParams="filterParams", @changeFilter="reload($event)")
 </template>
 
 <style lang="scss">
