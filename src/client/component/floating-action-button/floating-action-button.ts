@@ -7,6 +7,7 @@ import {IDatastoreServiceNoteFilterParams} from "../../service/datastore.service
   props: {
     enableReload: [Boolean, String],
     enableFilter: [Boolean, String],
+    enableMenu: [Boolean, String],
     filterParams: Object,
   },
 })
@@ -14,6 +15,7 @@ export default class FloatingActionButtonComponent extends BaseComponent {
 
   enableReload: boolean;
   enableFilter: boolean;
+  enableMenu: boolean;
   filterParams: IDatastoreServiceNoteFilterParams;
 
   async mounted(): Promise<void> {

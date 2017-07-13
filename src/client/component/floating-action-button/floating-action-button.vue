@@ -1,8 +1,10 @@
 <template lang="pug">
   nav#actions
-    #filter.action.rounded-circle(v-if="enableFilter", @click="showFilterModal()")
+    #menu-button.action.rounded-circle(v-if="enableMenu", @click="$root.$emit('show::modal', 'menu-modal')")
+      i.fa.fa-bars
+    #filter-button.action.rounded-circle(v-if="enableFilter", @click="showFilterModal()")
       i.fa.fa-filter
-    #reload.action.rounded-circle(v-if="enableReload", @click="$root.$emit('reload')")
+    #reload-button.action.rounded-circle(v-if="enableReload", @click="$root.$emit('reload')")
       i.fa.fa-refresh
 </template>
 

@@ -31,7 +31,9 @@
             | {{notesSpentTimes['$total']['$total'] | spentTime}}
           div(v-if="notesProfits['$total'] && notesProfits['$total']['$total']")
             | {{Math.round(notesProfits['$total']['$total'])}}
-    app-floating-action-button(enableReload, enableFilter, :filterParams="filterParams", @changeFilter="reload($event)")
+    b-modal(id="menu-modal", title="Menu", ok-only)
+      b-button() test
+    app-floating-action-button(enableReload, enableFilter, enableMenu, :filterParams="filterParams", @changeFilter="reload($event)")
 </template>
 
 <script lang="ts" src="./notes-mode.component.ts"></script>
