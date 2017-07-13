@@ -41,7 +41,7 @@ export default class AttendanceModeComponent extends BaseComponent {
       label: "Arrival",
     },
     departure: {
-      label: "Depature",
+      label: "Departure",
     },
     rest: {
       label: "Rest",
@@ -156,6 +156,23 @@ export default class AttendanceModeComponent extends BaseComponent {
   async remove(attendance: AttendanceEntity): Promise<void> {
     await this.requestService.remove(AttendanceEntity, attendance.id);
     await this.reload();
+  }
+
+  exportCsv(): void {
+    let content: string = "Day,Arrival,Departure,Rest,Remarks\n";
+    for (let attendance of this.attendances)
+      content += `${attendance.day},${this.timeToStr(attendance.arrivalTime)},${this.timeToStr(attendance.departureTime)},${this.timeToStr(attendance.restTime)},${attendance.remarks}\n`;
+    let bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    let blob = new Blob([bom, content], {type: "text/csv"});
+    let a = document.createElement("a");
+    a.download = `attendances_${this.person.name}-${this.year}-${this.month}_${moment().format("YYYYMMDDHHmmss")}.csv`;
+    a.href = URL.createObjectURL(blob);
+    a.click();
+  }
+
+  private timeToStr(time: number): string {
+    if (!_.isNumber(time)) return "";
+    return `${Math.floor(time / 60)}:${time % 60}`;
   }
 
 }

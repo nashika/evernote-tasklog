@@ -33,6 +33,8 @@
         template(slot="action", scope="data")
           b-button(variant="primary", size="sm", :disabled="!updateFlags[data.index]", @click="save(data.item)") Update
           b-button(variant="danger", size="sm", :disabled="!createFlags[data.index]", @click="remove(data.item)") Delete
+      .my-3.text-right
+        b-button(variant="secondary", size="sm", @click="exportCsv()") Export CSV
 </template>
 
 <script lang="ts" src="./attendance-mode.component.ts"></script>
