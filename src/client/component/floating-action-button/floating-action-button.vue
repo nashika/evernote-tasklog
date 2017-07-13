@@ -14,6 +14,7 @@
     bottom: 0;
     right: 0;
     padding: 10px;
+    z-index: 100;
 
     .action {
       display: flex;
