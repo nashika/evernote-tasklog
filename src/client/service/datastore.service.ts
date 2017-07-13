@@ -19,15 +19,19 @@ import {configLoader, IPersonConfig} from "../../common/util/config-loader";
 import {SocketIoClientService} from "./socket-io-client-service";
 import {logger} from "../logger";
 
-interface IDatastoreServiceParams {
-  start?: moment.Moment,
-  end?: moment.Moment,
-  noteGuids?: string[],
-  hasContent?: boolean,
-  noFilter?: boolean,
-  getContent?: boolean,
-  archive?: boolean
+export interface IDatastoreServiceNoteFilterParams {
+  start?: moment.Moment;
+  end?: moment.Moment;
+  notebookGuids?: string[];
+  stacks?: string[];
+  hasContent?: boolean;
   archiveMinStepMinute?: number;
+}
+
+interface IDatastoreServiceTimeLogFilterParams {
+  start?: moment.Moment;
+  end?: moment.Moment;
+  noteGuids?: string[];
 }
 
 export class TerminateResult {
@@ -38,17 +42,6 @@ export class TerminateResult {
   }
 }
 
-@Component({})
-export class DatastoreServiceEventBus extends Vue {
-  lastUpdateCount: number = 0;
-  user: Evernote.User = null;
-  currentPersonId: number = 0;
-  notebooks: {[guid: string]: NotebookEntity} = {};
-  stacks: string[] = [];
-  tags: {[guid: string]: TagEntity} = {};
-  filterParams: {notebookGuids?: string[], stacks?: string[]} = {};
-}
-
 type TNotesResult = {[guid: string]: NoteEntity};
 type TTimeLogsResult = {[noteGuid: string]: {[id: number]: TimeLogEntity}};
 type TProfitLogsResult = {[noteGuid: string]: {[id: number]: ProfitLogEntity}};
@@ -57,6 +50,16 @@ interface INoteLogsResult {
   notes: TNotesResult;
   timeLogs: TTimeLogsResult;
   profitLogs: TProfitLogsResult;
+}
+
+@Component({})
+export class DatastoreServiceEventBus extends Vue {
+  lastUpdateCount: number = 0;
+  user: Evernote.User = null;
+  currentPersonId: number = 0;
+  notebooks: {[guid: string]: NotebookEntity} = {};
+  stacks: string[] = [];
+  tags: {[guid: string]: TagEntity} = {};
 }
 
 @injectable()
@@ -96,7 +99,7 @@ export class DatastoreService extends BaseClientService {
     this.$vm.tags = _.keyBy(tags, "guid");
   }
 
-  async getNoteLogs(params: IDatastoreServiceParams = {}): Promise<INoteLogsResult> {
+  async getNoteLogs(params: IDatastoreServiceNoteFilterParams = {}): Promise<INoteLogsResult> {
     if (this.progressService.isActive) return null;
     let result: INoteLogsResult = {notes: null, timeLogs: null, profitLogs: null};
     this.progressService.open(7);
@@ -117,7 +120,7 @@ export class DatastoreService extends BaseClientService {
     return result;
   }
 
-  async getArchiveLogs(params: IDatastoreServiceParams = {}): Promise<NoteEntity[]> {
+  async getArchiveLogs(params: IDatastoreServiceNoteFilterParams = {}): Promise<NoteEntity[]> {
     if (this.progressService.isActive) return null;
     this.progressService.open(4);
     let archiveNotes: NoteEntity[];
@@ -140,7 +143,7 @@ export class DatastoreService extends BaseClientService {
     await this.requestService.sync();
   }
 
-  private async checkNoteCount(params: IDatastoreServiceParams): Promise<void> {
+  private async checkNoteCount(params: IDatastoreServiceNoteFilterParams): Promise<void> {
     this.progressService.next("Checking notes count.");
     let options = this.makeNoteFindOptions(params);
     let count = await this.requestService.count(NoteEntity, options);
@@ -149,16 +152,18 @@ export class DatastoreService extends BaseClientService {
         throw new TerminateResult(`User Canceled`);
   }
 
-  protected async getNotes(params: IDatastoreServiceParams): Promise<TNotesResult> {
+  protected async getNotes(params: IDatastoreServiceNoteFilterParams): Promise<TNotesResult> {
     this.progressService.next("Getting notes.");
     let options = this.makeNoteFindOptions(params);
     let notes = await this.requestService.find<NoteEntity>(NoteEntity, options);
     return _.keyBy(notes, "guid");
   }
 
-  private async getArchiveNotes(params: IDatastoreServiceParams): Promise<NoteEntity[]> {
+  private async getArchiveNotes(params: IDatastoreServiceNoteFilterParams): Promise<NoteEntity[]> {
     this.progressService.next("Getting arcguve notes.");
     let options = this.makeNoteFindOptions(params);
+    options.archive = true;
+    options.includeContent = true;
     let notes = await this.requestService.find<NoteEntity>(NoteEntity, options);
     if (params.archiveMinStepMinute) {
       notes = _.filter(notes, (filterNote: NoteEntity) => {
@@ -185,7 +190,7 @@ export class DatastoreService extends BaseClientService {
     }
   }
 
-  private async getTimeLogs(notes: TNotesResult, params: IDatastoreServiceParams): Promise<TTimeLogsResult> {
+  private async getTimeLogs(notes: TNotesResult, params: IDatastoreServiceTimeLogFilterParams): Promise<TTimeLogsResult> {
     this.progressService.next("Getting time logs.");
     let guids: string[] = [];
     for (let noteGuid in notes) {
@@ -228,7 +233,7 @@ export class DatastoreService extends BaseClientService {
     this.progressService.close();
   }
 
-  async countNotes(params: IDatastoreServiceParams): Promise<number> {
+  async countNotes(params: IDatastoreServiceNoteFilterParams): Promise<number> {
     let options = this.makeNoteFindOptions(params);
     return await this.requestService.count(NoteEntity, options);
   }
@@ -251,7 +256,7 @@ export class DatastoreService extends BaseClientService {
     return await this.requestService.findOne<NoteEntity>(NoteEntity, options);
   }
 
-  private makeNoteFindOptions(params: IDatastoreServiceParams): IFindNoteEntityOptions {
+  private makeNoteFindOptions(params: IDatastoreServiceNoteFilterParams): IFindNoteEntityOptions {
     let options: IFindNoteEntityOptions = {where: {$and: []}};
     if (params.start)
       (<any>options.where.$and).push({updated: {$gte: params.start.valueOf()}});
@@ -260,39 +265,29 @@ export class DatastoreService extends BaseClientService {
     // set hasContent query
     if (params.hasContent)
       (<any>options.where.$and).push({content: {$ne: null}});
-    // set noFilter
-    if (!params.noFilter) {
-      // check notebooks
-      var notebooksHash: {[notebookGuid: string]: boolean} = {};
-      if (this.$vm.filterParams.stacks)
-        for (let stack of this.$vm.filterParams.stacks)
-          for (let notebook of _.values(this.$vm.notebooks))
-            if (notebook.stack == stack)
-              notebooksHash[notebook.guid] = true;
-      if (this.$vm.filterParams.notebookGuids && this.$vm.filterParams.notebookGuids.length > 0)
-        for (let notebookGuid of this.$vm.filterParams.notebookGuids)
-          notebooksHash[notebookGuid] = true;
-      // set notebooks query
-      if (_.size(notebooksHash) > 0)
-        (<any>options.where.$and).push({notebookGuid: {$in: _.keys(notebooksHash)}});
-    }
-    if (params.archive) {
-      options.archive = true;
-      options.includeContent = true;
-    }
+    // check notebooks
+    var notebooksHash: {[notebookGuid: string]: boolean} = {};
+    if (params.stacks)
+      for (let stack of params.stacks)
+        for (let notebook of _.values(this.$vm.notebooks))
+          if (notebook.stack == stack)
+            notebooksHash[notebook.guid] = true;
+    if (_.size(params.notebookGuids) > 0)
+      for (let notebookGuid of params.notebookGuids)
+        notebooksHash[notebookGuid] = true;
+    // set notebooks query
+    if (_.size(notebooksHash) > 0)
+      (<any>options.where.$and).push({notebookGuid: {$in: _.keys(notebooksHash)}});
     return options;
   }
 
-  private makeTimeLogFindOptions(params: IDatastoreServiceParams): IFindEntityOptions {
+  private makeTimeLogFindOptions(params: IDatastoreServiceTimeLogFilterParams): IFindEntityOptions {
     let options: IFindEntityOptions = {where: {$and: []}};
     // set date query
     if (params.start)
       (<any>options.where.$and).push({date: {$gte: params.start.valueOf()}});
     if (params.end)
       (<any>options.where.$and).push({date: {$lte: params.end.valueOf()}});
-    // set noFilter query
-    if (params.noFilter) {
-    }
     // set note guids query
     if (params.noteGuids)
       if (params.noteGuids.length > 0)

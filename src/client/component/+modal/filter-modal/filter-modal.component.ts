@@ -3,7 +3,7 @@ import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";
 import {container} from "../../../inversify.config";
-import {DatastoreService} from "../../../service/datastore.service";
+import {DatastoreService, IDatastoreServiceNoteFilterParams} from "../../../service/datastore.service";
 import {NotebookEntity} from "../../../../common/entity/notebook.entity";
 
 interface IStackItem {
@@ -17,17 +17,12 @@ interface INotebookItem {
   selected: boolean;
 }
 
-@Component({
-  watch: {
-    "datastoreService.notebooks": "reloadConditions",
-    "datastoreService.filterParams.notebookGuids": "reloadCounts",
-    "datastoreService.filterParams.stacks": "reloadCounts",
-  },
-})
+@Component({})
 export default class FilterModalComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
+  noteFilterParams: IDatastoreServiceNoteFilterParams;
   stacks: IStackItem[] = null;
   notebooks: INotebookItem[] = null;
 
@@ -54,6 +49,7 @@ export default class FilterModalComponent extends BaseComponent {
   async hidden(): Promise<void> {
     if (this.changed)
       this.$root.reload();
+    this.$root.$emit("filter-modal::change", this.noteFilterParams);
     this.changed = false;
   }
 
@@ -90,11 +86,9 @@ export default class FilterModalComponent extends BaseComponent {
   }
 
   reloadConditions(): void {
-    this.datastoreService.$vm.filterParams = {};
-    this.datastoreService.$vm.filterParams.stacks = _(this.stacks)
-      .filter(stack => stack.selected).map(stack => stack.stack).value();
-    this.datastoreService.$vm.filterParams.notebookGuids = _(this.notebooks)
-      .filter(notebook => notebook.selected).map(notebook => notebook.guid).value();
+    this.noteFilterParams = {};
+    this.noteFilterParams.stacks = _(this.stacks).filter(stack => stack.selected).map(stack => stack.stack).value();
+    this.noteFilterParams.notebookGuids = _(this.notebooks).filter(notebook => notebook.selected).map(notebook => notebook.guid).value();
   }
 
   async reloadCount(): Promise<void> {
@@ -103,10 +97,12 @@ export default class FilterModalComponent extends BaseComponent {
     this.allNoteCount = null;
     this.loadedNoteCount = null;
     this.allLoadedNoteCount = null;
-    this.noteCount = await this.datastoreService.countNotes({});
-    this.allNoteCount = await this.datastoreService.countNotes({noFilter: true});
-    this.loadedNoteCount = await this.datastoreService.countNotes({hasContent: true});
-    this.allLoadedNoteCount = await this.datastoreService.countNotes({hasContent: true, noFilter: true});
+    this.noteCount = await this.datastoreService.countNotes(this.noteFilterParams);
+    this.allNoteCount = await this.datastoreService.countNotes({});
+    let hasContentFilterParams = _.clone(this.noteFilterParams);
+    hasContentFilterParams.hasContent = true;
+    this.loadedNoteCount = await this.datastoreService.countNotes(hasContentFilterParams);
+    this.allLoadedNoteCount = await this.datastoreService.countNotes({hasContent: true});
   }
 
   async reParse(): Promise<void> {

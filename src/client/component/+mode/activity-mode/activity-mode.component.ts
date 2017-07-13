@@ -46,7 +46,7 @@ export default class ActivityModeComponent extends BaseComponent {
     let start = moment(this.date).startOf("day");
     let end = moment(this.date).endOf("day");
     this.modifies = {};
-    this.archiveNotes = await this.datastoreService.getArchiveLogs({start: start, end: end, archive: true, archiveMinStepMinute: 10});
+    this.archiveNotes = await this.datastoreService.getArchiveLogs({start: start, end: end, archiveMinStepMinute: 10});
     if (!this.archiveNotes) return;
     for (let note of this.archiveNotes) {
       let prevNote = await this.datastoreService.getPrevNote(this.archiveNotes, note, 10);

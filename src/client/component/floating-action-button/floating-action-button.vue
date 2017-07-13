@@ -1,6 +1,6 @@
 <template lang="pug">
   nav#actions
-    #filter.action.rounded-circle(v-if="enableFilter", @click="$root.$emit('show::modal', 'filter-modal')")
+    #filter.action.rounded-circle(v-if="enableFilter", @click="showFilterModal()")
       i.fa.fa-filter
     #reload.action.rounded-circle(v-if="enableReload", @click="$root.$emit('reload')")
       i.fa.fa-refresh

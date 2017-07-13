@@ -2,7 +2,7 @@ import Component from "vue-class-component";
 import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";
-import {DatastoreService} from "../../../service/datastore.service";
+import {DatastoreService, IDatastoreServiceNoteFilterParams} from "../../../service/datastore.service";
 import {ProfitLogEntity} from "../../../../common/entity/profit-log.entity";
 import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
 import {container} from "../../../inversify.config";
@@ -13,6 +13,8 @@ import {configLoader, IPersonConfig} from "../../../../common/util/config-loader
 export default class NotesModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
+
+  filterParams: IDatastoreServiceNoteFilterParams = {};
   notes: { [guid: string]: NoteEntity } = {};
   notesSpentTimes: { [noteGuid: string]: { [person: string]: number } } = {};
   notesProfits: { [noteGuid: string]: { [person: string]: number } } = {};
@@ -28,8 +30,10 @@ export default class NotesModeComponent extends BaseComponent {
     await this.reload();
   }
 
-  async reload(): Promise<void> {
-    let noteLogsResult = await this.datastoreService.getNoteLogs({getContent: true});
+  async reload(filterParams: IDatastoreServiceNoteFilterParams = null): Promise<void> {
+    if (filterParams) this.filterParams = filterParams;
+    let noteLogsResult = await this.datastoreService.getNoteLogs(this.filterParams);
+    if (!noteLogsResult) return;
     this.notes = noteLogsResult.notes;
     this.reloadTimeLogs(noteLogsResult.timeLogs);
     this.reloadProfitLogs(noteLogsResult.profitLogs);

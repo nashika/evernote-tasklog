@@ -1,9 +1,10 @@
 import Component from "vue-class-component";
 import moment = require("moment");
 import {DataSet, Timeline} from "vis";
+import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";
-import {DatastoreService} from "../../../service/datastore.service";
+import {DatastoreService, IDatastoreServiceNoteFilterParams} from "../../../service/datastore.service";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 import {abbreviateFilter} from "../../../filter/abbreviate.filter";
 import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
@@ -23,6 +24,8 @@ interface TimelineItem {
 export default class TimelineModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
+
+  filterParams: IDatastoreServiceNoteFilterParams = {};
   timeline: any = null;
   timelineItems: any = null;
   timelineGroups: any = null;
@@ -39,8 +42,12 @@ export default class TimelineModeComponent extends BaseComponent {
     await this.reload();
   }
 
-  async reload(): Promise<void> {
-    let noteLogsResult = await this.datastoreService.getNoteLogs({start: this.start, end: this.end, getContent: true});
+  async reload(filterParams: IDatastoreServiceNoteFilterParams = null): Promise<void> {
+    if (filterParams) this.filterParams = filterParams;
+    let noteFilterParams = _.clone(this.filterParams);
+    noteFilterParams.start = this.start;
+    noteFilterParams.end = this.end;
+    let noteLogsResult = await this.datastoreService.getNoteLogs(noteFilterParams);
     if (!noteLogsResult) return;
     if (this.timeline) this.timeline.destroy();
     this.timelineGroups = new DataSet();
