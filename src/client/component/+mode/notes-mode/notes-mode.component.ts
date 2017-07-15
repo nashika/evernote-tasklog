@@ -25,6 +25,15 @@ export default class NotesModeComponent extends BaseComponent {
     this.existPersons = [];
   }
 
+  get fields(): Object {
+    let result: any = {};
+    result["title"] = {label: "Title"};
+    for (let person of this.existPersons)
+      result["person-" + person.id] = {label: person.name, personId: person.id};
+    result["total"] = {label: "Total"};
+    return result;
+  }
+
   async mounted(): Promise<void> {
     await super.mounted();
     this.filterParams = this.datastoreService.makeDefaultNoteFilterParams(configLoader.app.defaultFilterParams.notes);
