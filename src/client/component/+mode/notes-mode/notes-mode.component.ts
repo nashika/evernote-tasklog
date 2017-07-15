@@ -15,10 +15,17 @@ export default class NotesModeComponent extends BaseComponent {
   datastoreService: DatastoreService = container.get(DatastoreService);
 
   filterParams: IDatastoreServiceNoteFilterParams = {};
+  filterProfitType: "" | "withProfit"| "withNoProfit" = "";
   notes: { [guid: string]: NoteEntity } = {};
   notesSpentTimes: { [noteGuid: string]: { [person: string]: number } } = {};
   notesProfits: { [noteGuid: string]: { [person: string]: number } } = {};
   existPersons: IPersonConfig[];
+
+  filterProfitTypeOptions = [
+    {text: "Show all notes.", value: ""},
+    {text: "Show notes with profit.", value: "withProfit"},
+    {text: "Show notes with no profit.", value: "withNoProfit"},
+  ];
 
   constructor() {
     super();
@@ -98,6 +105,12 @@ export default class NotesModeComponent extends BaseComponent {
         this.notesProfits["$total"][person.id] += this.notesProfits[noteGuid][person.id];
       }
     }
+  }
+
+  filter(note: NoteEntity): boolean {
+    if (this.filterProfitType == "withProfit") return !!_.get(this.notesProfits[note.guid], "$total");
+    if (this.filterProfitType == "withNoProfit") return !_.get(this.notesProfits[note.guid], "$total");
+    return true;
   }
 
 }
