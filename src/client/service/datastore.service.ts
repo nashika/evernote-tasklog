@@ -42,11 +42,11 @@ export class TerminateResult {
   }
 }
 
-type TNotesResult = {[guid: string]: NoteEntity};
-type TTimeLogsResult = {[noteGuid: string]: {[id: number]: TimeLogEntity}};
-type TProfitLogsResult = {[noteGuid: string]: {[id: number]: ProfitLogEntity}};
+export type TNotesResult = {[guid: string]: NoteEntity};
+export type TTimeLogsResult = {[noteGuid: string]: {[id: number]: TimeLogEntity}};
+export type TProfitLogsResult = {[noteGuid: string]: {[id: number]: ProfitLogEntity}};
 
-interface INoteLogsResult {
+export interface INoteLogsResult {
   notes: TNotesResult;
   timeLogs: TTimeLogsResult;
   profitLogs: TProfitLogsResult;

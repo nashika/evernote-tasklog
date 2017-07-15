@@ -2,9 +2,10 @@ import Component from "vue-class-component";
 import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";
-import {DatastoreService, IDatastoreServiceNoteFilterParams} from "../../../service/datastore.service";
-import {ProfitLogEntity} from "../../../../common/entity/profit-log.entity";
-import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
+import {
+  DatastoreService, IDatastoreServiceNoteFilterParams, TNotesResult,
+  TProfitLogsResult, TTimeLogsResult
+} from "../../../service/datastore.service";
 import {container} from "../../../inversify.config";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 import {configLoader, IPersonConfig} from "../../../../common/util/config-loader";
@@ -14,6 +15,7 @@ export default class NotesModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
 
+  filterText: string = "";
   filterParams: IDatastoreServiceNoteFilterParams = {};
   filterProfitType: "" | "withProfit"| "withNoProfit" = "";
   notes: { [guid: string]: NoteEntity } = {};
@@ -51,15 +53,25 @@ export default class NotesModeComponent extends BaseComponent {
     if (filterParams) this.filterParams = filterParams;
     let noteLogsResult = await this.datastoreService.getNoteLogs(this.filterParams);
     if (!noteLogsResult) return;
-    this.notes = noteLogsResult.notes;
+    this.reloadNotes(noteLogsResult.notes, noteLogsResult.profitLogs);
     this.reloadTimeLogs(noteLogsResult.timeLogs);
     this.reloadProfitLogs(noteLogsResult.profitLogs);
   }
 
-  private reloadTimeLogs(timeLogs: { [noteGuid: string]: { [_id: string]: TimeLogEntity } }) {
+  private reloadNotes(notes: TNotesResult, profitLogs: TProfitLogsResult) {
+    if (this.filterProfitType == "withProfit")
+      this.notes = _.pickBy(notes, (note: NoteEntity) => !!profitLogs[note.guid]);
+    else if (this.filterProfitType == "withNoProfit")
+      this.notes = _.pickBy(notes, (note: NoteEntity) => !profitLogs[note.guid]);
+    else
+      this.notes = notes;
+  }
+
+  private reloadTimeLogs(timeLogs: TTimeLogsResult) {
     this.notesSpentTimes = {};
     let personsHash: { [person: string]: boolean } = {};
     for (var noteGuid in timeLogs) {
+      if (!this.notes[noteGuid]) continue;
       var noteTimeLog = timeLogs[noteGuid];
       for (var timeLogId in noteTimeLog) {
         var timeLog = noteTimeLog[timeLogId];
@@ -82,9 +94,10 @@ export default class NotesModeComponent extends BaseComponent {
     this.existPersons = _.filter(configLoader.app.persons, person => _.has(personsHash, person.id));
   }
 
-  private reloadProfitLogs(profitLogs: { [noteGuid: string]: { [person: string]: ProfitLogEntity } }) {
+  private reloadProfitLogs(profitLogs: TProfitLogsResult) {
     this.notesProfits = {};
     for (var noteGuid in profitLogs) {
+      if (!this.notes[noteGuid]) continue;
       var noteProfitLog = profitLogs[noteGuid];
       for (var profitLogId in noteProfitLog) {
         var profitLog = noteProfitLog[profitLogId];
@@ -107,10 +120,10 @@ export default class NotesModeComponent extends BaseComponent {
     }
   }
 
-  filter(note: NoteEntity): boolean {
+  /*filter(note: NoteEntity): boolean {
     if (this.filterProfitType == "withProfit") return !!_.get(this.notesProfits[note.guid], "$total");
     if (this.filterProfitType == "withNoProfit") return !_.get(this.notesProfits[note.guid], "$total");
     return true;
-  }
+  }*/
 
 }

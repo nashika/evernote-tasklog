@@ -1,7 +1,10 @@
 <template lang="pug">
   section#notes-mode.p-3
+    b-input-group.mb-2
+      b-input-group-addon(slot="left"): i.fa.fa-search
+      b-form-input(v-model="filterText", placeholder="Type to Search")
     b-table(bordered, striped, hover, small, responsive, head-variant="inverse", foot-clone, foot-variant="default",
-    :fields="fields", :items="lodash.values(notes)", :filter="filter")
+    :fields="fields", :items="lodash.values(notes)", :filter="filterText")
       template(slot="title", scope="data")
         a(:href="'evernote:///view/' + datastoreService.$vm.user.id + '/' + datastoreService.$vm.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
       template(v-for="person in existPersons", :slot="'person-' + person.id", scope="data")
@@ -27,7 +30,7 @@
           | {{notesSpentTimes['$total']['$total'] | spentTime}}
         .text-right(v-if="notesProfits['$total'] && notesProfits['$total']['$total']")
           | {{Math.round(notesProfits['$total']['$total'])}}
-    b-modal(id="menu-modal", title="Menu", ok-only)
+    b-modal(id="menu-modal", title="Menu", ok-only, @hidden="reload()")
       .h6 Filter profit type
       b-form-radio(v-model="filterProfitType", :options="filterProfitTypeOptions", stacked)
     app-floating-action-button(enableReload, enableFilter, enableMenu, :filterParams="filterParams", @changeFilter="reload($event)")
