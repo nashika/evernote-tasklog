@@ -8,6 +8,7 @@ import "inversify";
 import "lodash";
 import "loglevel";
 import "moment";
+import "numeral";
 import "pluralize";
 import "push.js";
 import "reflect-metadata";

@@ -7,6 +7,7 @@ configLoader.isBrowser = true;
 // filters
 import "./filter/abbreviate.filter";
 import "./filter/filter-by-property.filter";
+import "./filter/numeral.filter";
 import "./filter/object-length.filter";
 import "./filter/order-object-by.filter";
 import "./filter/spent-time.filter";

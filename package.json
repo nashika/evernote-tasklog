@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/nashika/evernote-tasklog#readme",
   "dependencies": {
+    "@types/numeral": "0.0.21",
     "body-parser": "1.17.2",
     "connect-session-sequelize": "4.1.0",
     "cookie-parser": "1.4.3",
@@ -48,6 +49,7 @@
     "lodash": "4.17.4",
     "log4js": "1.1.1",
     "moment": "2.18.1",
+    "numeral": "2.0.6",
     "pluralize": "5.0.0",
     "pug": "2.0.0-rc.2",
     "reflect-metadata": "0.1.10",

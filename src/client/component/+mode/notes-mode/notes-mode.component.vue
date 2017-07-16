@@ -12,14 +12,14 @@
           small ({{Math.round(notesSpentTimes[data.item.guid]['$' + person.id] / notesSpentTimes[data.item.guid]['$total'] * 100)}}%)&nbsp;
           | {{notesSpentTimes[data.item.guid]['$' + person.id] | spentTime}}
         .text-right(v-if="lodash.get(notesProfits, [data.item.guid, '$' + person.id])")
-          | {{Math.round(notesProfits[data.item.guid]['$' + person.id])}}
+          | {{notesProfits[data.item.guid]['$' + person.id] | numeral('0,0')}}
       template(slot="total", scope="data")
         .text-right(v-if="lodash.get(notesSpentTimes, [data.item.guid, '$total'])")
           | {{notesSpentTimes[data.item.guid]['$total'] | spentTime}}
         .text-right(v-if="lodash.get(notesProfits, [data.item.guid, '$total'])")
           small(v-if="lodash.get(notesProfits, [data.item.guid, '$total']) && lodash.get(notesSpentTimes, [data.item.guid, '$total'])")
-            | ({{Math.round(notesProfits[data.item.guid]['$total'] / notesSpentTimes[data.item.guid]['$total'] * 60)}}/h)&nbsp;
-          | {{Math.round(notesProfits[data.item.guid]['$total'])}}
+            | ({{notesProfits[data.item.guid]['$total'] / notesSpentTimes[data.item.guid]['$total'] * 60 | numeral('0,0')}}/h)&nbsp;
+          | {{notesProfits[data.item.guid]['$total'] | numeral('0,0')}}
       template(slot="profitPerHour", scope="data")
       template(slot="FOOT_title", scope="data") Total
       template(v-for="person in existPersons", :slot="'FOOT_person-' + person.id", scope="data")
@@ -27,14 +27,14 @@
           small ({{Math.round(notesSpentTimes['$total']['$' + person.id] / notesSpentTimes['$total']['$total'] * 100)}}%)&nbsp;
           | {{notesSpentTimes['$total']['$' + person.id] | spentTime}}
         .text-right(v-if="lodash.get(notesProfits, ['$total', '$' + person.id])")
-          | {{Math.round(notesProfits['$total']['$' + person.id])}}
+          | {{notesProfits['$total']['$' + person.id] | numeral('0,0')}}
       template(slot="FOOT_total", scope="data")
         .text-right(v-if="lodash.get(notesSpentTimes, ['$total', '$total'])")
           | {{notesSpentTimes['$total']['$total'] | spentTime}}
         .text-right(v-if="lodash.get(notesProfits, ['$total', '$total'])")
           small(v-if="lodash.get(notesProfits, ['$total', '$total']) && lodash.get(notesSpentTimes, ['$total', '$total'])")
-            | ({{Math.round(notesProfits['$total']['$total'] / notesSpentTimes['$total']['$total'] * 60)}}/h)&nbsp;
-          | {{Math.round(notesProfits['$total']['$total'])}}
+            | ({{notesProfits['$total']['$total'] / notesSpentTimes['$total']['$total'] * 60 | numeral('0,0')}}/h)&nbsp;
+          | {{notesProfits['$total']['$total'] | numeral('0,0')}}
     b-modal(id="menu-modal", title="Menu", ok-only, @hidden="reload()")
       .h6 Filter profit type
       b-form-radio(v-model="filterProfitType", :options="filterProfitTypeOptions", stacked)
