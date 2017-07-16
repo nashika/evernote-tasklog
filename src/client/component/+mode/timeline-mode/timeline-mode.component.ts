@@ -1,9 +1,10 @@
 import Component from "vue-class-component";
 import moment = require("moment");
 import {DataSet, Timeline} from "vis";
+import * as _ from "lodash";
 
 import BaseComponent from "../../base.component";
-import {DatastoreService} from "../../../service/datastore.service";
+import {DatastoreService, IDatastoreServiceNoteFilterParams} from "../../../service/datastore.service";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 import {abbreviateFilter} from "../../../filter/abbreviate.filter";
 import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
@@ -23,6 +24,8 @@ interface TimelineItem {
 export default class TimelineModeComponent extends BaseComponent {
 
   datastoreService: DatastoreService = container.get(DatastoreService);
+
+  filterParams: IDatastoreServiceNoteFilterParams = {};
   timeline: any = null;
   timelineItems: any = null;
   timelineGroups: any = null;
@@ -39,8 +42,13 @@ export default class TimelineModeComponent extends BaseComponent {
     await this.reload();
   }
 
-  async reload(): Promise<void> {
-    await this.datastoreService.reload({start: this.start, end: this.end, getContent: true});
+  async reload(filterParams: IDatastoreServiceNoteFilterParams = null): Promise<void> {
+    if (filterParams) this.filterParams = filterParams;
+    let noteFilterParams = _.clone(this.filterParams);
+    noteFilterParams.start = this.start;
+    noteFilterParams.end = this.end;
+    let noteLogsResult = await this.datastoreService.getNoteLogs(noteFilterParams);
+    if (!noteLogsResult) return;
     if (this.timeline) this.timeline.destroy();
     this.timelineGroups = new DataSet();
     this.timelineItems = new DataSet();
@@ -54,20 +62,20 @@ export default class TimelineModeComponent extends BaseComponent {
       content: "Update",
     });
     let notes: {[noteGuid: string]: NoteEntity} = {};
-    for (var noteGuid in this.datastoreService.notes) {
-      let note: NoteEntity = this.datastoreService.notes[noteGuid];
+    for (var noteGuid in noteLogsResult.notes) {
+      let note: NoteEntity = noteLogsResult.notes[noteGuid];
       notes[note.guid] = note;
       let timelineItem: TimelineItem = {
         id: note.guid,
         group: "updated",
-        content: `<a href="evernote:///view/${this.datastoreService.user.id}/${this.datastoreService.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${abbreviateFilter(note.title, 40)}</a>`,
+        content: `<a href="evernote:///view/${this.datastoreService.$vm.user.id}/${this.datastoreService.$vm.user.shardId}/${note.guid}/${note.guid}/" title="${note.title}">${abbreviateFilter(note.title, 40)}</a>`,
         start: moment(note.updated).toDate(),
         type: "point",
       };
       this.timelineItems.add(timelineItem);
     }
-    for (let noteGuid in this.datastoreService.timeLogs) {
-      let noteTimeLogs = this.datastoreService.timeLogs[noteGuid];
+    for (let noteGuid in noteLogsResult.timeLogs) {
+      let noteTimeLogs = noteLogsResult.timeLogs[noteGuid];
       for (let timeLogId in noteTimeLogs) {
         let timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
         let note: NoteEntity = notes[timeLog.noteGuid];
@@ -75,7 +83,7 @@ export default class TimelineModeComponent extends BaseComponent {
         let timelineItem: TimelineItem = {
           id: String(timeLog.id),
           group: timeLog.personId,
-          content: `<a href="evernote:///view/${this.datastoreService.user["id"]}/${this.datastoreService.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
+          content: `<a href="evernote:///view/${this.datastoreService.$vm.user["id"]}/${this.datastoreService.$vm.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
           start: moment(timeLog.date).toDate(),
           end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
           type: timeLog.spentTime ? 'range' : 'point',

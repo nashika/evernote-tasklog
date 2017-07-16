@@ -67,10 +67,11 @@ export class SyncService extends BaseServerService {
     let localSyncState: evernote.Evernote.SyncState = await optionTable.findValueByKey("syncState");
     if (!localSyncState) localSyncState = <any>{updateCount: 0};
     let remoteSyncState = await this.evernoteClientService.getSyncState();
+    let updateEventHash = {};
     // Sync process
     logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
     while (localSyncState.updateCount < remoteSyncState.updateCount) {
-      await this.getSyncChunk(localSyncState);
+      await this.getSyncChunk(localSyncState, updateEventHash);
     }
     await optionTable.saveValueByKey("syncState", remoteSyncState);
     logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
@@ -80,10 +81,12 @@ export class SyncService extends BaseServerService {
     logger.info(`Next auto reload will run after ${this.interval} msec.`);
     await this.autoGetNoteContent(this.interval);
     this.socketIoServerService.emitAll("sync::updateCount", this.updateCount);
+    for (let event in updateEventHash)
+      this.socketIoServerService.emitAll(event);
     await this.unlock();
   }
 
-  private async getSyncChunk(localSyncState: evernote.Evernote.SyncState): Promise<void> {
+  private async getSyncChunk(localSyncState: evernote.Evernote.SyncState, updateEventHash: any): Promise<void> {
     logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
     let optionTable = this.tableService.getTable<OptionTable>(OptionEntity);
     let noteTable = this.tableService.getTable<NoteTable>(NoteEntity);
@@ -102,6 +105,16 @@ export class SyncService extends BaseServerService {
     await savedSearchTable.removeByGuid(lastSyncChunk.expungedSearches);
     await linkedNotebookTable.saveAll(_.map(lastSyncChunk.linkedNotebooks, linkedNotebook => new LinkedNotebookEntity(linkedNotebook)));
     await linkedNotebookTable.removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
+    if (_.size(lastSyncChunk.notes) > 0 || _.size(lastSyncChunk.expungedNotes) > 0)
+      updateEventHash["sync::updateNotes"] = true;
+    if (_.size(lastSyncChunk.notebooks) > 0 || _.size(lastSyncChunk.expungedNotebooks) > 0)
+      updateEventHash["sync::updateNotebooks"] = true;
+    if (_.size(lastSyncChunk.tags) > 0 || _.size(lastSyncChunk.expungedTags) > 0)
+      updateEventHash["sync::updateTags"] = true;
+    if (_.size(lastSyncChunk.searches) > 0 || _.size(lastSyncChunk.expungedSearches) > 0)
+      updateEventHash["sync::updateSearches"] = true;
+    if (_.size(lastSyncChunk.linkedNotebooks) > 0 || _.size(lastSyncChunk.expungedLinkedNotebooks) > 0)
+      updateEventHash["sync::updateLinkedNotebooks"] = true;
     localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
     await optionTable.saveValueByKey("syncState", localSyncState);
     logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);

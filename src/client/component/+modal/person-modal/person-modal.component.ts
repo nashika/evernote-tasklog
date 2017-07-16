@@ -14,6 +14,7 @@ export default class PersonModalComponent extends BaseComponent {
 
   persons: IPersonConfig[] = configLoader.app.persons;
   currentPersonId: number = 0;
+  changed: boolean = false;
 
   fields = {
     id: {label: "ID", sortable: true},
@@ -22,12 +23,19 @@ export default class PersonModalComponent extends BaseComponent {
   };
 
   async shown(): Promise<void> {
-    this.currentPersonId = this.datastoreService.currentPersonId;
+    this.currentPersonId = this.datastoreService.$vm.currentPersonId;
+  }
+
+  async hidden(): Promise<void> {
+    if (this.changed)
+      this.$root.reload();
+    this.changed = false;
   }
 
   async select(id: number): Promise<void> {
     this.currentPersonId = id;
-    this.datastoreService.currentPersonId = id;
+    this.datastoreService.$vm.currentPersonId = id;
+    this.changed = true;
     await this.requestService.saveSession("currentPersonId", id);
   }
 

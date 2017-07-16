@@ -8,8 +8,10 @@
 </template>
 
 <style lang="scss">
-  section.app {
-    padding-top: 56px;
+  @media screen {
+    section.app {
+      padding-top: 56px;
+    }
   }
 </style>
 

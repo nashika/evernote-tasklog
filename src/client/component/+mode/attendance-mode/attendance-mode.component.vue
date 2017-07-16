@@ -19,7 +19,7 @@
           b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] Arrival
         .col-sm-6
           b-button(variant="primary", size="lg", block, :disabled="!todayAttendance.arrivalTime || !!todayAttendance.departureTime", @click="departure()") #[i.fa.fa-sign-out] Departure
-      b-table(bordered, small, striped, hover, head-variant="inverse", :fields="fields", :items="attendances")
+      b-table(bordered, small, striped, hover, responsive, head-variant="inverse", :fields="fields", :items="attendances")
         template(slot="day", scope="data")
           | {{data.item.day}} ({{moment({year: data.item.year, month: data.item.month - 1, day: data.item.day}).format('ddd')}})
         template(slot="arrival", scope="data")
@@ -33,6 +33,8 @@
         template(slot="action", scope="data")
           b-button(variant="primary", size="sm", :disabled="!updateFlags[data.index]", @click="save(data.item)") Update
           b-button(variant="danger", size="sm", :disabled="!createFlags[data.index]", @click="remove(data.item)") Delete
+      .my-3.text-right
+        b-button(variant="secondary", size="sm", @click="exportCsv()") Export CSV
 </template>
 
 <script lang="ts" src="./attendance-mode.component.ts"></script>

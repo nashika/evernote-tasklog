@@ -8,8 +8,7 @@ import diff2html = require("diff2html");
 
 import BaseComponent from "../../base.component";
 import {container} from "../../../inversify.config";
-import {DatastoreService} from "../../../service/datastore.service";
-import AppComponent from "../../app.component";
+import {DatastoreService, IDatastoreServiceNoteFilterParams} from "../../../service/datastore.service";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 
 interface IActivityModifyData {
@@ -21,12 +20,12 @@ interface IActivityModifyData {
 @Component({})
 export default class ActivityModeComponent extends BaseComponent {
 
-  $root: AppComponent;
-
   datastoreService: DatastoreService = container.get(DatastoreService);
 
+  filterParams: IDatastoreServiceNoteFilterParams = {};
   date: Date = new Date();
   modifies: {[archiveId: string]: IActivityModifyData} = {};
+  archiveNotes: NoteEntity[] = [];
 
   constructor() {
     super();
@@ -41,13 +40,17 @@ export default class ActivityModeComponent extends BaseComponent {
     await this.reload();
   }
 
-  async reload(): Promise<void> {
-    let start = moment(this.date).startOf("day");
-    let end = moment(this.date).endOf("day");
+  async reload(filterParams: IDatastoreServiceNoteFilterParams = null): Promise<void> {
+    if (filterParams) this.filterParams = filterParams;
+    let noteFilterParams = _.clone(this.filterParams);
+    noteFilterParams.start = moment(this.date).startOf("day");
+    noteFilterParams.end = moment(this.date).endOf("day");
+    noteFilterParams.archiveMinStepMinute = 10;
     this.modifies = {};
-    await this.datastoreService.reload({start: start, end: end, archive: true, archiveMinStepMinute: 10});
-    for (let note of this.datastoreService.noteArchives) {
-      let prevNote = await this.datastoreService.getPrevNote(note, 10);
+    this.archiveNotes = await this.datastoreService.getArchiveLogs(noteFilterParams);
+    if (!this.archiveNotes) return;
+    for (let note of this.archiveNotes) {
+      let prevNote = await this.datastoreService.getPrevNote(this.archiveNotes, note, 10);
       let modify: IActivityModifyData = {};
       modify.prevNote = prevNote;
       let oldText = this.makeDiffText(modify.prevNote);
@@ -88,11 +91,11 @@ UpdateSequenceNum: ${note.updateSequenceNum}`;
   }
 
   notebookName(note: NoteEntity): string {
-    return this.datastoreService.notebooks[note.notebookGuid].name;
+    return this.datastoreService.$vm.notebooks[note.notebookGuid].name;
   }
 
   tagNames(note: NoteEntity): string[] {
-    return _.map(note.tagGuids, tagGuid => this.datastoreService.tags[tagGuid].name);
+    return _.map(note.tagGuids, tagGuid => this.datastoreService.$vm.tags[tagGuid].name);
   }
 
 }

@@ -17,13 +17,24 @@ export interface IAppConfig {
   sandbox: boolean;
   token: string;
   persons: IPersonConfig[];
+  warningNoteCount: number;
   workingTimeStart: number;
   workingTimeEnd: number;
+  defaultFilterParams: {
+    timeline: IDefaultFilterParamsConfig;
+    notes: IDefaultFilterParamsConfig;
+    activity: IDefaultFilterParamsConfig;
+  };
 }
 
 export interface IPersonConfig {
   id: number;
   name: string;
+}
+
+export interface IDefaultFilterParamsConfig {
+  stacks?: string[];
+  notebooks?: string[];
 }
 
 class ConfigLoader {
