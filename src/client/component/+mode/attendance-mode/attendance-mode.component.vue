@@ -14,7 +14,7 @@
           .form-group
             label Month
             b-form-input(v-model="strMonth", type="number", min="1", max="12", step="1", @change="reload()")
-      .row.my-2(v-if="todayAttendance && personId == datastoreService.currentPersonId && year == moment().year() && month == moment().month() + 1")
+      .row.my-2(v-if="todayAttendance && personId == datastoreService.$vm.currentPersonId && year == moment().year() && month == moment().month() + 1")
         .col-sm-6
           b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] Arrival
         .col-sm-6

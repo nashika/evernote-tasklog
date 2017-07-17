@@ -75,18 +75,18 @@ export default class NotesModeComponent extends BaseComponent {
       var noteTimeLog = timeLogs[noteGuid];
       for (var timeLogId in noteTimeLog) {
         var timeLog = noteTimeLog[timeLogId];
-        if (!this.notesSpentTimes[timeLog.noteGuid])
-          this.notesSpentTimes[timeLog.noteGuid] = {$total: 0};
-        this.notesSpentTimes[timeLog.noteGuid]["$total"] += timeLog.spentTime;
-        if (!this.notesSpentTimes[timeLog.noteGuid][timeLog.personId])
-          this.notesSpentTimes[timeLog.noteGuid][timeLog.personId] = 0;
-        this.notesSpentTimes[timeLog.noteGuid][timeLog.personId] += timeLog.spentTime;
-        if (!this.notesSpentTimes["$total"])
-          this.notesSpentTimes["$total"] = {$total: 0};
-        this.notesSpentTimes["$total"]["$total"] += timeLog.spentTime;
-        if (!this.notesSpentTimes["$total"][timeLog.personId])
-          this.notesSpentTimes["$total"][timeLog.personId] = 0;
-        this.notesSpentTimes["$total"][timeLog.personId] += timeLog.spentTime;
+        if (!this.notesSpentTimes[timeLog.noteGuid]) this.notesSpentTimes[timeLog.noteGuid] = {$total: 0};
+        let noteSpentTimes = this.notesSpentTimes[timeLog.noteGuid];
+        noteSpentTimes["$total"] += timeLog.spentTime;
+        if (!noteSpentTimes["$" + timeLog.personId])
+          noteSpentTimes["$" + timeLog.personId] = 0;
+        noteSpentTimes["$" + timeLog.personId] += timeLog.spentTime;
+        if (!this.notesSpentTimes["$total"]) this.notesSpentTimes["$total"] = {$total: 0};
+        let totalSpentTimes = this.notesSpentTimes["$total"];
+        totalSpentTimes["$total"] += timeLog.spentTime;
+        if (!totalSpentTimes["$" + timeLog.personId])
+          totalSpentTimes["$" + timeLog.personId] = 0;
+        totalSpentTimes["$" + timeLog.personId] += timeLog.spentTime;
         if (timeLog.spentTime > 0)
           personsHash[timeLog.personId] = true;
       }
@@ -98,32 +98,23 @@ export default class NotesModeComponent extends BaseComponent {
     this.notesProfits = {};
     for (var noteGuid in profitLogs) {
       if (!this.notes[noteGuid]) continue;
-      var noteProfitLog = profitLogs[noteGuid];
+      let noteProfitLog = profitLogs[noteGuid];
       for (var profitLogId in noteProfitLog) {
-        var profitLog = noteProfitLog[profitLogId];
-        if (!this.notesProfits[profitLog.noteGuid])
-          this.notesProfits[profitLog.noteGuid] = {$total: 0};
+        let profitLog = noteProfitLog[profitLogId];
+        if (!this.notesProfits[profitLog.noteGuid]) this.notesProfits[profitLog.noteGuid] = {$total: 0};
         this.notesProfits[profitLog.noteGuid]["$total"] += profitLog.profit;
-        if (!this.notesProfits["$total"])
-          this.notesProfits["$total"] = {$total: 0};
+        if (!this.notesProfits["$total"]) this.notesProfits["$total"] = {$total: 0};
         this.notesProfits["$total"]["$total"] += profitLog.profit;
       }
       for (var person of this.existPersons) {
-        if (!this.notesSpentTimes[noteGuid] || !this.notesSpentTimes[noteGuid][person.id] || !this.notesSpentTimes[noteGuid]["$total"])
-          this.notesProfits[noteGuid][person.id] = null;
+        if (!this.notesSpentTimes[noteGuid] || !this.notesSpentTimes[noteGuid]["$" + person.id] || !this.notesSpentTimes[noteGuid]["$total"])
+          this.notesProfits[noteGuid]["$" + person.id] = null;
         else
-          this.notesProfits[noteGuid][person.id] = Math.round(this.notesProfits[noteGuid]["$total"] * this.notesSpentTimes[noteGuid][person.id] / this.notesSpentTimes[noteGuid]["$total"]);
-        if (!this.notesProfits["$total"][person.id])
-          this.notesProfits["$total"][person.id] = 0;
-        this.notesProfits["$total"][person.id] += this.notesProfits[noteGuid][person.id];
+          this.notesProfits[noteGuid]["$" + person.id] = Math.round(this.notesProfits[noteGuid]["$total"] * this.notesSpentTimes[noteGuid]["$" + person.id] / this.notesSpentTimes[noteGuid]["$total"]);
+        if (!this.notesProfits["$total"]["$" + person.id]) this.notesProfits["$total"]["$" + person.id] = 0;
+        this.notesProfits["$total"]["$" + person.id] += this.notesProfits[noteGuid]["$" + person.id];
       }
     }
   }
-
-  /*filter(note: NoteEntity): boolean {
-    if (this.filterProfitType == "withProfit") return !!_.get(this.notesProfits[note.guid], "$total");
-    if (this.filterProfitType == "withNoProfit") return !_.get(this.notesProfits[note.guid], "$total");
-    return true;
-  }*/
 
 }
