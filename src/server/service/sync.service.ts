@@ -63,27 +63,30 @@ export class SyncService extends BaseServerService {
   async sync(manual: boolean): Promise<void> {
     clearTimeout(this.timer);
     await this.lock();
-    let optionTable = this.tableService.getTable<OptionTable>(OptionEntity);
-    let localSyncState: evernote.Evernote.SyncState = await optionTable.findValueByKey("syncState");
-    if (!localSyncState) localSyncState = <any>{updateCount: 0};
-    let remoteSyncState = await this.evernoteClientService.getSyncState();
-    let updateEventHash = {};
-    // Sync process
-    logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
-    while (localSyncState.updateCount < remoteSyncState.updateCount) {
-      await this.getSyncChunk(localSyncState, updateEventHash);
+    try {
+      let optionTable = this.tableService.getTable<OptionTable>(OptionEntity);
+      let localSyncState: evernote.Evernote.SyncState = await optionTable.findValueByKey("syncState");
+      if (!localSyncState) localSyncState = <any>{updateCount: 0};
+      let remoteSyncState = await this.evernoteClientService.getSyncState();
+      let updateEventHash = {};
+      // Sync process
+      logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
+      while (localSyncState.updateCount < remoteSyncState.updateCount) {
+        await this.getSyncChunk(localSyncState, updateEventHash);
+      }
+      await optionTable.saveValueByKey("syncState", remoteSyncState);
+      logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
+      this.updateCount = localSyncState.updateCount;
+      this.socketIoServerService.emitAll("sync::updateCount", this.updateCount);
+      for (let event in updateEventHash)
+        this.socketIoServerService.emitAll(event);
+    } finally {
+      await this.unlock();
+      this.interval = manual ? this.Class.startInterval : Math.min(Math.round(this.interval * 1.5), this.Class.maxInterval);
+      this.timer = setTimeout(() => this.sync(false).catch(err => logger.error(err)), this.interval);
+      logger.info(`Next auto reload will run after ${this.interval} msec.`);
+      await this.autoGetNoteContent(this.interval);
     }
-    await optionTable.saveValueByKey("syncState", remoteSyncState);
-    logger.info(`Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
-    this.updateCount = localSyncState.updateCount;
-    this.interval = manual ? this.Class.startInterval : Math.min(Math.round(this.interval * 1.5), this.Class.maxInterval);
-    this.timer = setTimeout(() => this.sync(false).catch(err => logger.error(err)), this.interval);
-    logger.info(`Next auto reload will run after ${this.interval} msec.`);
-    await this.autoGetNoteContent(this.interval);
-    this.socketIoServerService.emitAll("sync::updateCount", this.updateCount);
-    for (let event in updateEventHash)
-      this.socketIoServerService.emitAll(event);
-    await this.unlock();
   }
 
   private async getSyncChunk(localSyncState: evernote.Evernote.SyncState, updateEventHash: any): Promise<void> {
