@@ -10,6 +10,12 @@ import {container} from "../../../inversify.config";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 import {configLoader, IPersonConfig} from "../../../../common/util/config-loader";
 
+interface INoteRecord {
+  guid: string;
+  title: string;
+  notebookName: string;
+}
+
 @Component({})
 export default class NotesModeComponent extends BaseComponent {
 
@@ -18,10 +24,11 @@ export default class NotesModeComponent extends BaseComponent {
   filterText: string = "";
   filterParams: IDatastoreServiceNoteFilterParams = {};
   filterProfitType: "" | "withProfit" | "withNoProfit" = "";
-  notes: { [guid: string]: NoteEntity } = {};
+  notes: TNotesResult = {};
   notesSpentTimes: { [noteGuid: string]: { [person: string]: number } } = {};
   notesProfits: { [noteGuid: string]: { [person: string]: number } } = {};
-  existPersons: IPersonConfig[];
+  existPersons: IPersonConfig[] = [];
+  records: INoteRecord[] = [];
 
   filterProfitTypeOptions = [
     {text: "Show all notes.", value: ""},
@@ -36,8 +43,8 @@ export default class NotesModeComponent extends BaseComponent {
 
   get fields(): Object {
     let result: any = {};
-    result["notebook"] = {label: "Notebook"};
-    result["title"] = {label: "Title"};
+    result["notebookName"] = {label: "Notebook", sortable: true};
+    result["title"] = {label: "Title", sortable: true};
     for (let person of this.existPersons)
       result["person-" + person.id] = {label: person.name, personId: person.id};
     result["total"] = {label: "Total"};
@@ -66,6 +73,14 @@ export default class NotesModeComponent extends BaseComponent {
       this.notes = _.pickBy(notes, (note: NoteEntity) => !profitLogs[note.guid]);
     else
       this.notes = notes;
+    this.records = _.map(this.notes, note => {
+      let record: INoteRecord = {
+        guid: note.guid,
+        title: note.title,
+        notebookName: this.datastoreService.$vm.notebooks[note.notebookGuid].name,
+      };
+      return record;
+    });
   }
 
   private reloadTimeLogs(timeLogs: TTimeLogsResult) {

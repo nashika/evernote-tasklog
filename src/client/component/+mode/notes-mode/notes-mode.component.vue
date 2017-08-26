@@ -4,9 +4,7 @@
       b-input-group-addon(slot="left"): i.fa.fa-search
       b-form-input(v-model="filterText", placeholder="Type to Search")
     b-table(bordered, striped, hover, small, responsive, head-variant="inverse", foot-clone, foot-variant="default",
-    :fields="fields", :items="lodash.values(notes)", :filter="filterText")
-      template(slot="notebook", scope="data")
-        | {{datastoreService.$vm.notebooks[data.item.notebookGuid].name}}
+    :fields="fields", :items="records", :filter="filterText")
       template(slot="title", scope="data")
         a(:href="'evernote:///view/' + datastoreService.$vm.user.id + '/' + datastoreService.$vm.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
       template(v-for="person in existPersons", :slot="'person-' + person.id", scope="data")
