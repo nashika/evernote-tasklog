@@ -3,7 +3,7 @@ import {IBaseEntityParams} from "./base.entity";
 
 export class TagEntity extends BaseEvernoteEntity {
 
-  static params:IBaseEntityParams = {
+  static params: IBaseEntityParams<TagEntity> = {
     name: "tag",
     primaryKey: "guid",
     displayField: "name",

@@ -2,7 +2,7 @@ import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
 export class TimeLogEntity extends BaseEntity {
 
-  static params: IBaseEntityParams = {
+  static params: IBaseEntityParams<TimeLogEntity> = {
     name: "timeLog",
     primaryKey: "id",
     displayField: "comment",

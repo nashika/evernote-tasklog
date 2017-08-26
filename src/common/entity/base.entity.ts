@@ -1,38 +1,29 @@
 import _ = require("lodash");
 import sequelize = require("sequelize");
 
-export interface IBaseEntityParams {
+export interface IBaseEntityParams<T extends BaseEntity> {
   name: string;
   primaryKey: string;
   displayField: string;
   archive: boolean;
-  default: IFindEntityOptions;
-  append: IFindEntityOptions;
+  default: IFindEntityOptions<T>;
+  append: IFindEntityOptions<T>;
 }
 
-export interface IFindEntityOptions extends sequelize.FindOptions {
-  where?: IWhereEntityOptions;
-  order?: TOrderEntityOptions;
+export interface IFindEntityOptions<T extends BaseEntity> extends sequelize.FindOptions<T> {
   archive?: boolean;
 }
 
 export interface ICountEntityOptions extends sequelize.CountOptions {
-  where?: IWhereEntityOptions;
   archive?: boolean;
 }
 
 export interface IDestroyEntityOptions extends sequelize.DestroyOptions {
-  where?: IWhereEntityOptions;
 }
-
-export interface IWhereEntityOptions extends sequelize.WhereOptions {
-}
-
-export type TOrderEntityOptions = [string, "ASC" | "DESC"][];
 
 export abstract class BaseEntity {
 
-  static params: IBaseEntityParams;
+  static params: IBaseEntityParams<any>;
 
   archiveId?: number;
   createdAt: Date;

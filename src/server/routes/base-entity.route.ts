@@ -37,7 +37,7 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
     this.on(socket, "remove", this.onRemove);
   }
 
-  protected async onFind(_socket: SocketIO.Socket, options: IFindEntityOptions): Promise<T1[]> {
+  protected async onFind(_socket: SocketIO.Socket, options: IFindEntityOptions<T1>): Promise<T1[]> {
     let entities = await this.getTable().findAll(options);
     return entities;
   }

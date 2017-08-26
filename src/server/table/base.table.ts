@@ -70,7 +70,7 @@ export abstract class BaseTable<T extends BaseEntity> {
   }
 
 
-  async findOne(options: IFindEntityOptions = {}): Promise<T> {
+  async findOne(options: IFindEntityOptions<T> = {}): Promise<T> {
     options = this.parseFindOptions(options);
     this.message("find", ["local"], this.EntityClass.params.name, true, {query: options});
     let instance: ISequelizeInstance<T> = await this.sequelizeModel.findOne(options);
@@ -79,10 +79,10 @@ export abstract class BaseTable<T extends BaseEntity> {
   }
 
   async findByPrimary(primaryKey: number | string): Promise<T> {
-    return await this.findOne({where: {[this.EntityClass.params.primaryKey]: primaryKey}});
+    return await this.findOne(<any>{where: {[this.EntityClass.params.primaryKey]: primaryKey}});
   }
 
-  async findAll(options: IFindEntityOptions = null): Promise<T[]> {
+  async findAll(options: IFindEntityOptions<T> = null): Promise<T[]> {
     options = this.parseFindOptions(options);
     let model = options.archive ? this.archiveSequelizeModel : this.sequelizeModel;
     this.message("find", ["local"], this.EntityClass.params.name, true, {options: options});
@@ -100,12 +100,12 @@ export abstract class BaseTable<T extends BaseEntity> {
     return count;
   }
 
-  private parseFindOptions(options: IFindEntityOptions): IFindEntityOptions {
+  private parseFindOptions(options: IFindEntityOptions<T>): IFindEntityOptions<T> {
     options = options || {};
     options.where = options.where || _.cloneDeep(this.EntityClass.params.default.where);
     options.where = _.merge(options.where || {}, this.EntityClass.params.append.where || {});
     options.order = options.order || _.cloneDeep(this.EntityClass.params.default.order);
-    options.order = _.concat(options.order || [], this.EntityClass.params.append.order || []);
+    options.order = _.concat(<any>(options.order || []), <any>(this.EntityClass.params.append.order || []));
     return options;
   }
 

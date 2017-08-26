@@ -14,7 +14,7 @@ import {IBaseTableParams, ISequelizeInstance} from "./base.table";
 import {IFindEntityOptions} from "../../common/entity/base.entity";
 import {logger} from "../logger";
 
-export interface IFindNoteEntityOptions extends IFindEntityOptions {
+export interface IFindNoteEntityOptions extends IFindEntityOptions<NoteEntity> {
   includeContent?: boolean;
 }
 

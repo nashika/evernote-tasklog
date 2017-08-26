@@ -4,8 +4,9 @@
       i.fa(class="fa-" + icon)
       span.hidden-xs-down &nbsp;#{label}
 
-  b-navbar.hidden-print(toggleable, type="inverse", toggle-breakpoint="xl", variant="inverse", fixed="top")
-    b-collapse(is-nav, id="nav-collapse")
+  b-navbar.d-print-none(toggleable="sm", type="dark", variant="dark", fixed="top")
+    b-nav-toggle(target="nav-collapse")
+    b-collapse#nav-collapse(is-nav)
       b-nav.mr-auto(is-nav-bar)
         +item("/attendance", "vcard", "Attendance")
         +item("/timeline", "clock-o", "Timeline")

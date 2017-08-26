@@ -264,7 +264,7 @@ export class DatastoreService extends BaseClientService {
   }
 
   private makeNoteFindOptions(params: IDatastoreServiceNoteFilterParams): IFindNoteEntityOptions {
-    let options: IFindNoteEntityOptions = {where: {$and: []}};
+    let options: IFindEntityOptions<any> = {where: {$and: []}};
     if (params.start)
       (<any>options.where.$and).push({updated: {$gte: params.start.valueOf()}});
     if (params.end)
@@ -288,8 +288,8 @@ export class DatastoreService extends BaseClientService {
     return options;
   }
 
-  private makeTimeLogFindOptions(params: IDatastoreServiceTimeLogFilterParams): IFindEntityOptions {
-    let options: IFindEntityOptions = {where: {$and: []}};
+  private makeTimeLogFindOptions(params: IDatastoreServiceTimeLogFilterParams): IFindEntityOptions<TimeLogEntity> {
+    let options: IFindEntityOptions<any> = {where: {$and: []}};
     // set date query
     if (params.start)
       (<any>options.where.$and).push({date: {$gte: params.start.valueOf()}});

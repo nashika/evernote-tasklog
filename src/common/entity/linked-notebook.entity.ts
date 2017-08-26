@@ -3,7 +3,7 @@ import {IBaseEntityParams} from "./base.entity";
 
 export class LinkedNotebookEntity extends BaseEvernoteEntity {
 
-  static params:IBaseEntityParams = {
+  static params: IBaseEntityParams<LinkedNotebookEntity> = {
     name: "linkedNotebook",
     primaryKey: "guid",
     displayField: "shareName",
