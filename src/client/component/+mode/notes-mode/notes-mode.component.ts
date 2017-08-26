@@ -17,7 +17,7 @@ export default class NotesModeComponent extends BaseComponent {
 
   filterText: string = "";
   filterParams: IDatastoreServiceNoteFilterParams = {};
-  filterProfitType: "" | "withProfit"| "withNoProfit" = "";
+  filterProfitType: "" | "withProfit" | "withNoProfit" = "";
   notes: { [guid: string]: NoteEntity } = {};
   notesSpentTimes: { [noteGuid: string]: { [person: string]: number } } = {};
   notesProfits: { [noteGuid: string]: { [person: string]: number } } = {};
@@ -36,6 +36,7 @@ export default class NotesModeComponent extends BaseComponent {
 
   get fields(): Object {
     let result: any = {};
+    result["notebook"] = {label: "Notebook"};
     result["title"] = {label: "Title"};
     for (let person of this.existPersons)
       result["person-" + person.id] = {label: person.name, personId: person.id};
