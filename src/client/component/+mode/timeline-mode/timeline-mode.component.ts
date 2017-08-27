@@ -9,7 +9,7 @@ import {NoteEntity} from "../../../../common/entity/note.entity";
 import {abbreviateFilter} from "../../../filter/abbreviate.filter";
 import {TimeLogEntity} from "../../../../common/entity/time-log.entity";
 import {container} from "../../../inversify.config";
-import {configLoader, IPersonConfig} from "../../../../common/util/config-loader";
+import {configLoader} from "../../../../common/util/config-loader";
 
 interface TimelineItem {
   id: string,
@@ -52,7 +52,7 @@ export default class TimelineModeComponent extends BaseComponent {
     if (this.timeline) this.timeline.destroy();
     this.timelineGroups = new DataSet();
     this.timelineItems = new DataSet();
-    let sortedPersons: IPersonConfig[] = _.sortBy(configLoader.app.persons,
+    let sortedPersons: config.IPersonConfig[] = _.sortBy(configLoader.app.persons,
       person => this.datastoreService.$vm.currentPersonId == person.id ? 1 : 2);
     for (let person of sortedPersons)
       this.timelineGroups.add({id: `person-${person.id}`, content: person.name});

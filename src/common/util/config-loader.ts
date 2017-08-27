@@ -1,41 +1,6 @@
-import * as fs from "fs";
 import * as path from "path";
 
 import * as _ from "lodash";
-
-declare namespace config {
-  namespace loader {
-    var app: IAppConfig;
-  }
-}
-
-export interface IAppConfig {
-  baseUrl: string;
-  port: number;
-  logLevel: string;
-  dbName: string;
-  sandbox: boolean;
-  token: string;
-  persons: IPersonConfig[];
-  warningNoteCount: number;
-  workingTimeStart: number;
-  workingTimeEnd: number;
-  defaultFilterParams: {
-    timeline: IDefaultFilterParamsConfig;
-    notes: IDefaultFilterParamsConfig;
-    activity: IDefaultFilterParamsConfig;
-  };
-}
-
-export interface IPersonConfig {
-  id: number;
-  name: string;
-}
-
-export interface IDefaultFilterParamsConfig {
-  stacks?: string[];
-  notebooks?: string[];
-}
 
 class ConfigLoader {
 
@@ -47,7 +12,7 @@ class ConfigLoader {
     this.caches = {};
   }
 
-  get app(): IAppConfig {
+  get app(): config.IAppConfig {
     return this.load("app");
   }
 
@@ -58,13 +23,13 @@ class ConfigLoader {
         this.caches["app"] = config.loader.app;
       } else {
         try {
-          jsonData = JSON.parse(fs.readFileSync(path.join(__dirname, `../../../config/${configName}.config.json`), "utf8"));
+          jsonData = require(path.join(__dirname, `../../../config/${configName}.config`)).default;
         } catch (err) {
-          throw new Error(`Cannot to read /config/${configName}.config.json`);
+          throw new Error(`Cannot to read /config/${configName}.config.ts`);
         }
         let targetEnvName: string = process.env.NODE_ENV || "development";
         if (!jsonData[targetEnvName])
-          throw new Error(`/config/${configName}.config.json has no "${targetEnvName}" setting.`);
+          throw new Error(`/config/${configName}.config.ts has no "${targetEnvName}" setting.`);
         let targetEnvConfig: Object = {};
         for (let envName in jsonData) {
           let envConfig = jsonData[envName];

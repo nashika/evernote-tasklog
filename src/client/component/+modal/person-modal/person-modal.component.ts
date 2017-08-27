@@ -1,7 +1,7 @@
 import Component from "vue-class-component";
 
 import BaseComponent from "../../base.component";
-import {configLoader, IPersonConfig} from "../../../../common/util/config-loader";
+import {configLoader} from "../../../../common/util/config-loader";
 import {DatastoreService} from "../../../service/datastore.service";
 import {container} from "../../../inversify.config";
 import {RequestService} from "../../../service/request.service";
@@ -12,7 +12,7 @@ export default class PersonModalComponent extends BaseComponent {
   datastoreService: DatastoreService = container.get(DatastoreService);
   requestService: RequestService = container.get(RequestService);
 
-  persons: IPersonConfig[] = configLoader.app.persons;
+  persons: config.IPersonConfig[] = configLoader.app.persons;
   currentPersonId: number = 0;
   changed: boolean = false;
 

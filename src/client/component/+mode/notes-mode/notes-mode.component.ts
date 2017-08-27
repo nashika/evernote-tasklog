@@ -8,7 +8,7 @@ import {
 } from "../../../service/datastore.service";
 import {container} from "../../../inversify.config";
 import {NoteEntity} from "../../../../common/entity/note.entity";
-import {configLoader, IPersonConfig} from "../../../../common/util/config-loader";
+import {configLoader} from "../../../../common/util/config-loader";
 
 interface INoteRecord {
   guid: string;
@@ -39,7 +39,7 @@ export default class NotesModeComponent extends BaseComponent {
     updated: false,
   };
   notes: TNotesResult = {};
-  existPersons: IPersonConfig[] = [];
+  existPersons: config.IPersonConfig[] = [];
   records: {[guid: string]: INoteRecord} = {};
   totalRecord: INoteRecord = <any>{};
 

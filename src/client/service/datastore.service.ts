@@ -15,7 +15,7 @@ import {RequestService} from "./request.service";
 import {TagEntity} from "../../common/entity/tag.entity";
 import {IFindNoteEntityOptions} from "../../server/table/note.table";
 import {IFindEntityOptions} from "../../common/entity/base.entity";
-import {configLoader, IDefaultFilterParamsConfig, IPersonConfig} from "../../common/util/config-loader";
+import {configLoader} from "../../common/util/config-loader";
 import {SocketIoClientService} from "./socket-io-client-service";
 import {logger} from "../logger";
 
@@ -73,7 +73,7 @@ export class DatastoreService extends BaseClientService {
     super();
   }
 
-  get currentPerson(): IPersonConfig {
+  get currentPerson(): config.IPersonConfig {
     return _.find(configLoader.app.persons, {id: this.$vm.currentPersonId});
   }
 
@@ -86,7 +86,7 @@ export class DatastoreService extends BaseClientService {
     await this.syncTags();
   }
 
-  makeDefaultNoteFilterParams(params: IDefaultFilterParamsConfig): IDatastoreServiceNoteFilterParams {
+  makeDefaultNoteFilterParams(params: config.IDefaultFilterParamsConfig): IDatastoreServiceNoteFilterParams {
     let result: IDatastoreServiceNoteFilterParams = {};
     result.stacks = params.stacks || [];
     result.notebookGuids = _(params.notebooks || []).map((notebookName: string) => this.$vm.notebooks[notebookName].guid).value();
