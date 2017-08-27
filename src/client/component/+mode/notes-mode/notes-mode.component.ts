@@ -14,6 +14,7 @@ interface INoteRecord {
   guid: string;
   title: string;
   notebookName: string;
+  updated: number;
   persons: {
     [personKey: string]: INoteRecordPersonData;
   }
@@ -33,6 +34,10 @@ export default class NotesModeComponent extends BaseComponent {
   filterText: string = "";
   filterParams: IDatastoreServiceNoteFilterParams = {};
   filterProfitType: "" | "withProfit" | "withNoProfit" = "";
+  displayColumns = {
+    notebook: true,
+    updated: false,
+  };
   notes: TNotesResult = {};
   existPersons: IPersonConfig[] = [];
   records: {[guid: string]: INoteRecord} = {};
@@ -51,8 +56,9 @@ export default class NotesModeComponent extends BaseComponent {
 
   get fields(): Object {
     let result: any = {};
-    result["notebookName"] = {label: "Notebook", sortable: true};
+    if (this.displayColumns.notebook) result.notebookName = {label: "Notebook", sortable: true};
     result["title"] = {label: "Title", sortable: true};
+    if (this.displayColumns.updated) result.updated = {label: "Updated", sortable: true};
     for (let person of this.existPersons)
       result["person-" + person.id] = {label: person.name, personId: person.id, sortable: true};
     result["total"] = {label: "Total", sortable: true};
@@ -86,6 +92,7 @@ export default class NotesModeComponent extends BaseComponent {
         guid: note.guid,
         title: note.title,
         notebookName: this.datastoreService.$vm.notebooks[note.notebookGuid].name,
+        updated: note.updated,
         persons: _(configLoader.app.persons).keyBy(person => "$" + person.id).mapValues(_person => ({spentTime: 0, profit: 0})).value(),
         total: {spentTime: 0, profit: 0},
       };
@@ -95,6 +102,7 @@ export default class NotesModeComponent extends BaseComponent {
       guid: "total",
       title: "Total",
       notebookName: "",
+      updated: 0,
       persons: _(configLoader.app.persons).keyBy(person => "$" + person.id).mapValues(_person => ({spentTime: 0, profit: 0})).value(),
       total: {spentTime: 0, profit: 0},
     };
