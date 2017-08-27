@@ -14,6 +14,15 @@ interface INoteRecord {
   guid: string;
   title: string;
   notebookName: string;
+  persons: {
+    [personKey: string]: INoteRecordPersonData;
+  }
+  total: INoteRecordPersonData;
+}
+
+interface INoteRecordPersonData {
+  spentTime: number;
+  profit: number;
 }
 
 @Component({})
@@ -25,10 +34,9 @@ export default class NotesModeComponent extends BaseComponent {
   filterParams: IDatastoreServiceNoteFilterParams = {};
   filterProfitType: "" | "withProfit" | "withNoProfit" = "";
   notes: TNotesResult = {};
-  notesSpentTimes: { [noteGuid: string]: { [person: string]: number } } = {};
-  notesProfits: { [noteGuid: string]: { [person: string]: number } } = {};
   existPersons: IPersonConfig[] = [];
-  records: INoteRecord[] = [];
+  records: {[guid: string]: INoteRecord} = {};
+  totalRecord: INoteRecord = <any>{};
 
   filterProfitTypeOptions = [
     {text: "Show all notes.", value: ""},
@@ -46,8 +54,8 @@ export default class NotesModeComponent extends BaseComponent {
     result["notebookName"] = {label: "Notebook", sortable: true};
     result["title"] = {label: "Title", sortable: true};
     for (let person of this.existPersons)
-      result["person-" + person.id] = {label: person.name, personId: person.id};
-    result["total"] = {label: "Total"};
+      result["person-" + person.id] = {label: person.name, personId: person.id, sortable: true};
+    result["total"] = {label: "Total", sortable: true};
     return result;
   }
 
@@ -73,36 +81,38 @@ export default class NotesModeComponent extends BaseComponent {
       this.notes = _.pickBy(notes, (note: NoteEntity) => !profitLogs[note.guid]);
     else
       this.notes = notes;
-    this.records = _.map(this.notes, note => {
+    this.records = _.mapValues(this.notes, note => {
       let record: INoteRecord = {
         guid: note.guid,
         title: note.title,
         notebookName: this.datastoreService.$vm.notebooks[note.notebookGuid].name,
+        persons: _(configLoader.app.persons).keyBy(person => "$" + person.id).mapValues(_person => ({spentTime: 0, profit: 0})).value(),
+        total: {spentTime: 0, profit: 0},
       };
       return record;
     });
+    this.totalRecord = {
+      guid: "total",
+      title: "Total",
+      notebookName: "",
+      persons: _(configLoader.app.persons).keyBy(person => "$" + person.id).mapValues(_person => ({spentTime: 0, profit: 0})).value(),
+      total: {spentTime: 0, profit: 0},
+    };
   }
 
   private reloadTimeLogs(timeLogs: TTimeLogsResult) {
-    this.notesSpentTimes = {};
     let personsHash: { [person: string]: boolean } = {};
-    for (var noteGuid in timeLogs) {
-      if (!this.notes[noteGuid]) continue;
-      var noteTimeLog = timeLogs[noteGuid];
-      for (var timeLogId in noteTimeLog) {
-        var timeLog = noteTimeLog[timeLogId];
-        if (!this.notesSpentTimes[timeLog.noteGuid]) this.notesSpentTimes[timeLog.noteGuid] = {$total: 0};
-        let noteSpentTimes = this.notesSpentTimes[timeLog.noteGuid];
-        noteSpentTimes["$total"] += timeLog.spentTime;
-        if (!noteSpentTimes["$" + timeLog.personId])
-          noteSpentTimes["$" + timeLog.personId] = 0;
-        noteSpentTimes["$" + timeLog.personId] += timeLog.spentTime;
-        if (!this.notesSpentTimes["$total"]) this.notesSpentTimes["$total"] = {$total: 0};
-        let totalSpentTimes = this.notesSpentTimes["$total"];
-        totalSpentTimes["$total"] += timeLog.spentTime;
-        if (!totalSpentTimes["$" + timeLog.personId])
-          totalSpentTimes["$" + timeLog.personId] = 0;
-        totalSpentTimes["$" + timeLog.personId] += timeLog.spentTime;
+    for (let noteGuid in timeLogs) {
+      let record = this.records[noteGuid];
+      if (!record) continue;
+      let noteTimeLogs = timeLogs[noteGuid];
+      for (let timeLogId in noteTimeLogs) {
+        let timeLog = noteTimeLogs[timeLogId];
+        let personKey = "$" + timeLog.personId;
+        record.total.spentTime += timeLog.spentTime;
+        record.persons[personKey].spentTime += timeLog.spentTime;
+        this.totalRecord.total.spentTime += timeLog.spentTime;
+        this.totalRecord.persons[personKey].spentTime += timeLog.spentTime;
         if (timeLog.spentTime > 0)
           personsHash[timeLog.personId] = true;
       }
@@ -111,24 +121,21 @@ export default class NotesModeComponent extends BaseComponent {
   }
 
   private reloadProfitLogs(profitLogs: TProfitLogsResult) {
-    this.notesProfits = {};
-    for (var noteGuid in profitLogs) {
-      if (!this.notes[noteGuid]) continue;
-      let noteProfitLog = profitLogs[noteGuid];
-      for (var profitLogId in noteProfitLog) {
-        let profitLog = noteProfitLog[profitLogId];
-        if (!this.notesProfits[profitLog.noteGuid]) this.notesProfits[profitLog.noteGuid] = {$total: 0};
-        this.notesProfits[profitLog.noteGuid]["$total"] += profitLog.profit;
-        if (!this.notesProfits["$total"]) this.notesProfits["$total"] = {$total: 0};
-        this.notesProfits["$total"]["$total"] += profitLog.profit;
+    for (let noteGuid in profitLogs) {
+      let record = this.records[noteGuid];
+      if (!record) continue;
+      let noteProfitLogs = profitLogs[noteGuid];
+      for (let profitLogId in noteProfitLogs) {
+        let profitLog = noteProfitLogs[profitLogId];
+        record.total.profit += profitLog.profit;
+        this.totalRecord.total.profit += profitLog.profit;
       }
-      for (var person of this.existPersons) {
-        if (!this.notesSpentTimes[noteGuid] || !this.notesSpentTimes[noteGuid]["$" + person.id] || !this.notesSpentTimes[noteGuid]["$total"])
-          this.notesProfits[noteGuid]["$" + person.id] = null;
-        else
-          this.notesProfits[noteGuid]["$" + person.id] = Math.round(this.notesProfits[noteGuid]["$total"] * this.notesSpentTimes[noteGuid]["$" + person.id] / this.notesSpentTimes[noteGuid]["$total"]);
-        if (!this.notesProfits["$total"]["$" + person.id]) this.notesProfits["$total"]["$" + person.id] = 0;
-        this.notesProfits["$total"]["$" + person.id] += this.notesProfits[noteGuid]["$" + person.id];
+      for (let person of this.existPersons) {
+        let personKey = "$" + person.id;
+        if (record.persons[personKey].spentTime) {
+          record.persons[personKey].profit = Math.round(record.total.profit * record.persons[personKey].spentTime / record.total.spentTime);
+          this.totalRecord.persons[personKey].profit += record.persons[personKey].profit;
+        }
       }
     }
   }
