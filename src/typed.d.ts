@@ -33,6 +33,7 @@ declare namespace config {
       notes: IDefaultFilterParamsConfig;
       activity: IDefaultFilterParamsConfig;
     };
+    constraint?: IConstraintConfig;
   }
 
   interface IPersonConfig {
@@ -43,6 +44,35 @@ declare namespace config {
   interface IDefaultFilterParamsConfig {
     stacks?: string[];
     notebooks?: string[];
+  }
+
+  interface IConstraintConfig {
+    title?: TConstraintConfigOperator;
+    notebook?: TConstraintConfigOperator;
+    tag?: TConstraintConfigOperator;
+    created?: TConstraintConfigOperator;
+    updated?: TConstraintConfigOperator;
+    reminderOrder?: TConstraintConfigOperator;
+    reminderDoneTime?: TConstraintConfigOperator;
+    reminderTime?: TConstraintConfigOperator;
+  }
+
+  type TConstraintConfigOperator = number | string | {
+    $and?: TConstraintConfigOperator[];
+    $or?: TConstraintConfigOperator[];
+    $gt?: number;
+    $gte?: number;
+    $lt?: number;
+    $lte?: number;
+    $ne?: number | string;
+    $eq?: number | string;
+    $not?: boolean;
+    $between?: [number, number];
+    $notBetween?: [number, number];
+    $in?: (number | string)[];
+    $notIn?: (number | string)[];
+    $like?: string;
+    $notLike?: string;
   }
 
   namespace loader {
