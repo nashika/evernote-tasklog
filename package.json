@@ -53,6 +53,7 @@
     "pug": "~2.0.0-rc.3",
     "reflect-metadata": "~0.1.10",
     "sequelize": "~4.7.5",
+    "sequelize-cli": "^2.8.0",
     "serve-favicon": "~2.4.3",
     "socket.io": "~2.0.3",
     "source-map-support": "~0.4.16",
