@@ -33,7 +33,7 @@ declare namespace config {
       notes: IDefaultFilterParamsConfig;
       activity: IDefaultFilterParamsConfig;
     };
-    constraint?: IConstraintConfig;
+    constraints?: IConstraintConfig[];
   }
 
   interface IPersonConfig {
@@ -47,32 +47,58 @@ declare namespace config {
   }
 
   interface IConstraintConfig {
-    title?: TConstraintConfigOperator;
-    notebook?: TConstraintConfigOperator;
-    tag?: TConstraintConfigOperator;
-    created?: TConstraintConfigOperator;
-    updated?: TConstraintConfigOperator;
-    reminderOrder?: TConstraintConfigOperator;
-    reminderDoneTime?: TConstraintConfigOperator;
-    reminderTime?: TConstraintConfigOperator;
+    label: string;
+    message: string;
+    query: IConstraintConfigQuery;
   }
 
-  type TConstraintConfigOperator = number | string | {
-    $and?: TConstraintConfigOperator[];
-    $or?: TConstraintConfigOperator[];
+  interface IConstraintConfigQuery {
+    $and?: TConstraintConfigQuery[];
+    $or?: TConstraintConfigQuery[];
+    title?: TConstraintConfigTextOperator;
+    stack?: TConstraintConfigSingleOperator;
+    notebook?: TConstraintConfigSingleOperator;
+    tag?: TConstraintConfigMultiOperator;
+    created?: TConstraintConfigNumberOperator;
+    updated?: TConstraintConfigNumberOperator;
+    reminderOrder?: TConstraintConfigNumberOperator;
+    reminderDoneTime?: TConstraintConfigNumberOperator;
+    reminderTime?: TConstraintConfigNumberOperator;
+  }
+
+  type TConstraintConfigSingleOperator = string | {
+    $eq?: string;
+    $ne?: string;
+    $in?: string[];
+    $notIn: string[];
+  }
+
+  type TConstraintConfigMultiOperator = string | string[] | {
+    $in?: string[];
+    $notIn: string[];
+  }
+
+  type TConstraintConfigTextOperator = string | {
+    $eq?: string;
+    $ne?: string;
+    $in?: string[];
+    $notIn?: string[];
+    $like?: string;
+    $notLike?: string;
+  }
+
+  type TConstraintConfigNumberOperator = number | {
     $gt?: number;
     $gte?: number;
     $lt?: number;
     $lte?: number;
-    $ne?: number | string;
-    $eq?: number | string;
+    $ne?: number;
+    $eq?: number;
     $not?: boolean;
     $between?: [number, number];
     $notBetween?: [number, number];
-    $in?: (number | string)[];
-    $notIn?: (number | string)[];
-    $like?: string;
-    $notLike?: string;
+    $in?: number[];
+    $notIn?: number[];
   }
 
   namespace loader {
