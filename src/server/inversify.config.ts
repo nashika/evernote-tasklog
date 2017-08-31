@@ -11,6 +11,7 @@ import {SavedSearchEntity} from "../common/entity/saved-search.entity";
 import {TagEntity} from "../common/entity/tag.entity";
 import {TimeLogEntity} from "../common/entity/time-log.entity";
 
+import {ConstraintServerService} from "./service/constraint-server-service";
 import {EvernoteClientService} from "./service/evernote-client.service";
 import {MainService} from "./service/main.service";
 import {SessionService} from "./service/session.service";
@@ -52,6 +53,7 @@ container.bind<BaseEntity>(BaseEntity).toConstructor(SavedSearchEntity).whenTarg
 container.bind<BaseEntity>(BaseEntity).toConstructor(TagEntity).whenTargetNamed("tag");
 container.bind<BaseEntity>(BaseEntity).toConstructor(TimeLogEntity).whenTargetNamed("timeLog");
 
+container.bind<ConstraintServerService>(ConstraintServerService).toSelf().inSingletonScope();
 container.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingletonScope();
 container.bind<MainService>(MainService).toSelf().inSingletonScope();
 container.bind<SessionService>(SessionService).toSelf().inSingletonScope();

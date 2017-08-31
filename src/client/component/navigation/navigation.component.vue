@@ -12,6 +12,7 @@
         +item("/timeline", "clock-o", "Timeline")
         +item("/notes", "files-o", "Notes")
         +item("/activity", "history", "Activity")
+        +item("/constraint", "check-circle", "Constraint")
     b-button(:variant="datastoreService.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$root.$emit('show::modal', 'person-modal')")
       i.fa.fa-user
       span.d-none.d-sm-inline &nbsp;{{personLabel}}

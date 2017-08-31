@@ -10,6 +10,7 @@ import {OptionTable} from "../table/option.table";
 import {OptionEntity} from "../../common/entity/option.entity";
 import {SocketIoServerService} from "./socket-io-server-service";
 import {logger} from "../logger";
+import {ConstraintServerService} from "./constraint-server-service";
 
 @injectable()
 export class MainService extends BaseServerService {
@@ -17,6 +18,7 @@ export class MainService extends BaseServerService {
   constructor(protected tableService: TableService,
               protected socketIoServerService: SocketIoServerService,
               protected syncService: SyncService,
+              protected constraintServerService: ConstraintServerService,
               protected evernoteClientService: EvernoteClientService) {
     super();
   }
