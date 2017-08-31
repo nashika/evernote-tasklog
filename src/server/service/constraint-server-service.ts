@@ -12,5 +12,8 @@ export class ConstraintServerService extends BaseServerService {
     super();
   }
 
+  async checkAll(): Promise<void> {
+
+  }
 
 }
