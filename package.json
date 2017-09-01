@@ -13,6 +13,7 @@
     "build:webpack-dll": "npm run webpack-dll",
     "build:webpack": "npm run webpack",
     "ncu": "ncu",
+    "sequelize": "sequelize",
     "start": "node ./bin/evernote-tasklog",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",

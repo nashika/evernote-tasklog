@@ -21,7 +21,6 @@ declare namespace config {
     baseUrl?: string;
     port?: number;
     logLevel?: string;
-    dbName?: string;
     sandbox?: boolean;
     token?: string;
     persons?: IPersonConfig[];

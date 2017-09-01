@@ -7,7 +7,6 @@ import {BaseServerService} from "./base-server.service";
 import {BaseTable} from "../table/base.table";
 import {BaseEntity} from "../../common/entity/base.entity";
 import {container} from "../inversify.config";
-import {configLoader} from "../../common/util/config-loader";
 
 @injectable()
 export class TableService extends BaseServerService {
@@ -27,7 +26,7 @@ export class TableService extends BaseServerService {
 
   getDatabase(): sequelize.Sequelize {
     if (!this.database) {
-      let filePath = path.join(__dirname, "../../../db/", configLoader.app.dbName + ".db");
+      let filePath = path.join(__dirname, "../../../db/database.db");
       this.database = new sequelize("", "", null, {
         dialect: "sqlite",
         storage: filePath,

@@ -2,7 +2,6 @@ let appConfig: config.IAppConfigs = {
   "*": {
     port: 3000,
     logLevel: "trace",
-    dbName: "db",
     sandbox: false,
     token: "",
     persons: [
