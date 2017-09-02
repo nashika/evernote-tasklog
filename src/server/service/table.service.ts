@@ -21,7 +21,7 @@ export class TableService extends BaseServerService {
       this.tables[table.EntityClass.params.name] = table;
       table.initialize(database);
     }
-    await database.sync();
+    //await database.sync();
   }
 
   getDatabase(): sequelize.Sequelize {
