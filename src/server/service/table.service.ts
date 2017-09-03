@@ -21,7 +21,6 @@ export class TableService extends BaseServerService {
       this.tables[table.EntityClass.params.name] = table;
       table.initialize(database);
     }
-    //await database.sync();
   }
 
   getDatabase(): sequelize.Sequelize {
@@ -38,6 +37,10 @@ export class TableService extends BaseServerService {
 
   getTable<T extends BaseTable<BaseEntity>>(EntityClass: typeof BaseEntity): T {
     return <T>this.tables[EntityClass.params.name];
+  }
+
+  async sync(): Promise<void> {
+    await this.getDatabase().sync();
   }
 
 }

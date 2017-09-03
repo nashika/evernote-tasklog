@@ -14,6 +14,7 @@
     "build:webpack": "npm run webpack",
     "ncu": "ncu",
     "sequelize": "sequelize",
+    "sequelize-sync": "node ./src/server/script/sequelize-sync.js",
     "start": "node ./bin/evernote-tasklog",
     "test": "echo \"Error: no test specified\" && exit 1",
     "tsc": "tsc",
