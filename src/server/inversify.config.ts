@@ -2,6 +2,7 @@ import {Container} from "inversify";
 
 import {BaseEntity} from "../common/entity/base.entity";
 import {AttendanceEntity} from "../common/entity/attendance.entity";
+import {ConstraintResultEntity} from "../common/entity/constraint-result.entity";
 import {LinkedNotebookEntity} from "../common/entity/linked-notebook.entity";
 import {NoteEntity} from "../common/entity/note.entity";
 import {NotebookEntity} from "../common/entity/notebook.entity";
@@ -32,6 +33,7 @@ import {TimeLogRoute} from "./routes/time-log.route";
 
 import {BaseTable} from "./table/base.table";
 import {AttendanceTable} from "./table/attendance.table";
+import {ConstraintResultTable} from "./table/constraint-result.table";
 import {LinkedNotebookTable} from "./table/linked-notebook.table";
 import {NoteTable} from "./table/note.table";
 import {NotebookTable} from "./table/notebook.table";
@@ -44,6 +46,7 @@ import {TimeLogTable} from "./table/time-log.table";
 export var container = new Container();
 
 container.bind<BaseEntity>(BaseEntity).toConstructor(AttendanceEntity).whenTargetNamed("attendance");
+container.bind<BaseEntity>(BaseEntity).toConstructor(ConstraintResultEntity).whenTargetNamed("constraintResult");
 container.bind<BaseEntity>(BaseEntity).toConstructor(LinkedNotebookEntity).whenTargetNamed("linkedNotebook");
 container.bind<BaseEntity>(BaseEntity).toConstructor(NoteEntity).whenTargetNamed("note");
 container.bind<BaseEntity>(BaseEntity).toConstructor(NotebookEntity).whenTargetNamed("notebook");
@@ -72,6 +75,7 @@ container.bind<BaseRoute>(BaseRoute).to(TagRoute).whenTargetNamed("tag");
 container.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 
 container.bind<BaseTable<AttendanceEntity>>(BaseTable).to(AttendanceTable).whenTargetNamed("attendance");
+container.bind<BaseTable<ConstraintResultEntity>>(BaseTable).to(ConstraintResultTable).whenTargetNamed("constraintResult");
 container.bind<BaseTable<LinkedNotebookEntity>>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linkedNotebook");
 container.bind<BaseTable<NoteEntity>>(BaseTable).to(NoteTable).whenTargetNamed("note");
 container.bind<BaseTable<NotebookEntity>>(BaseTable).to(NotebookTable).whenTargetNamed("notebook");

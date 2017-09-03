@@ -9,7 +9,7 @@ export class ConstraintResultTable extends BaseTable<ConstraintResultEntity> {
 
   static params: IBaseTableParams = {
     fields: {
-      id: {type: sequelize.INTEGER, primaryKey: true},
+      id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       noteGuid: {type: sequelize.STRING, allowNull: false},
       constraintId: {type: sequelize.INTEGER, allowNull: false},
     },
