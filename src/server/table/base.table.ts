@@ -53,7 +53,7 @@ export abstract class BaseTable<T extends BaseEntity> {
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
       this.archiveFields = {};
-      this.archiveFields["archiveId"] = {type: sequelize.INTEGER, primaryKey: true};
+      this.archiveFields["archiveId"] = {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true};
       let addIndexes: sequelize.DefineIndexesOptions[] = [];
       _.each(this.Class.params.fields, (field: sequelize.DefineAttributeColumnOptions, name) => {
         field = _.cloneDeep(field);

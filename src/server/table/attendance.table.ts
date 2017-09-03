@@ -9,7 +9,7 @@ export class AttendanceTable extends BaseTable<AttendanceEntity> {
 
   static params: IBaseTableParams = {
     fields: {
-      id: {type: sequelize.INTEGER, primaryKey: true},
+      id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       personId: {type: sequelize.INTEGER, allowNull: false},
       year: {type: sequelize.INTEGER, allowNull: false, validate: {min: 1, max: 9999}},
       month: {type: sequelize.INTEGER, allowNull: false, validate: {min: 1, max: 12}},
