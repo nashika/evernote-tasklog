@@ -13,6 +13,7 @@ export async function up(queryInterface: QueryInterface) {
   await queryInterface.addIndex("attendances", ["personId", "year", "month", "day"], {indicesType: "UNIQUE"});
   console.log(`${++i}. Change profitLogs.id column to add auto increment.`);
   await queryInterface.changeColumn("profitLogs", "id", {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true});
+  console.log(`${++i}. Done.`);
 }
 
 export async function down(queryInterface: QueryInterface) {
@@ -27,4 +28,5 @@ export async function down(queryInterface: QueryInterface) {
   await queryInterface.addIndex("attendances", ["personId", "year", "month", "day"], {indicesType: "UNIQUE"});
   console.log(`${++i}. Change profitLogs.id column to remove auto increment.`);
   await queryInterface.changeColumn("profitLogs", "id", {type: sequelize.INTEGER, primaryKey: true});
+  console.log(`${++i}. Done.`);
 }
