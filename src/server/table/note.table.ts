@@ -4,11 +4,7 @@ import sequelize = require("sequelize");
 
 import {NoteEntity} from "../../common/entity/note.entity";
 import {BaseEvernoteTable} from "./base-evernote.table";
-import {TimeLogTable} from "./time-log.table";
-import {ProfitLogTable} from "./profit-log.table";
 import {TableService} from "../service/table.service";
-import {TimeLogEntity} from "../../common/entity/time-log.entity";
-import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {EvernoteClientService} from "../service/evernote-client.service";
 import {IBaseTableParams, ISequelizeInstance} from "./base.table";
 import {IFindEntityOptions} from "../../common/entity/base.entity";
@@ -137,8 +133,8 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
     for (var line of content.split('<>')) {
       lines.push(line.replace(/<[^>]*>/g, ''));
     }
-    await this.tableService.getTable<TimeLogTable>(TimeLogEntity).parse(note, lines);
-    await this.tableService.getTable<ProfitLogTable>(ProfitLogEntity).parse(note, lines);
+    await this.tableService.timeLogTable.parse(note, lines);
+    await this.tableService.profitLogTable.parse(note, lines);
     this.message("parse", ["local"], "note", false, {guid: note.guid, title: note.title});
   }
 
