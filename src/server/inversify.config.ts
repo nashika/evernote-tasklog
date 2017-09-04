@@ -22,6 +22,7 @@ import {TableService} from "./service/table.service";
 
 import {BaseRoute} from "./routes/base.route";
 import {AttendanceRoute} from "./routes/attendance.route";
+import {ConstraintResultRoute} from "./routes/constraint-result.route";
 import {NoteRoute} from "./routes/note.route";
 import {NotebookRoute} from "./routes/notebook.route";
 import {OptionRoute} from "./routes/option.route";
@@ -65,6 +66,7 @@ container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
 container.bind<TableService>(TableService).toSelf().inSingletonScope();
 
 container.bind<BaseRoute>(BaseRoute).to(AttendanceRoute).whenTargetNamed("attendance");
+container.bind<BaseRoute>(BaseRoute).to(ConstraintResultRoute).whenTargetNamed("constraintResult");
 container.bind<BaseRoute>(BaseRoute).to(NoteRoute).whenTargetNamed("note");
 container.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");
 container.bind<BaseRoute>(BaseRoute).to(OptionRoute).whenTargetNamed("option");
