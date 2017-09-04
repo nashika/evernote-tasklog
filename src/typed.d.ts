@@ -52,38 +52,25 @@ declare namespace config {
   }
 
   interface IConstraintConfigQuery {
-    $and?: TConstraintConfigQuery[];
-    $or?: TConstraintConfigQuery[];
-    title?: TConstraintConfigTextOperator;
-    stack?: TConstraintConfigSingleOperator;
-    notebook?: TConstraintConfigSingleOperator;
-    tag?: TConstraintConfigMultiOperator;
+    title?: TConstraintConfigStringOperator;
+    notebook?: TConstraintConfigStringOperator;
+    stack?: TConstraintConfigStringOperator;
+    tag?: TConstraintConfigArrayOperator;
     created?: TConstraintConfigNumberOperator;
     updated?: TConstraintConfigNumberOperator;
     reminderOrder?: TConstraintConfigNumberOperator;
     reminderDoneTime?: TConstraintConfigNumberOperator;
     reminderTime?: TConstraintConfigNumberOperator;
+    $and?: TConstraintConfigQuery[];
+    $or?: TConstraintConfigQuery[];
   }
 
-  type TConstraintConfigSingleOperator = string | {
-    $eq?: string;
-    $ne?: string;
-    $in?: string[];
-    $notIn: string[];
-  }
-
-  type TConstraintConfigMultiOperator = string | string[] | {
-    $in?: string[];
-    $notIn: string[];
-  }
-
-  type TConstraintConfigTextOperator = string | {
+  type TConstraintConfigStringOperator = string | RegExp | {
     $eq?: string;
     $ne?: string;
     $in?: string[];
     $notIn?: string[];
-    $like?: string;
-    $notLike?: string;
+    $not?: TConstraintConfigStringOperator;
   }
 
   type TConstraintConfigNumberOperator = number | {
@@ -93,11 +80,16 @@ declare namespace config {
     $lte?: number;
     $ne?: number;
     $eq?: number;
-    $not?: boolean;
     $between?: [number, number];
     $notBetween?: [number, number];
     $in?: number[];
     $notIn?: number[];
+    $not?: TConstraintConfigNumberOperator;
+  }
+
+  type TConstraintConfigArrayOperator = string | string[] | {
+    $in?: string[];
+    $all?: string[];
   }
 
   namespace loader {

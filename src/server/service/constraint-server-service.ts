@@ -22,9 +22,8 @@ export class ConstraintServerService extends BaseServerService {
     let i = 0;
     do {
       notes = await this.tableService.noteTable.findAll({limit: 100, offset: 100 * i});
-      for (let note of notes) {
-        this.check(note);
-      }
+      for (let note of notes)
+        await this.check(note);
       i++;
     } while (notes.length > 0)
   }
@@ -45,21 +44,73 @@ export class ConstraintServerService extends BaseServerService {
   }
 
   private async eval(note: NoteEntity, query: config.IConstraintConfigQuery): Promise<boolean> {
-    //if (!this.evalMulti(_.map(note.tagGuids), query.tag))
+    if (!this.evalString(note.title, query.title)) return false;
     if (!this.evalNumber(note.created, query.created)) return false;
     if (!this.evalNumber(note.updated, query.updated)) return false;
+    if (!this.evalNumber(note.attributes.reminderOrder, query.reminderOrder)) return false;
+    if (!this.evalNumber(note.attributes.reminderDoneTime, query.reminderDoneTime)) return false;
+    if (!this.evalNumber(note.attributes.reminderTime, query.reminderTime)) return false;
+    if (query.notebook || query.stack) {
+      let notebook = await this.tableService.notebookTable.findByPrimary(note.notebookGuid);
+      if (!this.evalString(notebook ? notebook.name : null, query.notebook)) return false;
+      if (!this.evalString(notebook ? notebook.stack : null, query.stack)) return false;
+    }
+    if (query.tag) {
+      let tagNames: string[] = [];
+      for (let tagGuid of _.toArray(note.tagGuids)) {
+        let tag = await this.tableService.tagTable.findByPrimary(tagGuid);
+        tagNames.push(tag.name);
+      }
+      if (!this.evalArray(tagNames, query.tag)) return false;
+    }
     return true;
   }
 
-  private evalNumber(number: number, query: config.TConstraintConfigNumberOperator): boolean {
-    if (_.isUndefined(number) === undefined) return true;
-    if (_.isNumber(query)) return number == query;
-    if (_.isNull(query)) return number === null;
+  private evalNumber(target: number, query: config.TConstraintConfigNumberOperator): boolean {
+    if (_.isUndefined(target)) return true;
+    if (_.isNull(query)) return _.isNull(target);
+    if (_.isNumber(query)) return target == query;
     if (_.isObject(query)) {
-      if (!_.isUndefined(query.$gt) && !(number > query.$gt)) return false;
-      if (!_.isUndefined(query.$gte) && !(number >= query.$gte)) return false;
-      if (!_.isUndefined(query.$lt) && !(number < query.$lt)) return false;
+      if (!_.isUndefined(query.$eq) && !(target == query.$eq)) return false;
+      if (!_.isUndefined(query.$ne) && !(target != query.$ne)) return false;
+      if (!_.isUndefined(query.$gt) && !(target > query.$gt)) return false;
+      if (!_.isUndefined(query.$gte) && !(target >= query.$gte)) return false;
+      if (!_.isUndefined(query.$lt) && !(target < query.$lt)) return false;
+      if (!_.isUndefined(query.$lte) && !(target <= query.$lte)) return false;
+      if (!_.isUndefined(query.$between) && !(target >= query.$between[0] && target <= query.$between[1])) return false;
+      if (!_.isUndefined(query.$notBetween) && (target >= query.$notBetween[0] && target <= query.$notBetween[1])) return false;
+      if (!_.isUndefined(query.$in) && !(_.includes(query.$in, target))) return false;
+      if (!_.isUndefined(query.$notIn) && (_.includes(query.$in, target))) return false;
+      if (!_.isUndefined(query.$not) && this.evalNumber(target, query.$not)) return false;
     }
+    return true;
+  }
+
+  private evalString(target: string, query: config.TConstraintConfigStringOperator): boolean {
+    if (_.isUndefined(target)) return true;
+    if (_.isNull(query)) return _.isNull(target);
+    if (_.isRegExp(query)) return query.test(target);
+    if (_.isString(query)) return target == query;
+    if (_.isObject(query)) {
+      if (!_.isUndefined(query.$eq) && !(target == query.$eq)) return false;
+      if (!_.isUndefined(query.$ne) && !(target != query.$ne)) return false;
+      if (!_.isUndefined(query.$in) && !(_.includes(query.$in, target))) return false;
+      if (!_.isUndefined(query.$notIn) && (_.includes(query.$notIn, target))) return false;
+      if (!_.isUndefined(query.$not) && this.evalString(target, query.$not)) return false;
+    }
+    return true;
+  }
+
+  private evalArray(target: string[], query: config.TConstraintConfigArrayOperator): boolean {
+    if (_.isUndefined(target)) return true;
+    if (_.isNull(query)) return _.isNull(target);
+    if (_.isString(query)) return _.includes(target, query);
+    if (_.isArray(query)) return _.some(query, q => _.includes(target, q));
+    if (_.isObject(query)) {
+      if (!_.isUndefined(query.$in) && !(_.some(query.$in, q => _.includes(target, q)))) return false;
+      if (!_.isUndefined(query.$all) && !(_.every(query.$all, q => _.includes(target, q)))) return false;
+    }
+    return true;
   }
 
 }
