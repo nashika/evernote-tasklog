@@ -46,8 +46,8 @@ declare namespace config {
   }
 
   interface IConstraintConfig {
+    id: number;
     label: string;
-    message: string;
     query: IConstraintConfigQuery;
   }
 
