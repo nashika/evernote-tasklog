@@ -28,7 +28,6 @@ export class MainService extends BaseServerService {
     let remoteUser = await this.evernoteClientService.getUser();
     await this.tableService.optionTable.saveValueByKey("user", remoteUser);
     await this.syncService.sync(true);
-    await this.constraintServerService.checkAll();
     logger.info(`Init user finished. data was initialized.`);
   }
 

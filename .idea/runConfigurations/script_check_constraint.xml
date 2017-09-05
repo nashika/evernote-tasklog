@@ -1,0 +1,5 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="script:check-constraint" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="src/server/script/check-constraint.js" working-dir="$PROJECT_DIR$">
+    <method />
+  </configuration>
+</component>

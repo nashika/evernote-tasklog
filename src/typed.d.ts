@@ -89,7 +89,9 @@ declare namespace config {
 
   type TConstraintConfigArrayOperator = string | string[] | {
     $in?: string[];
+    $notIn?: string[];
     $all?: string[];
+    $notAll?: string[];
   }
 
   namespace loader {
