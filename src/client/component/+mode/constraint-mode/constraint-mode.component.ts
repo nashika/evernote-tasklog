@@ -41,8 +41,10 @@ export default class ConstraintModeComponent extends BaseComponent {
     let notes: {[guid: string]: NoteEntity} = _.keyBy(noteArray, "guid");
     this.records = [];
     for (let constraintResult of constraintResults) {
+      let note = notes[constraintResult.noteGuid];
+      if (!note) continue;
       this.records.push({
-        noteTitle: notes[constraintResult.noteGuid].title,
+        noteTitle: note.title,
         noteGuid: constraintResult.noteGuid,
         constraintId: constraintResult.constraintId,
         constraintLabel: _.find(configLoader.app.constraints, {id: constraintResult.constraintId}).label,
