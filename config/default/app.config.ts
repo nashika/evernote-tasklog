@@ -17,6 +17,16 @@ let appConfig: config.IAppConfigs = {
       notes: {stacks: ["StackA", "StackB"], notebooks: ["NotebookA", "NotebookB"]},
       activity: {},
     },
+    constraints: [
+      {
+        id: 1,
+        label: "Constraint 1",
+        query: {
+          notebook: "Notebook1",
+          reminderOrder: null,
+        },
+      }
+    ],
   },
   "development": {
     baseUrl: "http://localhost:3000"
