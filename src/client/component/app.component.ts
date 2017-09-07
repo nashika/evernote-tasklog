@@ -20,7 +20,7 @@ export default class AppComponent extends BaseComponent {
     await super.mounted();
     await this.datastoreService.initialize();
     this.$on("reload", () => this.reload());
-    this.pushService.initialize(this);
+    await this.pushService.initialize(this);
     this.isReady = true;
   }
 

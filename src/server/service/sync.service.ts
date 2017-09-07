@@ -12,6 +12,7 @@ import {NotebookEntity} from "../../common/entity/notebook.entity";
 import {BaseServerService} from "./base-server.service";
 import {logger} from "../logger";
 import {SocketIoServerService} from "./socket-io-server-service";
+import {ConstraintService} from "./constraint-service";
 
 @injectable()
 export class SyncService extends BaseServerService {
@@ -28,7 +29,8 @@ export class SyncService extends BaseServerService {
 
   constructor(protected tableService: TableService,
               protected evernoteClientService: EvernoteClientService,
-              protected socketIoServerService: SocketIoServerService) {
+              protected socketIoServerService: SocketIoServerService,
+              protected constraintService: ConstraintService) {
     super();
     this.lockResolves = [];
   }
@@ -60,7 +62,7 @@ export class SyncService extends BaseServerService {
       let localSyncState: evernote.Evernote.SyncState = await this.tableService.optionTable.findValueByKey("syncState");
       if (!localSyncState) localSyncState = <any>{updateCount: 0};
       let remoteSyncState = await this.evernoteClientService.getSyncState();
-      let updateEventHash = {};
+      let updateEventHash: {[event:string]: boolean} = {};
       // Sync process
       logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       while (localSyncState.updateCount < remoteSyncState.updateCount) {
@@ -72,6 +74,10 @@ export class SyncService extends BaseServerService {
       this.socketIoServerService.emitAll("sync::updateCount", this.updateCount);
       for (let event in updateEventHash)
         this.socketIoServerService.emitAll(event);
+      if (updateEventHash["sync::updateNotes"]) {
+        if (await this.tableService.constraintResultTable.count() > 0)
+          this.socketIoServerService.emitAll("constraint::notify");
+      }
     } finally {
       await this.unlock();
       this.interval = manual ? this.Class.startInterval : Math.min(Math.round(this.interval * 1.5), this.Class.maxInterval);
@@ -81,7 +87,7 @@ export class SyncService extends BaseServerService {
     }
   }
 
-  private async getSyncChunk(localSyncState: evernote.Evernote.SyncState, updateEventHash: any): Promise<void> {
+  private async getSyncChunk(localSyncState: evernote.Evernote.SyncState, updateEventHash: {[event:string]: boolean}): Promise<void> {
     logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
     let lastSyncChunk: evernote.Evernote.SyncChunk = await this.evernoteClientService.getFilteredSyncChunk(localSyncState.updateCount);
     await this.tableService.noteTable.saveAll(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
@@ -104,6 +110,12 @@ export class SyncService extends BaseServerService {
       updateEventHash["sync::updateSearches"] = true;
     if (_.size(lastSyncChunk.linkedNotebooks) > 0 || _.size(lastSyncChunk.expungedLinkedNotebooks) > 0)
       updateEventHash["sync::updateLinkedNotebooks"] = true;
+    if (_.size(lastSyncChunk.notes) > 0)
+      for (let note of lastSyncChunk.notes)
+        await this.constraintService.checkOne(new NoteEntity(note));
+    if (_.size(lastSyncChunk.expungedNotes) > 0)
+      for (let guid of lastSyncChunk.expungedNotes)
+        await this.constraintService.removeOne(guid);
     localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
     await this.tableService.optionTable.saveValueByKey("syncState", localSyncState);
     logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);

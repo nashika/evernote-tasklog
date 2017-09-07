@@ -9,7 +9,7 @@ import {configLoader} from "../../common/util/config-loader";
 import {ConstraintResultEntity} from "../../common/entity/constraint-result.entity";
 
 @injectable()
-export class ConstraintServerService extends BaseServerService {
+export class ConstraintService extends BaseServerService {
 
   constructor(protected tableService: TableService) {
     super();
@@ -33,7 +33,12 @@ export class ConstraintServerService extends BaseServerService {
     this.check(note);
   }
 
+  async removeOne(guid: string): Promise<void> {
+    await this.tableService.constraintResultTable.remove({where: {noteGuid: guid}});
+  }
+
   private async check(note: NoteEntity): Promise<void> {
+    if (note.deleted) return;
     for (let constraint of configLoader.app.constraints) {
       if (!await this.eval(note, constraint.query)) continue;
       let constraintResult = new ConstraintResultEntity();
