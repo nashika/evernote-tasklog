@@ -65,7 +65,7 @@ declare namespace config {
     $or?: TConstraintConfigQuery[];
   }
 
-  type TConstraintConfigStringOperator = string | RegExp | {
+  type TConstraintConfigStringOperator = string | string[] | RegExp | {
     $eq?: string;
     $ne?: string;
     $in?: string[];
@@ -88,10 +88,15 @@ declare namespace config {
   }
 
   type TConstraintConfigArrayOperator = string | string[] | {
-    $in?: string[];
-    $notIn?: string[];
-    $all?: string[];
-    $notAll?: string[];
+    $in?: TConstraintConfigTreeOperator;
+    $notIn?: TConstraintConfigTreeOperator;
+    $all?: TConstraintConfigTreeOperator;
+    $notAll?: TConstraintConfigTreeOperator;
+  }
+
+  type TConstraintConfigTreeOperator = string[] | {
+    $children?: string | string[];
+    $descendants?: string | string[];
   }
 
   namespace loader {

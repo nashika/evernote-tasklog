@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as _ from "lodash";
 
 import {injectable} from "inversify";
 import sequelize = require("sequelize");
@@ -28,6 +29,11 @@ import {ProfitLogTable} from "../table/profit-log.table";
 
 @injectable()
 export class TableService extends BaseServerService {
+
+  caches: {
+    tags?: { [guid: string]: TagEntity };
+    notebooks?: { [guid: string]: NotebookEntity };
+  };
 
   private database: sequelize.Sequelize;
   private tables: { [tableName: string]: BaseTable<BaseEntity> };
@@ -75,6 +81,8 @@ export class TableService extends BaseServerService {
       this.tables[table.EntityClass.params.name] = table;
       table.initialize(database);
     }
+    this.caches = {};
+    await this.reloadCache();
   }
 
   getDatabase(): sequelize.Sequelize {
@@ -91,6 +99,13 @@ export class TableService extends BaseServerService {
 
   getTable<T extends BaseTable<BaseEntity>>(EntityClass: typeof BaseEntity): T {
     return <T>this.tables[EntityClass.params.name];
+  }
+
+  async reloadCache(type: "tag" | "notebook" | "all" = "all"): Promise<void> {
+    if (type == "tag" || type == "all")
+      this.caches.tags = _.keyBy(await this.tagTable.findAll(), "guid");
+    if (type == "notebook" || type == "all")
+      this.caches.notebooks = _.keyBy(await this.notebookTable.findAll(), "guid");
   }
 
   async sync(): Promise<void> {

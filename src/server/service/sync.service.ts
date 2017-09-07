@@ -62,7 +62,7 @@ export class SyncService extends BaseServerService {
       let localSyncState: evernote.Evernote.SyncState = await this.tableService.optionTable.findValueByKey("syncState");
       if (!localSyncState) localSyncState = <any>{updateCount: 0};
       let remoteSyncState = await this.evernoteClientService.getSyncState();
-      let updateEventHash: {[event:string]: boolean} = {};
+      let updateEventHash: { [event: string]: boolean } = {};
       // Sync process
       logger.info(`Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`);
       while (localSyncState.updateCount < remoteSyncState.updateCount) {
@@ -87,7 +87,7 @@ export class SyncService extends BaseServerService {
     }
   }
 
-  private async getSyncChunk(localSyncState: evernote.Evernote.SyncState, updateEventHash: {[event:string]: boolean}): Promise<void> {
+  private async getSyncChunk(localSyncState: evernote.Evernote.SyncState, updateEventHash: { [event: string]: boolean }): Promise<void> {
     logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
     let lastSyncChunk: evernote.Evernote.SyncChunk = await this.evernoteClientService.getFilteredSyncChunk(localSyncState.updateCount);
     await this.tableService.noteTable.saveAll(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
@@ -102,10 +102,14 @@ export class SyncService extends BaseServerService {
     await this.tableService.linkedNotebookTable.removeByGuid(lastSyncChunk.expungedLinkedNotebooks);
     if (_.size(lastSyncChunk.notes) > 0 || _.size(lastSyncChunk.expungedNotes) > 0)
       updateEventHash["sync::updateNotes"] = true;
-    if (_.size(lastSyncChunk.notebooks) > 0 || _.size(lastSyncChunk.expungedNotebooks) > 0)
+    if (_.size(lastSyncChunk.notebooks) > 0 || _.size(lastSyncChunk.expungedNotebooks) > 0) {
       updateEventHash["sync::updateNotebooks"] = true;
-    if (_.size(lastSyncChunk.tags) > 0 || _.size(lastSyncChunk.expungedTags) > 0)
+      await this.tableService.reloadCache("notebook");
+    }
+    if (_.size(lastSyncChunk.tags) > 0 || _.size(lastSyncChunk.expungedTags) > 0) {
       updateEventHash["sync::updateTags"] = true;
+      await this.tableService.reloadCache("tag");
+    }
     if (_.size(lastSyncChunk.searches) > 0 || _.size(lastSyncChunk.expungedSearches) > 0)
       updateEventHash["sync::updateSearches"] = true;
     if (_.size(lastSyncChunk.linkedNotebooks) > 0 || _.size(lastSyncChunk.expungedLinkedNotebooks) > 0)
@@ -124,7 +128,11 @@ export class SyncService extends BaseServerService {
   private async autoGetNoteContent(interval: number): Promise<void> {
     let numNote: number = Math.ceil(interval / (60 * 1000));
     logger.info(`Auto get note content was started. Number of note is ${numNote}.`);
-    let notes = await this.tableService.noteTable.findAll({where: {content: null}, order: [["updated", "DESC"]], limit: numNote});
+    let notes = await this.tableService.noteTable.findAll({
+      where: {content: null},
+      order: [["updated", "DESC"]],
+      limit: numNote
+    });
     for (let note of notes) {
       await this.tableService.noteTable.loadRemote(note.guid);
     }
