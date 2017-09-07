@@ -4,6 +4,7 @@
     :fields="fields", :items="records")
       template(slot="noteTitle", scope="row")
         a(:href="'evernote:///view/' + datastoreService.$vm.user.id + '/' + datastoreService.$vm.user.shardId + '/' + row.item.noteGuid + '/' + row.item.noteGuid + '/'") {{row.item.noteTitle}}
+    app-floating-action-button(enableReload)
 </template>
 
 <script lang="ts" src="./constraint-mode.component.ts"></script>
