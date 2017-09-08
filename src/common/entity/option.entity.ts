@@ -2,7 +2,7 @@ import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
 export class OptionEntity extends BaseEntity {
 
-  static params: IBaseEntityParams = {
+  static params: IBaseEntityParams<OptionEntity> = {
     name: "option",
     primaryKey: "key",
     displayField: "key",

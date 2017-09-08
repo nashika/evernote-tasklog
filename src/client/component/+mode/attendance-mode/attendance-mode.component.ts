@@ -7,7 +7,7 @@ import BaseComponent from "../../base.component";
 import {AttendanceEntity} from "../../../../common/entity/attendance.entity";
 import {RequestService} from "../../../service/request.service";
 import {container} from "../../../inversify.config";
-import {configLoader, IPersonConfig} from "../../../../common/util/config-loader";
+import {configLoader} from "../../../../common/util/config-loader";
 import {DatastoreService} from "../../../service/datastore.service";
 import {ProgressService} from "../../../service/progress.service";
 
@@ -74,11 +74,11 @@ export default class AttendanceModeComponent extends BaseComponent {
     return moment().year(this.year).month(this.month - 1).endOf("month").date();
   }
 
-  get persons(): IPersonConfig[] {
+  get persons(): config.IPersonConfig[] {
     return configLoader.app.persons;
   }
 
-  get person(): IPersonConfig {
+  get person(): config.IPersonConfig {
     return _.find(this.persons, {id: this.personId});
   }
 

@@ -3,7 +3,7 @@ import {IBaseEntityParams} from "./base.entity";
 
 export class SavedSearchEntity extends BaseEvernoteEntity {
 
-  static params: IBaseEntityParams = {
+  static params: IBaseEntityParams<SavedSearchEntity> = {
     name: "savedSearch",
     primaryKey: "guid",
     displayField: "name",

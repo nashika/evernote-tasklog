@@ -29,7 +29,7 @@
       color: white;
       opacity: 0.8;
       cursor: pointer;
-      background-color: $brand-info;
+      background-color: theme-color("info");
       box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
 
       &, &::before, &::after {

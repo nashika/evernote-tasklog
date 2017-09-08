@@ -11,7 +11,7 @@ export class ProfitLogTable extends BaseTable<ProfitLogEntity> {
 
   static params: IBaseTableParams = {
     fields: {
-      id: {type: sequelize.INTEGER, primaryKey: true},
+      id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       noteGuid: {type: sequelize.STRING, allowNull: false},
       comment: {type: sequelize.TEXT, allowNull: true},
       profit: {type: sequelize.INTEGER, allowNull: false},

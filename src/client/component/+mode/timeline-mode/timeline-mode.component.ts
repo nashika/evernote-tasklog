@@ -52,16 +52,12 @@ export default class TimelineModeComponent extends BaseComponent {
     if (this.timeline) this.timeline.destroy();
     this.timelineGroups = new DataSet();
     this.timelineItems = new DataSet();
-    for (let person of configLoader.app.persons)
-      this.timelineGroups.add({
-        id: person.id,
-        content: person.name,
-      });
-    this.timelineGroups.add({
-      id: "updated",
-      content: "Update",
-    });
-    let notes: {[noteGuid: string]: NoteEntity} = {};
+    let sortedPersons: config.IPersonConfig[] = _.sortBy(configLoader.app.persons,
+      person => this.datastoreService.$vm.currentPersonId == person.id ? 1 : 2);
+    for (let person of sortedPersons)
+      this.timelineGroups.add({id: `person-${person.id}`, content: person.name});
+    this.timelineGroups.add({id: "updated", content: "Update"});
+    let notes: { [noteGuid: string]: NoteEntity } = {};
     for (var noteGuid in noteLogsResult.notes) {
       let note: NoteEntity = noteLogsResult.notes[noteGuid];
       notes[note.guid] = note;
@@ -82,7 +78,7 @@ export default class TimelineModeComponent extends BaseComponent {
         if (!note) continue;
         let timelineItem: TimelineItem = {
           id: String(timeLog.id),
-          group: timeLog.personId,
+          group: `person-${timeLog.personId}`,
           content: `<a href="evernote:///view/${this.datastoreService.$vm.user["id"]}/${this.datastoreService.$vm.user["shardId"]}/${timeLog.noteGuid}/${timeLog.noteGuid}/" title="${note.title} ${timeLog.comment}">${abbreviateFilter(note.title, 20)} ${abbreviateFilter(timeLog.comment, 20)}</a>`,
           start: moment(timeLog.date).toDate(),
           end: timeLog.spentTime ? moment(timeLog.date).add(timeLog.spentTime, 'minutes').toDate() : null,
@@ -93,7 +89,7 @@ export default class TimelineModeComponent extends BaseComponent {
     }
     let container: HTMLElement = <HTMLElement>this.$el.querySelector("#timeline");
     // set working time
-    let hiddenDates: {start: moment.Moment, end: moment.Moment, repeat: string}[];
+    let hiddenDates: { start: moment.Moment, end: moment.Moment, repeat: string }[];
     if (configLoader.app.workingTimeStart && configLoader.app.workingTimeEnd)
       hiddenDates = [{
         start: moment().subtract(1, "days").startOf("day").hour(configLoader.app.workingTimeEnd),
@@ -113,10 +109,10 @@ export default class TimelineModeComponent extends BaseComponent {
       },
       hiddenDates: hiddenDates,
     });
-    this.timeline.on("rangechanged", (properties: {start: Date, end: Date}) => this.onRangeChanged(properties));
+    this.timeline.on("rangechanged", (properties: { start: Date, end: Date }) => this.onRangeChanged(properties));
   }
 
-  onRangeChanged(properties: {start: Date, end: Date}) {
+  onRangeChanged(properties: { start: Date, end: Date }) {
     this.startView = moment(properties.start);
     this.endView = moment(properties.end);
     let currentStart = moment(properties.start).startOf("day");

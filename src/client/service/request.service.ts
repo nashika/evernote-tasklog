@@ -14,19 +14,19 @@ export class RequestService extends BaseClientService {
     super();
   }
 
-  async find<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T[]> {
+  async find<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions<T> = {}): Promise<T[]> {
     let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
     return _.map(datas, data => new (<any>EntityClass)(data));
   }
 
-  async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions = {}): Promise<T> {
+  async findOne<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions<T> = {}): Promise<T> {
     options.limit = 1;
     let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
     let results: T[] = _.map(datas, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
 
-  async count(EntityClass: typeof BaseEntity, options: IFindEntityOptions): Promise<number> {
+  async count<T extends BaseEntity>(EntityClass: typeof BaseEntity, options: IFindEntityOptions<T>): Promise<number> {
     return await this.socketIoClientService.request<number>(`${EntityClass.params.name}::count`, options);
   }
 
@@ -39,7 +39,7 @@ export class RequestService extends BaseClientService {
   }
 
   async loadOption(key: string): Promise<any> {
-    let options: IFindEntityOptions = {where: {key: key}};
+    let options: IFindEntityOptions<any> = {where: {key: key}};
     let optionEntity = await this.findOne<OptionEntity>(OptionEntity, options);
     return optionEntity ? optionEntity.value : null;
   }

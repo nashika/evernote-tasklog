@@ -11,6 +11,7 @@ export class TimeLogTable extends BaseTable<TimeLogEntity> {
 
   static params: IBaseTableParams = {
     fields: {
+      id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       noteGuid: {type: sequelize.STRING, allowNull: false},
       comment: {type: sequelize.TEXT, allowNull: true},
       allDay: {type: sequelize.BOOLEAN, allowNull: false},

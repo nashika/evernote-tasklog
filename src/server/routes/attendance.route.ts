@@ -13,4 +13,5 @@ export class AttendanceRoute extends BaseEntityRoute<AttendanceEntity, Attendanc
               protected sessionService: SessionService) {
     super(tableService, sessionService);
   }
+
 }

@@ -2,7 +2,7 @@ import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
 export class ProfitLogEntity extends BaseEntity {
 
-  static params:IBaseEntityParams = {
+  static params: IBaseEntityParams<ProfitLogEntity> = {
     name: "profitLog",
     primaryKey: "id",
     displayField: "comment",

@@ -3,9 +3,9 @@ import log4js = require("log4js");
 
 import {configLoader} from "../common/util/config-loader";
 
-log4js.configure({
-  appenders: [
-    {
+log4js.configure(<any>{
+  appenders: {
+    system: {
       category: "system",
       type: "dateFile",
       filename: path.join(__dirname, "../../logs/system"),
@@ -13,7 +13,7 @@ log4js.configure({
       backups: 365,
       alwaysIncludePattern: true,
     },
-    {
+    access: {
       category: "access",
       type: "dateFile",
       filename: path.join(__dirname, "../../logs/access"),
@@ -21,13 +21,20 @@ log4js.configure({
       backups: 365,
       alwaysIncludePattern: true,
     },
-    {
-      "type": "console"
+    out: {
+      "type": "stdout",
     },
-  ],
-  levels: {
-    "system": configLoader.app.logLevel,
   },
+  categories: {
+    default: {
+      appenders: ["system", "out"],
+      level: configLoader.app.logLevel,
+    },
+    access: {
+      appenders: ["access", "out"],
+      level: configLoader.app.logLevel,
+    }
+  }
 });
 
-export var logger = log4js.getLogger("system");
+export var logger = log4js.getLogger();

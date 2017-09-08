@@ -2,7 +2,7 @@ import {BaseEntity, IBaseEntityParams} from "./base.entity";
 
 export class AttendanceEntity extends BaseEntity {
 
-  static params: IBaseEntityParams = {
+  static params: IBaseEntityParams<AttendanceEntity> = {
     name: "attendance",
     primaryKey: "id",
     displayField: "id",

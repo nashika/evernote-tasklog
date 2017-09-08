@@ -1,7 +1,9 @@
 /.idea/dataSources
 /.idea/workspace.xml
 /.idea/libraries/Generated_files.xml
-/config/*.json
+/config/*.config.ts
+/config/**/*.js
+/config/**/*.js.map
 /db/*
 /dist
 /logs/*
