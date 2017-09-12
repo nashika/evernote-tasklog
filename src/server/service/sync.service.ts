@@ -126,17 +126,22 @@ export class SyncService extends BaseServerService {
   }
 
   private async autoGetNoteContent(interval: number): Promise<void> {
-    let numNote: number = Math.ceil(interval / (60 * 1000));
-    logger.info(`Auto get note content was started. Number of note is ${numNote}.`);
-    let notes = await this.tableService.noteTable.findAll({
-      where: {content: null},
-      order: [["updated", "DESC"]],
-      limit: numNote
-    });
-    for (let note of notes) {
-      await this.tableService.noteTable.loadRemote(note.guid);
+    await this.lock();
+    try {
+      let numNote: number = Math.ceil(interval / (60 * 1000));
+      logger.info(`Auto get note content was started. Number of note is ${numNote}.`);
+      let notes = await this.tableService.noteTable.findAll({
+        where: {content: null},
+        order: [["updated", "DESC"]],
+        limit: numNote
+      });
+      for (let note of notes) {
+        await this.tableService.noteTable.loadRemote(note.guid);
+      }
+      logger.info(`Auto get note content was finished.`);
+    } finally {
+      await this.unlock();
     }
-    logger.info(`Auto get note content was finished.`);
   }
 
 }
