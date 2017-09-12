@@ -4,7 +4,7 @@
       .row.my-2
         .col-sm-4
           .form-group
-            label Person
+            label {{$t('common.person')}}
             b-form-select.form-control(v-model="personId", :options="persons", value-field="id", text-field="name")
         .col-sm-4
           .form-group
