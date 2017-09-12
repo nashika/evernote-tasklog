@@ -9,6 +9,7 @@ import {ConstraintResultEntity} from "../../../../common/entity/constraint-resul
 import {configLoader} from "../../../../common/util/config-loader";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 import {ProgressService} from "../../../service/progress.service";
+import {i18n} from "../../../i18n";
 
 interface IConstraintResultRecord {
   noteTitle: string;
@@ -27,8 +28,8 @@ export default class ConstraintModeComponent extends BaseComponent {
   records: IConstraintResultRecord[] = [];
 
   fields = {
-    noteTitle: {label: "Note", sortable: true},
-    constraintLabel: {label: "Constraint", sortable: true},
+    noteTitle: {label: i18n.t("common.note"), sortable: true},
+    constraintLabel: {label: i18n.t("common.constraint"), sortable: true},
   };
 
   async mounted(): Promise<void> {

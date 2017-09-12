@@ -10,6 +10,7 @@ import {container} from "../../../inversify.config";
 import {configLoader} from "../../../../common/util/config-loader";
 import {DatastoreService} from "../../../service/datastore.service";
 import {ProgressService} from "../../../service/progress.service";
+import {i18n} from "../../../i18n";
 
 @Component({
   components: {
@@ -35,22 +36,22 @@ export default class AttendanceModeComponent extends BaseComponent {
 
   fields = {
     day: {
-      label: "Day",
+      label: i18n.t("common.day"),
     },
     arrival: {
-      label: "Arrival",
+      label: i18n.t("common.arrival"),
     },
     departure: {
-      label: "Departure",
+      label: i18n.t("common.departure"),
     },
     rest: {
-      label: "Rest",
+      label: i18n.t("common.rest"),
     },
     remarks: {
-      label: "Remarks",
+      label: i18n.t("common.remarks"),
     },
     action: {
-      label: "Action",
+      label: i18n.t("common.action"),
     },
   };
 

@@ -11,8 +11,8 @@ import "./filter/spent-time.filter";
 
 import Vue from "vue";
 import VueRouter from "vue-router";
-let BootstrapVue = require("bootstrap-vue").default;
-//let BootstrapVue = require("bootstrap-vue").default;
+import BootstrapVue from "bootstrap-vue";
+import {i18n} from "./i18n";
 
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
@@ -34,4 +34,4 @@ const routes = [
 export const router = new VueRouter({routes});
 
 let AppComponent = require("./component/app.component.vue").default;
-new (<any>AppComponent)({router}).$mount("#app");
+new (<any>AppComponent)({router, i18n}).$mount("#app");

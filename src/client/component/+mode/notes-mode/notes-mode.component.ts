@@ -9,6 +9,7 @@ import {
 import {container} from "../../../inversify.config";
 import {NoteEntity} from "../../../../common/entity/note.entity";
 import {configLoader} from "../../../../common/util/config-loader";
+import {i18n} from "../../../i18n";
 
 interface INoteRecord {
   guid: string;
@@ -56,12 +57,12 @@ export default class NotesModeComponent extends BaseComponent {
 
   get fields(): Object {
     let result: any = {};
-    if (this.displayColumns.notebook) result.notebookName = {label: "Notebook", sortable: true};
-    result["title"] = {label: "Title", sortable: true};
-    if (this.displayColumns.updated) result.updated = {label: "Updated", sortable: true};
+    if (this.displayColumns.notebook) result.notebookName = {label: i18n.t("common.notebook"), sortable: true};
+    result["title"] = {label: i18n.t("common.title"), sortable: true};
+    if (this.displayColumns.updated) result.updated = {label: i18n.t("common.updated"), sortable: true};
     for (let person of this.existPersons)
       result["person-" + person.id] = {label: person.name, personId: person.id, sortable: true};
-    result["total"] = {label: "Total", sortable: true};
+    result["total"] = {label: i18n.t("common.total"), sortable: true};
     return result;
   }
 

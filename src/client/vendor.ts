@@ -16,4 +16,5 @@ import "socket.io-client";
 import "vis";
 import "vue";
 //import "vue-class-component"; // this module cannot use in dll
+import "vue-i18n";
 import "vue-router";
