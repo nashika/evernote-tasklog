@@ -13,7 +13,7 @@ export default class NavigationComponent extends BaseComponent {
     if (this.datastoreService.$vm.currentPersonId)
       return this.datastoreService.currentPerson.name.substr(0, 1);
     else
-      return "Person";
+      return <string>this.$t("common.person");
   }
 
 }

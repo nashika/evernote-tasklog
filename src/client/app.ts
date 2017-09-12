@@ -12,12 +12,10 @@ import "./filter/spent-time.filter";
 import Vue from "vue";
 import VueRouter from "vue-router";
 import BootstrapVue from "bootstrap-vue";
-import VueI18n from "vue-i18n";
-import messages from "../lang/index";
+import {i18n} from "./i18n";
 
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
-Vue.use(VueI18n);
 
 Vue.component("app-navigation", require("./component/navigation/navigation.component.vue").default);
 Vue.component("app-filter-modal", require("./component/+modal/filter-modal/filter-modal.component.vue").default);
@@ -34,11 +32,6 @@ const routes = [
   {path: "/constraint", component: require("./component/+mode/constraint-mode/constraint-mode.component.vue").default},
 ];
 export const router = new VueRouter({routes});
-
-const i18n = new VueI18n ({
-  locale: "ja",
-  messages,
-});
 
 let AppComponent = require("./component/app.component.vue").default;
 new (<any>AppComponent)({router, i18n}).$mount("#app");

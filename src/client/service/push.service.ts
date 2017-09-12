@@ -5,6 +5,7 @@ import {logger} from "../logger";
 import {router} from "../app";
 import AppComponent from "../component/app.component";
 import {SocketIoClientService} from "./socket-io-client-service";
+import {i18n} from "../i18n";
 
 let Push = require("push.js");
 
@@ -29,8 +30,8 @@ export class PushService extends BaseClientService {
     if (this.lastUpdateCount < updateCount) {
       this.lastUpdateCount = updateCount;
       this.appComponent.reload();
-      Push.create("Updated (Evernote Tasklog)", {
-        body: "Note was updated, check activity.",
+      Push.create(i18n.t("push.update.title"), {
+        body: i18n.t("push.update.body"),
         link: "#/activity",
         timeout: 3000,
         onClick: function (this: any) {
@@ -43,8 +44,8 @@ export class PushService extends BaseClientService {
 
   private async notifyConstraint(): Promise<void> {
     logger.debug("Notify constraint from server.");
-    Push.create("Constraint (Evernote Tasklog)", {
-      body: "There are notes that violated constraints.",
+    Push.create(i18n.t("push.constraint.title"), {
+      body: i18n.t("push.constraint.body"),
       link: "#/constraint",
       timeout: 10000,
       onClick: function (this: any) {
