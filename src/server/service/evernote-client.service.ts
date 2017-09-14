@@ -24,10 +24,10 @@ export class EvernoteClientService extends BaseServerService {
 
   async getUser(): Promise<evernote.Evernote.User> {
     let userStore: evernote.Evernote.UserStoreClient = this.client.getUserStore();
-    this.mes_(true, "user", {});
+    this.loadMessage(true, "user", {});
     return await new Promise<evernote.Evernote.User>((resolve, reject) => {
       userStore.getUser((err, user) => {
-        this.mes_(false, "user", {}, err);
+        this.loadMessage(false, "user", {}, err);
         if (err) return reject(err);
         resolve(user);
       });
@@ -36,10 +36,10 @@ export class EvernoteClientService extends BaseServerService {
 
   async getSyncState(): Promise<evernote.Evernote.SyncState> {
     let noteStore: evernote.Evernote.NoteStoreClient = this.client.getNoteStore();
-    this.mes_(true, "syncState", {});
+    this.loadMessage(true, "syncState", {});
     return await new Promise<evernote.Evernote.SyncState>((resolve, reject) => {
       noteStore.getSyncState((err, syncState) => {
-        this.mes_(false, "syncState", {updateCount: syncState && syncState.updateCount}, err);
+        this.loadMessage(false, "syncState", {updateCount: syncState && syncState.updateCount}, err);
         if (err) return reject(err);
         resolve(syncState);
       });
@@ -54,10 +54,10 @@ export class EvernoteClientService extends BaseServerService {
     syncChunkFilter.includeTags = true;
     syncChunkFilter.includeSearches = true;
     syncChunkFilter.includeExpunged = true;
-    this.mes_(true, "syncChunk", {startUSN: updateCount});
+    this.loadMessage(true, "syncChunk", {startUSN: updateCount});
     return await new Promise<evernote.Evernote.SyncChunk>((resolve, reject) => {
       noteStore.getFilteredSyncChunk(updateCount, this.SYNC_CHUNK_COUNT, syncChunkFilter, (err, syncChunk) => {
-        this.mes_(false, "syncChunk", {startUSN: updateCount}, err);
+        this.loadMessage(false, "syncChunk", {startUSN: updateCount}, err);
         if (err) return reject(err);
         resolve(<any>syncChunk);
       });
@@ -66,18 +66,75 @@ export class EvernoteClientService extends BaseServerService {
 
   async getNote(guid: string): Promise<NoteEntity> {
     let noteStore: evernote.Evernote.NoteStoreClient = this.client.getNoteStore();
-    this.mes_(true, "note", {guid: guid});
+    this.loadMessage(true, "note", {guid: guid});
     return await new Promise<NoteEntity>((resolve, reject) => {
       noteStore.getNote(guid, true, false, false, false, (err, note) => {
-        this.mes_(false, "note", {guid: guid, title: note && note.title}, err);
+        this.loadMessage(false, "note", {guid: guid, title: note && note.title}, err);
         if (err) return reject(err);
         resolve(new NoteEntity(note));
       });
     });
   }
 
-  private mes_(start: boolean, name: string, dispData: Object = {}, err: any = null) {
-    logger.debug(`Load remote ${name} was ${start ? "started" : err ? "failed" : "succeed"}. ${JSON.stringify(dispData)}`);
+  async createNote(note: NoteEntity): Promise<NoteEntity> {
+    let noteStore = this.client.getNoteStore();
+    this.message("Create remote note", true, {noteTitle: note.title});
+    return await new Promise<NoteEntity>((resolve, reject) => {
+      noteStore.createNote(this.noteEntityToEvernoteNote(note), (err, createdNote) => {
+        this.message("Create remote note", false, {noteTitle: note.title}, err);
+        if (err) return reject(err);
+        resolve(new NoteEntity(createdNote));
+      });
+    });
+  }
+
+  async updateNote(note: NoteEntity): Promise<NoteEntity> {
+    let noteStore = this.client.getNoteStore();
+    this.message("Update remote note", true, {noteTitle: note.title});
+    return await new Promise<NoteEntity>((resolve, reject) => {
+      noteStore.updateNote(this.noteEntityToEvernoteNote(note), (err, updatedNote) => {
+        this.message("Update remote note", false, {noteTitle: note.title}, err);
+        if (err) return reject(err);
+        resolve(new NoteEntity(updatedNote));
+      });
+    });
+  }
+
+  private noteEntityToEvernoteNote(note: NoteEntity): evernote.Evernote.Note {
+    return new evernote.Evernote.Note({
+      guid: note.guid,
+      title: note.title,
+      content: note.content,
+      created: note.created,
+      updated: note.updated,
+      deleted: note.deleted,
+      active: note.active,
+      notebookGuid: note.notebookGuid,
+      tagGuids: note.tagGuids,
+      attributes: new evernote.Evernote.NoteAttributes({
+        subjectDate: note.attributes.subjectDate,
+        latitude: note.attributes.latitude,
+        longitude: note.attributes.longitude,
+        author: note.attributes.author,
+        source: note.attributes.source,
+        sourceURL: note.attributes.sourceURL,
+        sourceApplication: note.attributes.sourceApplication,
+        shareDate: note.attributes.shareDate,
+        reminderOrder: note.attributes.reminderOrder,
+        reminderDoneTime: note.attributes.reminderDoneTime,
+        reminderTime: note.attributes.reminderTime,
+        placeName: note.attributes.placeName,
+        contentClass: note.attributes.contentClass,
+      }),
+    });
+  }
+
+  private loadMessage(isStart: boolean, name: string, dispData: Object = {}, err: any = null) {
+    this.message(`Load remote ${name}`, isStart, dispData, err);
+  }
+
+  private message(action: string, isStart: boolean, dispData: Object = {}, err: any = null) {
+    logger.debug(`${action} was ${isStart ? "started" : err ? "failed" : "succeed"}. ${JSON.stringify(dispData)}`);
   }
 
 }
