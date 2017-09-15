@@ -15,6 +15,7 @@ let message: LocaleMessageObject = {
     notebook: "notebook",
     person: "person",
     remarks: "remarks",
+    repetition: "repetition",
     rest: "rest",
     timeline: "timeline",
     title: "title",

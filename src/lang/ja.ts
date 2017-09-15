@@ -15,6 +15,7 @@ let message: LocaleMessageObject = {
     notebook: "ノートブック",
     person: "担当者",
     remarks: "備考",
+    repetition: "繰返し",
     rest: "休憩",
     timeline: "時系列",
     title: "表題",

@@ -12,6 +12,7 @@
         +item("/timeline", "clock-o", "{{$t('common.timeline')}}")
         +item("/notes", "files-o", "{{$tc('common.note')}}")
         +item("/activity", "history", "{{$t('common.activity')}}")
+        +item("/repetition", "recycle", "{{$t('common.repetition')}}")
         +item("/constraint", "check-circle", "{{$t('common.constraint')}}")
     b-button(:variant="datastoreService.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$root.$emit('show::modal', 'person-modal')")
       i.fa.fa-user

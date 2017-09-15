@@ -29,6 +29,7 @@ const routes = [
   {path: "/timeline", component: require("./component/+mode/timeline-mode/timeline-mode.component.vue").default},
   {path: "/notes", component: require("./component/+mode/notes-mode/notes-mode.component.vue").default},
   {path: "/activity", component: require("./component/+mode/activity-mode/activity-mode.component.vue").default},
+  {path: "/repetition", component: require("./component/+mode/repetition-mode/repetition-mode.component.vue").default},
   {path: "/constraint", component: require("./component/+mode/constraint-mode/constraint-mode.component.vue").default},
 ];
 export const router = new VueRouter({routes});
