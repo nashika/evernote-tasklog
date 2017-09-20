@@ -54,11 +54,11 @@ export default class RepetitionModeComponent extends BaseComponent {
     this.progressService.open(3);
     try {
       this.progressService.next("Getting note data.");
-      let note = await this.requestService.findOne<NoteEntity>(NoteEntity, {where: {guid: record.noteGuid}});
+      let note = await this.requestService.findOne(NoteEntity, {where: {guid: record.noteGuid}});
       this.progressService.next("Creating new note.");
       let newNote = _.cloneDeep(note);
       newNote.guid = null;
-      let createdNote = await this.requestService.save<NoteEntity>(NoteEntity, newNote);
+      let createdNote = await this.requestService.save(NoteEntity, newNote);
       console.log(createdNote);
       debugger;
     } finally {

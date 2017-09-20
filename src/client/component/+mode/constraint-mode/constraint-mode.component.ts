@@ -43,9 +43,9 @@ export default class ConstraintModeComponent extends BaseComponent {
       this.progressService.next("Syncing remote server.");
       await this.requestService.sync();
       this.progressService.next("Requesting constraint result.");
-      let constraintResults = await this.requestService.find<ConstraintResultEntity>(ConstraintResultEntity, {});
+      let constraintResults = await this.requestService.find(ConstraintResultEntity, {});
       let noteGuids: string[] = _(constraintResults).map(constraintResult => constraintResult.noteGuid).uniq().value();
-      let noteArray = await this.requestService.find<NoteEntity>(NoteEntity, {where: {guid: noteGuids}});
+      let noteArray = await this.requestService.find(NoteEntity, {where: {guid: noteGuids}});
       let notes: { [guid: string]: NoteEntity } = _.keyBy(noteArray, "guid");
       this.records = [];
       for (let constraintResult of constraintResults) {

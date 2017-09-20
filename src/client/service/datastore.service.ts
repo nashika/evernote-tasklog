@@ -95,14 +95,14 @@ export class DatastoreService extends BaseClientService {
 
   private async syncNotebooks(): Promise<void> {
     logger.debug(`Synchronizing notebooks.`);
-    let notebooks = await this.requestService.find<NotebookEntity>(NotebookEntity);
+    let notebooks = await this.requestService.find(NotebookEntity);
     this.$vm.notebooks = _.keyBy(notebooks, "guid");
     this.$vm.stacks = _(notebooks).map<string>("stack").uniq().value();
   }
 
   private async syncTags(): Promise<void> {
     logger.debug(`Synchronizing tags.`);
-    let tags = await this.requestService.find<TagEntity>(TagEntity);
+    let tags = await this.requestService.find(TagEntity);
     this.$vm.tags = _.keyBy(tags, "guid");
   }
 
@@ -162,7 +162,7 @@ export class DatastoreService extends BaseClientService {
   protected async getNotes(params: IDatastoreServiceNoteFilterParams): Promise<TNotesResult> {
     this.progressService.next("Getting notes.");
     let options = this.makeNoteFindOptions(params);
-    let notes = await this.requestService.find<NoteEntity>(NoteEntity, options);
+    let notes = await this.requestService.find(NoteEntity, options);
     return _.keyBy(notes, "guid");
   }
 
@@ -171,7 +171,7 @@ export class DatastoreService extends BaseClientService {
     let options = this.makeNoteFindOptions(params);
     options.archive = true;
     options.includeContent = true;
-    let notes = await this.requestService.find<NoteEntity>(NoteEntity, options);
+    let notes = await this.requestService.find(NoteEntity, options);
     if (params.archiveMinStepMinute) {
       notes = _.filter(notes, (filterNote: NoteEntity) => {
         return !_.find(notes, (findNote: NoteEntity) => {
@@ -205,7 +205,7 @@ export class DatastoreService extends BaseClientService {
       guids.push(note.guid);
     }
     let options = this.makeTimeLogFindOptions(_.merge({}, params, {noteGuids: guids}));
-    let timeLogs = await this.requestService.find<TimeLogEntity>(TimeLogEntity, options);
+    let timeLogs = await this.requestService.find(TimeLogEntity, options);
     let result: TTimeLogsResult = {};
     for (var timeLog of timeLogs) {
       if (!result[timeLog.noteGuid])
@@ -222,7 +222,7 @@ export class DatastoreService extends BaseClientService {
       let note = notes[noteGuid];
       guids.push(note.guid);
     }
-    let profitLogs = await this.requestService.find<ProfitLogEntity>(ProfitLogEntity, {where: {noteGuid: {$in: guids}}});
+    let profitLogs = await this.requestService.find(ProfitLogEntity, {where: {noteGuid: {$in: guids}}});
     let result: TProfitLogsResult = {};
     for (let profitLog of profitLogs) {
       if (!result[profitLog.noteGuid])
@@ -260,7 +260,7 @@ export class DatastoreService extends BaseClientService {
       archive: true,
       includeContent: true,
     };
-    return await this.requestService.findOne<NoteEntity>(NoteEntity, options);
+    return await this.requestService.findOne(NoteEntity, options);
   }
 
   private makeNoteFindOptions(params: IDatastoreServiceNoteFilterParams): IFindNoteEntityOptions {

@@ -97,7 +97,7 @@ export default class AttendanceModeComponent extends BaseComponent {
     this.todayAttendance = null;
     this.progressService.open(1);
     this.progressService.next("Request from server.");
-    let requestAttendances = await this.requestService.find<AttendanceEntity>(AttendanceEntity, {
+    let requestAttendances = await this.requestService.find(AttendanceEntity, {
       where: {personId: this.personId, year: this.year, month: this.month}
     });
     for (let i = 1; i <= this.lastDayOfMonth; i++) {
