@@ -32,6 +32,7 @@ declare namespace config {
       notes: IDefaultFilterParamsConfig;
       activity: IDefaultFilterParamsConfig;
     };
+    repetitions?: IRepetitionConfig[];
     constraints?: IConstraintConfig[];
   }
 
@@ -43,6 +44,12 @@ declare namespace config {
   interface IDefaultFilterParamsConfig {
     stacks?: string[];
     notebooks?: string[];
+  }
+
+  interface IRepetitionConfig {
+    id: number;
+    label: string;
+    noteGuid: string;
   }
 
   interface IConstraintConfig {

@@ -47,10 +47,9 @@ export abstract class BaseEntityRoute<T1 extends BaseEntity, T2 extends BaseTabl
     return count;
   }
 
-  protected async onSave(_socket: SocketIO.Socket, data: Object): Promise<boolean> {
+  protected async onSave(_socket: SocketIO.Socket, data: Object): Promise<T1> {
     let entity: T1 = new (<any>this.EntityClass)(data);
-    await this.getTable().save(entity);
-    return true;
+    return await this.getTable().save(entity);
   }
 
   protected async onRemove(_socket: SocketIO.Socket, id: number | string): Promise<boolean> {

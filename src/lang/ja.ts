@@ -24,6 +24,9 @@ let message: LocaleMessageObject = {
     updated: "更新日",
     year: "年",
   },
+  verb: {
+    create: "{0}を作成",
+  },
   push: {
     constraint: {
       body: "制約に違反したノートがあります、制約のページを確認してください。",

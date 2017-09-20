@@ -30,8 +30,9 @@ export class RequestService extends BaseClientService {
     return await this.socketIoClientService.request<number>(`${EntityClass.params.name}::count`, options);
   }
 
-  async save<T extends BaseEntity>(EntityClass: typeof BaseEntity, entity: T): Promise<void> {
-    await this.socketIoClientService.request(`${EntityClass.params.name}::save`, entity);
+  async save<T extends BaseEntity>(EntityClass: typeof BaseEntity, entity: T): Promise<T> {
+    let data = await this.socketIoClientService.request(`${EntityClass.params.name}::save`, entity);
+    return data ? new (<any>EntityClass)(data) : null;
   }
 
   async remove(EntityClass: typeof BaseEntity, id: number | string): Promise<void> {

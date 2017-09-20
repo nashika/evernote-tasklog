@@ -3,7 +3,7 @@ let appConfig: config.IAppConfigs = {
     port: 3000,
     logLevel: "trace",
     sandbox: false,
-    token: "",
+    token: "****",
     persons: [
       {id: 1, name: "Alpha"},
       {id: 2, name: "Beta"},
@@ -17,6 +17,13 @@ let appConfig: config.IAppConfigs = {
       notes: {stacks: ["StackA", "StackB"], notebooks: ["NotebookA", "NotebookB"]},
       activity: {},
     },
+    repetitions: [
+      {
+        id: 1,
+        label: "Repetition 1",
+        noteGuid: "****",
+      },
+    ],
     constraints: [
       {
         id: 1,

@@ -24,6 +24,9 @@ let message: LocaleMessageObject = {
     updated: "updated",
     year: "year",
   },
+  verb: {
+    create: "create {0}"
+  },
   push: {
     constraint: {
       body: "There are notes that violated constraints.",
