@@ -19,21 +19,42 @@ export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
   async connect(socket: SocketIO.Socket): Promise<void> {
     await super.connect(socket);
     this.on(socket, "getContent", this.onGetContent);
+    this.on(socket, "saveRemote", this.onSaveRemote);
     this.on(socket, "reParse", this.onReParse);
   }
 
   protected async onGetContent(_socket: SocketIO.Socket, guid: string): Promise<NoteEntity> {
     if (!guid) return null;
     await this.syncService.lock();
-    let note = await this.getTable().loadRemote(guid);
-    await this.syncService.unlock();
+    let note;
+    try {
+      note = await this.getTable().loadRemote(guid);
+    } finally {
+      await this.syncService.unlock();
+    }
     return note;
+  }
+
+  protected async onSaveRemote(_socket: SocketIO.Socket, data: Object): Promise<NoteEntity> {
+    let note: NoteEntity = new NoteEntity(data);
+    await this.syncService.lock();
+    let savedNote;
+    try {
+      savedNote = await this.getTable().saveRemote(note);
+      savedNote = await this.getTable().save(note);
+    } finally {
+      await this.syncService.unlock();
+    }
+    return savedNote;
   }
 
   protected async onReParse(_socket: SocketIO.Socket, query: Object): Promise<boolean> {
     await this.syncService.lock();
-    await this.getTable().reParseNotes(query);
-    await this.syncService.unlock();
+    try {
+      await this.getTable().reParseNotes(query);
+    } finally {
+      await this.syncService.unlock();
+    }
     return true;
   }
 

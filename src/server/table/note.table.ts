@@ -109,6 +109,10 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
     return lastNote;
   }
 
+  async saveRemote(note: NoteEntity): Promise<NoteEntity> {
+
+  }
+
   async reParseNotes(query = {}): Promise<void> {
     let options: IFindNoteEntityOptions = {};
     options.where = query;

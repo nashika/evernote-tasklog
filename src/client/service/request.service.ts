@@ -67,6 +67,11 @@ export class RequestService extends BaseClientService {
     return data ? new NoteEntity(data) : null;
   }
 
+  async saveRemoteNote(note: NoteEntity): Promise<NoteEntity> {
+    let data = await this.socketIoClientService.request("note::saveRemote", note);
+    return data ? new NoteEntity(data) : null;
+  }
+
   async reParseNote(): Promise<void> {
     await this.socketIoClientService.request(`note::reParse`, {});
   }
