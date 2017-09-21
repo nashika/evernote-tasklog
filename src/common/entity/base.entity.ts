@@ -21,6 +21,12 @@ export interface ICountEntityOptions extends sequelize.CountOptions {
 export interface IDestroyEntityOptions extends sequelize.DestroyOptions {
 }
 
+export type TEntityClass<T extends BaseEntity> = {
+  new(): T;
+  prototype: T;
+  params: IBaseEntityParams<T>;
+}
+
 export abstract class BaseEntity {
 
   static params: IBaseEntityParams<any>;

@@ -2,16 +2,10 @@ import _ = require("lodash");
 import {injectable} from "inversify";
 
 import {BaseClientService} from "./base-client.service";
-import {BaseEntity, IBaseEntityParams, IFindEntityOptions} from "../../common/entity/base.entity";
+import {BaseEntity, IFindEntityOptions, TEntityClass} from "../../common/entity/base.entity";
 import {NoteEntity} from "../../common/entity/note.entity";
 import {OptionEntity} from "../../common/entity/option.entity";
 import {SocketIoClientService} from "./socket-io-client-service";
-
-type EntityConstructor<T extends BaseEntity> = {
-  new(): T;
-  prototype: T;
-  params: IBaseEntityParams<T>;
-}
 
 @injectable()
 export class RequestService extends BaseClientService {
@@ -20,28 +14,28 @@ export class RequestService extends BaseClientService {
     super();
   }
 
-  async find<T extends BaseEntity>(EntityClass: EntityConstructor<T>, options: IFindEntityOptions<T> = {}): Promise<T[]> {
+  async find<T extends BaseEntity>(EntityClass: TEntityClass<T>, options: IFindEntityOptions<T> = {}): Promise<T[]> {
     let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
     return _.map(datas, data => new (<any>EntityClass)(data));
   }
 
-  async findOne<T extends BaseEntity>(EntityClass: EntityConstructor<T>, options: IFindEntityOptions<T> = {}): Promise<T> {
+  async findOne<T extends BaseEntity>(EntityClass: TEntityClass<T>, options: IFindEntityOptions<T> = {}): Promise<T> {
     options.limit = 1;
     let datas = await this.socketIoClientService.request<Object[]>(`${EntityClass.params.name}::find`, options);
     let results: T[] = _.map(datas, data => new (<any>EntityClass)(data));
     return results[0] || null;
   }
 
-  async count<T extends BaseEntity>(EntityClass: EntityConstructor<T>, options: IFindEntityOptions<T>): Promise<number> {
+  async count<T extends BaseEntity>(EntityClass: TEntityClass<T>, options: IFindEntityOptions<T>): Promise<number> {
     return await this.socketIoClientService.request<number>(`${EntityClass.params.name}::count`, options);
   }
 
-  async save<T extends BaseEntity>(EntityClass: EntityConstructor<T>, entity: T): Promise<T> {
+  async save<T extends BaseEntity>(EntityClass: TEntityClass<T>, entity: T): Promise<T> {
     let data = await this.socketIoClientService.request(`${EntityClass.params.name}::save`, entity);
     return data ? new (<any>EntityClass)(data) : null;
   }
 
-  async remove<T extends BaseEntity>(EntityClass: EntityConstructor<T>, id: number | string): Promise<void> {
+  async remove<T extends BaseEntity>(EntityClass: TEntityClass<T>, id: number | string): Promise<void> {
     await this.socketIoClientService.request(`${EntityClass.params.name}::remove`, id);
   }
 
