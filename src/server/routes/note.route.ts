@@ -41,7 +41,6 @@ export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
     let savedNote;
     try {
       savedNote = await this.getTable().saveRemote(note);
-      savedNote = await this.getTable().save(note);
     } finally {
       await this.syncService.unlock();
     }

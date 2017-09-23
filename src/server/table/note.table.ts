@@ -110,7 +110,14 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
   }
 
   async saveRemote(note: NoteEntity): Promise<NoteEntity> {
-
+    this.message("save", ["remote"], "note", true, {title: note.title});
+    let savedNote;
+    if (note.guid)
+      savedNote = await this.evernoteClientService.updateNote(note);
+    else
+      savedNote = await this.evernoteClientService.createNote(note);
+    this.message("save", ["remote"], "note", false, {title: note.title});
+    return savedNote;
   }
 
   async reParseNotes(query = {}): Promise<void> {
