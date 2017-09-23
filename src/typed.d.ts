@@ -50,6 +50,8 @@ declare namespace config {
     id: number;
     label: string;
     noteGuid: string;
+    destNotebook: string;
+    title: string;
   }
 
   interface IConstraintConfig {

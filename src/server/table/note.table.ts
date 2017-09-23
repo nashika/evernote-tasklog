@@ -2,17 +2,12 @@ import _ = require("lodash");
 import {injectable} from "inversify";
 import sequelize = require("sequelize");
 
-import {NoteEntity} from "../../common/entity/note.entity";
+import {IFindNoteEntityOptions, NoteEntity} from "../../common/entity/note.entity";
 import {BaseEvernoteTable} from "./base-evernote.table";
 import {TableService} from "../service/table.service";
 import {EvernoteClientService} from "../service/evernote-client.service";
 import {IBaseTableParams, ISequelizeInstance} from "./base.table";
-import {IFindEntityOptions} from "../../common/entity/base.entity";
 import {logger} from "../logger";
-
-export interface IFindNoteEntityOptions extends IFindEntityOptions<NoteEntity> {
-  includeContent?: boolean;
-}
 
 @injectable()
 export class NoteTable extends BaseEvernoteTable<NoteEntity> {
@@ -71,15 +66,20 @@ export class NoteTable extends BaseEvernoteTable<NoteEntity> {
 
   async findAll(options: IFindNoteEntityOptions): Promise<NoteEntity[]> {
     let notes = await super.findAll(options);
-    if (options.includeContent) {
-      return notes;
-    } else {
-      return _.map(notes, (note: NoteEntity) => {
-        note.hasContent = note.content != null;
-        note.content = null;
-        return note;
-      });
+    return _.map(notes, note => this.prepareFindEntity(note, options));
+  }
+
+  async findOne(options: IFindNoteEntityOptions): Promise<NoteEntity> {
+    let note = await super.findOne(options);
+    return this.prepareFindEntity(note, options);
+  }
+
+  protected prepareFindEntity(note: NoteEntity, options: IFindNoteEntityOptions): NoteEntity {
+    if (!options.includeContent) {
+      note.hasContent = note.content != null;
+      note.content = null;
     }
+    return note;
   }
 
   protected prepareSaveEntity(entity: NoteEntity): any {

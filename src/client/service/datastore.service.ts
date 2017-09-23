@@ -5,7 +5,7 @@ import {Evernote} from "evernote";
 import  Vue from "vue";
 import Component from "vue-class-component";
 
-import {NoteEntity} from "../../common/entity/note.entity";
+import {IFindNoteEntityOptions, NoteEntity} from "../../common/entity/note.entity";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
 import {ProfitLogEntity} from "../../common/entity/profit-log.entity";
 import {NotebookEntity} from "../../common/entity/notebook.entity";
@@ -13,7 +13,6 @@ import {BaseClientService} from "./base-client.service";
 import {ProgressService} from "./progress.service";
 import {RequestService} from "./request.service";
 import {TagEntity} from "../../common/entity/tag.entity";
-import {IFindNoteEntityOptions} from "../../server/table/note.table";
 import {IFindEntityOptions} from "../../common/entity/base.entity";
 import {configLoader} from "../../common/util/config-loader";
 import {SocketIoClientService} from "./socket-io-client-service";

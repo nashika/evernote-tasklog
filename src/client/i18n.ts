@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueI18n from "vue-i18n";
+import * as moment from "moment";
 
 import messages from "../lang/index";
 
@@ -14,3 +15,5 @@ export const i18n = new VueI18n ({
   fallbackLocale: "en",
   messages,
 });
+
+moment.locale(language);

@@ -22,6 +22,8 @@ let appConfig: config.IAppConfigs = {
         id: 1,
         label: "Repetition 1",
         noteGuid: "****",
+        destNotebook: "Inbox",
+        title: "[Repetition note] YYYY-MM-DD",
       },
     ],
     constraints: [
