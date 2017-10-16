@@ -9,7 +9,7 @@
     "build-production": "cross-env NODE_ENV=production npm run build",
     "build:tsc": "tsc",
     "build:scss": "node-sass --output-style compressed --source-map true --source-map-contents true src/client/scss/style.scss -o dist/css",
-    "build:font-awesome-fonts": "cpx \"node_modules/font-awesome/fonts/*\" \"dist/fonts\"",
+    "build:font-awesome-fonts": "cpx -C \"node_modules/font-awesome/fonts/*\" \"dist/fonts\"",
     "build:webpack-dll": "npm run webpack-dll",
     "build:webpack": "npm run webpack",
     "ncu": "ncu",
