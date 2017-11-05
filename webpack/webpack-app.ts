@@ -17,6 +17,7 @@ export function appPartial(): webpack.Configuration {
     resolve: {
       extensions: [".ts", ".js"],
       alias: {
+        "push.js": "push.js/bin/push.js",
         vis: "vis/dist/vis-timeline-graph2d.min.js",
       },
     },
