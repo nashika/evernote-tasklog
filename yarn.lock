@@ -31,12 +31,6 @@
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/@types/diff/-/diff-3.2.1.tgz#a9d41aa10e13f46b74295461a88846616a898e83"
 
-"@types/evernote@~1.25.34":
-  version "1.25.34"
-  resolved "https://registry.yarnpkg.com/@types/evernote/-/evernote-1.25.34.tgz#762fc466452a96a9ad50f23872d213c218169af6"
-  dependencies:
-    "@types/thrift" "*"
-
 "@types/express-serve-static-core@*", "@types/express-serve-static-core@~4.0.50":
   version "4.0.50"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.50.tgz#c5a139b5d29d2305aae6d982f69cef36120beacf"
@@ -137,10 +131,6 @@
 "@types/tapable@*":
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-0.2.4.tgz#8181a228da46185439300e600c5ae3b3b3982585"
-
-"@types/thrift@*":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@types/thrift/-/thrift-0.10.0.tgz#076e5e5c731de6aacdf632f38f68ac8763276785"
 
 "@types/uglify-js@*":
   version "2.6.29"
@@ -2160,11 +2150,11 @@ eventsource@0.1.6:
   dependencies:
     original ">=0.0.5"
 
-evernote@~1.25.82:
-  version "1.25.82"
-  resolved "https://registry.yarnpkg.com/evernote/-/evernote-1.25.82.tgz#79f3f74767c655c5bb42b2ac341913e81c50fa54"
+evernote@~2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/evernote/-/evernote-2.0.5.tgz#187f979b450d93d54190d852c69494e48e677e23"
   dependencies:
-    oauth "*"
+    oauth "^0.9.14"
 
 evp_bytestokey@^1.0.0:
   version "1.0.2"
@@ -4955,7 +4945,7 @@ oauth-sign@~0.8.1:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
 
-oauth@*:
+oauth@^0.9.14:
   version "0.9.15"
   resolved "https://registry.yarnpkg.com/oauth/-/oauth-0.9.15.tgz#bd1fefaf686c96b75475aed5196412ff60cfb9c1"
 

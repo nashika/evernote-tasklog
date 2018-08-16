@@ -58,7 +58,7 @@ export default class TimelineModeComponent extends BaseComponent {
       this.timelineGroups.add({id: `person-${person.id}`, content: person.name});
     this.timelineGroups.add({id: "updated", content: "Update"});
     let notes: { [noteGuid: string]: NoteEntity } = {};
-    for (var noteGuid in noteLogsResult.notes) {
+    for (let noteGuid in noteLogsResult.notes) {
       let note: NoteEntity = noteLogsResult.notes[noteGuid];
       notes[note.guid] = note;
       let timelineItem: TimelineItem = {

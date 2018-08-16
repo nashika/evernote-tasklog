@@ -1,8 +1,7 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
 import moment = require("moment");
-import {Evernote} from "evernote";
-import  Vue from "vue";
+import Vue from "vue";
 import Component from "vue-class-component";
 
 import {NoteEntity} from "../../common/entity/note.entity";
@@ -97,7 +96,7 @@ export class DatastoreService extends BaseClientService {
     logger.debug(`Synchronizing notebooks.`);
     let notebooks = await this.requestService.find<NotebookEntity>(NotebookEntity);
     this.$vm.notebooks = _.keyBy(notebooks, "guid");
-    this.$vm.stacks = _(notebooks).map<string>("stack").uniq().value();
+    this.$vm.stacks = _(notebooks).map("stack").uniq().value();
   }
 
   private async syncTags(): Promise<void> {

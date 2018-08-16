@@ -1,5 +1,4 @@
 import {injectable} from "inversify";
-import {Evernote} from "evernote";
 
 import {BaseServerService} from "./base-server.service";
 
