@@ -3,7 +3,7 @@ import {injectable} from "inversify";
 import {BaseServerService} from "./base-server.service";
 
 export interface ISession {
-  user: any;
+  user: Evernote.User;
 }
 
 @injectable()

@@ -13,7 +13,7 @@ export class EvernoteClientService extends BaseServerService {
 
   SYNC_CHUNK_COUNT = 100;
 
-  private client: any;
+  private client: Evernote.Client;
 
   async initialize(): Promise<void> {
     this.client = new Evernote.Client({
@@ -22,7 +22,7 @@ export class EvernoteClientService extends BaseServerService {
     });
   }
 
-  async getUser(): Promise<any> {
+  async getUser(): Promise<Evernote.User> {
     this.mes_(true, "user", {});
     try {
       return await this.client.getUserStore().getUser();
@@ -32,7 +32,7 @@ export class EvernoteClientService extends BaseServerService {
     }
   }
 
-  async getSyncState(): Promise<any> {
+  async getSyncState(): Promise<Evernote.SyncState> {
     this.mes_(true, "syncState", {});
     try {
       return await this.client.getNoteStore().getSyncState();
@@ -42,8 +42,8 @@ export class EvernoteClientService extends BaseServerService {
     }
   }
 
-  async getFilteredSyncChunk(updateCount: number): Promise<any> {
-    let syncChunkFilter: any = new Evernote.NoteStore.SyncChunkFilter();
+  async getFilteredSyncChunk(updateCount: number): Promise<Evernote.SyncChunk> {
+    let syncChunkFilter: Evernote.SyncChunkFilter = new Evernote.NoteStore.SyncChunkFilter();
     syncChunkFilter.includeNotes = true;
     syncChunkFilter.includeNotebooks = true;
     syncChunkFilter.includeTags = true;

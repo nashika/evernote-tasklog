@@ -54,7 +54,7 @@ export interface INoteLogsResult {
 @Component({})
 export class DatastoreServiceEventBus extends Vue {
   lastUpdateCount: number = 0;
-  user: any = null;
+  user: Evernote.User = null;
   currentPersonId: number = 0;
   notebooks: {[guid: string]: NotebookEntity} = {};
   stacks: string[] = [];
