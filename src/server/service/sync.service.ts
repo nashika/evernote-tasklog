@@ -1,4 +1,3 @@
-import evernote = require("evernote");
 import _ = require("lodash");
 import {injectable} from "inversify";
 
@@ -59,7 +58,7 @@ export class SyncService extends BaseServerService {
     clearTimeout(this.timer);
     await this.lock();
     try {
-      let localSyncState: evernote.Evernote.SyncState = await this.tableService.optionTable.findValueByKey("syncState");
+      let localSyncState: any = await this.tableService.optionTable.findValueByKey("syncState");
       if (!localSyncState) localSyncState = <any>{updateCount: 0};
       let remoteSyncState = await this.evernoteClientService.getSyncState();
       let updateEventHash: { [event: string]: boolean } = {};
@@ -87,9 +86,9 @@ export class SyncService extends BaseServerService {
     }
   }
 
-  private async getSyncChunk(localSyncState: evernote.Evernote.SyncState, updateEventHash: { [event: string]: boolean }): Promise<void> {
+  private async getSyncChunk(localSyncState: any, updateEventHash: { [event: string]: boolean }): Promise<void> {
     logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
-    let lastSyncChunk: evernote.Evernote.SyncChunk = await this.evernoteClientService.getFilteredSyncChunk(localSyncState.updateCount);
+    let lastSyncChunk: any = await this.evernoteClientService.getFilteredSyncChunk(localSyncState.updateCount);
     await this.tableService.noteTable.saveAll(_.map(lastSyncChunk.notes, note => new NoteEntity(note)));
     await this.tableService.noteTable.removeByGuid(lastSyncChunk.expungedNotes);
     await this.tableService.notebookTable.saveAll(_.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook)));

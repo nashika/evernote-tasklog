@@ -1,8 +1,7 @@
 import _ = require("lodash");
 import {injectable} from "inversify";
 import moment = require("moment");
-import {Evernote} from "evernote";
-import  Vue from "vue";
+import Vue from "vue";
 import Component from "vue-class-component";
 
 import {NoteEntity} from "../../common/entity/note.entity";
@@ -55,7 +54,7 @@ export interface INoteLogsResult {
 @Component({})
 export class DatastoreServiceEventBus extends Vue {
   lastUpdateCount: number = 0;
-  user: Evernote.User = null;
+  user: any = null;
   currentPersonId: number = 0;
   notebooks: {[guid: string]: NotebookEntity} = {};
   stacks: string[] = [];

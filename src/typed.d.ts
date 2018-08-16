@@ -1,5 +1,5 @@
 declare module "bootstrap-vue" {
-  var BootstrapVue: any;
+  let BootstrapVue: any;
   export = BootstrapVue;
 }
 
@@ -9,6 +9,15 @@ declare namespace SocketIO {
       session: Express.Session;
     }
   }
+}
+
+declare module "evernote" {
+  let Evernote: any;
+  export = Evernote;
+}
+
+declare namespace Evernote {
+  let Client: any;
 }
 
 declare namespace config {
