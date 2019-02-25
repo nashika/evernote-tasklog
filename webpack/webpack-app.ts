@@ -21,7 +21,7 @@ export function appPartial(): webpack.Configuration {
       },
     },
     module: {
-      loaders: [
+      rules: [
         {test: /\.ts$/, loader: "awesome-typescript-loader", exclude: /node_modules/},
         {test: /\.vue$/, loader: "vue-loader", options: {
           loaders: {
