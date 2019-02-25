@@ -3,14 +3,6 @@ declare module "bootstrap-vue" {
   export = BootstrapVue;
 }
 
-declare namespace SocketIO {
-  interface Socket extends NodeJS.EventEmitter {
-    handshake: {
-      session: Express.Session;
-    }
-  }
-}
-
 declare module "evernote" {
   let Evernote: any;
   export = Evernote;
