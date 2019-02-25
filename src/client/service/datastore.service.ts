@@ -3,6 +3,7 @@ import {injectable} from "inversify";
 import moment = require("moment");
 import Vue from "vue";
 import Component from "vue-class-component";
+import * as sequelize from "sequelize";
 
 import {NoteEntity} from "../../common/entity/note.entity";
 import {TimeLogEntity} from "../../common/entity/time-log.entity";
@@ -263,16 +264,16 @@ export class DatastoreService extends BaseClientService {
   }
 
   private makeNoteFindOptions(params: IDatastoreServiceNoteFilterParams): IFindNoteEntityOptions {
-    let options: IFindEntityOptions<any> = {where: {$and: []}};
+    let andConds: sequelize.WhereOptions<any>[] = [];
     if (params.start)
-      (<any>options.where.$and).push({updated: {$gte: params.start.valueOf()}});
+      andConds.push({updated: {$gte: params.start.valueOf()}});
     if (params.end)
-      (<any>options.where.$and).push({updated: {$lte: params.end.valueOf()}});
+      andConds.push({updated: {$lte: params.end.valueOf()}});
     // set hasContent query
     if (params.hasContent)
-      (<any>options.where.$and).push({content: {$ne: null}});
+      andConds.push({content: {$ne: null}});
     // check notebooks
-    var notebooksHash: {[notebookGuid: string]: boolean} = {};
+    let notebooksHash: {[notebookGuid: string]: boolean} = {};
     if (params.stacks)
       for (let stack of params.stacks)
         for (let notebook of _.values(this.$vm.notebooks))
@@ -283,22 +284,21 @@ export class DatastoreService extends BaseClientService {
         notebooksHash[notebookGuid] = true;
     // set notebooks query
     if (_.size(notebooksHash) > 0)
-      (<any>options.where.$and).push({notebookGuid: {$in: _.keys(notebooksHash)}});
-    return options;
+      andConds.push({notebookGuid: {$in: _.keys(notebooksHash)}});
+    return {where: <any>{$and: andConds}};
   }
 
   private makeTimeLogFindOptions(params: IDatastoreServiceTimeLogFilterParams): IFindEntityOptions<TimeLogEntity> {
-    let options: IFindEntityOptions<any> = {where: {$and: []}};
+    let andConds: sequelize.WhereOptions<TimeLogEntity>[] = [];
     // set date query
     if (params.start)
-      (<any>options.where.$and).push({date: {$gte: params.start.valueOf()}});
+      andConds.push({date: {$gte: params.start.valueOf()}});
     if (params.end)
-      (<any>options.where.$and).push({date: {$lte: params.end.valueOf()}});
+      andConds.push({date: {$lte: params.end.valueOf()}});
     // set note guids query
     if (params.noteGuids)
-      if (params.noteGuids.length > 0)
-        _.merge(options.where, {noteGuid: {$in: params.noteGuids}});
-    return options;
+      andConds.push({noteGuid: {$in: params.noteGuids}});
+    return {where: <any>{$and: andConds}};
   }
 
 }
