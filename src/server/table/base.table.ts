@@ -17,16 +17,16 @@ export interface ISequelizeInstance<T extends BaseEntity> extends sequelize.Inst
 export interface ISequelizeModel<T extends BaseEntity> extends sequelize.Model<ISequelizeInstance<T>, T> {
 }
 
-export interface IBaseTableParams {
+export interface IBaseTableParams<T extends BaseEntity> {
   fields: sequelize.DefineAttributes,
-  options: sequelize.DefineOptions<ISequelizeInstance<BaseEntity>>,
+  options: sequelize.DefineOptions<ISequelizeInstance<T>>,
   jsonFields: string[],
 }
 
 @injectable()
 export abstract class BaseTable<T extends BaseEntity> {
 
-  static params: IBaseTableParams;
+  params: IBaseTableParams<T>;
 
   EntityClass: typeof BaseEntity;
 
@@ -49,13 +49,13 @@ export abstract class BaseTable<T extends BaseEntity> {
 
   initialize(database: sequelize.Sequelize) {
    this.sequelizeDatabase = database;
-    this.sequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.name, this.Class.params.fields, this.Class.params.options);
+    this.sequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.name, <any>this.params.fields, this.params.options);
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
       this.archiveFields = {};
       this.archiveFields["archiveId"] = {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true};
       let addIndexes: sequelize.DefineIndexesOptions[] = [];
-      _.each(this.Class.params.fields, (field: sequelize.DefineAttributeColumnOptions, name) => {
+      _.each(this.params.fields, (field: sequelize.DefineAttributeColumnOptions, name) => {
         field = _.cloneDeep(field);
         if (field.primaryKey || field.unique)
           addIndexes.push({unique: false, fields: [name]});
@@ -63,9 +63,9 @@ export abstract class BaseTable<T extends BaseEntity> {
         field.unique = false;
         this.archiveFields[name] = field;
       });
-      this.archiveOptions = _.cloneDeep(this.Class.params.options);
+      this.archiveOptions = _.cloneDeep(this.params.options);
       this.archiveOptions.indexes = _.union(addIndexes, this.archiveOptions.indexes);
-      this.archiveSequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.archiveName, this.archiveFields, this.archiveOptions);
+      this.archiveSequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.archiveName, <any>this.archiveFields, this.archiveOptions);
     }
   }
 
@@ -111,7 +111,7 @@ export abstract class BaseTable<T extends BaseEntity> {
 
   private parseCountOptions(options: ICountEntityOptions): ICountEntityOptions {
     options = options || {};
-    options.where = options.where || _.cloneDeep(this.EntityClass.params.default.where);
+    options.where = options.where || <any>_.cloneDeep(this.EntityClass.params.default.where);
     options.where = _.merge(options.where || {}, this.EntityClass.params.append.where || {});
     return options;
   }
@@ -159,7 +159,7 @@ export abstract class BaseTable<T extends BaseEntity> {
 
   protected prepareSaveEntity(entity: T): any {
     let result: any = _.cloneDeep(entity);
-    for (let jsonField of this.Class.params.jsonFields) {
+    for (let jsonField of this.params.jsonFields) {
       result[jsonField] = JSON.stringify(_.get(entity, jsonField));
     }
     return result;
@@ -167,7 +167,7 @@ export abstract class BaseTable<T extends BaseEntity> {
 
   protected prepareLoadEntity(instance: ISequelizeInstance<T>): T {
     let data: any = instance.toJSON();
-    for (let jsonField of this.Class.params.jsonFields) {
+    for (let jsonField of this.params.jsonFields) {
       data[jsonField] = data[jsonField] ? JSON.parse(data[jsonField]) : null;
     }
     return new (<any>this.EntityClass)(data);

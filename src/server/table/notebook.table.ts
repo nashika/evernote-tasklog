@@ -8,7 +8,7 @@ import {IBaseTableParams} from "./base.table";
 @injectable()
 export class NotebookTable extends BaseEvernoteTable<NotebookEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<NotebookEntity> = {
     fields: {
       guid: {type: sequelize.STRING, primaryKey: true},
       name: {type: sequelize.STRING, allowNull: false},

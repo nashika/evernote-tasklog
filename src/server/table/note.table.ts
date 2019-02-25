@@ -17,7 +17,7 @@ export interface IFindNoteEntityOptions extends IFindEntityOptions<NoteEntity> {
 @injectable()
 export class NoteTable extends BaseEvernoteTable<NoteEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<NoteEntity> = {
     fields: {
       guid: {type: sequelize.STRING, primaryKey: true},
       title: {type: sequelize.STRING, allowNull: false},

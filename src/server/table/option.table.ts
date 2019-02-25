@@ -7,7 +7,7 @@ import {IBaseTableParams, BaseTable} from "./base.table";
 @injectable()
 export class OptionTable extends BaseTable<OptionEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<OptionEntity> = {
     fields: {
       key: {type: sequelize.STRING, primaryKey: true},
       value: {type: sequelize.TEXT},

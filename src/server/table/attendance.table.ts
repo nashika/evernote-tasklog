@@ -7,7 +7,7 @@ import {AttendanceEntity} from "../../common/entity/attendance.entity";
 @injectable()
 export class AttendanceTable extends BaseTable<AttendanceEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<AttendanceEntity> = {
     fields: {
       id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       personId: {type: sequelize.INTEGER, allowNull: false},

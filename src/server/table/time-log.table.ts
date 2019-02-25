@@ -9,7 +9,7 @@ import {configLoader} from "../../common/util/config-loader";
 @injectable()
 export class TimeLogTable extends BaseTable<TimeLogEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<TimeLogEntity> = {
     fields: {
       id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       noteGuid: {type: sequelize.STRING, allowNull: false},

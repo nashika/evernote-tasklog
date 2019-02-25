@@ -8,7 +8,7 @@ import {IBaseTableParams} from "./base.table";
 @injectable()
 export class TagTable extends BaseEvernoteTable<TagEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<TagEntity> = {
     fields: {
       guid: {type: sequelize.STRING, primaryKey: true},
       name: {type: sequelize.STRING, allowNull: false},

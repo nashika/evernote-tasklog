@@ -8,7 +8,7 @@ import {IBaseTableParams} from "./base.table";
 @injectable()
 export class SavedSearchTable extends BaseEvernoteTable<SavedSearchEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<SavedSearchEntity> = {
     fields: {
       guid: {type: sequelize.STRING, primaryKey: true},
       name: {type: sequelize.STRING, allowNull: false},

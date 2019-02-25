@@ -8,7 +8,7 @@ import {IBaseTableParams} from "./base.table";
 @injectable()
 export class LinkedNotebookTable extends BaseEvernoteTable<LinkedNotebookEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<LinkedNotebookEntity> = {
     fields: {
       guid: {type: sequelize.STRING, primaryKey: true},
       shareName: {type: sequelize.STRING},

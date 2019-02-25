@@ -9,7 +9,7 @@ import {IBaseTableParams} from "./base.table";
 @injectable()
 export class ProfitLogTable extends BaseTable<ProfitLogEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<ProfitLogEntity> = {
     fields: {
       id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       noteGuid: {type: sequelize.STRING, allowNull: false},

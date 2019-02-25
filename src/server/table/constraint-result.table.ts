@@ -7,7 +7,7 @@ import {ConstraintResultEntity} from "../../common/entity/constraint-result.enti
 @injectable()
 export class ConstraintResultTable extends BaseTable<ConstraintResultEntity> {
 
-  static params: IBaseTableParams = {
+  params: IBaseTableParams<ConstraintResultEntity> = {
     fields: {
       id: {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true},
       noteGuid: {type: sequelize.STRING, allowNull: false},
