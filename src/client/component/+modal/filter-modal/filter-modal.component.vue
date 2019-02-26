@@ -15,13 +15,13 @@
       .h6 Filter by stack
       .scroll(v-if="stacks")
         b-table(:items="stacks", :fields="stackFields", striped, small)
-          template(slot="selected", scope="data")
+          template(slot="selected", slot-scope="data")
             b-form-checkbox(:checked="data.item.selected", @change="toggleStackItem(data.item)")
     .mb-3
       .h6 Filter by notebook
       .scroll(v-if="notebooks")
         b-table(:items="notebooks", :fields="notebookFields", striped, small)
-          template(slot="selected", scope="data")
+          template(slot="selected", slot-scope="data")
             b-form-checkbox(:checked="data.item.selected", @change="toggleNotebookItem(data.item)")
 </template>
 

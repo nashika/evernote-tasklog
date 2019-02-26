@@ -1,4 +1,5 @@
 import * as webpack from "webpack";
+import {VueLoaderPlugin} from "vue-loader";
 
 import {root} from "./webpack-helpers";
 import {configLoader} from "../src/common/util/config-loader";
@@ -22,14 +23,10 @@ export function appPartial(): webpack.Configuration {
     },
     module: {
       rules: [
-        {test: /\.ts$/, loader: "awesome-typescript-loader", exclude: /node_modules/},
-        {test: /\.vue$/, loader: "vue-loader", options: {
-          loaders: {
-            ts: "awesome-typescript-loader",
-            pug: "pug-html-loader",
-            scss: "style-loader!css-loader!sass-loader",
-          }
-        }},
+        {test: /\.ts$/, loader: "ts-loader", exclude: /node_modules/},
+        {test: /\.vue$/, loader: "vue-loader"},
+        {test: /\.pug$/, loader: "pug-html-loader"},
+        {test: /\.scss$/, loader: "style-loader!css-loader!sass-loader"},
       ],
     },
     devtool: "source-map",
@@ -43,6 +40,7 @@ export function appPartial(): webpack.Configuration {
         "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
         "config.loader.app": JSON.stringify(configLoader.app),
       }),
+      new VueLoaderPlugin(),
       new webpack.DllReferencePlugin({
         context: '.',
         manifest: require(root("./dist/js-vendor/app-vendor-manifest.json")),

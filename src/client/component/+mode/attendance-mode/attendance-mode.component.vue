@@ -20,17 +20,17 @@
         .col-sm-6
           b-button(variant="primary", size="lg", block, :disabled="!todayAttendance.arrivalTime || !!todayAttendance.departureTime", @click="departure()") #[i.fa.fa-sign-out] {{$t('common.departure')}}
       b-table(bordered, small, striped, hover, responsive, head-variant="inverse", :fields="fields", :items="attendances")
-        template(slot="day", scope="data")
+        template(slot="day", slot-scope="data")
           | {{data.item.day}} ({{moment({year: data.item.year, month: data.item.month - 1, day: data.item.day}).format('ddd')}})
-        template(slot="arrival", scope="data")
+        template(slot="arrival", slot-scope="data")
           app-timepicker-attendance-mode(v-model="data.item.arrivalTime", @change="changeRow(data.index)")
-        template(slot="departure", scope="data")
+        template(slot="departure", slot-scope="data")
           app-timepicker-attendance-mode(v-model="data.item.departureTime", @change="changeRow(data.index)")
-        template(slot="rest", scope="data")
+        template(slot="rest", slot-scope="data")
           app-timepicker-attendance-mode(v-model="data.item.restTime", @change="changeRow(data.index)")
-        template(slot="remarks", scope="data")
+        template(slot="remarks", slot-scope="data")
           b-form-input(size="sm", v-model="data.item.remarks", @change="changeRow(data.index)")
-        template(slot="action", scope="data")
+        template(slot="action", slot-scope="data")
           b-button(variant="primary", size="sm", :disabled="!updateFlags[data.index]", @click="save(data.item)") {{$t('common.update')}}
           b-button(variant="danger", size="sm", :disabled="!createFlags[data.index]", @click="remove(data.item)") {{$t('common.delete')}}
       .my-3.text-right
