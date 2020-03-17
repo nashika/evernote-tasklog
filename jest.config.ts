@@ -1,4 +1,6 @@
-module.exports = {
+import { InitialOptions } from '@jest/types/build/Config'
+
+const conf: InitialOptions = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^~/(.*)$': '<rootDir>/$1',
@@ -13,5 +15,9 @@ module.exports = {
   collectCoverageFrom: [
     '<rootDir>/components/**/*.vue',
     '<rootDir>/pages/**/*.vue'
-  ]
+  ],
+  rootDir: 'test', // tsが通らないから追加した
+  maxWorkers: 8 // tsが通らないから追加した
 }
+
+export default conf

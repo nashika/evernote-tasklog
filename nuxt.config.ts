@@ -1,4 +1,6 @@
-module.exports = {
+import { Configuration } from '@nuxt/types'
+
+const conf: Configuration = {
   mode: 'spa',
   /*
    ** Headers of the page
@@ -35,7 +37,8 @@ module.exports = {
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/stylelint-module
-    '@nuxtjs/stylelint-module'
+    '@nuxtjs/stylelint-module',
+    '@nuxt/typescript-build'
   ],
   /*
    ** Nuxt.js modules
@@ -61,6 +64,8 @@ module.exports = {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {}
+    // extend(config: any, ctx: any) {}
   }
 }
+
+export default conf
