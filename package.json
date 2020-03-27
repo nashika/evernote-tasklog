@@ -50,6 +50,9 @@
     "nodemon": "^1.18.9",
     "nuxt-property-decorator": "^2.5.1",
     "prettier": "^1.19.1",
+    "pug": "^2.0.4",
+    "pug-loader": "^2.4.0",
+    "pug-plain-loader": "^1.0.0",
     "stylelint": "^10.1.0",
     "vue-jest": "^4.0.0-0"
   }
