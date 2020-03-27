@@ -34,11 +34,11 @@ const conf: Configuration = {
    ** Nuxt.js dev-modules
    */
   buildModules: [
+    '@nuxt/typescript-build',
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
     // Doc: https://github.com/nuxt-community/stylelint-module
-    '@nuxtjs/stylelint-module',
-    '@nuxt/typescript-build'
+    '@nuxtjs/stylelint-module'
   ],
   /*
    ** Nuxt.js modules

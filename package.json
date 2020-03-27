@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.6.0",
-    "@nuxtjs/eslint-config-typescript": "^1.0.2",
+    "@nuxtjs/eslint-config-typescript": "^1.0.0",
     "@nuxtjs/eslint-module": "^1.0.0",
     "@nuxtjs/stylelint-module": "^3.1.0",
     "@vue/test-utils": "^1.0.0-beta.27",
@@ -54,6 +54,7 @@
     "pug-loader": "^2.4.0",
     "pug-plain-loader": "^1.0.0",
     "stylelint": "^10.1.0",
-    "vue-jest": "^4.0.0-0"
+    "vue-jest": "^4.0.0-0",
+    "ts-jest": "^25.0.0"
   }
 }
