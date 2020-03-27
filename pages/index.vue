@@ -33,8 +33,7 @@ import Logo from '~/components/Logo.vue'
     Logo
   }
 })
-export default class extends Vue { }
-
+export default class extends Vue {}
 </script>
 
 <style>

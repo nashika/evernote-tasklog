@@ -4,8 +4,7 @@ module.exports = {
     browser: true,
     node: true
   },
-  parserOptions: {
-  },
+  parserOptions: {},
   extends: [
     '@nuxtjs',
     'prettier',
@@ -19,6 +18,11 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    'nuxt/no-cjs-in-config': 'off'
+    'nuxt/no-cjs-in-config': 'off',
+    'space-before-function-paren': ['error', {
+      'anonymous': 'never',
+      'named': 'never',
+      'asyncArrow': 'always'
+    }]
   }
 }
