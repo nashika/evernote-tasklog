@@ -77,7 +77,7 @@ dist
 # Serverless directories
 .serverless
 
-# IDE / Editor
+# IDE / Editor (標準では全部無視設定だったが、一部無視に修正)
 /.idea/dataSources
 /.idea/workspace.xml
 /.idea/libraries/Generated_files.xml
@@ -91,4 +91,7 @@ sw.*
 # Vim swap files
 *.swp
 
+# その他追加設定
 /config/*.config.ts
+/db/*
+!.gitkeep
