@@ -7,7 +7,7 @@ const appConfig: appConfig.IAppConfigs = {
     persons: [
       { id: 1, name: "Alpha" },
       { id: 2, name: "Beta" },
-      { id: 3, name: "Gamma" }
+      { id: 3, name: "Gamma" },
     ],
     warningNoteCount: 300,
     workingTimeStart: 9,
@@ -15,7 +15,7 @@ const appConfig: appConfig.IAppConfigs = {
     defaultFilterParams: {
       timeline: {},
       notes: { stacks: ["StackA", "StackB"], notebooks: ["NotebookA", "NotebookB"] },
-      activity: {}
+      activity: {},
     },
     constraints: [
       {
@@ -23,18 +23,18 @@ const appConfig: appConfig.IAppConfigs = {
         label: "Constraint 1",
         query: {
           notebook: "Notebook1",
-          reminderOrder: null
-        }
-      }
-    ]
+          reminderOrder: null,
+        },
+      },
+    ],
   },
   development: {
-    baseUrl: "http://localhost:3000"
+    baseUrl: "http://localhost:3000",
   },
   "production*": {
-    logLevel: "info"
+    logLevel: "info",
   },
   "production-pre": {},
-  production: {}
+  production: {},
 };
 export default appConfig;

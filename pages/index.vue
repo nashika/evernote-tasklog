@@ -16,8 +16,8 @@ import Logo from "~/components/Logo.vue";
 
 @Component({
   components: {
-    Logo
-  }
+    Logo,
+  },
 })
 export default class extends Vue {}
 </script>
