@@ -78,7 +78,9 @@ dist
 .serverless
 
 # IDE / Editor
-.idea
+/.idea/dataSources
+/.idea/workspace.xml
+/.idea/libraries/Generated_files.xml
 
 # Service worker
 sw.*
