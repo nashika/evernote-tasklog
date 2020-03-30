@@ -12,7 +12,10 @@ const conf: InitialOptions = {
     ".*\\.(vue)$": "vue-jest",
   },
   collectCoverage: true,
-  collectCoverageFrom: ["<rootDir>/components/**/*.vue", "<rootDir>/pages/**/*.vue"],
+  collectCoverageFrom: [
+    "<rootDir>/components/**/*.vue",
+    "<rootDir>/pages/**/*.vue",
+  ],
   rootDir: "test", // tsが通らないから追加した
   maxWorkers: 8, // tsが通らないから追加した
 };

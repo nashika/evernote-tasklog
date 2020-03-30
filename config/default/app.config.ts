@@ -14,7 +14,10 @@ const appConfig: appConfig.IAppConfigs = {
     workingTimeEnd: 19,
     defaultFilterParams: {
       timeline: {},
-      notes: { stacks: ["StackA", "StackB"], notebooks: ["NotebookA", "NotebookB"] },
+      notes: {
+        stacks: ["StackA", "StackB"],
+        notebooks: ["NotebookA", "NotebookB"],
+      },
       activity: {},
     },
     constraints: [

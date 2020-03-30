@@ -10,7 +10,8 @@ export interface IBaseEntityParams<T extends BaseEntity> {
   append: IFindEntityOptions<T>;
 }
 
-export interface IFindEntityOptions<T extends BaseEntity> extends sequelize.FindOptions {
+export interface IFindEntityOptions<T extends BaseEntity>
+  extends sequelize.FindOptions {
   archive?: boolean;
 }
 

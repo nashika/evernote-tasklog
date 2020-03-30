@@ -17,12 +17,16 @@ class ConfigLoader {
     if (!this.caches[configName]) {
       const targetEnvName: string = process.env.NODE_ENV || "development";
       if (!config[targetEnvName]) {
-        throw new Error(`/config/${configName}.config.ts has no "${targetEnvName}" setting.`);
+        throw new Error(
+          `/config/${configName}.config.ts has no "${targetEnvName}" setting.`
+        );
       }
       const targetEnvConfig: Object = {};
       for (const envName in config) {
         const envConfig = config[envName];
-        if (new RegExp("^" + envName.replace("*", ".*") + "$").test(targetEnvName)) {
+        if (
+          new RegExp("^" + envName.replace("*", ".*") + "$").test(targetEnvName)
+        ) {
           _.merge(targetEnvConfig, envConfig);
         }
       }
