@@ -1,4 +1,4 @@
-declare namespace appConfig {
+declare namespace AppConfig {
   interface IAppConfigs {
     [env: string]: IAppConfig;
   }

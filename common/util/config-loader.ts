@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import appConfig from "~/config/app.config";
 
 class ConfigLoader {
-  private caches: { [configName: string]: any };
+  private readonly caches: { [configName: string]: any };
 
   constructor() {
     this.caches = {};
