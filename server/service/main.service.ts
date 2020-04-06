@@ -1,21 +1,22 @@
-import {Server} from "http";
+import { Server } from "http";
 
-import {injectable} from "inversify";
+import { injectable } from "inversify";
 
-import {TableService} from "./table.service";
-import {EvernoteClientService} from "./evernote-client.service";
-import {BaseServerService} from "./base-server.service";
-import {SyncService} from "./sync.service";
-import {SocketIoServerService} from "./socket-io-server-service";
-import {logger} from "../logger";
+import { logger } from "../logger";
+import { TableService } from "./table.service";
+import { EvernoteClientService } from "./evernote-client.service";
+import { BaseServerService } from "./base-server.service";
+import { SyncService } from "./sync.service";
+import { SocketIoServerService } from "./socket-io-server-service";
 
 @injectable()
 export class MainService extends BaseServerService {
-
-  constructor(protected tableService: TableService,
-              protected socketIoServerService: SocketIoServerService,
-              protected syncService: SyncService,
-              protected evernoteClientService: EvernoteClientService) {
+  constructor(
+    protected tableService: TableService,
+    protected socketIoServerService: SocketIoServerService,
+    protected syncService: SyncService,
+    protected evernoteClientService: EvernoteClientService
+  ) {
     super();
   }
 
@@ -23,10 +24,9 @@ export class MainService extends BaseServerService {
     await this.socketIoServerService.initialize(server);
     await this.tableService.initialize();
     await this.evernoteClientService.initialize();
-    let remoteUser = await this.evernoteClientService.getUser();
+    const remoteUser = await this.evernoteClientService.getUser();
     await this.tableService.optionTable.saveValueByKey("user", remoteUser);
     await this.syncService.sync(true);
     logger.info(`Init user finished. data was initialized.`);
   }
-
 }

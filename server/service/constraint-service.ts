@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import * as _ from "lodash";
+import _ from "lodash";
 
 import { TableService } from "./table.service";
 import { BaseServerService } from "./base-server.service";
@@ -12,6 +12,10 @@ import { ConstraintResultEntity } from "~/common/entity/constraint-result.entity
 export class ConstraintService extends BaseServerService {
   constructor(protected tableService: TableService) {
     super();
+  }
+
+  async initialize(): Promise<void> {
+    await Promise.resolve();
   }
 
   async checkAll(): Promise<void> {

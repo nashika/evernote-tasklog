@@ -1,5 +1,6 @@
-import {injectable} from "inversify";
+import { injectable } from "inversify";
 
 @injectable()
-export class BaseServerService {
+export abstract class BaseServerService {
+  abstract async initialize(...args: any[]): Promise<void>;
 }
