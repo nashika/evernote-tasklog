@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import * as sequelize from "sequelize";
 
 export interface IBaseEntityParams<T extends BaseEntity> {
   name: string;

@@ -2,30 +2,29 @@ import * as path from "path";
 import * as _ from "lodash";
 
 import { injectable } from "inversify";
-import * as sequelize from "sequelize";
 
-import { BaseServerService } from "./base-server.service";
-import { BaseTable } from "../table/base.table";
-import { BaseEntity } from "~/common/entity/base.entity";
-import { container } from "~/inversify.config";
-import { ConstraintResultEntity } from "~/common/entity/constraint-result.entity";
-import { ConstraintResultTable } from "../table/constraint-result.table";
 import { NoteTable } from "../table/note.table";
-import { NoteEntity } from "~/common/entity/note.entity";
-import { OptionEntity } from "~/common/entity/option.entity";
 import { OptionTable } from "../table/option.table";
-import { NotebookEntity } from "~/common/entity/notebook.entity";
+import { BaseTable } from "../table/base.table";
+import { ConstraintResultTable } from "../table/constraint-result.table";
 import { NotebookTable } from "../table/notebook.table";
 import { LinkedNotebookEntity } from "../../common/entity/linked-notebook.entity";
 import { LinkedNotebookTable } from "../table/linked-notebook.table";
 import { TagTable } from "../table/tag.table";
-import { TagEntity } from "~/common/entity/tag.entity";
 import { SavedSearchTable } from "../table/saved-search.table";
-import { SavedSearchEntity } from "~/common/entity/saved-search.entity";
 import { TimeLogTable } from "../table/time-log.table";
+import { ProfitLogTable } from "../table/profit-log.table";
+import { BaseServerService } from "./base-server.service";
+import { BaseEntity } from "~/common/entity/base.entity";
+import { container } from "~/inversify.config";
+import { ConstraintResultEntity } from "~/common/entity/constraint-result.entity";
+import { NoteEntity } from "~/common/entity/note.entity";
+import { OptionEntity } from "~/common/entity/option.entity";
+import { NotebookEntity } from "~/common/entity/notebook.entity";
+import { TagEntity } from "~/common/entity/tag.entity";
+import { SavedSearchEntity } from "~/common/entity/saved-search.entity";
 import { TimeLogEntity } from "~/common/entity/time-log.entity";
 import { ProfitLogEntity } from "~/common/entity/profit-log.entity";
-import { ProfitLogTable } from "../table/profit-log.table";
 
 @injectable()
 export class TableService extends BaseServerService {

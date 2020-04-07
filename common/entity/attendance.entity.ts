@@ -17,13 +17,13 @@ export class AttendanceEntity extends BaseEntity {
     },
   };
 
-  id: number | null = null;
-  personId: number | null = null;
-  year: number | null = null;
-  month: number | null = null;
-  day: number | null = null;
-  arrivalTime: number | null = null;
-  departureTime: number | null = null;
-  restTime: number | null = null;
-  remarks: string | null = null;
+  id?: number;
+  personId?: number;
+  year?: number;
+  month?: number;
+  day?: number;
+  arrivalTime?: number;
+  departureTime?: number;
+  restTime?: number;
+  remarks?: string;
 }

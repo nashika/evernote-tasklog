@@ -2,6 +2,7 @@
   <dictionary name="info">
     <words>
       <w>evernote</w>
+      <w>sequelize</w>
     </words>
   </dictionary>
 </component>
