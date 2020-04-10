@@ -3,11 +3,13 @@ import { Column, Entity, Index } from "typeorm";
 import { Max, Min } from "class-validator";
 
 import { AttendanceEntity } from "~/common/entity/attendance.entity";
+import { IBaseSEntity } from "~/server/s-entity/base.s-entity";
 
 @injectable()
 @Entity({ name: AttendanceEntity.params.name })
 @Index(["personId", "year", "month", "day"], { unique: true })
-export class AttendanceSEntity extends AttendanceEntity {
+export class AttendanceSEntity extends AttendanceEntity
+  implements IBaseSEntity {
   @Column("int", { primary: true, generated: true })
   id?: number;
 

@@ -11,6 +11,10 @@ import { ProfitLogEntity } from "~/common/entity/profit-log.entity";
 import { SavedSearchEntity } from "~/common/entity/saved-search.entity";
 import { TagEntity } from "~/common/entity/tag.entity";
 import { TimeLogEntity } from "~/common/entity/time-log.entity";
+import { BaseRepository } from "~/server/repository/base.repository";
+import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
+import { attendanceRepository } from "~/server/repository/attendance.repository";
+import { MainService } from "~/server/service/main.service";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
@@ -89,10 +93,14 @@ container
   .toConstructor(TimeLogEntity)
   .whenTargetNamed("timeLog");
 
+container
+  .bind<MainService>(MainService)
+  .toSelf()
+  .inSingletonScope();
+
 /*
 container.bind<ConstraintService>(ConstraintService).toSelf().inSingletonScope();
 container.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingletonScope();
-container.bind<MainService>(MainService).toSelf().inSingletonScope();
 container.bind<SessionService>(SessionService).toSelf().inSingletonScope();
 container.bind<SocketIoServerService>(SocketIoServerService).toSelf().inSingletonScope();
 container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
@@ -109,7 +117,6 @@ container.bind<BaseRoute>(BaseRoute).to(SyncRoute).whenTargetNamed("sync");
 container.bind<BaseRoute>(BaseRoute).to(TagRoute).whenTargetNamed("tag");
 container.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
 
-container.bind<BaseTable<AttendanceEntity>>(BaseTable).to(AttendanceTable).whenTargetNamed("attendance");
 container.bind<BaseTable<ConstraintResultEntity>>(BaseTable).to(ConstraintResultTable).whenTargetNamed("constraintResult");
 container.bind<BaseTable<LinkedNotebookEntity>>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linkedNotebook");
 container.bind<BaseTable<NoteEntity>>(BaseTable).to(NoteTable).whenTargetNamed("note");
@@ -120,3 +127,8 @@ container.bind<BaseTable<OptionEntity>>(BaseTable).to(OptionTable).whenTargetNam
 container.bind<BaseTable<TagEntity>>(BaseTable).to(TagTable).whenTargetNamed("tag");
 container.bind<BaseTable<TimeLogEntity>>(BaseTable).to(TimeLogTable).whenTargetNamed("timeLog");
  */
+
+container
+  .bind<BaseRepository<AttendanceSEntity>>(BaseRepository)
+  .toConstantValue(attendanceRepository)
+  .whenTargetNamed("attendance");

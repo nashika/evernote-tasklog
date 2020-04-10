@@ -1,14 +1,15 @@
-import * as _ from "lodash";
+import _ from "lodash";
 
 export interface IBaseEntityParams<T extends BaseEntity> {
   name: string;
   primaryKey: string;
   displayField: string;
   archive: boolean;
-  default: IFindEntityOptions<T>;
-  append: IFindEntityOptions<T>;
+  default: any; // IFindEntityOptions<T>;
+  append: any; // IFindEntityOptions<T>;
 }
 
+/*
 export interface IFindEntityOptions<T extends BaseEntity>
   extends sequelize.FindOptions {
   archive?: boolean;
@@ -19,13 +20,14 @@ export interface ICountEntityOptions extends sequelize.CountOptions {
 }
 
 export interface IDestroyEntityOptions extends sequelize.DestroyOptions {}
+*/
 
 export abstract class BaseEntity {
   static params: IBaseEntityParams<any>;
 
   archiveId?: number;
-  createdAt: Date | null = null;
-  updatedAt: Date | null = null;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   constructor(data: any = {}) {
     for (const key of _.keys(data)) {

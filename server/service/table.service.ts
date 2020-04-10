@@ -1,8 +1,8 @@
-import * as path from "path";
-import * as _ from "lodash";
-
+import path from "path";
 import { injectable } from "inversify";
+import { Connection, createConnection } from "typeorm";
 
+/*
 import { NoteTable } from "../table/note.table";
 import { OptionTable } from "../table/option.table";
 import { BaseTable } from "../table/base.table";
@@ -14,17 +14,17 @@ import { TagTable } from "../table/tag.table";
 import { SavedSearchTable } from "../table/saved-search.table";
 import { TimeLogTable } from "../table/time-log.table";
 import { ProfitLogTable } from "../table/profit-log.table";
-import { BaseServerService } from "./base-server.service";
 import { BaseEntity } from "~/common/entity/base.entity";
+ */
+
+import { BaseServerService } from "./base-server.service";
 import { container } from "~/inversify.config";
-import { ConstraintResultEntity } from "~/common/entity/constraint-result.entity";
-import { NoteEntity } from "~/common/entity/note.entity";
-import { OptionEntity } from "~/common/entity/option.entity";
 import { NotebookEntity } from "~/common/entity/notebook.entity";
 import { TagEntity } from "~/common/entity/tag.entity";
-import { SavedSearchEntity } from "~/common/entity/saved-search.entity";
-import { TimeLogEntity } from "~/common/entity/time-log.entity";
-import { ProfitLogEntity } from "~/common/entity/profit-log.entity";
+import { IBaseSEntity } from "~/server/s-entity/base.s-entity";
+import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
+import { BaseRepository } from "~/server/repository/base.repository";
+import { BaseEntity } from "~/common/entity/base.entity";
 
 @injectable()
 export class TableService extends BaseServerService {
@@ -33,8 +33,10 @@ export class TableService extends BaseServerService {
     notebooks: { [guid: string]: NotebookEntity };
   };
 
-  private database: sequelize.Sequelize | null = null;
-  private readonly tables: { [tableName: string]: BaseTable<BaseEntity> };
+  private connection: Connection | null = null;
+  private readonly repositories: {
+    [tableName: string]: BaseRepository<IBaseSEntity>;
+  };
 
   constructor() {
     super();
@@ -42,9 +44,9 @@ export class TableService extends BaseServerService {
       tags: {},
       notebooks: {},
     };
-    this.tables = {};
+    this.repositories = {};
   }
-
+  /*
   get constraintResultTable(): ConstraintResultTable {
     return this.getTable<ConstraintResultTable>(ConstraintResultEntity);
   }
@@ -80,32 +82,39 @@ export class TableService extends BaseServerService {
   get timeLogTable(): TimeLogTable {
     return this.getTable<TimeLogTable>(TimeLogEntity);
   }
+   */
 
   async initialize(): Promise<void> {
-    this.getDatabase();
-    for (const table of container.getAll<BaseTable<BaseEntity>>(BaseTable)) {
-      this.tables[table.EntityClass.params.name] = table;
-      await table.initialize();
+    await this.getConnection();
+    for (const repository of container.getAll<BaseRepository<IBaseSEntity>>(
+      BaseRepository
+    )) {
+      this.repositories[repository.SEntityClass.params.name] = repository;
+      await repository.initialize();
     }
-    await this.reloadCache();
+    // await this.reloadCache();
   }
 
-  getDatabase(): sequelize.Sequelize {
-    if (!this.database) {
+  async getConnection(): Promise<Connection> {
+    if (!this.connection) {
       const filePath = path.join(__dirname, "../../../db/database.db");
-      this.database = new sequelize.Sequelize("", "", "", {
-        dialect: "sqlite",
-        storage: filePath,
-        logging: false,
+      this.connection = await createConnection({
+        type: "sqlite",
+        database: filePath,
+        entities: [AttendanceSEntity],
+        logging: true,
       });
     }
-    return this.database;
+    return this.connection;
   }
 
-  getTable<T extends BaseTable<BaseEntity>>(EntityClass: typeof BaseEntity): T {
-    return <T>this.tables[EntityClass.params.name];
+  getRepository<T extends BaseRepository<IBaseSEntity>>(
+    EntityClass: typeof BaseEntity
+  ): T {
+    return <T>this.repositories[EntityClass.params.name];
   }
 
+  /*
   async reloadCache(type: "tag" | "notebook" | "all" = "all"): Promise<void> {
     if (type === "tag" || type === "all")
       this.caches.tags = _.keyBy(await this.tagTable.findAll(), "guid");
@@ -115,8 +124,10 @@ export class TableService extends BaseServerService {
         "guid"
       );
   }
+   */
 
   async sync(): Promise<void> {
-    await this.getDatabase().sync();
+    const connection = await this.getConnection();
+    await connection.synchronize();
   }
 }

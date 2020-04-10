@@ -23,10 +23,10 @@ export class MainService extends BaseServerService {
   async initialize(server: Server): Promise<void> {
     await this.socketIoServerService.initialize(server);
     await this.tableService.initialize();
-    await this.evernoteClientService.initialize();
-    const remoteUser = await this.evernoteClientService.getUser();
-    await this.tableService.optionTable.saveValueByKey("user", remoteUser);
-    await this.syncService.sync(true);
+    // await this.evernoteClientService.initialize();
+    // const remoteUser = await this.evernoteClientService.getUser();
+    // await this.tableService.optionTable.saveValueByKey("user", remoteUser);
+    // await this.syncService.sync(true);
     logger.info(`Init user finished. data was initialized.`);
   }
 }
