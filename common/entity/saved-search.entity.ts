@@ -18,8 +18,8 @@ export class SavedSearchEntity extends BaseEvernoteEntity {
     },
   };
 
-  name: string | null = null;
-  query: string | null = null;
-  format: number | null = null;
-  scope: Object | null = null;
+  name?: string;
+  query?: string;
+  format?: number;
+  scope?: Object;
 }

@@ -17,6 +17,6 @@ export class OptionEntity extends BaseEntity {
     },
   };
 
-  key: string | null = null;
-  value: any | null = null;
+  key?: string;
+  value?: any;
 }

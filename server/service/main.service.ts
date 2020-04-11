@@ -4,18 +4,17 @@ import { injectable } from "inversify";
 
 import { logger } from "../logger";
 import { TableService } from "./table.service";
-import { EvernoteClientService } from "./evernote-client.service";
 import { BaseServerService } from "./base-server.service";
-import { SyncService } from "./sync.service";
 import { SocketIoServerService } from "./socket-io-server-service";
 
 @injectable()
 export class MainService extends BaseServerService {
   constructor(
     protected tableService: TableService,
-    protected socketIoServerService: SocketIoServerService,
+    protected socketIoServerService: SocketIoServerService /*
     protected syncService: SyncService,
     protected evernoteClientService: EvernoteClientService
+     */
   ) {
     super();
   }

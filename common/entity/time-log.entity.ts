@@ -17,11 +17,11 @@ export class TimeLogEntity extends BaseEntity {
     },
   };
 
-  id: number | null = null;
-  noteGuid: string | null = null;
-  comment: string | null = null;
-  allDay: boolean | null = null;
-  date: number | null = null;
-  personId: number | null = null;
-  spentTime: number | null = null;
+  id?: number;
+  noteGuid?: string;
+  comment?: string;
+  allDay?: boolean;
+  date?: number;
+  personId?: number;
+  spentTime?: number;
 }

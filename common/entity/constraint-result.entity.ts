@@ -17,7 +17,7 @@ export class ConstraintResultEntity extends BaseEntity {
     },
   };
 
-  id: number | null = null;
-  noteGuid: string | null = null;
-  constraintId: number | null = null;
+  id?: number;
+  noteGuid?: string;
+  constraintId?: number;
 }

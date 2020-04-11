@@ -21,17 +21,17 @@ export class NotebookEntity extends BaseEvernoteEntity {
     },
   };
 
-  name: string | null = null;
-  defaultNotebook: boolean | null = null;
-  serviceCreated: number | null = null;
-  serviceUpdated: number | null = null;
-  publishing: Object | null = null;
-  published: boolean | null = null;
-  stack: string | null = null;
-  sharedNotebookIds: number[] | null = null;
-  sharedNotebooks: Object[] | null = null;
-  businessNotebooks: Object | null = null;
-  contact: Object | null = null;
-  restrictions: Object | null = null;
-  recipientSettings: Object | null = null;
+  name?: string;
+  defaultNotebook?: boolean;
+  serviceCreated?: number;
+  serviceUpdated?: number;
+  publishing?: Object;
+  published?: boolean;
+  stack?: string;
+  sharedNotebookIds?: number[];
+  sharedNotebooks?: Object[];
+  businessNotebooks?: Object;
+  contact?: Object;
+  restrictions?: Object;
+  recipientSettings?: Object;
 }

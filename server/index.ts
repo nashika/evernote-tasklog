@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { container } from "~/inversify.config";
+import { container } from "../inversify.config";
 import { MainService } from "~/server/service/main.service";
 import { logger } from "~/server/logger";
 

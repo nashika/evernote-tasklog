@@ -1,4 +1,4 @@
-const appConfig: appConfig.IAppConfigs = {
+const appConfig: AppConfig.IAppConfigs = {
   "*": {
     port: 3000,
     logLevel: "trace",

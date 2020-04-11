@@ -17,8 +17,8 @@ export class ProfitLogEntity extends BaseEntity {
     },
   };
 
-  id: number | null = null;
-  noteGuid: string | null = null;
-  comment: string | null = null;
-  profit: number | null = null;
+  id?: number;
+  noteGuid?: string;
+  comment?: string;
+  profit?: number;
 }

@@ -9,7 +9,7 @@ class ConfigLoader {
     this.caches = {};
   }
 
-  get app(): appConfig.IAppConfig {
+  get app(): AppConfig.IAppConfig {
     return this.load("app", appConfig);
   }
 
