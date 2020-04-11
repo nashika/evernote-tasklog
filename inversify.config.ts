@@ -16,7 +16,7 @@ import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
 import { AttendanceRepository } from "~/server/repository/attendance.repository";
 
 import { MainService } from "~/server/service/main.service";
-import { TableService } from "~/server/service/table.service";
+import { RepositoryService } from "~/server/service/repository.service";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
@@ -98,7 +98,7 @@ container
   .toSelf()
   .inSingletonScope();
 container
-  .bind<TableService>(TableService)
+  .bind<RepositoryService>(RepositoryService)
   .toSelf()
   .inSingletonScope();
 

@@ -25,9 +25,10 @@ import { IBaseSEntity } from "~/server/s-entity/base.s-entity";
 import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
 import { BaseRepository } from "~/server/repository/base.repository";
 import { BaseEntity } from "~/common/entity/base.entity";
+import { AttendanceRepository } from "~/server/repository/attendance.repository";
 
 @injectable()
-export class TableService extends BaseServerService {
+export class RepositoryService extends BaseServerService {
   caches: {
     tags: { [guid: string]: TagEntity };
     notebooks: { [guid: string]: NotebookEntity };
@@ -46,6 +47,11 @@ export class TableService extends BaseServerService {
     };
     this.repositories = {};
   }
+
+  get attendanceRepository(): AttendanceRepository {
+    return this.getRepository(AttendanceSEntity);
+  }
+
   /*
   get constraintResultTable(): ConstraintResultTable {
     return this.getTable<ConstraintResultTable>(ConstraintResultEntity);
@@ -98,7 +104,7 @@ export class TableService extends BaseServerService {
 
   async getConnection(): Promise<Connection> {
     if (!this.connection) {
-      const filePath = path.join(__dirname, "../../../db/database.db");
+      const filePath = path.join(__dirname, "../../db/database.db");
       this.connection = await createConnection({
         type: "sqlite",
         database: filePath,
