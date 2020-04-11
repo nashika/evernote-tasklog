@@ -1,15 +1,16 @@
 import "reflect-metadata";
+import express from "express";
+import consola from "consola";
+
+// Import and Set Nuxt.js options
+import config from "../nuxt.config";
 import { container } from "~/inversify.config";
 import { MainService } from "~/server/service/main.service";
 import { logger } from "~/server/logger";
 
-const express = require("express");
-const consola = require("consola");
 const { Nuxt, Builder } = require("nuxt");
 const app = express();
 
-// Import and Set Nuxt.js options
-const config = require("../nuxt.config");
 config.dev = process.env.NODE_ENV !== "production";
 
 async function start() {
@@ -22,11 +23,11 @@ async function start() {
   // Build only in dev mode
   if (config.dev) {
     const builder = new Builder(nuxt);
-    // await builder.build();
+    await builder.build();
   }
 
   // Give nuxt middleware to express
-  // app.use(nuxt.render);
+  app.use(nuxt.render);
 
   // Listen the server
   const server = app.listen(port, host);

@@ -27,9 +27,9 @@ export class MainService extends BaseServerService {
     // const remoteUser = await this.evernoteClientService.getUser();
     // await this.tableService.optionTable.saveValueByKey("user", remoteUser);
     // await this.syncService.sync(true);
-    const attendanceRepository = this.repositoryService.attendanceRepository;
-    const attendances = await attendanceRepository.find();
-    console.log(attendances.length);
+    // const attendanceRepository = this.repositoryService.attendanceRepository;
+    // const attendances = await attendanceRepository.find();
+    // console.log(attendances.length);
     /*
     const attendance = new AttendanceSEntity();
     attendance.personId = 4;
