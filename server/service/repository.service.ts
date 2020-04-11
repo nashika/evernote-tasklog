@@ -102,16 +102,22 @@ export class RepositoryService extends BaseServerService {
     // await this.reloadCache();
   }
 
+  // eslint-disable-next-line require-await
   async getConnection(): Promise<Connection> {
     if (!this.connection) {
-      const filePath = path.join(__dirname, "../../db/database.db");
-      this.connection = await createConnection({
-        type: "sqlite",
-        database: filePath,
-        entities: [AttendanceSEntity],
-        logging: true,
-      });
+      return this.initConnection();
     }
+    return this.connection;
+  }
+
+  async initConnection(): Promise<Connection> {
+    const filePath = path.join(__dirname, "../../db/database.db");
+    this.connection = await createConnection({
+      type: "sqlite",
+      database: filePath,
+      entities: [AttendanceSEntity],
+      logging: true,
+    });
     return this.connection;
   }
 

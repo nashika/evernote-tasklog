@@ -6,6 +6,7 @@ import { logger } from "../logger";
 import { RepositoryService } from "./repository.service";
 import { BaseServerService } from "./base-server.service";
 import { SocketIoServerService } from "./socket-io-server-service";
+import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
 
 @injectable()
 export class MainService extends BaseServerService {
@@ -29,6 +30,18 @@ export class MainService extends BaseServerService {
     const attendanceRepository = this.repositoryService.attendanceRepository;
     const attendances = await attendanceRepository.find();
     console.log(attendances.length);
+    /*
+    const attendance = new AttendanceSEntity();
+    attendance.personId = 4;
+    attendance.year = 2020;
+    attendance.month = 12;
+    attendance.day = 31;
+    attendance.arrivalTime = 600;
+    attendance.departureTime = 1200;
+    attendance.restTime = 60;
+    attendance.remarks = "";
+    let createdAttendance = await attendanceRepository.save(attendance);
+     */
     logger.info(`Init user finished. data was initialized.`);
   }
 }

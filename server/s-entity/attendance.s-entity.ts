@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { Column, Entity, Index } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, UpdateDateColumn } from "typeorm";
 import { Max, Min } from "class-validator";
 
 import { AttendanceEntity } from "~/common/entity/attendance.entity";
@@ -48,4 +48,10 @@ export class AttendanceSEntity extends AttendanceEntity
 
   @Column("text")
   remarks?: string;
+
+  @CreateDateColumn()
+  createdAt?: Date;
+
+  @UpdateDateColumn()
+  updatedAt?: Date;
 }
