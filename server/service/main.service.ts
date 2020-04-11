@@ -10,8 +10,8 @@ import { SocketIoServerService } from "./socket-io-server-service";
 @injectable()
 export class MainService extends BaseServerService {
   constructor(
-    protected tableService: TableService,
-    protected socketIoServerService: SocketIoServerService /*
+    protected tableService: TableService, /*
+    protected socketIoServerService: SocketIoServerService
     protected syncService: SyncService,
     protected evernoteClientService: EvernoteClientService
      */
@@ -19,8 +19,8 @@ export class MainService extends BaseServerService {
     super();
   }
 
-  async initialize(server: Server): Promise<void> {
-    await this.socketIoServerService.initialize(server);
+  async initialize(_server: Server): Promise<void> {
+    // await this.socketIoServerService.initialize(server);
     await this.tableService.initialize();
     // await this.evernoteClientService.initialize();
     // const remoteUser = await this.evernoteClientService.getUser();

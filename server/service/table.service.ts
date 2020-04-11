@@ -1,6 +1,6 @@
 import path from "path";
 import { injectable } from "inversify";
-import { Connection, createConnection } from "typeorm";
+import { Connection, createConnection, getCustomRepository } from "typeorm";
 
 /*
 import { NoteTable } from "../table/note.table";
@@ -86,9 +86,10 @@ export class TableService extends BaseServerService {
 
   async initialize(): Promise<void> {
     await this.getConnection();
-    for (const repository of container.getAll<BaseRepository<IBaseSEntity>>(
-      BaseRepository
-    )) {
+    for (const RepositoryClass of container.getAll<any>(BaseRepository)) {
+      const repository: BaseRepository<IBaseSEntity> = getCustomRepository(
+        RepositoryClass
+      );
       this.repositories[repository.SEntityClass.params.name] = repository;
       await repository.initialize();
     }

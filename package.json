@@ -8,10 +8,11 @@
     "dev": "nuxt-ts",
     "build": "nuxt-ts build",
     "start": "nuxt-ts start",
-    "server": "ts-node -r tsconfig-paths/register ./server/index.ts",
+    "server": "ts-node -r tsconfig-paths/register --files ./server/index.ts",
     "generate": "nuxt-ts generate",
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
-    "test": "jest"
+    "test": "jest",
+    "tsc": "tsc"
   },
   "lint-staged": {
     "*.{js,vue}": "npm run lint",

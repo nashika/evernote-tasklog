@@ -13,17 +13,17 @@ import { TagEntity } from "~/common/entity/tag.entity";
 import { TimeLogEntity } from "~/common/entity/time-log.entity";
 import { BaseRepository } from "~/server/repository/base.repository";
 import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
-import { attendanceRepository } from "~/server/repository/attendance.repository";
+import { AttendanceRepository } from "~/server/repository/attendance.repository";
+
 import { MainService } from "~/server/service/main.service";
+import { TableService } from "~/server/service/table.service";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
 import { EvernoteClientService } from "~/server/service/evernote-client.service";
-import { MainService } from "~/server/service/main.service";
 import { SessionService } from "~/server/service/session.service";
 import { SocketIoServerService } from "~/server/service/socket-io-server-service";
 import { SyncService } from "~/server/service/sync.service";
-import { TableService } from "~/server/service/table.service";
 
 import { BaseRoute } from "~/server/routes/base.route";
 import { AttendanceRoute } from "~/server/routes/attendance.route";
@@ -97,6 +97,10 @@ container
   .bind<MainService>(MainService)
   .toSelf()
   .inSingletonScope();
+container
+  .bind<TableService>(TableService)
+  .toSelf()
+  .inSingletonScope();
 
 /*
 container.bind<ConstraintService>(ConstraintService).toSelf().inSingletonScope();
@@ -130,5 +134,5 @@ container.bind<BaseTable<TimeLogEntity>>(BaseTable).to(TimeLogTable).whenTargetN
 
 container
   .bind<BaseRepository<AttendanceSEntity>>(BaseRepository)
-  .toConstantValue(attendanceRepository)
+  .toConstructor(AttendanceRepository)
   .whenTargetNamed("attendance");
