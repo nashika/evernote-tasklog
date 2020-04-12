@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "nuxt-ts",
     "build": "nuxt-ts build",
+    "build-analyze": "nuxt-ts build --analyze",
     "start": "nuxt-ts start",
     "server": "ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./server/index.ts",
     "generate": "nuxt-ts generate",
