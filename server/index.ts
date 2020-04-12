@@ -1,14 +1,15 @@
 import "reflect-metadata";
 import express from "express";
 import consola from "consola";
+// @ts-ignore
+import { Nuxt, Builder } from "nuxt";
 
 // Import and Set Nuxt.js options
 import config from "../nuxt.config";
-import { container } from "~/inversify.config";
-import { MainService } from "~/server/service/main.service";
-import { logger } from "~/server/logger";
+import container from "~/inversify.config";
+import MainService from "~/server/service/main.service";
+import logger from "~/server/logger";
 
-const { Nuxt, Builder } = require("nuxt");
 const app = express();
 
 config.dev = process.env.NODE_ENV !== "production";

@@ -17,18 +17,18 @@ import { ProfitLogTable } from "../table/profit-log.table";
 import { BaseEntity } from "~/common/entity/base.entity";
  */
 
-import { BaseServerService } from "./base-server.service";
-import { container } from "~/inversify.config";
-import { NotebookEntity } from "~/common/entity/notebook.entity";
-import { TagEntity } from "~/common/entity/tag.entity";
-import { IBaseSEntity } from "~/server/s-entity/base.s-entity";
-import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
-import { BaseRepository } from "~/server/repository/base.repository";
-import { BaseEntity } from "~/common/entity/base.entity";
-import { AttendanceRepository } from "~/server/repository/attendance.repository";
+import BaseServerService from "./base-server.service";
+import container from "~/inversify.config";
+import NotebookEntity from "~/common/entity/notebook.entity";
+import TagEntity from "~/common/entity/tag.entity";
+import IBaseSEntity from "~/server/s-entity/base.s-entity";
+import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
+import BaseRepository from "~/server/repository/base.repository";
+import BaseEntity from "~/common/entity/base.entity";
+import AttendanceRepository from "~/server/repository/attendance.repository";
 
 @injectable()
-export class RepositoryService extends BaseServerService {
+export default class RepositoryService extends BaseServerService {
   caches: {
     tags: { [guid: string]: TagEntity };
     notebooks: { [guid: string]: NotebookEntity };
@@ -122,7 +122,7 @@ export class RepositoryService extends BaseServerService {
   }
 
   getRepository<T extends BaseRepository<IBaseSEntity>>(
-    EntityClass: typeof BaseEntity
+    EntityClass: typeof BaseSEntity
   ): T {
     return <T>this.repositories[EntityClass.params.name];
   }

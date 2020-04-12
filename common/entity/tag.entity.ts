@@ -1,7 +1,7 @@
-import { BaseEvernoteEntity } from "./base-evernote.entity";
+import BaseEvernoteEntity from "./base-evernote.entity";
 import { IBaseEntityParams } from "./base.entity";
 
-export class TagEntity extends BaseEvernoteEntity {
+export default class TagEntity extends BaseEvernoteEntity {
   static params: IBaseEntityParams<TagEntity> = {
     name: "tag",
     primaryKey: "guid",

@@ -1,6 +1,6 @@
-import { BaseEntity, IBaseEntityParams } from "./base.entity";
+import BaseEntity, { IBaseEntityParams } from "./base.entity";
 
-export class ProfitLogEntity extends BaseEntity {
+export default class ProfitLogEntity extends BaseEntity {
   static params: IBaseEntityParams<ProfitLogEntity> = {
     name: "profitLog",
     primaryKey: "id",

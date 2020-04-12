@@ -37,4 +37,5 @@ log4js.configure(<any>{
   },
 });
 
-export const logger = log4js.getLogger();
+const logger = log4js.getLogger();
+export default logger;

@@ -22,7 +22,7 @@ export interface ICountEntityOptions extends sequelize.CountOptions {
 export interface IDestroyEntityOptions extends sequelize.DestroyOptions {}
 */
 
-export abstract class BaseEntity {
+export default abstract class BaseEntity {
   static params: IBaseEntityParams<any>;
 
   archiveId?: number;

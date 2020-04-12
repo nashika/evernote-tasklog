@@ -1,6 +1,6 @@
-import { BaseEntity, IBaseEntityParams } from "./base.entity";
+import BaseEntity, { IBaseEntityParams } from "~/common/entity/base.entity";
 
-export class ConstraintResultEntity extends BaseEntity {
+export default class ConstraintResultEntity extends BaseEntity {
   static params: IBaseEntityParams<ConstraintResultEntity> = {
     name: "constraintResult",
     primaryKey: "id",

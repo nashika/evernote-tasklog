@@ -36,4 +36,5 @@ class ConfigLoader {
   }
 }
 
-export const configLoader = new ConfigLoader();
+const configLoader = new ConfigLoader();
+export default configLoader;

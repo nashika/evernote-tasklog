@@ -2,14 +2,14 @@ import { injectable } from "inversify";
 import socketIo from "socket.io";
 import Evernote from "evernote";
 
-import { BaseServerService } from "./base-server.service";
+import BaseServerService from "./base-server.service";
 
 export interface ISession {
   user: Evernote.Types.User;
 }
 
 @injectable()
-export class SessionService extends BaseServerService {
+export default class SessionService extends BaseServerService {
   async initialize() {}
 
   load(socket: socketIo.Socket, key: string): ISession {

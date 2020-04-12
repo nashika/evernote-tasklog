@@ -12,17 +12,17 @@ import { SavedSearchEntity } from "~/common/entity/saved-search.entity";
 import { TagEntity } from "~/common/entity/tag.entity";
 import { TimeLogEntity } from "~/common/entity/time-log.entity";
 import { BaseRepository } from "~/server/repository/base.repository";
-import { AttendanceSEntity } from "~/server/s-entity/attendance.s-entity";
+import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
 import { AttendanceRepository } from "~/server/repository/attendance.repository";
 
-import { MainService } from "~/server/service/main.service";
-import { RepositoryService } from "~/server/service/repository.service";
+import MainService from "~/server/service/main.service";
+import RepositoryService from "~/server/service/repository.service";
+import SocketIoServerService from "~/server/service/socket-io-server-service";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
 import { EvernoteClientService } from "~/server/service/evernote-client.service";
 import { SessionService } from "~/server/service/session.service";
-import { SocketIoServerService } from "~/server/service/socket-io-server-service";
 import { SyncService } from "~/server/service/sync.service";
 
 import { BaseRoute } from "~/server/routes/base.route";
@@ -50,7 +50,7 @@ import { TagTable } from "~/server/table/tag.table";
 import { TimeLogTable } from "~/server/table/time-log.table";
 */
 
-export const container = new Container();
+const container = new Container();
 
 container
   .bind<BaseEntity>(BaseEntity)
@@ -101,6 +101,10 @@ container
   .bind<RepositoryService>(RepositoryService)
   .toSelf()
   .inSingletonScope();
+container
+  .bind<SocketIoServerService>(SocketIoServerService)
+  .toSelf()
+  .inSingletonScope();
 
 /*
 container.bind<ConstraintService>(ConstraintService).toSelf().inSingletonScope();
@@ -136,3 +140,5 @@ container
   .bind<BaseRepository<AttendanceSEntity>>(BaseRepository)
   .toConstructor(AttendanceRepository)
   .whenTargetNamed("attendance");
+
+export default container;
