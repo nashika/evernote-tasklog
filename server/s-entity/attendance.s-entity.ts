@@ -9,13 +9,30 @@ import {
 import { Max, Min } from "class-validator";
 
 import AttendanceEntity from "~/common/entity/attendance.entity";
-import IBaseSEntity from "~/server/s-entity/base.s-entity";
+import BaseSEntity, {
+  IBaseSEntityParams,
+} from "~/server/s-entity/base.s-entity";
 
 @injectable()
 @Entity({ name: AttendanceEntity.params.name })
 @Index(["personId", "year", "month", "day"], { unique: true })
-export default class AttendanceSEntity extends AttendanceEntity
-  implements IBaseSEntity {
+export default class AttendanceSEntity extends BaseSEntity {
+  static params: IBaseSEntityParams<AttendanceSEntity> = {
+    name: "attendance",
+    primaryKey: "id",
+    displayField: "id",
+    archive: false,
+    default: {
+      where: {},
+      order: [],
+      limit: 500,
+    },
+    append: {
+      where: {},
+      order: [],
+    },
+  };
+
   @Column("int", { primary: true, generated: true })
   id?: number;
 

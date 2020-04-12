@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as log4js from "log4js";
 
-import { configLoader } from "~/common/util/config-loader";
+import configLoader from "~/common/util/config-loader";
 
 log4js.configure(<any>{
   appenders: {

@@ -1,23 +1,30 @@
 import { Container } from "inversify";
 
-import { BaseEntity } from "~/common/entity/base.entity";
-import { AttendanceEntity } from "~/common/entity/attendance.entity";
-import { ConstraintResultEntity } from "~/common/entity/constraint-result.entity";
-import { LinkedNotebookEntity } from "~/common/entity/linked-notebook.entity";
-import { NoteEntity } from "~/common/entity/note.entity";
-import { NotebookEntity } from "~/common/entity/notebook.entity";
-import { OptionEntity } from "~/common/entity/option.entity";
-import { ProfitLogEntity } from "~/common/entity/profit-log.entity";
-import { SavedSearchEntity } from "~/common/entity/saved-search.entity";
-import { TagEntity } from "~/common/entity/tag.entity";
-import { TimeLogEntity } from "~/common/entity/time-log.entity";
-import { BaseRepository } from "~/server/repository/base.repository";
+import BaseEntity from "~/common/entity/base.entity";
+import AttendanceEntity from "~/common/entity/attendance.entity";
+import ConstraintResultEntity from "~/common/entity/constraint-result.entity";
+import LinkedNotebookEntity from "~/common/entity/linked-notebook.entity";
+import NoteEntity from "~/common/entity/note.entity";
+import NotebookEntity from "~/common/entity/notebook.entity";
+import OptionEntity from "~/common/entity/option.entity";
+import ProfitLogEntity from "~/common/entity/profit-log.entity";
+import SavedSearchEntity from "~/common/entity/saved-search.entity";
+import TagEntity from "~/common/entity/tag.entity";
+import TimeLogEntity from "~/common/entity/time-log.entity";
+
+import BaseSEntity from "~/server/s-entity/base.s-entity";
 import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
-import { AttendanceRepository } from "~/server/repository/attendance.repository";
+
+import BaseRepository from "~/server/repository/base.repository";
+import AttendanceRepository from "~/server/repository/attendance.repository";
 
 import MainService from "~/server/service/main.service";
 import RepositoryService from "~/server/service/repository.service";
 import SocketIoServerService from "~/server/service/socket-io-server-service";
+import SessionService from "~/server/service/session.service";
+
+import BaseRoute from "~/server/route/base.route";
+import AttendanceRoute from "~/server/route/attendance.route";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
@@ -25,8 +32,6 @@ import { EvernoteClientService } from "~/server/service/evernote-client.service"
 import { SessionService } from "~/server/service/session.service";
 import { SyncService } from "~/server/service/sync.service";
 
-import { BaseRoute } from "~/server/routes/base.route";
-import { AttendanceRoute } from "~/server/routes/attendance.route";
 import { ConstraintResultRoute } from "~/server/routes/constraint-result.route";
 import { NoteRoute } from "~/server/routes/note.route";
 import { NotebookRoute } from "~/server/routes/notebook.route";
@@ -105,16 +110,22 @@ container
   .bind<SocketIoServerService>(SocketIoServerService)
   .toSelf()
   .inSingletonScope();
+container
+  .bind<SessionService>(SessionService)
+  .toSelf()
+  .inSingletonScope();
+
+container
+  .bind<BaseRoute>(BaseRoute)
+  .to(AttendanceRoute)
+  .whenTargetNamed("attendance");
 
 /*
 container.bind<ConstraintService>(ConstraintService).toSelf().inSingletonScope();
 container.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingletonScope();
-container.bind<SessionService>(SessionService).toSelf().inSingletonScope();
 container.bind<SocketIoServerService>(SocketIoServerService).toSelf().inSingletonScope();
 container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
-container.bind<TableService>(TableService).toSelf().inSingletonScope();
 
-container.bind<BaseRoute>(BaseRoute).to(AttendanceRoute).whenTargetNamed("attendance");
 container.bind<BaseRoute>(BaseRoute).to(ConstraintResultRoute).whenTargetNamed("constraintResult");
 container.bind<BaseRoute>(BaseRoute).to(NoteRoute).whenTargetNamed("note");
 container.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");

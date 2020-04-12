@@ -1,4 +1,4 @@
-import { BaseEntity, IBaseEntityParams } from "./base.entity";
+import BaseEntity, { IBaseEntityParams } from "./base.entity";
 
 export default class AttendanceEntity extends BaseEntity {
   static params: IBaseEntityParams<AttendanceEntity> = {

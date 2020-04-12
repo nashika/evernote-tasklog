@@ -26,6 +26,7 @@ import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
 import BaseRepository from "~/server/repository/base.repository";
 import BaseEntity from "~/common/entity/base.entity";
 import AttendanceRepository from "~/server/repository/attendance.repository";
+import BaseSEntity from "~/server/s-entity/base.s-entity";
 
 @injectable()
 export default class RepositoryService extends BaseServerService {

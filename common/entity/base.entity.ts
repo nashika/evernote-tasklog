@@ -9,19 +9,6 @@ export interface IBaseEntityParams<T extends BaseEntity> {
   append: any; // IFindEntityOptions<T>;
 }
 
-/*
-export interface IFindEntityOptions<T extends BaseEntity>
-  extends sequelize.FindOptions {
-  archive?: boolean;
-}
-
-export interface ICountEntityOptions extends sequelize.CountOptions {
-  archive?: boolean;
-}
-
-export interface IDestroyEntityOptions extends sequelize.DestroyOptions {}
-*/
-
 export default abstract class BaseEntity {
   static params: IBaseEntityParams<any>;
 
