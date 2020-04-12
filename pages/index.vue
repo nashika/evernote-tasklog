@@ -2,8 +2,7 @@
   .container
     div
       logo
-      h1.title
-        evernote-tasklog
+      h1.title evernote-tasklog
       h2.subtitle My swell Nuxt.js project
       .links
         a.button--green(href="https://nuxtjs.org/", target="_blank") Documentation
@@ -11,15 +10,31 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "nuxt-property-decorator";
+import { Component } from "nuxt-property-decorator";
 import Logo from "~/components/Logo.vue";
+import BaseComponent from "~/components/base.component";
 
 @Component({
   components: {
     Logo,
   },
 })
-export default class extends Vue {}
+export default class extends BaseComponent {
+  // eslint-disable-next-line require-await
+  async fetch() {
+    console.log("AAA");
+  }
+
+  async mounted(): Promise<void> {
+    await super.mounted();
+    const result = await this.$socketIoService.request("attendance::find");
+    console.log(result);
+    // await this.datastoreService.initialize();
+    // this.$on("reload", () => this.reload());
+    // await this.pushService.initialize(this);
+    // this.isReady = true;
+  }
+}
 </script>
 
 <style>

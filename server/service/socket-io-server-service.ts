@@ -9,7 +9,7 @@ import container from "~/inversify.config";
 import BaseRoute from "~/server/route/base.route";
 import BaseServerService from "~/server/service/base-server.service";
 
-const expressSocketIoSession = require("express-socket.io-session");
+// const expressSocketIoSession = require("express-socket.io-session");
 
 @injectable()
 export default class SocketIoServerService extends BaseServerService {
@@ -20,9 +20,11 @@ export default class SocketIoServerService extends BaseServerService {
   async initialize(server: HttpServer): Promise<void> {
     this.io = SocketIo(server);
     this.io.sockets.on("connect", socket => this.connect(socket));
+    /*
     this.io.use(
       expressSocketIoSession(this.sessionMiddleware, { autoSave: true })
     );
+     */
     await Promise.resolve();
   }
 

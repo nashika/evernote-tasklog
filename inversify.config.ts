@@ -99,6 +99,11 @@ container
   .whenTargetNamed("timeLog");
 
 container
+  .bind<BaseSEntity>(BaseSEntity)
+  .toConstructor(AttendanceEntity)
+  .whenTargetNamed("attendance");
+
+container
   .bind<MainService>(MainService)
   .toSelf()
   .inSingletonScope();
