@@ -92,6 +92,6 @@ sw.*
 *.swp
 
 # その他追加設定
-/config/*.config.ts
+/config/*.ts
 /db/*
 !.gitkeep
