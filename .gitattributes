@@ -4,9 +4,11 @@
 *.ts text
 *.js text
 *.json text
+*.xml text
 
 *.bat eol=crlf
 
 *.png binary
 *.jpg binary
 *.gif binary
+*.ico binary
