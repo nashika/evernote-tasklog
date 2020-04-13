@@ -15,7 +15,7 @@ export default abstract class BaseEntityRoute<
 > extends BaseRoute {
   SEntityClass: typeof BaseSEntity = BaseSEntity;
 
-  constructor(
+  protected constructor(
     protected repositoryService: RepositorySService,
     protected sessionService: SessionSService
   ) {

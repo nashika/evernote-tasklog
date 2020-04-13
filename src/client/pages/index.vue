@@ -13,7 +13,7 @@
 import { Component } from "nuxt-property-decorator";
 import Logo from "~/src/client/components/Logo.vue";
 import BaseComponent from "~/src/client/components/base.component";
-import AttendanceEntity from "~/src/common/entity/attendance.entity";
+import AttendanceCEntity from "~/src/common/c-entity/attendance.c-entity";
 
 @Component({
   components: {
@@ -21,23 +21,20 @@ import AttendanceEntity from "~/src/common/entity/attendance.entity";
   },
 })
 export default class extends BaseComponent {
-  // eslint-disable-next-line require-await
-  async fetch() {
-    console.log("AAA");
-  }
+  async fetch() {}
 
   async mounted(): Promise<void> {
     await super.mounted();
-    // const datas = await this.$socketIoService.request("attendance::find");
-    const attendances: AttendanceEntity[] = [];
-    /*
+    this.logger.info("request start");
+    const datas = await this.$socketIoService.request("attendance::find");
+    const attendances: AttendanceCEntity[] = [];
     for (const data of datas) {
-      const attendance = new AttendanceEntity();
+      const attendance = new AttendanceCEntity();
       Object.assign(attendance, data);
-      attendances.push(data);
+      attendances.push(attendance);
     }
-    */
-    console.log(attendances);
+    this.logger.info("request ok");
+    this.logger.info(attendances);
     // await this.datastoreService.initialize();
     // this.$on("reload", () => this.reload());
     // await this.pushService.initialize(this);

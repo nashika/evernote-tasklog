@@ -100,7 +100,7 @@ container
 
 container
   .bind<BaseSEntity>(BaseSEntity)
-  .toConstructor(AttendanceCEntity)
+  .toConstructor(AttendanceSEntity)
   .whenTargetNamed("attendance");
 
 container
