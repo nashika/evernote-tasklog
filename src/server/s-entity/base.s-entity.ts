@@ -18,7 +18,6 @@ export interface IFindManyEntityOptions<T extends BaseSEntity>
 export type TDeleteEntityOptions<T extends BaseSEntity> = FindConditions<T>;
 
 export default abstract class BaseSEntity {
-
   static EntityClass: typeof BaseEntity;
   static params: IBaseSEntityParams<BaseSEntity>;
 

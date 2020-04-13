@@ -17,5 +17,4 @@ export default class AttendanceRoute extends BaseEntityRoute<
   ) {
     super(repositoryService, sessionService);
   }
-
 }

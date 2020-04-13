@@ -1,4 +1,5 @@
 import { Configuration } from "@nuxt/types";
+import webpack from "webpack";
 
 const conf: Configuration = {
   mode: "spa",
@@ -37,7 +38,7 @@ const conf: Configuration = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ["~/src/client/plugins/socket-io"],
+  plugins: ["~/src/client/plugins/vendor", "~/src/client/plugins/socket-io"],
   /*
    ** Nuxt.js dev-modules
    */
@@ -73,6 +74,10 @@ const conf: Configuration = {
      ** You can extend webpack config here
      */
     // extend(config: any, ctx: any) {}
+    plugins: [
+      // Ignore all locale files of moment.js
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    ],
   },
 };
 export default conf;

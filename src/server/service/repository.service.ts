@@ -21,7 +21,6 @@ import BaseServerService from "./base-server.service";
 import container from "~/src/server/inversify.config";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
-import IBaseSEntity from "~/src/server/s-entity/base.s-entity";
 import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
@@ -36,7 +35,7 @@ export default class RepositoryService extends BaseServerService {
 
   private connection: Connection | null = null;
   private readonly repositories: {
-    [tableName: string]: BaseRepository<IBaseSEntity>;
+    [tableName: string]: BaseRepository<BaseSEntity>;
   };
 
   constructor() {
@@ -93,7 +92,7 @@ export default class RepositoryService extends BaseServerService {
   async initialize(): Promise<void> {
     await this.getConnection();
     for (const RepositoryClass of container.getAll<any>(BaseRepository)) {
-      const repository: BaseRepository<IBaseSEntity> = getCustomRepository(
+      const repository: BaseRepository<BaseSEntity> = getCustomRepository(
         RepositoryClass
       );
       this.repositories[repository.SEntityClass.params.name] = repository;
@@ -121,7 +120,7 @@ export default class RepositoryService extends BaseServerService {
     return this.connection;
   }
 
-  getRepository<T extends BaseRepository<IBaseSEntity>>(
+  getRepository<T extends BaseRepository<BaseSEntity>>(
     EntityClass: typeof BaseSEntity
   ): T {
     return <T>this.repositories[EntityClass.params.name];
