@@ -2,7 +2,7 @@ import Vue from "vue";
 import _ from "lodash";
 import moment from "moment";
 import numeral from "numeral";
-import { SocketIoClientService } from "~/plugins/socket-io";
+import { SocketIoClientService } from "~/src/client/plugins/socket-io";
 
 export default abstract class BaseComponent extends Vue {
   lodash = _;

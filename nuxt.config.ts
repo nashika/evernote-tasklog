@@ -2,6 +2,14 @@ import { Configuration } from "@nuxt/types";
 
 const conf: Configuration = {
   mode: "spa",
+  dir: {
+    assets: "src/client/assets",
+    layouts: "src/client/layouts",
+    middleware: "src/client/middleware",
+    pages: "src/client/pages",
+    static: "src/client/static",
+    store: "src/client/store",
+  },
   /*
    ** Headers of the page
    */
@@ -29,7 +37,7 @@ const conf: Configuration = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ["~/plugins/socket-io"],
+  plugins: ["~/src/client/plugins/socket-io"],
   /*
    ** Nuxt.js dev-modules
    */

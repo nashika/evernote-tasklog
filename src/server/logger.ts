@@ -1,14 +1,14 @@
 import * as path from "path";
 import * as log4js from "log4js";
 
-import configLoader from "~/common/util/config-loader";
+import configLoader from "~/src/common/util/config-loader";
 
 log4js.configure(<any>{
   appenders: {
     system: {
       category: "system",
       type: "dateFile",
-      filename: path.join(__dirname, "../logs/system"),
+      filename: path.join(__dirname, "../../logs/system"),
       pattern: "-yyyyMMdd.log",
       backups: 365,
       alwaysIncludePattern: true,
@@ -16,7 +16,7 @@ log4js.configure(<any>{
     access: {
       category: "access",
       type: "dateFile",
-      filename: path.join(__dirname, "../logs/access"),
+      filename: path.join(__dirname, "../../logs/access"),
       pattern: "-yyyyMMdd.log",
       backups: 365,
       alwaysIncludePattern: true,

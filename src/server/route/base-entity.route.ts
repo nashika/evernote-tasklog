@@ -1,14 +1,14 @@
 import _ from "lodash";
 import SocketIO from "socket.io";
 
-import BaseRoute from "~/server/route/base.route";
-import BaseRepository from "~/server/repository/base.repository";
-import RepositoryService from "~/server/service/repository.service";
-import container from "~/inversify.config";
-import SessionService from "~/server/service/session.service";
+import BaseRoute from "~/src/server/route/base.route";
+import BaseRepository from "~/src/server/repository/base.repository";
+import RepositoryService from "~/src/server/service/repository.service";
+import container from "~/src/server/inversify.config";
+import SessionService from "~/src/server/service/session.service";
 import BaseSEntity, {
   IFindManyEntityOptions,
-} from "~/server/s-entity/base.s-entity";
+} from "~/src/server/s-entity/base.s-entity";
 
 export default abstract class BaseEntityRoute<
   T1 extends BaseSEntity,

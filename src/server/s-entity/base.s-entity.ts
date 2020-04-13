@@ -1,4 +1,5 @@
 import { FindConditions, FindManyOptions } from "typeorm";
+import BaseEntity from "~/src/common/entity/base.entity";
 
 export interface IBaseSEntityParams<T extends BaseSEntity> {
   name: string;
@@ -17,6 +18,8 @@ export interface IFindManyEntityOptions<T extends BaseSEntity>
 export type TDeleteEntityOptions<T extends BaseSEntity> = FindConditions<T>;
 
 export default abstract class BaseSEntity {
+
+  static EntityClass: typeof BaseEntity;
   static params: IBaseSEntityParams<BaseSEntity>;
 
   createdAt?: Date;

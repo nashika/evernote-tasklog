@@ -1,30 +1,30 @@
 import { Container } from "inversify";
 
-import BaseEntity from "~/common/entity/base.entity";
-import AttendanceEntity from "~/common/entity/attendance.entity";
-import ConstraintResultEntity from "~/common/entity/constraint-result.entity";
-import LinkedNotebookEntity from "~/common/entity/linked-notebook.entity";
-import NoteEntity from "~/common/entity/note.entity";
-import NotebookEntity from "~/common/entity/notebook.entity";
-import OptionEntity from "~/common/entity/option.entity";
-import ProfitLogEntity from "~/common/entity/profit-log.entity";
-import SavedSearchEntity from "~/common/entity/saved-search.entity";
-import TagEntity from "~/common/entity/tag.entity";
-import TimeLogEntity from "~/common/entity/time-log.entity";
+import BaseEntity from "~/src/common/entity/base.entity";
+import AttendanceEntity from "~/src/common/entity/attendance.entity";
+import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
+import LinkedNotebookEntity from "~/src/common/entity/linked-notebook.entity";
+import NoteEntity from "~/src/common/entity/note.entity";
+import NotebookEntity from "~/src/common/entity/notebook.entity";
+import OptionEntity from "~/src/common/entity/option.entity";
+import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
+import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
+import TagEntity from "~/src/common/entity/tag.entity";
+import TimeLogEntity from "~/src/common/entity/time-log.entity";
 
-import BaseSEntity from "~/server/s-entity/base.s-entity";
-import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
+import BaseSEntity from "~/src/server/s-entity/base.s-entity";
+import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 
-import BaseRepository from "~/server/repository/base.repository";
-import AttendanceRepository from "~/server/repository/attendance.repository";
+import BaseRepository from "~/src/server/repository/base.repository";
+import AttendanceRepository from "~/src/server/repository/attendance.repository";
 
-import MainService from "~/server/service/main.service";
-import RepositoryService from "~/server/service/repository.service";
-import SocketIoServerService from "~/server/service/socket-io-server-service";
-import SessionService from "~/server/service/session.service";
+import MainService from "~/src/server/service/main.service";
+import RepositoryService from "~/src/server/service/repository.service";
+import SocketIoServerService from "~/src/server/service/socket-io-server-service";
+import SessionService from "~/src/server/service/session.service";
 
-import BaseRoute from "~/server/route/base.route";
-import AttendanceRoute from "~/server/route/attendance.route";
+import BaseRoute from "~/src/server/route/base.route";
+import AttendanceRoute from "~/src/server/route/attendance.route";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";

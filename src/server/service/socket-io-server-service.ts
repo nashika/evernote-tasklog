@@ -5,9 +5,9 @@ import { RequestHandler } from "express";
 
 import logger from "../logger";
 
-import container from "~/inversify.config";
-import BaseRoute from "~/server/route/base.route";
-import BaseServerService from "~/server/service/base-server.service";
+import container from "~/src/server/inversify.config";
+import BaseRoute from "~/src/server/route/base.route";
+import BaseServerService from "~/src/server/service/base-server.service";
 
 // const expressSocketIoSession = require("express-socket.io-session");
 

@@ -8,15 +8,16 @@ import {
 } from "typeorm";
 import { Max, Min } from "class-validator";
 
-import AttendanceEntity from "~/common/entity/attendance.entity";
+import AttendanceEntity from "~/src/common/entity/attendance.entity";
 import BaseSEntity, {
   IBaseSEntityParams,
-} from "~/server/s-entity/base.s-entity";
+} from "~/src/server/s-entity/base.s-entity";
 
 @injectable()
 @Entity({ name: AttendanceEntity.params.name })
 @Index(["personId", "year", "month", "day"], { unique: true })
 export default class AttendanceSEntity extends BaseSEntity {
+  static EntityClass = AttendanceEntity;
   static params: IBaseSEntityParams<AttendanceSEntity> = {
     name: "attendance",
     primaryKey: "id",

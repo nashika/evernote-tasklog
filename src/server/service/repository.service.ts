@@ -18,15 +18,14 @@ import { BaseEntity } from "~/common/entity/base.entity";
  */
 
 import BaseServerService from "./base-server.service";
-import container from "~/inversify.config";
-import NotebookEntity from "~/common/entity/notebook.entity";
-import TagEntity from "~/common/entity/tag.entity";
-import IBaseSEntity from "~/server/s-entity/base.s-entity";
-import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
-import BaseRepository from "~/server/repository/base.repository";
-import BaseEntity from "~/common/entity/base.entity";
-import AttendanceRepository from "~/server/repository/attendance.repository";
-import BaseSEntity from "~/server/s-entity/base.s-entity";
+import container from "~/src/server/inversify.config";
+import NotebookEntity from "~/src/common/entity/notebook.entity";
+import TagEntity from "~/src/common/entity/tag.entity";
+import IBaseSEntity from "~/src/server/s-entity/base.s-entity";
+import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
+import BaseRepository from "~/src/server/repository/base.repository";
+import AttendanceRepository from "~/src/server/repository/attendance.repository";
+import BaseSEntity from "~/src/server/s-entity/base.s-entity";
 
 @injectable()
 export default class RepositoryService extends BaseServerService {
@@ -112,7 +111,7 @@ export default class RepositoryService extends BaseServerService {
   }
 
   async initConnection(): Promise<Connection> {
-    const filePath = path.join(__dirname, "../../db/database.db");
+    const filePath = path.join(__dirname, "../../../db/database.db");
     this.connection = await createConnection({
       type: "sqlite",
       database: filePath,

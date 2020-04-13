@@ -5,10 +5,10 @@ import consola from "consola";
 import { Nuxt, Builder } from "nuxt";
 
 // Import and Set Nuxt.js options
-import config from "../nuxt.config";
-import container from "~/inversify.config";
-import MainService from "~/server/service/main.service";
-import logger from "~/server/logger";
+import config from "../../nuxt.config";
+import container from "~/src/server/inversify.config";
+import MainService from "~/src/server/service/main.service";
+import logger from "~/src/server/logger";
 
 const app = express();
 

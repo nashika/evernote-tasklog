@@ -11,9 +11,9 @@
 
 <script lang="ts">
 import { Component } from "nuxt-property-decorator";
-import Logo from "~/components/Logo.vue";
-import BaseComponent from "~/components/base.component";
-import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
+import Logo from "~/src/client/components/Logo.vue";
+import BaseComponent from "~/src/client/components/base.component";
+import AttendanceEntity from "~/src/common/entity/attendance.entity";
 
 @Component({
   components: {
@@ -28,13 +28,15 @@ export default class extends BaseComponent {
 
   async mounted(): Promise<void> {
     await super.mounted();
-    const datas = await this.$socketIoService.request("attendance::find");
-    const attendances: AttendanceSEntity[] = [];
+    // const datas = await this.$socketIoService.request("attendance::find");
+    const attendances: AttendanceEntity[] = [];
+    /*
     for (const data of datas) {
-      const attendance = new AttendanceSEntity();
+      const attendance = new AttendanceEntity();
       Object.assign(attendance, data);
       attendances.push(data);
     }
+    */
     console.log(attendances);
     // await this.datastoreService.initialize();
     // this.$on("reload", () => this.reload());

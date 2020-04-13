@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
 
-import SessionService from "../service/session.service";
 import BaseEntityRoute from "./base-entity.route";
-import RepositoryService from "~/server/service/repository.service";
-import AttendanceRepository from "~/server/repository/attendance.repository";
-import AttendanceSEntity from "~/server/s-entity/attendance.s-entity";
+import SessionService from "~/src/server/service/session.service";
+import RepositoryService from "~/src/server/service/repository.service";
+import AttendanceRepository from "~/src/server/repository/attendance.repository";
+import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 
 @injectable()
 export default class AttendanceRoute extends BaseEntityRoute<
