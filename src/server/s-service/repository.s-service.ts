@@ -17,20 +17,20 @@ import { ProfitLogTable } from "../table/profit-log.table";
 import { BaseEntity } from "~/common/entity/base.entity";
  */
 
-import BaseServerService from "./base-server.service";
+import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
-import NotebookEntity from "~/src/common/entity/notebook.entity";
-import TagEntity from "~/src/common/entity/tag.entity";
+import NotebookCEntity from "~/src/common/c-entity/notebook.c-entity";
+import TagCEntity from "~/src/common/c-entity/tag.c-entity";
 import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
 import BaseSEntity from "~/src/server/s-entity/base.s-entity";
 
 @injectable()
-export default class RepositoryService extends BaseServerService {
+export default class RepositorySService extends BaseSService {
   caches: {
-    tags: { [guid: string]: TagEntity };
-    notebooks: { [guid: string]: NotebookEntity };
+    tags: { [guid: string]: TagCEntity };
+    notebooks: { [guid: string]: NotebookCEntity };
   };
 
   private connection: Connection | null = null;
@@ -95,7 +95,9 @@ export default class RepositoryService extends BaseServerService {
       const repository: BaseRepository<BaseSEntity> = getCustomRepository(
         RepositoryClass
       );
-      this.repositories[repository.SEntityClass.params.name] = repository;
+      this.repositories[
+        repository.SEntityClass.CEntityClass.params.name
+      ] = repository;
       await repository.initialize();
     }
     // await this.reloadCache();
@@ -121,9 +123,9 @@ export default class RepositoryService extends BaseServerService {
   }
 
   getRepository<T extends BaseRepository<BaseSEntity>>(
-    EntityClass: typeof BaseSEntity
+    SEntityClass: typeof BaseSEntity
   ): T {
-    return <T>this.repositories[EntityClass.params.name];
+    return <T>this.repositories[SEntityClass.CEntityClass.params.name];
   }
 
   /*

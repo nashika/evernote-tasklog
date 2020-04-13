@@ -3,22 +3,21 @@ import SocketIO from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
 import BaseRepository from "~/src/server/repository/base.repository";
-import RepositoryService from "~/src/server/service/repository.service";
 import container from "~/src/server/inversify.config";
-import SessionService from "~/src/server/service/session.service";
-import BaseSEntity, {
-  IFindManyEntityOptions,
-} from "~/src/server/s-entity/base.s-entity";
+import BaseSEntity from "~/src/server/s-entity/base.s-entity";
+import RepositorySService from "~/src/server/s-service/repository.s-service";
+import SessionSService from "~/src/server/s-service/session.s-service";
+import { IFindManyCEntityOptions } from "~/src/common/c-entity/base.c-entity";
 
 export default abstract class BaseEntityRoute<
-  T1 extends BaseSEntity,
-  T2 extends BaseRepository<T1>
+  TSEntity extends BaseSEntity,
+  TRepository extends BaseRepository<TSEntity>
 > extends BaseRoute {
   SEntityClass: typeof BaseSEntity = BaseSEntity;
 
   constructor(
-    protected repositoryService: RepositoryService,
-    protected sessionService: SessionService
+    protected repositoryService: RepositorySService,
+    protected sessionService: SessionSService
   ) {
     super();
     const name = _.lowerFirst(_.replace(this.Class.name, /Route$/, ""));
@@ -30,11 +29,11 @@ export default abstract class BaseEntityRoute<
   }
 
   getBasePath(): string {
-    return this.SEntityClass.params.name;
+    return this.SEntityClass.CEntityClass.params.name;
   }
 
-  getRepository(): T2 {
-    return <T2>this.repositoryService.getRepository(this.SEntityClass);
+  getRepository(): TRepository {
+    return <TRepository>this.repositoryService.getRepository(this.SEntityClass);
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
@@ -42,19 +41,20 @@ export default abstract class BaseEntityRoute<
     this.on(socket, "count", this.onCount);
     this.on(socket, "save", this.onSave);
     this.on(socket, "remove", this.onRemove);
+    await Promise.resolve();
   }
 
   protected async onFind(
     _socket: SocketIO.Socket,
-    options: IFindManyEntityOptions<T1>
-  ): Promise<T1[]> {
+    options: IFindManyCEntityOptions<TSEntity>
+  ): Promise<TSEntity[]> {
     const entities = await this.getRepository().find(options);
     return entities;
   }
 
   protected async onCount(
     _socket: SocketIO.Socket,
-    options: IFindManyEntityOptions<T1>
+    options: IFindManyCEntityOptions<TSEntity>
   ): Promise<number> {
     const count = await this.getRepository().count(options);
     return count;
@@ -64,7 +64,7 @@ export default abstract class BaseEntityRoute<
     _socket: SocketIO.Socket,
     data: Object
   ): Promise<boolean> {
-    const entity: T1 = new (<any>this.SEntityClass)(data);
+    const entity: TSEntity = new (<any>this.SEntityClass)(data);
     await this.getRepository().save(<any>entity);
     return true;
   }
@@ -75,7 +75,7 @@ export default abstract class BaseEntityRoute<
   ): Promise<boolean> {
     if (!id) throw new Error("削除対象のIDが指定されていません");
     await this.getRepository().delete(<any>{
-      [this.SEntityClass.params.primaryKey]: id,
+      [this.SEntityClass.CEntityClass.params.primaryKey]: id,
     });
     return true;
   }

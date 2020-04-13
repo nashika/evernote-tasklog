@@ -1,19 +1,15 @@
-import BaseEvernoteEntity from "./base-evernote.entity";
-import { IBaseEntityParams } from "./base.entity";
+import BaseEvernoteCEntity from "./base-evernote.c-entity";
+import { IBaseCEntityParams } from "./base.c-entity";
 
-export default class NoteEntity extends BaseEvernoteEntity {
-  static params: IBaseEntityParams<NoteEntity> = {
+export default class NoteCEntity extends BaseEvernoteCEntity {
+  static params: IBaseCEntityParams<NoteCEntity> = {
     name: "note",
     primaryKey: "guid",
     displayField: "title",
     archive: true,
     default: {
-      where: {},
-      order: [
-        ["updated", "DESC"],
-        ["updateSequenceNum", "DESC"],
-      ],
-      limit: 500,
+      order: { updatedAt: "DESC", updateSequenceNum: "DESC" },
+      take: 500,
     },
     append: {
       where: { deleted: null },

@@ -1,26 +1,13 @@
-import { FindConditions, FindManyOptions } from "typeorm";
-import BaseEntity from "~/src/common/entity/base.entity";
-
-export interface IBaseSEntityParams<T extends BaseSEntity> {
-  name: string;
-  primaryKey: string;
-  displayField: string;
-  archive: boolean;
-  default: any; // IFindEntityOptions<T>;
-  append: any; // IFindEntityOptions<T>;
-}
-
-export interface IFindManyEntityOptions<T extends BaseSEntity>
-  extends FindManyOptions<T> {
-  archive?: boolean;
-}
-
-export type TDeleteEntityOptions<T extends BaseSEntity> = FindConditions<T>;
+import BaseCEntity from "~/src/common/c-entity/base.c-entity";
 
 export default abstract class BaseSEntity {
-  static EntityClass: typeof BaseEntity;
-  static params: IBaseSEntityParams<BaseSEntity>;
+  static CEntityClass: typeof BaseCEntity;
 
+  get Class(): typeof BaseSEntity {
+    return <typeof BaseSEntity>this.constructor;
+  }
+
+  archiveId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -5,14 +5,14 @@ import { RequestHandler } from "express";
 
 import logger from "../logger";
 
+import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
 import BaseRoute from "~/src/server/route/base.route";
-import BaseServerService from "~/src/server/service/base-server.service";
 
 // const expressSocketIoSession = require("express-socket.io-session");
 
 @injectable()
-export default class SocketIoServerService extends BaseServerService {
+export default class SocketIoSService extends BaseSService {
   sessionMiddleware: RequestHandler | null = null;
 
   private io: SocketIo.Server | null = null;

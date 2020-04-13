@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
 
 import BaseEntityRoute from "./base-entity.route";
-import SessionService from "~/src/server/service/session.service";
-import RepositoryService from "~/src/server/service/repository.service";
+import SessionSService from "~/src/server/s-service/session.s-service";
+import RepositorySService from "~/src/server/s-service/repository.s-service";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
 import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 
@@ -12,8 +12,8 @@ export default class AttendanceRoute extends BaseEntityRoute<
   AttendanceRepository
 > {
   constructor(
-    protected repositoryService: RepositoryService,
-    protected sessionService: SessionService
+    protected repositoryService: RepositorySService,
+    protected sessionService: SessionSService
   ) {
     super(repositoryService, sessionService);
   }

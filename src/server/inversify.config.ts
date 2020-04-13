@@ -1,16 +1,16 @@
 import { Container } from "inversify";
 
-import BaseEntity from "~/src/common/entity/base.entity";
-import AttendanceEntity from "~/src/common/entity/attendance.entity";
-import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
-import LinkedNotebookEntity from "~/src/common/entity/linked-notebook.entity";
-import NoteEntity from "~/src/common/entity/note.entity";
-import NotebookEntity from "~/src/common/entity/notebook.entity";
-import OptionEntity from "~/src/common/entity/option.entity";
-import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
-import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
-import TagEntity from "~/src/common/entity/tag.entity";
-import TimeLogEntity from "~/src/common/entity/time-log.entity";
+import BaseCEntity from "~/src/common/c-entity/base.c-entity";
+import AttendanceCEntity from "~/src/common/c-entity/attendance.c-entity";
+import ConstraintResultCEntity from "~/src/common/c-entity/constraint-result.c-entity";
+import LinkedNotebookCEntity from "~/src/common/c-entity/linked-notebook.c-entity";
+import NoteCEntity from "~/src/common/c-entity/note.c-entity";
+import NotebookCEntity from "~/src/common/c-entity/notebook.c-entity";
+import OptionCEntity from "~/src/common/c-entity/option.c-entity";
+import ProfitLogCEntity from "~/src/common/c-entity/profit-log.c-entity";
+import SavedSearchCEntity from "~/src/common/c-entity/saved-search.c-entity";
+import TagCEntity from "~/src/common/c-entity/tag.c-entity";
+import TimeLogCEntity from "~/src/common/c-entity/time-log.c-entity";
 
 import BaseSEntity from "~/src/server/s-entity/base.s-entity";
 import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
@@ -18,10 +18,10 @@ import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
 
-import MainService from "~/src/server/service/main.service";
-import RepositoryService from "~/src/server/service/repository.service";
-import SocketIoServerService from "~/src/server/service/socket-io-server-service";
-import SessionService from "~/src/server/service/session.service";
+import MainSService from "~/src/server/s-service/main.s-service";
+import RepositorySService from "~/src/server/s-service/repository.s-service";
+import SocketIoSService from "~/src/server/s-service/socket-io.s-service";
+import SessionSService from "~/src/server/s-service/session.s-service";
 
 import BaseRoute from "~/src/server/route/base.route";
 import AttendanceRoute from "~/src/server/route/attendance.route";
@@ -58,65 +58,65 @@ import { TimeLogTable } from "~/server/table/time-log.table";
 const container = new Container();
 
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(AttendanceEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(AttendanceCEntity)
   .whenTargetNamed("attendance");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(ConstraintResultEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(ConstraintResultCEntity)
   .whenTargetNamed("constraintResult");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(LinkedNotebookEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(LinkedNotebookCEntity)
   .whenTargetNamed("linkedNotebook");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(NoteEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(NoteCEntity)
   .whenTargetNamed("note");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(NotebookEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(NotebookCEntity)
   .whenTargetNamed("notebook");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(OptionEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(OptionCEntity)
   .whenTargetNamed("option");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(ProfitLogEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(ProfitLogCEntity)
   .whenTargetNamed("profitLog");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(SavedSearchEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(SavedSearchCEntity)
   .whenTargetNamed("savedSearch");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(TagEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(TagCEntity)
   .whenTargetNamed("tag");
 container
-  .bind<BaseEntity>(BaseEntity)
-  .toConstructor(TimeLogEntity)
+  .bind<BaseCEntity>(BaseCEntity)
+  .toConstructor(TimeLogCEntity)
   .whenTargetNamed("timeLog");
 
 container
   .bind<BaseSEntity>(BaseSEntity)
-  .toConstructor(AttendanceEntity)
+  .toConstructor(AttendanceCEntity)
   .whenTargetNamed("attendance");
 
 container
-  .bind<MainService>(MainService)
+  .bind<MainSService>(MainSService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<RepositoryService>(RepositoryService)
+  .bind<RepositorySService>(RepositorySService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<SocketIoServerService>(SocketIoServerService)
+  .bind<SocketIoSService>(SocketIoSService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<SessionService>(SessionService)
+  .bind<SessionSService>(SessionSService)
   .toSelf()
   .inSingletonScope();
 

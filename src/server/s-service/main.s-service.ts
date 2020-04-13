@@ -3,15 +3,15 @@ import { Server } from "http";
 import { injectable } from "inversify";
 
 import logger from "../logger";
-import RepositoryService from "./repository.service";
-import BaseServerService from "./base-server.service";
-import SocketIoServerService from "./socket-io-server-service";
+import RepositorySService from "./repository.s-service";
+import BaseSService from "./base.s-service";
+import SocketIoSService from "./socket-io.s-service";
 
 @injectable()
-export default class MainService extends BaseServerService {
+export default class MainSService extends BaseSService {
   constructor(
-    protected repositoryService: RepositoryService,
-    protected socketIoServerService: SocketIoServerService /*
+    protected repositoryService: RepositorySService,
+    protected socketIoServerService: SocketIoSService /*
     protected syncService: SyncService,
     protected evernoteClientService: EvernoteClientService
      */

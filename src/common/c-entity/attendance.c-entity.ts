@@ -1,20 +1,15 @@
-import BaseEntity, { IBaseEntityParams } from "./base.entity";
+import BaseCEntity, { IBaseCEntityParams } from "./base.c-entity";
 
-export default class AttendanceEntity extends BaseEntity {
-  static params: IBaseEntityParams<AttendanceEntity> = {
+export default class AttendanceCEntity extends BaseCEntity {
+  static params: IBaseCEntityParams<AttendanceCEntity> = {
     name: "attendance",
     primaryKey: "id",
     displayField: "id",
     archive: false,
     default: {
-      where: {},
-      order: [],
-      limit: 500,
+      take: 500,
     },
-    append: {
-      where: {},
-      order: [],
-    },
+    append: {},
   };
 
   id?: number;
