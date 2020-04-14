@@ -1,6 +1,10 @@
 import _ from "lodash";
+import { EntitySchema } from "typeorm";
 
-import { INVERSIFY_MODELS, INVERSIFY_TYPES } from "~/src/common/inversify.symbol";
+import {
+  INVERSIFY_MODELS,
+  INVERSIFY_TYPES,
+} from "~/src/common/inversify.symbol";
 import BaseEntity from "~/src/common/entity/base.entity";
 import container from "~/src/server/inversify.config";
 
@@ -11,6 +15,8 @@ export interface IBaseTableParams {
 }
 
 export abstract class BaseTable<T extends BaseEntity> {
+
+  protected abstract schema: EntitySchema<T>;
 
   static params: IBaseTableParams;
 
