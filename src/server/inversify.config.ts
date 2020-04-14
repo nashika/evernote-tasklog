@@ -18,10 +18,7 @@ import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 
-import BaseRepository from "~/src/server/repository/base.repository";
-import AttendanceRepository from "~/src/server/repository/attendance.repository";
-
-import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
+import attendanceSchema from "~/src/server/schema/attendance.schema";
 
 import MainSService from "~/src/server/s-service/main.s-service";
 import RepositorySService from "~/src/server/s-service/repository.s-service";
@@ -104,8 +101,8 @@ container
 
 // SEntity系
 container
-  .bind<EntitySchema>(INVERSIFY_TYPES.SEntity)
-  .toConstantValue(AttendanceSEntity)
+  .bind<EntitySchema>(INVERSIFY_TYPES.Schema)
+  .toConstantValue(attendanceSchema)
   .whenTargetNamed(INVERSIFY_MODELS.Attendance);
 
 // SService系
@@ -158,11 +155,5 @@ container.bind<BaseTable<OptionEntity>>(BaseTable).to(OptionTable).whenTargetNam
 container.bind<BaseTable<TagEntity>>(BaseTable).to(TagTable).whenTargetNamed("tag");
 container.bind<BaseTable<TimeLogEntity>>(BaseTable).to(TimeLogTable).whenTargetNamed("timeLog");
  */
-
-// Repository系
-container
-  .bind<BaseRepository<BaseEntity>>(INVERSIFY_TYPES.Repository)
-  .toConstructor(AttendanceRepository)
-  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
 
 export default container;

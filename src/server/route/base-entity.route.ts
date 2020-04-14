@@ -2,7 +2,6 @@ import _ from "lodash";
 import SocketIO from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
-import BaseRepository from "~/src/server/repository/base.repository";
 import container from "~/src/server/inversify.config";
 import RepositorySService from "~/src/server/s-service/repository.s-service";
 import SessionSService from "~/src/server/s-service/session.s-service";
@@ -15,8 +14,7 @@ import {
 } from "~/src/common/inversify.symbol";
 
 export default abstract class BaseEntityRoute<
-  TEntity extends BaseEntity,
-  TRepository extends BaseRepository<TEntity>
+  TEntity extends BaseEntity
 > extends BaseRoute {
   EntityClass: typeof BaseEntity;
 

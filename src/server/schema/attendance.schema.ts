@@ -2,7 +2,7 @@ import { EntitySchema } from "typeorm";
 
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
 
-const AttendanceSEntity = new EntitySchema<AttendanceEntity>({
+const attendanceSchema = new EntitySchema<AttendanceEntity>({
   name: "attendance",
   columns: {
     id: {
@@ -54,4 +54,4 @@ const AttendanceSEntity = new EntitySchema<AttendanceEntity>({
     },
   ],
 });
-export default AttendanceSEntity;
+export default attendanceSchema;

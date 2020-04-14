@@ -1,9 +1,9 @@
 export const INVERSIFY_TYPES = {
   Entity: Symbol.for("Entity"),
-  Repository: Symbol.for("Repository"),
   Route: Symbol.for("Route"),
-  SEntity: Symbol.for("SEntity"),
+  Schema: Symbol.for("Schema"),
   SService: Symbol.for("SService"),
+  Table: Symbol.for("Table"),
 };
 
 export const INVERSIFY_MODELS = {
