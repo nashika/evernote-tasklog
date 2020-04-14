@@ -13,7 +13,7 @@
 import { Component } from "nuxt-property-decorator";
 import Logo from "~/src/client/components/Logo.vue";
 import BaseComponent from "~/src/client/components/base.component";
-import AttendanceCEntity from "~/src/common/c-entity/attendance.c-entity";
+import AttendanceEntity from "~/src/common/entity/attendance.entity";
 
 @Component({
   components: {
@@ -27,9 +27,9 @@ export default class extends BaseComponent {
     await super.mounted();
     this.logger.info("request start");
     const datas = await this.$socketIoService.request("attendance::find");
-    const attendances: AttendanceCEntity[] = [];
+    const attendances: AttendanceEntity[] = [];
     for (const data of datas) {
-      const attendance = new AttendanceCEntity();
+      const attendance = new AttendanceEntity();
       Object.assign(attendance, data);
       attendances.push(attendance);
     }

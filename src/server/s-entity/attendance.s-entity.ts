@@ -1,8 +1,8 @@
 import { EntitySchema } from "typeorm";
 
-import AttendanceCEntity from "~/src/common/c-entity/attendance.c-entity";
+import AttendanceEntity from "~/src/common/entity/attendance.entity";
 
-const AttendanceSEntity = new EntitySchema<AttendanceCEntity>({
+const AttendanceSEntity = new EntitySchema<AttendanceEntity>({
   name: "attendance",
   columns: {
     id: {

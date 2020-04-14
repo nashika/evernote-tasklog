@@ -1,8 +1,8 @@
-import BaseEvernoteCEntity from "./base-evernote.c-entity";
-import { IBaseCEntityParams } from "./base.c-entity";
+import BaseEvernoteEntity from "./base-evernote.entity";
+import { IBaseEntityParams } from "./base.entity";
 
-export default class SavedSearchCEntity extends BaseEvernoteCEntity {
-  static params: IBaseCEntityParams<SavedSearchCEntity> = {
+export default class SavedSearchEntity extends BaseEvernoteEntity {
+  static params: IBaseEntityParams<SavedSearchEntity> = {
     name: "savedSearch",
     primaryKey: "guid",
     displayField: "name",

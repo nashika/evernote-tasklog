@@ -1,23 +1,23 @@
 import _ from "lodash";
 import { FindConditions, FindManyOptions } from "typeorm";
 
-export interface IBaseCEntityParams<T extends BaseCEntity> {
+export interface IBaseEntityParams<T extends BaseEntity> {
   name: string;
   primaryKey: string;
   displayField: string;
   archive: boolean;
-  default: IFindManyCEntityOptions<T>;
-  append: IFindManyCEntityOptions<T>;
+  default: IFindManyEntityOptions<T>;
+  append: IFindManyEntityOptions<T>;
 }
 
-export interface IFindManyCEntityOptions<T> extends FindManyOptions<T> {
+export interface IFindManyEntityOptions<T> extends FindManyOptions<T> {
   archive?: boolean;
 }
 
-export type TDeleteCEntityOptions<T> = FindConditions<T>;
+export type TDeleteEntityOptions<T> = FindConditions<T>;
 
-export default abstract class BaseCEntity {
-  static params: IBaseCEntityParams<any>;
+export default abstract class BaseEntity {
+  static params: IBaseEntityParams<any>;
 
   constructor(data: any = {}) {
     for (const key of _.keys(data)) {
@@ -25,8 +25,8 @@ export default abstract class BaseCEntity {
     }
   }
 
-  get Class(): typeof BaseCEntity {
-    return <typeof BaseCEntity>this.constructor;
+  get Class(): typeof BaseEntity {
+    return <typeof BaseEntity>this.constructor;
   }
 
   get primaryKey(): any {

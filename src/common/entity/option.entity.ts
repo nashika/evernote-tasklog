@@ -1,7 +1,7 @@
-import BaseCEntity, { IBaseCEntityParams } from "./base.c-entity";
+import BaseEntity, { IBaseEntityParams } from "./base.entity";
 
-export default class OptionCEntity extends BaseCEntity {
-  static params: IBaseCEntityParams<OptionCEntity> = {
+export default class OptionEntity extends BaseEntity {
+  static params: IBaseEntityParams<OptionEntity> = {
     name: "option",
     primaryKey: "key",
     displayField: "key",

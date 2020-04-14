@@ -1,7 +1,7 @@
-import BaseCEntity, { IBaseCEntityParams } from "./base.c-entity";
+import BaseEntity, { IBaseEntityParams } from "./base.entity";
 
-export default class TimeLogCEntity extends BaseCEntity {
-  static params: IBaseCEntityParams<TimeLogCEntity> = {
+export default class TimeLogEntity extends BaseEntity {
+  static params: IBaseEntityParams<TimeLogEntity> = {
     name: "timeLog",
     primaryKey: "id",
     displayField: "comment",

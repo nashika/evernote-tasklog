@@ -1,8 +1,8 @@
 import { Max, Min } from "class-validator";
-import BaseCEntity, { IBaseCEntityParams } from "./base.c-entity";
+import BaseEntity, { IBaseEntityParams } from "./base.entity";
 
-export default class AttendanceCEntity extends BaseCEntity {
-  static params: IBaseCEntityParams<AttendanceCEntity> = {
+export default class AttendanceEntity extends BaseEntity {
+  static params: IBaseEntityParams<AttendanceEntity> = {
     name: "attendance",
     primaryKey: "id",
     displayField: "id",

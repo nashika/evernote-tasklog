@@ -1,10 +1,10 @@
 import { Repository } from "typeorm";
-import BaseCEntity from "~/src/common/c-entity/base.c-entity";
+import BaseEntity from "~/src/common/entity/base.entity";
 
 export default abstract class BaseRepository<
-  T extends BaseCEntity
+  T extends BaseEntity
 > extends Repository<T> {
-  abstract CEntityClass: typeof BaseCEntity;
+  abstract EntityClass: typeof BaseEntity;
 
   async initialize(): Promise<void> {}
 }

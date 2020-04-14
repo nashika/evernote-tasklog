@@ -2,41 +2,26 @@ import path from "path";
 import { injectable } from "inversify";
 import { Connection, createConnection, getCustomRepository } from "typeorm";
 
-/*
-import { NoteTable } from "../table/note.table";
-import { OptionTable } from "../table/option.table";
-import { BaseTable } from "../table/base.table";
-import { ConstraintResultTable } from "../table/constraint-result.table";
-import { NotebookTable } from "../table/notebook.table";
-import { LinkedNotebookEntity } from "../../common/entity/linked-notebook.entity";
-import { LinkedNotebookTable } from "../table/linked-notebook.table";
-import { TagTable } from "../table/tag.table";
-import { SavedSearchTable } from "../table/saved-search.table";
-import { TimeLogTable } from "../table/time-log.table";
-import { ProfitLogTable } from "../table/profit-log.table";
-import { BaseEntity } from "~/common/entity/base.entity";
- */
-
 import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
-import NotebookCEntity from "~/src/common/c-entity/notebook.c-entity";
-import TagCEntity from "~/src/common/c-entity/tag.c-entity";
+import NotebookEntity from "~/src/common/entity/notebook.entity";
+import TagEntity from "~/src/common/entity/tag.entity";
 import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
-import BaseCEntity from "~/src/common/c-entity/base.c-entity";
-import AttendanceCEntity from "~/src/common/c-entity/attendance.c-entity";
+import BaseEntity from "~/src/common/entity/base.entity";
+import AttendanceEntity from "~/src/common/entity/attendance.entity";
 
 @injectable()
 export default class RepositorySService extends BaseSService {
   caches: {
-    tags: { [guid: string]: TagCEntity };
-    notebooks: { [guid: string]: NotebookCEntity };
+    tags: { [guid: string]: TagEntity };
+    notebooks: { [guid: string]: NotebookEntity };
   };
 
   private connection: Connection | null = null;
   private readonly repositories: {
-    [tableName: string]: BaseRepository<BaseCEntity>;
+    [tableName: string]: BaseRepository<BaseEntity>;
   };
 
   constructor() {
@@ -49,7 +34,7 @@ export default class RepositorySService extends BaseSService {
   }
 
   get attendanceRepository(): AttendanceRepository {
-    return this.getRepository(AttendanceCEntity);
+    return this.getRepository(AttendanceEntity);
   }
 
   /*
@@ -93,10 +78,10 @@ export default class RepositorySService extends BaseSService {
   async initialize(): Promise<void> {
     await this.getConnection();
     for (const RepositoryClass of container.getAll<any>(BaseRepository)) {
-      const repository: BaseRepository<BaseCEntity> = getCustomRepository(
+      const repository: BaseRepository<BaseEntity> = getCustomRepository(
         RepositoryClass
       );
-      this.repositories[repository.CEntityClass.params.name] = repository;
+      this.repositories[repository.EntityClass.params.name] = repository;
       await repository.initialize();
     }
     // await this.reloadCache();
@@ -121,10 +106,10 @@ export default class RepositorySService extends BaseSService {
     return this.connection;
   }
 
-  getRepository<T extends BaseRepository<BaseCEntity>>(
-    CEntityClass: typeof BaseCEntity
+  getRepository<T extends BaseRepository<BaseEntity>>(
+    EntityClass: typeof BaseEntity
   ): T {
-    return <T>this.repositories[CEntityClass.params.name];
+    return <T>this.repositories[EntityClass.params.name];
   }
 
   /*
