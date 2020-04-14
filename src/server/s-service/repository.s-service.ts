@@ -24,7 +24,8 @@ import TagCEntity from "~/src/common/c-entity/tag.c-entity";
 import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
 import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
-import BaseSEntity from "~/src/server/s-entity/base.s-entity";
+import BaseCEntity from "~/src/common/c-entity/base.c-entity";
+import AttendanceCEntity from "~/src/common/c-entity/attendance.c-entity";
 
 @injectable()
 export default class RepositorySService extends BaseSService {
@@ -35,7 +36,7 @@ export default class RepositorySService extends BaseSService {
 
   private connection: Connection | null = null;
   private readonly repositories: {
-    [tableName: string]: BaseRepository<BaseSEntity>;
+    [tableName: string]: BaseRepository<BaseCEntity>;
   };
 
   constructor() {
@@ -48,7 +49,7 @@ export default class RepositorySService extends BaseSService {
   }
 
   get attendanceRepository(): AttendanceRepository {
-    return this.getRepository(AttendanceSEntity);
+    return this.getRepository(AttendanceCEntity);
   }
 
   /*
@@ -92,12 +93,10 @@ export default class RepositorySService extends BaseSService {
   async initialize(): Promise<void> {
     await this.getConnection();
     for (const RepositoryClass of container.getAll<any>(BaseRepository)) {
-      const repository: BaseRepository<BaseSEntity> = getCustomRepository(
+      const repository: BaseRepository<BaseCEntity> = getCustomRepository(
         RepositoryClass
       );
-      this.repositories[
-        repository.SEntityClass.CEntityClass.params.name
-      ] = repository;
+      this.repositories[repository.CEntityClass.params.name] = repository;
       await repository.initialize();
     }
     // await this.reloadCache();
@@ -122,10 +121,10 @@ export default class RepositorySService extends BaseSService {
     return this.connection;
   }
 
-  getRepository<T extends BaseRepository<BaseSEntity>>(
-    SEntityClass: typeof BaseSEntity
+  getRepository<T extends BaseRepository<BaseCEntity>>(
+    CEntityClass: typeof BaseCEntity
   ): T {
-    return <T>this.repositories[SEntityClass.CEntityClass.params.name];
+    return <T>this.repositories[CEntityClass.params.name];
   }
 
   /*

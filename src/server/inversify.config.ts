@@ -12,9 +12,6 @@ import SavedSearchCEntity from "~/src/common/c-entity/saved-search.c-entity";
 import TagCEntity from "~/src/common/c-entity/tag.c-entity";
 import TimeLogCEntity from "~/src/common/c-entity/time-log.c-entity";
 
-import BaseSEntity from "~/src/server/s-entity/base.s-entity";
-import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
-
 import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
 
@@ -99,11 +96,6 @@ container
   .whenTargetNamed("timeLog");
 
 container
-  .bind<BaseSEntity>(BaseSEntity)
-  .toConstructor(AttendanceSEntity)
-  .whenTargetNamed("attendance");
-
-container
   .bind<MainSService>(MainSService)
   .toSelf()
   .inSingletonScope();
@@ -153,7 +145,7 @@ container.bind<BaseTable<TimeLogEntity>>(BaseTable).to(TimeLogTable).whenTargetN
  */
 
 container
-  .bind<BaseRepository<AttendanceSEntity>>(BaseRepository)
+  .bind<BaseRepository<AttendanceCEntity>>(BaseRepository)
   .toConstructor(AttendanceRepository)
   .whenTargetNamed("attendance");
 
