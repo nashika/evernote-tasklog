@@ -9,20 +9,26 @@ import SessionSService from "~/src/server/s-service/session.s-service";
 import BaseEntity, {
   IFindManyEntityOptions,
 } from "~/src/common/entity/base.entity";
+import {
+  INVERSIFY_MODELS,
+  INVERSIFY_TYPES,
+} from "~/src/server/inversify.symbol";
 
 export default abstract class BaseEntityRoute<
   TEntity extends BaseEntity,
   TRepository extends BaseRepository<TEntity>
 > extends BaseRoute {
-  EntityClass: typeof BaseEntity = BaseEntity;
+  EntityClass: typeof BaseEntity;
 
   protected constructor(
     protected repositoryService: RepositorySService,
     protected sessionService: SessionSService
   ) {
     super();
-    const name = _.lowerFirst(_.replace(this.Class.name, /Route$/, ""));
-    this.EntityClass = <any>container.getNamed(BaseEntity, name);
+    const name = _.replace(this.Class.name, /Route$/, "");
+    this.EntityClass = <any>(
+      container.getNamed(INVERSIFY_TYPES.Entity, _.get(INVERSIFY_MODELS, name))
+    );
   }
 
   get Class(): typeof BaseEntityRoute {

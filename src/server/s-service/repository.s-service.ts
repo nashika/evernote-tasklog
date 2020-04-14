@@ -11,6 +11,7 @@ import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
 import BaseEntity from "~/src/common/entity/base.entity";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
+import { INVERSIFY_TYPES } from "~/src/server/inversify.symbol";
 
 @injectable()
 export default class RepositorySService extends BaseSService {
@@ -77,7 +78,9 @@ export default class RepositorySService extends BaseSService {
 
   async initialize(): Promise<void> {
     await this.getConnection();
-    for (const RepositoryClass of container.getAll<any>(BaseRepository)) {
+    for (const RepositoryClass of container.getAll<any>(
+      INVERSIFY_TYPES.Repository
+    )) {
       const repository: BaseRepository<BaseEntity> = getCustomRepository(
         RepositoryClass
       );

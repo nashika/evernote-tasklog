@@ -8,6 +8,7 @@ import logger from "../logger";
 import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
 import BaseRoute from "~/src/server/route/base.route";
+import { INVERSIFY_TYPES } from "~/src/server/inversify.symbol";
 
 // const expressSocketIoSession = require("express-socket.io-session");
 
@@ -30,7 +31,7 @@ export default class SocketIoSService extends BaseSService {
 
   private async connect(socket: SocketIo.Socket): Promise<void> {
     logger.info(`Socket.IOによる接続が開始されました. socket.id=${socket.id}.`);
-    for (const route of container.getAll<BaseRoute>(BaseRoute)) {
+    for (const route of container.getAll<BaseRoute>(INVERSIFY_TYPES.Route)) {
       await route.connect(socket);
     }
     logger.info(`Socket.IOによる接続が終了しました. socket.id=${socket.id}.`);

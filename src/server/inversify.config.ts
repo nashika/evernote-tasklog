@@ -22,6 +22,10 @@ import SessionSService from "~/src/server/s-service/session.s-service";
 
 import BaseRoute from "~/src/server/route/base.route";
 import AttendanceRoute from "~/src/server/route/attendance.route";
+import {
+  INVERSIFY_MODELS,
+  INVERSIFY_TYPES,
+} from "~/src/server/inversify.symbol";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
@@ -54,47 +58,49 @@ import { TimeLogTable } from "~/server/table/time-log.table";
 
 const container = new Container();
 
+// Entity系
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(AttendanceEntity)
-  .whenTargetNamed("attendance");
+  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(ConstraintResultEntity)
-  .whenTargetNamed("constraintResult");
+  .whenTargetNamed(INVERSIFY_MODELS.ConstraintResult);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(LinkedNotebookEntity)
-  .whenTargetNamed("linkedNotebook");
+  .whenTargetNamed(INVERSIFY_MODELS.LinkedNotebook);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(NoteEntity)
-  .whenTargetNamed("note");
+  .whenTargetNamed(INVERSIFY_MODELS.Note);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(NotebookEntity)
-  .whenTargetNamed("notebook");
+  .whenTargetNamed(INVERSIFY_MODELS.Notebook);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(OptionEntity)
-  .whenTargetNamed("option");
+  .whenTargetNamed(INVERSIFY_MODELS.Option);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(ProfitLogEntity)
-  .whenTargetNamed("profitLog");
+  .whenTargetNamed(INVERSIFY_MODELS.ProfitLog);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(SavedSearchEntity)
-  .whenTargetNamed("savedSearch");
+  .whenTargetNamed(INVERSIFY_MODELS.SavedSearch);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(TagEntity)
-  .whenTargetNamed("tag");
+  .whenTargetNamed(INVERSIFY_MODELS.Tag);
 container
-  .bind<BaseEntity>(BaseEntity)
+  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(TimeLogEntity)
-  .whenTargetNamed("timeLog");
+  .whenTargetNamed(INVERSIFY_MODELS.TimeLog);
 
+// SService系
 container
   .bind<MainSService>(MainSService)
   .toSelf()
@@ -112,10 +118,11 @@ container
   .toSelf()
   .inSingletonScope();
 
+// Route系
 container
-  .bind<BaseRoute>(BaseRoute)
+  .bind<BaseRoute>(INVERSIFY_TYPES.Route)
   .to(AttendanceRoute)
-  .whenTargetNamed("attendance");
+  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
 
 /*
 container.bind<ConstraintService>(ConstraintService).toSelf().inSingletonScope();
@@ -144,9 +151,10 @@ container.bind<BaseTable<TagEntity>>(BaseTable).to(TagTable).whenTargetNamed("ta
 container.bind<BaseTable<TimeLogEntity>>(BaseTable).to(TimeLogTable).whenTargetNamed("timeLog");
  */
 
+// Repository系
 container
-  .bind<BaseRepository<AttendanceEntity>>(BaseRepository)
+  .bind<BaseRepository<BaseEntity>>(INVERSIFY_TYPES.Repository)
   .toConstructor(AttendanceRepository)
-  .whenTargetNamed("attendance");
+  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
 
 export default container;
