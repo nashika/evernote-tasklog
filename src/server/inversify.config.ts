@@ -1,4 +1,10 @@
 import { Container } from "inversify";
+import { EntitySchema } from "typeorm";
+
+import {
+  INVERSIFY_MODELS,
+  INVERSIFY_TYPES,
+} from "~/src/common/inversify.symbol";
 
 import BaseEntity from "~/src/common/entity/base.entity";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
@@ -15,6 +21,8 @@ import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
 
+import AttendanceSEntity from "~/src/server/s-entity/attendance.s-entity";
+
 import MainSService from "~/src/server/s-service/main.s-service";
 import RepositorySService from "~/src/server/s-service/repository.s-service";
 import SocketIoSService from "~/src/server/s-service/socket-io.s-service";
@@ -22,10 +30,6 @@ import SessionSService from "~/src/server/s-service/session.s-service";
 
 import BaseRoute from "~/src/server/route/base.route";
 import AttendanceRoute from "~/src/server/route/attendance.route";
-import {
-  INVERSIFY_MODELS,
-  INVERSIFY_TYPES,
-} from "~/src/server/inversify.symbol";
 
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
@@ -43,8 +47,6 @@ import { SyncRoute } from "~/server/routes/sync.route";
 import { TagRoute } from "~/server/routes/tag.route";
 import { TimeLogRoute } from "~/server/routes/time-log.route";
 
-import { BaseTable } from "~/server/table/base.table";
-import { AttendanceTable } from "~/server/table/attendance.table";
 import { ConstraintResultTable } from "~/server/table/constraint-result.table";
 import { LinkedNotebookTable } from "~/server/table/linked-notebook.table";
 import { NoteTable } from "~/server/table/note.table";
@@ -99,6 +101,12 @@ container
   .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
   .toConstructor(TimeLogEntity)
   .whenTargetNamed(INVERSIFY_MODELS.TimeLog);
+
+// SEntity系
+container
+  .bind<EntitySchema>(INVERSIFY_TYPES.SEntity)
+  .toConstantValue(AttendanceSEntity)
+  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
 
 // SService系
 container

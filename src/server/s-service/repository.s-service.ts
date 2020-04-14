@@ -1,6 +1,6 @@
 import path from "path";
 import { injectable } from "inversify";
-import { Connection, createConnection, getCustomRepository } from "typeorm";
+import { Connection, createConnection, EntitySchema, getCustomRepository } from "typeorm";
 
 import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
@@ -11,7 +11,7 @@ import BaseRepository from "~/src/server/repository/base.repository";
 import AttendanceRepository from "~/src/server/repository/attendance.repository";
 import BaseEntity from "~/src/common/entity/base.entity";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
-import { INVERSIFY_TYPES } from "~/src/server/inversify.symbol";
+import { INVERSIFY_TYPES } from "~/src/common/inversify.symbol";
 
 @injectable()
 export default class RepositorySService extends BaseSService {
@@ -100,10 +100,13 @@ export default class RepositorySService extends BaseSService {
 
   async initConnection(): Promise<Connection> {
     const filePath = path.join(__dirname, "../../../db/database.db");
+    const SEntityClasses = container.getAll<EntitySchema>(
+      INVERSIFY_TYPES.SEntity
+    );
     this.connection = await createConnection({
       type: "sqlite",
       database: filePath,
-      entities: [AttendanceSEntity],
+      entities: SEntityClasses,
       logging: true,
     });
     return this.connection;

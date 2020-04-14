@@ -12,7 +12,7 @@ import BaseEntity, {
 import {
   INVERSIFY_MODELS,
   INVERSIFY_TYPES,
-} from "~/src/server/inversify.symbol";
+} from "~/src/common/inversify.symbol";
 
 export default abstract class BaseEntityRoute<
   TEntity extends BaseEntity,

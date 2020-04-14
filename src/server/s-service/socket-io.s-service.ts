@@ -8,7 +8,7 @@ import logger from "../logger";
 import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
 import BaseRoute from "~/src/server/route/base.route";
-import { INVERSIFY_TYPES } from "~/src/server/inversify.symbol";
+import { INVERSIFY_TYPES } from "~/src/common/inversify.symbol";
 
 // const expressSocketIoSession = require("express-socket.io-session");
 
