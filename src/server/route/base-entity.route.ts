@@ -3,15 +3,12 @@ import SocketIO from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
 import container from "~/src/server/inversify.config";
-import RepositorySService from "~/src/server/s-service/repository.s-service";
+import TableSService from "~/src/server/s-service/table-s.service";
 import SessionSService from "~/src/server/s-service/session.s-service";
 import BaseEntity, {
   IFindManyEntityOptions,
 } from "~/src/common/entity/base.entity";
-import {
-  INVERSIFY_MODELS,
-  INVERSIFY_TYPES,
-} from "~/src/common/inversify.symbol";
+import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 
 export default abstract class BaseEntityRoute<
   TEntity extends BaseEntity
@@ -19,13 +16,14 @@ export default abstract class BaseEntityRoute<
   EntityClass: typeof BaseEntity;
 
   protected constructor(
-    protected repositoryService: RepositorySService,
+    protected tableService: TableSService,
     protected sessionService: SessionSService
   ) {
     super();
-    const name = _.replace(this.Class.name, /Route$/, "");
-    this.EntityClass = <any>(
-      container.getNamed(INVERSIFY_TYPES.Entity, _.get(INVERSIFY_MODELS, name))
+    const name = _.lowerFirst(_.replace(this.Class.name, /Route$/, ""));
+    this.EntityClass = container.getNamed<typeof BaseEntity>(
+      SYMBOL_TYPES.Entity,
+      _.get(SYMBOL_TABLES, name)
     );
   }
 
@@ -38,7 +36,7 @@ export default abstract class BaseEntityRoute<
   }
 
   getRepository(): TRepository {
-    return <TRepository>this.repositoryService.getRepository(this.EntityClass);
+    return <TRepository>this.tableService.getRepository(this.EntityClass);
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {

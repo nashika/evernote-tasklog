@@ -1,10 +1,6 @@
 import { Container } from "inversify";
-import { EntitySchema } from "typeorm";
 
-import {
-  INVERSIFY_MODELS,
-  INVERSIFY_TYPES,
-} from "~/src/common/inversify.symbol";
+import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 
 import BaseEntity from "~/src/common/entity/base.entity";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
@@ -18,22 +14,20 @@ import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 
-import attendanceSchema from "~/src/server/schema/attendance.schema";
-
 import MainSService from "~/src/server/s-service/main.s-service";
-import RepositorySService from "~/src/server/s-service/repository.s-service";
+import TableSService from "~/src/server/s-service/table-s.service";
 import SocketIoSService from "~/src/server/s-service/socket-io.s-service";
 import SessionSService from "~/src/server/s-service/session.s-service";
-
-import BaseRoute from "~/src/server/route/base.route";
-import AttendanceRoute from "~/src/server/route/attendance.route";
-
 /*
 import { ConstraintService } from "~/server/service/constraint-service";
 import { EvernoteClientService } from "~/server/service/evernote-client.service";
 import { SessionService } from "~/server/service/session.service";
 import { SyncService } from "~/server/service/sync.service";
+*/
 
+import BaseRoute from "~/src/server/route/base.route";
+import AttendanceRoute from "~/src/server/route/attendance.route";
+/*
 import { ConstraintResultRoute } from "~/server/routes/constraint-result.route";
 import { NoteRoute } from "~/server/routes/note.route";
 import { NotebookRoute } from "~/server/routes/notebook.route";
@@ -43,7 +37,11 @@ import { SessionRoute } from "~/server/routes/session.route";
 import { SyncRoute } from "~/server/routes/sync.route";
 import { TagRoute } from "~/server/routes/tag.route";
 import { TimeLogRoute } from "~/server/routes/time-log.route";
+*/
 
+import BaseTable from "~/src/server/table/base.table";
+import AttendanceTable from "~/src/server/table/attendance.table";
+/*
 import { ConstraintResultTable } from "~/server/table/constraint-result.table";
 import { LinkedNotebookTable } from "~/server/table/linked-notebook.table";
 import { NoteTable } from "~/server/table/note.table";
@@ -59,51 +57,45 @@ const container = new Container();
 
 // Entity系
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(AttendanceEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
+  .whenTargetNamed(SYMBOL_TABLES.attendance);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(ConstraintResultEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.ConstraintResult);
+  .whenTargetNamed(SYMBOL_TABLES.constraintResult);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(LinkedNotebookEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.LinkedNotebook);
+  .whenTargetNamed(SYMBOL_TABLES.linkedNotebook);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(NoteEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.Note);
+  .whenTargetNamed(SYMBOL_TABLES.note);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(NotebookEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.Notebook);
+  .whenTargetNamed(SYMBOL_TABLES.notebook);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(OptionEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.Option);
+  .whenTargetNamed(SYMBOL_TABLES.option);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(ProfitLogEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.ProfitLog);
+  .whenTargetNamed(SYMBOL_TABLES.profitLog);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(SavedSearchEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.SavedSearch);
+  .whenTargetNamed(SYMBOL_TABLES.savedSearch);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(TagEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.Tag);
+  .whenTargetNamed(SYMBOL_TABLES.tag);
 container
-  .bind<BaseEntity>(INVERSIFY_TYPES.Entity)
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(TimeLogEntity)
-  .whenTargetNamed(INVERSIFY_MODELS.TimeLog);
-
-// SEntity系
-container
-  .bind<EntitySchema>(INVERSIFY_TYPES.Schema)
-  .toConstantValue(attendanceSchema)
-  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
+  .whenTargetNamed(SYMBOL_TABLES.timeLog);
 
 // SService系
 container
@@ -111,7 +103,7 @@ container
   .toSelf()
   .inSingletonScope();
 container
-  .bind<RepositorySService>(RepositorySService)
+  .bind<TableSService>(TableSService)
   .toSelf()
   .inSingletonScope();
 container
@@ -123,18 +115,19 @@ container
   .toSelf()
   .inSingletonScope();
 
-// Route系
-container
-  .bind<BaseRoute>(INVERSIFY_TYPES.Route)
-  .to(AttendanceRoute)
-  .whenTargetNamed(INVERSIFY_MODELS.Attendance);
-
 /*
 container.bind<ConstraintService>(ConstraintService).toSelf().inSingletonScope();
 container.bind<EvernoteClientService>(EvernoteClientService).toSelf().inSingletonScope();
-container.bind<SocketIoServerService>(SocketIoServerService).toSelf().inSingletonScope();
 container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
+ */
 
+// Route系
+container
+  .bind<BaseRoute>(SYMBOL_TYPES.Route)
+  .to(AttendanceRoute)
+  .whenTargetNamed(SYMBOL_TABLES.attendance);
+
+/*
 container.bind<BaseRoute>(BaseRoute).to(ConstraintResultRoute).whenTargetNamed("constraintResult");
 container.bind<BaseRoute>(BaseRoute).to(NoteRoute).whenTargetNamed("note");
 container.bind<BaseRoute>(BaseRoute).to(NotebookRoute).whenTargetNamed("notebook");
@@ -144,7 +137,14 @@ container.bind<BaseRoute>(BaseRoute).to(SessionRoute).whenTargetNamed("session")
 container.bind<BaseRoute>(BaseRoute).to(SyncRoute).whenTargetNamed("sync");
 container.bind<BaseRoute>(BaseRoute).to(TagRoute).whenTargetNamed("tag");
 container.bind<BaseRoute>(BaseRoute).to(TimeLogRoute).whenTargetNamed("timeLog");
+*/
 
+// Table系
+container
+  .bind<BaseTable<BaseEntity>>(SYMBOL_TYPES.Table)
+  .to(AttendanceTable)
+  .whenTargetNamed(SYMBOL_TABLES.attendance);
+/*
 container.bind<BaseTable<ConstraintResultEntity>>(BaseTable).to(ConstraintResultTable).whenTargetNamed("constraintResult");
 container.bind<BaseTable<LinkedNotebookEntity>>(BaseTable).to(LinkedNotebookTable).whenTargetNamed("linkedNotebook");
 container.bind<BaseTable<NoteEntity>>(BaseTable).to(NoteTable).whenTargetNamed("note");

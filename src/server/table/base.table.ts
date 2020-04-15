@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { EntitySchema } from "typeorm";
+import { Connection, EntitySchema, getRepository, Repository } from "typeorm";
 
 import {
-  INVERSIFY_MODELS,
-  INVERSIFY_TYPES,
-} from "~/src/common/inversify.symbol";
+  SYMBOL_TABLES,
+  SYMBOL_TYPES,
+} from "~/src/common/symbols";
 import BaseEntity from "~/src/common/entity/base.entity";
 import container from "~/src/server/inversify.config";
 
@@ -14,9 +14,9 @@ export interface IBaseTableParams {
   jsonFields: string[],
 }
 
-export abstract class BaseTable<T extends BaseEntity> {
+export default abstract class BaseTable<T extends BaseEntity> {
 
-  protected abstract schema: EntitySchema<T>;
+  abstract schema: EntitySchema<T>;
 
   static params: IBaseTableParams;
 
@@ -26,7 +26,7 @@ export abstract class BaseTable<T extends BaseEntity> {
   protected archiveName: string;
   protected archiveFields: sequelize.DefineAttributes;
   protected archiveOptions: sequelize.DefineOptions<ISequelizeInstance<T>>;
-  protected sequelizeDatabase: sequelize.Sequelize;
+  protected repository: Repository<T>;
   protected sequelizeModel: ISequelizeModel<T> = null;
   protected archiveSequelizeModel: ISequelizeModel<T> = null;
 
@@ -34,16 +34,18 @@ export abstract class BaseTable<T extends BaseEntity> {
     return <typeof BaseTable>this.constructor;
   }
 
-  protected constructor() {
-    const modelName = _.replace(this.Class.name, /Table$/, "");
-    this.name = _.lowerFirst(modelName);
-    const modelSymbol = _.get(INVERSIFY_MODELS, modelName);
-    this.EntityClass = container.getNamed(INVERSIFY_TYPES.Entity, modelSymbol);
+  constructor() {
+    this.name = _.lowerFirst(_.replace(this.Class.name, /Table$/, ""));
+    this.EntityClass = container.getNamed(
+      SYMBOL_TYPES.Entity,
+      _.get(SYMBOL_TABLES, this.name)
+    );
   }
 
-  initialize(database: sequelize.Sequelize) {
-   this.sequelizeDatabase = database;
-    this.sequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.name, this.Class.params.fields, this.Class.params.options);
+  initialize(connection: Connection) {
+    this.repository = getRepository(this.schema);
+
+    this.sequelizeModel = this.repository.define<ISequelizeInstance<T>, T>(this.name, this.Class.params.fields, this.Class.params.options);
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
       this.archiveFields = {};
@@ -59,7 +61,7 @@ export abstract class BaseTable<T extends BaseEntity> {
       });
       this.archiveOptions = _.cloneDeep(this.Class.params.options);
       this.archiveOptions.indexes = _.union(addIndexes, this.archiveOptions.indexes);
-      this.archiveSequelizeModel = this.sequelizeDatabase.define<ISequelizeInstance<T>, T>(this.archiveName, this.archiveFields, this.archiveOptions);
+      this.archiveSequelizeModel = this.repository.define<ISequelizeInstance<T>, T>(this.archiveName, this.archiveFields, this.archiveOptions);
     }
   }
 

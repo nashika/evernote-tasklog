@@ -1,10 +1,10 @@
 import { EntitySchema } from "typeorm";
 
-import { BaseTable } from "~/src/server/table/base.table";
+import BaseTable from "~/src/server/table/base.table";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
 
 export default class AttendanceTable extends BaseTable<AttendanceEntity> {
-  protected schema = new EntitySchema<AttendanceEntity>({
+  schema = new EntitySchema<AttendanceEntity>({
     name: "attendance",
     columns: {
       id: {

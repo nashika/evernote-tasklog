@@ -13,18 +13,19 @@ import container from "~/src/server/inversify.config";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
 import BaseEntity from "~/src/common/entity/base.entity";
-import { INVERSIFY_TYPES } from "~/src/common/inversify.symbol";
+import { SYMBOL_TYPES } from "~/src/common/symbols";
+import BaseTable from "~/src/server/table/base.table";
 
 @injectable()
-export default class RepositorySService extends BaseSService {
+export default class TableSService extends BaseSService {
   caches: {
     tags: { [guid: string]: TagEntity };
     notebooks: { [guid: string]: NotebookEntity };
   };
 
   private connection: Connection | null = null;
-  private readonly repositories: {
-    [tableName: string]: Repository<BaseEntity>;
+  private readonly tables: {
+    [name: string]: BaseTable<BaseEntity>;
   };
 
   constructor() {
@@ -33,16 +34,16 @@ export default class RepositorySService extends BaseSService {
       tags: {},
       notebooks: {},
     };
-    this.repositories = {};
+    this.tables = {};
   }
 
   async initialize(): Promise<void> {
-    await this.getConnection();
-    for (const schema of container.getAll<EntitySchema<BaseEntity>>(
-      INVERSIFY_TYPES.Schema
+    const connection = await this.getConnection();
+    for (const table of container.getAll<BaseTable<BaseEntity>>(
+      SYMBOL_TYPES.Table
     )) {
-      const repository = getRepository(schema);
-      this.repositories[schema.options.name] = repository;
+      await table.initialize(connection);
+      this.tables[table.EntityClass.params.name] = table;
     }
     // await this.reloadCache();
   }
@@ -56,7 +57,8 @@ export default class RepositorySService extends BaseSService {
 
   private async initConnection(): Promise<Connection> {
     const filePath = path.join(__dirname, "../../../db/database.db");
-    const schemas = container.getAll<EntitySchema>(INVERSIFY_TYPES.Schema);
+    const tables = container.getAll<BaseTable<BaseEntity>>(SYMBOL_TYPES.Table);
+    const schemas = tables.map(table => table.schema);
     this.connection = await createConnection({
       type: "sqlite",
       database: filePath,
@@ -66,10 +68,8 @@ export default class RepositorySService extends BaseSService {
     return this.connection;
   }
 
-  getRepository<T extends BaseEntity>(
-    EntityClass: typeof BaseEntity
-  ): Repository<T> {
-    return <Repository<T>>this.repositories[EntityClass.params.name];
+  getTable<T extends BaseEntity>(EntityClass: typeof BaseEntity): BaseTable<T> {
+    return <BaseTable<T>>this.tables[EntityClass.params.name];
   }
 
   /*

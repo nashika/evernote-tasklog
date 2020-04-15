@@ -3,14 +3,14 @@ import { Server } from "http";
 import { injectable } from "inversify";
 
 import logger from "../logger";
-import RepositorySService from "./repository.s-service";
+import TableSService from "./table-s.service";
 import BaseSService from "./base.s-service";
 import SocketIoSService from "./socket-io.s-service";
 
 @injectable()
 export default class MainSService extends BaseSService {
   constructor(
-    protected repositoryService: RepositorySService,
+    protected tableService: TableSService,
     protected socketIoServerService: SocketIoSService /*
     protected syncService: SyncService,
     protected evernoteClientService: EvernoteClientService
@@ -21,12 +21,12 @@ export default class MainSService extends BaseSService {
 
   async initialize(server: Server): Promise<void> {
     await this.socketIoServerService.initialize(server);
-    await this.repositoryService.initialize();
+    await this.tableService.initialize();
     // await this.evernoteClientService.initialize();
     // const remoteUser = await this.evernoteClientService.getUser();
     // await this.tableService.optionTable.saveValueByKey("user", remoteUser);
     // await this.syncService.sync(true);
-    // const attendanceRepository = this.repositoryService.attendanceRepository;
+    // const attendanceRepository = this.tableService.attendanceRepository;
     // const attendances = await attendanceRepository.find();
     // console.log(attendances.length);
     /*
