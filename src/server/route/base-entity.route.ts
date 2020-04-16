@@ -9,6 +9,7 @@ import BaseEntity, {
   IFindManyEntityOptions,
 } from "~/src/common/entity/base.entity";
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
+import BaseTable from "~/src/server/table/base.table";
 
 export default abstract class BaseEntityRoute<
   TEntity extends BaseEntity
@@ -35,8 +36,8 @@ export default abstract class BaseEntityRoute<
     return this.EntityClass.params.name;
   }
 
-  getRepository(): TRepository {
-    return <TRepository>this.tableService.getRepository(this.EntityClass);
+  getTable(): BaseTable<TEntity> {
+    return this.tableService.getTable(this.EntityClass);
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
@@ -51,7 +52,7 @@ export default abstract class BaseEntityRoute<
     _socket: SocketIO.Socket,
     options: IFindManyEntityOptions<TEntity>
   ): Promise<TEntity[]> {
-    const entities = await this.getRepository().find(options);
+    const entities = await this.getTable().findAll(options);
     return entities;
   }
 
@@ -59,7 +60,7 @@ export default abstract class BaseEntityRoute<
     _socket: SocketIO.Socket,
     options: IFindManyEntityOptions<TEntity>
   ): Promise<number> {
-    const count = await this.getRepository().count(options);
+    const count = await this.getTable().count(options);
     return count;
   }
 
@@ -68,7 +69,7 @@ export default abstract class BaseEntityRoute<
     data: Object
   ): Promise<boolean> {
     const entity: TEntity = new (<any>this.EntityClass)(data);
-    await this.getRepository().save(<any>entity);
+    await this.getTable().save(<any>entity);
     return true;
   }
 
@@ -77,7 +78,7 @@ export default abstract class BaseEntityRoute<
     id: number | string
   ): Promise<boolean> {
     if (!id) throw new Error("削除対象のIDが指定されていません");
-    await this.getRepository().delete(<any>{
+    await this.getTable().delete(<any>{
       [this.EntityClass.params.primaryKey]: id,
     });
     return true;

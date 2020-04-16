@@ -1,10 +1,10 @@
 import _ from "lodash";
-import { FindConditions, FindManyOptions } from "typeorm";
+import { FindManyOptions, FindOneOptions } from "typeorm";
 
 export interface IBaseEntityParams<T extends BaseEntity> {
   name: string;
-  primaryKey: string;
-  displayField: string;
+  primaryKey: keyof T;
+  displayField: keyof T;
   archive: boolean;
   default: IFindManyEntityOptions<T>;
   append: IFindManyEntityOptions<T>;
@@ -14,7 +14,9 @@ export interface IFindManyEntityOptions<T> extends FindManyOptions<T> {
   archive?: boolean;
 }
 
-export type TDeleteEntityOptions<T> = FindConditions<T>;
+export interface IFindOneEntityOptions<T> extends FindOneOptions<T> {
+  archive?: boolean;
+}
 
 export default abstract class BaseEntity {
   static params: IBaseEntityParams<any>;
@@ -40,4 +42,5 @@ export default abstract class BaseEntity {
   archiveId?: number;
   createdAt?: Date;
   updatedAt?: Date;
+  [key: string]: any;
 }

@@ -1,12 +1,6 @@
 import path from "path";
 import { injectable } from "inversify";
-import {
-  Connection,
-  createConnection,
-  EntitySchema,
-  getRepository,
-  Repository,
-} from "typeorm";
+import { Connection, createConnection } from "typeorm";
 
 import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
@@ -38,11 +32,11 @@ export default class TableSService extends BaseSService {
   }
 
   async initialize(): Promise<void> {
-    const connection = await this.getConnection();
+    await this.getConnection();
     for (const table of container.getAll<BaseTable<BaseEntity>>(
       SYMBOL_TYPES.Table
     )) {
-      await table.initialize(connection);
+      await table.initialize();
       this.tables[table.EntityClass.params.name] = table;
     }
     // await this.reloadCache();
