@@ -1,4 +1,3 @@
-import { Max, Min } from "class-validator";
 import BaseEntity, { IBaseEntityParams } from "./base.entity";
 
 export default class AttendanceEntity extends BaseEntity {
@@ -14,32 +13,12 @@ export default class AttendanceEntity extends BaseEntity {
   };
 
   id?: number;
-
   personId?: number;
-
-  @Min(1)
-  @Max(9999)
   year?: number;
-
-  @Min(1)
-  @Max(31)
   month?: number;
-
-  @Min(1)
-  @Max(31)
   day?: number;
-
-  @Min(0)
-  @Max(24 * 60)
   arrivalTime?: number;
-
-  @Min(0)
-  @Max(24 * 60)
   departureTime?: number;
-
-  @Min(0)
-  @Max(24 * 60)
   restTime?: number;
-
   remarks?: string;
 }

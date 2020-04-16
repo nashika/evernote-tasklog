@@ -31,7 +31,6 @@
     "@nuxtjs/pwa": "^3.0.0-0",
     "bootstrap": "^4.1.3",
     "bootstrap-vue": "^2.0.0",
-    "class-validator": "^0.11.1",
     "cross-env": "^5.2.0",
     "evernote": "^2.0.5",
     "express": "^4.16.4",

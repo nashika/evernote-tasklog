@@ -1,6 +1,17 @@
 import { Configuration } from "@nuxt/types";
 import webpack from "webpack";
 
+const webpackConfig: webpack.Configuration = {
+  /*
+   ** You can extend webpack config here
+   */
+  // extend(config: any, ctx: any) {}
+  plugins: [
+    // Ignore all locale files of moment.js
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+  ],
+};
+
 const conf: Configuration = {
   mode: "spa",
   dir: {
@@ -69,15 +80,6 @@ const conf: Configuration = {
   /*
    ** Build configuration
    */
-  build: {
-    /*
-     ** You can extend webpack config here
-     */
-    // extend(config: any, ctx: any) {}
-    plugins: [
-      // Ignore all locale files of moment.js
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    ],
-  },
+  build: <any>webpackConfig,
 };
 export default conf;
