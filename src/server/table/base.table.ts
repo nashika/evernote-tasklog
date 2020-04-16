@@ -7,6 +7,7 @@ import {
   Repository,
 } from "typeorm";
 import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
+import { injectable } from "inversify";
 
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseEntity, {
@@ -17,8 +18,12 @@ import container from "~/src/server/inversify.config";
 import { UNSET_ERROR } from "~/src/common/errors";
 import logger from "~/src/server/logger";
 
+@injectable()
 export default abstract class BaseTable<T extends BaseEntity> {
-  protected readonly schemaOptions: EntitySchemaOptions<T> | null = null;
+  protected static readonly schemaOptions: EntitySchemaOptions<
+    BaseEntity
+  > | null = null;
+
   protected readonly jsonFields: string[] = [];
 
   readonly EntityClass: typeof BaseEntity;
@@ -28,11 +33,16 @@ export default abstract class BaseTable<T extends BaseEntity> {
   readonly schema: EntitySchema<T>;
   readonly archiveSchema: EntitySchema<T> | null = null;
 
-  protected readonly repository: Repository<T>;
-  protected readonly archiveRepository: Repository<T> | null = null;
+  private _repository: Repository<T> | null = null;
+  private archiveRepository: Repository<T> | null = null;
 
   get Class(): typeof BaseTable {
     return <typeof BaseTable>this.constructor;
+  }
+
+  get repository(): Repository<T> {
+    if (!this._repository) throw UNSET_ERROR;
+    return this._repository;
   }
 
   constructor() {
@@ -44,13 +54,12 @@ export default abstract class BaseTable<T extends BaseEntity> {
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
     }
-    if (!this.schemaOptions)
+    if (!this.Class.schemaOptions)
       throw new Error("schemaOptionsが指定されていません");
-    this.schema = new EntitySchema(this.schemaOptions);
-    this.repository = getRepository(this.schema);
+    this.schema = new EntitySchema(this.Class.schemaOptions);
     if (this.EntityClass.params.archive) {
       const archiveSchemaOptions: EntitySchemaOptions<T> = _.clone(
-        this.schemaOptions
+        this.Class.schemaOptions
       );
       const addIndexes: EntitySchemaIndexOptions[] = [];
       archiveSchemaOptions.columns = {};
@@ -59,7 +68,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
         primary: true,
         generated: true,
       };
-      _.each(this.schemaOptions.columns, (column, name) => {
+      _.each(this.Class.schemaOptions.columns, (column, name) => {
         const addColumn = _.clone(column);
         if (!addColumn) return;
         if (addColumn.primary || addColumn.unique)
@@ -70,14 +79,17 @@ export default abstract class BaseTable<T extends BaseEntity> {
       });
       archiveSchemaOptions.indices = _.union(
         addIndexes,
-        this.schemaOptions.indices
+        this.Class.schemaOptions.indices
       );
       this.archiveSchema = new EntitySchema(archiveSchemaOptions);
-      this.archiveRepository = getRepository(this.archiveSchema);
     }
   }
 
-  initialize() {}
+  initialize() {
+    this._repository = getRepository(this.schema);
+    if (this.archiveSchema)
+      this.archiveRepository = getRepository(this.archiveSchema);
+  }
 
   async findOne(options: IFindOneEntityOptions<T> = {}): Promise<T | null> {
     options = this.parseFindOptions(options);

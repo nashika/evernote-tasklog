@@ -10,6 +10,7 @@
     "build-analyze": "nuxt-ts build --analyze",
     "start": "nuxt-ts start",
     "server": "ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/index.ts",
+    "server-production": "cross-env NODE_ENV=production ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/index.ts",
     "generate": "nuxt-ts generate",
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
     "test": "jest",

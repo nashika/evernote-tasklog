@@ -1,9 +1,14 @@
 import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
+import { injectable } from "inversify";
+
 import BaseTable from "~/src/server/table/base.table";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
 
+@injectable()
 export default class AttendanceTable extends BaseTable<AttendanceEntity> {
-  protected readonly schemaOptions: EntitySchemaOptions<AttendanceEntity> = {
+  protected static readonly schemaOptions: EntitySchemaOptions<
+    AttendanceEntity
+  > = {
     name: "attendance",
     columns: {
       id: {
