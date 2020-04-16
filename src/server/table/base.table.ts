@@ -1,37 +1,43 @@
 import _ from "lodash";
-import { Connection, EntitySchema, getRepository, Repository } from "typeorm";
-
 import {
-  SYMBOL_TABLES,
-  SYMBOL_TYPES,
-} from "~/src/common/symbols";
+  EntitySchema,
+  EntitySchemaIndexOptions,
+  getRepository,
+  Repository,
+} from "typeorm";
+import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
+
+import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseEntity from "~/src/common/entity/base.entity";
 import container from "~/src/server/inversify.config";
 
 export interface IBaseTableParams {
-  fields: sequelize.DefineAttributes,
-  options: sequelize.DefineOptions<ISequelizeInstance<BaseEntity>>,
-  jsonFields: string[],
+  jsonFields: string[];
 }
 
 export default abstract class BaseTable<T extends BaseEntity> {
+  protected abstract readonly schemaOptions: EntitySchemaOptions<T>;
 
-  abstract schema: EntitySchema<T>;
+  readonly EntityClass: typeof BaseEntity;
+  readonly name: string;
+  readonly archiveName?: string;
 
-  static params: IBaseTableParams;
+  private _schema: EntitySchema<T> | null = null;
+  private _archiveSchema: EntitySchema<T> | null = null;
 
-  EntityClass: typeof BaseEntity;
-
-  protected name: string;
-  protected archiveName: string;
-  protected archiveFields: sequelize.DefineAttributes;
-  protected archiveOptions: sequelize.DefineOptions<ISequelizeInstance<T>>;
-  protected repository: Repository<T>;
-  protected sequelizeModel: ISequelizeModel<T> = null;
-  protected archiveSequelizeModel: ISequelizeModel<T> = null;
+  protected repository: Repository<T> | null = null;
+  protected archiveRepository: Repository<T> | null = null;
 
   get Class(): typeof BaseTable {
     return <typeof BaseTable>this.constructor;
+  }
+
+  get schema(): EntitySchema<T> | null {
+    return this._schema;
+  }
+
+  get archiveSchema(): EntitySchema<T> | null {
+    return this._archiveSchema;
   }
 
   constructor() {
@@ -40,31 +46,42 @@ export default abstract class BaseTable<T extends BaseEntity> {
       SYMBOL_TYPES.Entity,
       _.get(SYMBOL_TABLES, this.name)
     );
-  }
-
-  initialize(connection: Connection) {
-    this.repository = getRepository(this.schema);
-
-    this.sequelizeModel = this.repository.define<ISequelizeInstance<T>, T>(this.name, this.Class.params.fields, this.Class.params.options);
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
-      this.archiveFields = {};
-      this.archiveFields["archiveId"] = {type: sequelize.INTEGER, primaryKey: true, autoIncrement: true};
-      let addIndexes: sequelize.DefineIndexesOptions[] = [];
-      _.each(this.Class.params.fields, (field: sequelize.DefineAttributeColumnOptions, name) => {
-        field = _.cloneDeep(field);
-        if (field.primaryKey || field.unique)
-          addIndexes.push({unique: false, fields: [name]});
-        field.primaryKey = false;
-        field.unique = false;
-        this.archiveFields[name] = field;
-      });
-      this.archiveOptions = _.cloneDeep(this.Class.params.options);
-      this.archiveOptions.indexes = _.union(addIndexes, this.archiveOptions.indexes);
-      this.archiveSequelizeModel = this.repository.define<ISequelizeInstance<T>, T>(this.archiveName, this.archiveFields, this.archiveOptions);
     }
   }
 
+  initialize() {
+    this._schema = new EntitySchema(this.schemaOptions);
+    this.repository = getRepository(this._schema);
+    if (this.EntityClass.params.archive) {
+      const archiveSchemaOptions: EntitySchemaOptions<T> = _.clone(
+        this.schemaOptions
+      );
+      const addIndexes: EntitySchemaIndexOptions[] = [];
+      archiveSchemaOptions.columns = {};
+      archiveSchemaOptions.columns.archiveId = {
+        type: "int",
+        primary: true,
+        generated: true,
+      };
+      _.each(this.schemaOptions.columns, (column, name) => {
+        const addColumn = _.clone(column);
+        if (!addColumn) return;
+        if (addColumn.primary || addColumn.unique)
+          addIndexes.push({ unique: false, columns: [name] });
+        addColumn.primary = false;
+        addColumn.unique = false;
+        _.set(archiveSchemaOptions.columns, name, addColumn);
+      });
+      archiveSchemaOptions.indices = _.union(
+        addIndexes,
+        this.schemaOptions.indices
+      );
+      this._archiveSchema = new EntitySchema(archiveSchemaOptions);
+      this.archiveRepository = getRepository(this._archiveSchema);
+    }
+  }
 
   async findOne(options: IFindEntityOptions<T> = {}): Promise<T> {
     options = this.parseFindOptions(options);
