@@ -15,7 +15,7 @@ import TagEntity from "~/src/common/entity/tag.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 
 import MainSService from "~/src/server/s-service/main.s-service";
-import TableSService from "~/src/server/s-service/table-s.service";
+import TableSService from "~/src/server/s-service/table.s-service";
 import SocketIoSService from "~/src/server/s-service/socket-io.s-service";
 import SessionSService from "~/src/server/s-service/session.s-service";
 /*

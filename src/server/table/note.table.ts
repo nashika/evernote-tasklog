@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import _ from "lodash";
 import { FindConditions } from "typeorm/find-options/FindConditions";
 
-import TableSService from "~/src/server/s-service/table-s.service";
+import TableSService from "~/src/server/s-service/table.s-service";
 import NoteEntity from "~/src/common/entity/note.entity";
 import BaseEvernoteTable from "~/src/server/table/base-evernote.table";
 import { IFindManyEntityOptions } from "~/src/common/entity/base.entity";

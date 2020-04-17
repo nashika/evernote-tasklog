@@ -13,7 +13,7 @@ export default class SessionSService extends BaseSService {
   async initialize() {}
 
   load(socket: socketIo.Socket, key: string): ISession {
-    // @ts-ignore
+    // @ts-ignore TODO: 動作確認
     return socket.handshake.session[key];
   }
 

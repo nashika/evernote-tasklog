@@ -3,7 +3,7 @@ import SocketIO from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
 import container from "~/src/server/inversify.config";
-import TableSService from "~/src/server/s-service/table-s.service";
+import TableSService from "~/src/server/s-service/table.s-service";
 import SessionSService from "~/src/server/s-service/session.s-service";
 import BaseEntity, {
   IFindManyEntityOptions,

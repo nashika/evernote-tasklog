@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { Socket } from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
+import SyncSService from "~/src/server/s-service/sync.s-service";
 
 @injectable()
 export default class SyncRoute extends BaseRoute {

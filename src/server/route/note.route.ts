@@ -5,8 +5,9 @@ import { FindConditions } from "typeorm";
 import BaseEntityRoute from "~/src/server/route/base-entity.route";
 import NoteEntity from "~/src/common/entity/note.entity";
 import SessionSService from "~/src/server/s-service/session.s-service";
-import TableSService from "~/src/server/s-service/table-s.service";
+import TableSService from "~/src/server/s-service/table.s-service";
 import NoteTable from "~/src/server/table/note.table";
+import SyncSService from "~/src/server/s-service/sync.s-service";
 
 @injectable()
 export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
