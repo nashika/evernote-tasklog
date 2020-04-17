@@ -1,15 +1,15 @@
 import { injectable } from "inversify";
 
-import BaseEntityRoute from "./base-entity.route";
+import TimeLogEntity from "~/src/common/entity/time-log.entity";
+import BaseEntityRoute from "~/src/server/route/base-entity.route";
+import TimeLogTable from "~/src/server/table/time-log.table";
 import SessionSService from "~/src/server/s-service/session.s-service";
 import TableSService from "~/src/server/s-service/table-s.service";
-import AttendanceEntity from "~/src/common/entity/attendance.entity";
-import AttendanceTable from "~/src/server/table/attendance.table";
 
 @injectable()
-export default class AttendanceRoute extends BaseEntityRoute<
-  AttendanceEntity,
-  AttendanceTable
+export default class TimeLogRoute extends BaseEntityRoute<
+  TimeLogEntity,
+  TimeLogTable
 > {
   constructor(
     protected tableSService: TableSService,

@@ -4,4 +4,4 @@ import BaseEvernoteTable from "~/src/server/table/base-evernote.table";
 import TagEntity from "~/src/common/entity/tag.entity";
 
 @injectable()
-export class TagTable extends BaseEvernoteTable<TagEntity> {}
+export default class TagTable extends BaseEvernoteTable<TagEntity> {}

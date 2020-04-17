@@ -5,7 +5,7 @@ import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import NoteEntity from "~/src/common/entity/note.entity";
 
 @injectable()
-export class ProfitLogTable extends BaseTable<ProfitLogEntity> {
+export default class ProfitLogTable extends BaseTable<ProfitLogEntity> {
   async parse(note: NoteEntity, lines: string[]): Promise<void> {
     const profitLogs: ProfitLogEntity[] = [];
     for (const line of lines) {

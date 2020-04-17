@@ -7,7 +7,7 @@ import configLoader from "~/src/common/util/config-loader";
 import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
-export class TimeLogTable extends BaseTable<TimeLogEntity> {
+export default class TimeLogTable extends BaseTable<TimeLogEntity> {
   async parse(note: NoteEntity, lines: string[]): Promise<void> {
     const timeLogs: TimeLogEntity[] = [];
     for (const line of lines) {
