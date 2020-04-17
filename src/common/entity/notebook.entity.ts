@@ -12,6 +12,66 @@ export default class NotebookEntity extends BaseEvernoteEntity {
       take: 500,
     },
     append: {},
+    columns: {
+      guid: {
+        type: "string",
+        primary: true,
+      },
+      name: {
+        type: "string",
+        nullable: false,
+      },
+      updateSequenceNum: {
+        type: "integer",
+        nullable: false,
+      },
+      defaultNotebook: {
+        type: "boolean",
+        nullable: false,
+      },
+      serviceCreated: {
+        type: "integer",
+      },
+      serviceUpdated: {
+        type: "integer",
+      },
+      publishing: {
+        type: "text",
+      },
+      published: {
+        type: "boolean",
+      },
+      stack: {
+        type: "string",
+      },
+      sharedNotebookIds: {
+        type: "text",
+      },
+      sharedNotebooks: {
+        type: "text",
+      },
+      businessNotebooks: {
+        type: "text",
+      },
+      contact: {
+        type: "text",
+      },
+      restrictions: {
+        type: "text",
+      },
+      recipientSettings: {
+        type: "text",
+      },
+    },
+    jsonFields: [
+      "publishing",
+      "sharedNotebookIds",
+      "sharedNotebooks",
+      "businessNotebooks",
+      "contact",
+      "restrictions",
+      "recipientSettings",
+    ],
   };
 
   name?: string;

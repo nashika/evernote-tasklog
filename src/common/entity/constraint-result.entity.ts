@@ -10,6 +10,21 @@ export default class ConstraintResultEntity extends BaseEntity {
       take: 500,
     },
     append: {},
+    columns: {
+      id: {
+        type: "integer",
+        primary: true,
+        generated: true,
+      },
+      noteGuid: {
+        type: "string",
+        nullable: false,
+      },
+      constraintId: {
+        type: "integer",
+        nullable: false,
+      },
+    },
   };
 
   id?: number;

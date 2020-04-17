@@ -10,6 +10,16 @@ export default class OptionEntity extends BaseEntity {
       take: 500,
     },
     append: {},
+    columns: {
+      key: {
+        type: "string",
+        primary: true,
+      },
+      value: {
+        type: "text",
+      },
+    },
+    jsonFields: ["value"],
   };
 
   key?: string;

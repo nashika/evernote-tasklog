@@ -15,6 +15,7 @@ export interface IEntityParams<T extends BaseEntity> {
     columns: string[];
     unique?: boolean;
   }[];
+  jsonFields?: string[];
 }
 
 export interface IEntityColumnParams<T extends BaseEntity> {
@@ -24,7 +25,14 @@ export interface IEntityColumnParams<T extends BaseEntity> {
   nullable?: boolean;
 }
 
-export type IEntityColumnType = "integer" | "number" | "string" | "text";
+export type IEntityColumnType =
+  | "integer"
+  | "real"
+  | "boolean"
+  | "string"
+  | "text"
+  | "date"
+  | "datetime";
 
 export interface IFindManyEntityOptions<T> extends FindManyOptions<T> {
   archive?: boolean;

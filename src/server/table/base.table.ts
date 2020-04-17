@@ -1,8 +1,8 @@
 import _ from "lodash";
 import {
-  EntitySchema, EntitySchemaColumnOptions,
+  EntitySchema,
+  EntitySchemaColumnOptions,
   EntitySchemaIndexOptions,
-  FindConditions,
   getRepository,
   Repository,
 } from "typeorm";
@@ -20,8 +20,6 @@ import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
 export default abstract class BaseTable<T extends BaseEntity> {
-  protected readonly jsonFields: string[] = [];
-
   readonly EntityClass: typeof BaseEntity;
   readonly name: string;
   readonly archiveName?: string;
@@ -242,7 +240,9 @@ export default abstract class BaseTable<T extends BaseEntity> {
     return savedEntities;
   }
 
-  async delete(criteria: number | string | FindConditions<T>): Promise<void> {
+  async delete(
+    criteria: Parameters<Repository<T>["delete"]>[0]
+  ): Promise<void> {
     if (!criteria) return;
     this.message("remove", ["local"], this.EntityClass.params.name, true, {
       criteria,
@@ -272,14 +272,20 @@ export default abstract class BaseTable<T extends BaseEntity> {
 
   protected prepareSaveEntity(entity: T): Partial<T> {
     const data: Partial<T> = _.clone(entity);
-    for (const jsonField of this.jsonFields) {
+    for (const jsonField of _.defaultTo(
+      this.EntityClass.params.jsonFields,
+      []
+    )) {
       _.set(data, jsonField, JSON.stringify(_.get(entity, jsonField)));
     }
     return data;
   }
 
   protected prepareLoadEntity(data: Partial<T>): T {
-    for (const jsonField of this.jsonFields) {
+    for (const jsonField of _.defaultTo(
+      this.EntityClass.params.jsonFields,
+      []
+    )) {
       const json = _.get(data, jsonField);
       _.set(
         data,

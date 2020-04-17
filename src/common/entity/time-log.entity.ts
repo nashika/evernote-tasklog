@@ -11,6 +11,37 @@ export default class TimeLogEntity extends BaseEntity {
       take: 2000,
     },
     append: {},
+    columns: {
+      id: {
+        type: "integer",
+        primary: true,
+        generated: true,
+      },
+      noteGuid: {
+        type: "string",
+        nullable: false,
+      },
+      comment: {
+        type: "text",
+        nullable: true,
+      },
+      allDay: {
+        type: "boolean",
+        nullable: false,
+      },
+      date: {
+        type: "integer",
+        nullable: false,
+      },
+      personId: {
+        type: "integer",
+        nullable: false,
+      },
+      spentTime: {
+        type: "integer",
+        nullable: true,
+      },
+    },
   };
 
   id?: number;

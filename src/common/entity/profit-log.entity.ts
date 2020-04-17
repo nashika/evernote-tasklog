@@ -11,6 +11,25 @@ export default class ProfitLogEntity extends BaseEntity {
       take: 2000,
     },
     append: {},
+    columns: {
+      id: {
+        type: "integer",
+        primary: true,
+        generated: true,
+      },
+      noteGuid: {
+        type: "string",
+        nullable: false,
+      },
+      comment: {
+        type: "text",
+        nullable: true,
+      },
+      profit: {
+        type: "integer",
+        nullable: false,
+      },
+    },
   };
 
   id?: number;

@@ -12,6 +12,44 @@ export default class LinkedNotebookEntity extends BaseEvernoteEntity {
       take: 500,
     },
     append: {},
+    columns: {
+      guid: {
+        type: "string",
+        primary: true,
+        generated: true,
+      },
+      shareName: {
+        type: "string",
+      },
+      username: {
+        type: "string",
+      },
+      shareId: {
+        type: "string",
+      },
+      sharedNotebookGlobalId: {
+        type: "string",
+      },
+      uri: {
+        type: "string",
+      },
+      updateSequenceNum: {
+        type: "integer",
+        nullable: false,
+      },
+      noteStoreUrl: {
+        type: "string",
+      },
+      webApiUrlPrefix: {
+        type: "string",
+      },
+      stack: {
+        type: "string",
+      },
+      businessId: {
+        type: "integer",
+      },
+    },
   };
 
   shareName?: string;

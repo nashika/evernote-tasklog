@@ -12,7 +12,7 @@ import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseTable from "~/src/server/table/base.table";
 
 export default abstract class BaseEntityRoute<
-  TEntity extends BaseEntity
+  T extends BaseEntity
 > extends BaseRoute {
   EntityClass: typeof BaseEntity;
 
@@ -36,8 +36,8 @@ export default abstract class BaseEntityRoute<
     return this.EntityClass.params.name;
   }
 
-  getTable(): BaseTable<TEntity> {
-    return this.tableService.getTable(this.EntityClass);
+  getTable(): BaseTable<T> {
+    return this.tableService.getTable<T, BaseTable<T>>(this.EntityClass);
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
@@ -50,15 +50,15 @@ export default abstract class BaseEntityRoute<
 
   protected async onFind(
     _socket: SocketIO.Socket,
-    options: IFindManyEntityOptions<TEntity>
-  ): Promise<TEntity[]> {
+    options: IFindManyEntityOptions<T>
+  ): Promise<T[]> {
     const entities = await this.getTable().findAll(options);
     return entities;
   }
 
   protected async onCount(
     _socket: SocketIO.Socket,
-    options: IFindManyEntityOptions<TEntity>
+    options: IFindManyEntityOptions<T>
   ): Promise<number> {
     const count = await this.getTable().count(options);
     return count;
@@ -68,7 +68,7 @@ export default abstract class BaseEntityRoute<
     _socket: SocketIO.Socket,
     data: Object
   ): Promise<boolean> {
-    const entity: TEntity = new (<any>this.EntityClass)(data);
+    const entity: T = new (<any>this.EntityClass)(data);
     await this.getTable().save(<any>entity);
     return true;
   }

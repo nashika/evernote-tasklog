@@ -1,24 +1,24 @@
 declare namespace AppConfig {
   interface IAppConfigs {
-    [env: string]: IAppConfig;
+    [env: string]: Partial<IAppConfig>;
   }
 
   interface IAppConfig {
-    baseUrl?: string;
-    port?: number;
-    logLevel?: string;
-    sandbox?: boolean;
-    token?: string;
-    persons?: IPersonConfig[];
-    warningNoteCount?: number;
-    workingTimeStart?: number;
-    workingTimeEnd?: number;
-    defaultFilterParams?: {
+    baseUrl: string;
+    port: number;
+    logLevel: string;
+    sandbox: boolean;
+    token: string;
+    persons: IPersonConfig[];
+    warningNoteCount: number;
+    workingTimeStart: number;
+    workingTimeEnd: number;
+    defaultFilterParams: {
       timeline: IDefaultFilterParamsConfig;
       notes: IDefaultFilterParamsConfig;
       activity: IDefaultFilterParamsConfig;
     };
-    constraints?: IConstraintConfig[];
+    constraints: IConstraintConfig[];
   }
 
   interface IPersonConfig {
