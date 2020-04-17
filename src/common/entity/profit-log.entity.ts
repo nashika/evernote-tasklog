@@ -1,7 +1,7 @@
-import BaseEntity, { IBaseEntityParams } from "./base.entity";
+import BaseEntity, { IEntityParams } from "./base.entity";
 
 export default class ProfitLogEntity extends BaseEntity {
-  static params: IBaseEntityParams<ProfitLogEntity> = {
+  static readonly params: IEntityParams<ProfitLogEntity> = {
     name: "profitLog",
     primaryKey: "id",
     displayField: "comment",

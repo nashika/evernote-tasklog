@@ -1,14 +1,30 @@
 import _ from "lodash";
 import { FindManyOptions, FindOneOptions } from "typeorm";
 
-export interface IBaseEntityParams<T extends BaseEntity> {
+export interface IEntityParams<T extends BaseEntity> {
   name: string;
   primaryKey: keyof T;
   displayField: keyof T;
   archive: boolean;
   default: IFindManyEntityOptions<T>;
   append: IFindManyEntityOptions<T>;
+  columns?: {
+    [P in keyof T]?: IEntityColumnParams<T>;
+  };
+  indicies?: {
+    columns: string[];
+    unique?: boolean;
+  }[];
 }
+
+export interface IEntityColumnParams<T extends BaseEntity> {
+  type: IEntityColumnType;
+  primary?: boolean;
+  generated?: true;
+  nullable?: boolean;
+}
+
+export type IEntityColumnType = "integer" | "number" | "string" | "text";
 
 export interface IFindManyEntityOptions<T> extends FindManyOptions<T> {
   archive?: boolean;
@@ -19,7 +35,7 @@ export interface IFindOneEntityOptions<T> extends FindOneOptions<T> {
 }
 
 export default abstract class BaseEntity {
-  static params: IBaseEntityParams<any>;
+  static readonly params: IEntityParams<BaseEntity>;
 
   constructor(data: any = {}) {
     for (const key of _.keys(data)) {

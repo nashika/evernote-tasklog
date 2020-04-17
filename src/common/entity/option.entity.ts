@@ -1,7 +1,7 @@
-import BaseEntity, { IBaseEntityParams } from "./base.entity";
+import BaseEntity, { IEntityParams } from "./base.entity";
 
 export default class OptionEntity extends BaseEntity {
-  static params: IBaseEntityParams<OptionEntity> = {
+  static readonly params: IEntityParams<OptionEntity> = {
     name: "option",
     primaryKey: "key",
     displayField: "key",

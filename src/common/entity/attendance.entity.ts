@@ -1,7 +1,7 @@
-import BaseEntity, { IBaseEntityParams } from "./base.entity";
+import BaseEntity, { IEntityParams } from "./base.entity";
 
 export default class AttendanceEntity extends BaseEntity {
-  static params: IBaseEntityParams<AttendanceEntity> = {
+  static readonly params: IEntityParams<AttendanceEntity> = {
     name: "attendance",
     primaryKey: "id",
     displayField: "id",
@@ -10,6 +10,51 @@ export default class AttendanceEntity extends BaseEntity {
       take: 500,
     },
     append: {},
+    columns: {
+      id: {
+        type: "integer",
+        primary: true,
+        generated: true,
+      },
+      personId: {
+        type: "integer",
+        nullable: false,
+      },
+      year: {
+        type: "integer",
+        nullable: false,
+      },
+      month: {
+        type: "integer",
+        nullable: false,
+      },
+      day: {
+        type: "integer",
+        nullable: false,
+      },
+      arrivalTime: {
+        type: "integer",
+        nullable: true,
+      },
+      departureTime: {
+        type: "integer",
+        nullable: true,
+      },
+      restTime: {
+        type: "integer",
+        nullable: true,
+      },
+      remarks: {
+        type: "text",
+        nullable: true,
+      },
+    },
+    indicies: [
+      {
+        columns: ["personId", "year", "month", "day"],
+        unique: true,
+      },
+    ],
   };
 
   id?: number;

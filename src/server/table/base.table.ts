@@ -1,6 +1,6 @@
 import _ from "lodash";
 import {
-  EntitySchema,
+  EntitySchema, EntitySchemaColumnOptions,
   EntitySchemaIndexOptions,
   FindConditions,
   getRepository,
@@ -15,15 +15,11 @@ import BaseEntity, {
   IFindOneEntityOptions,
 } from "~/src/common/entity/base.entity";
 import container from "~/src/server/inversify.config";
-import { UNSET_ERROR } from "~/src/common/errors";
 import logger from "~/src/server/logger";
+import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
 export default abstract class BaseTable<T extends BaseEntity> {
-  protected static readonly schemaOptions: EntitySchemaOptions<
-    BaseEntity
-  > | null = null;
-
   protected readonly jsonFields: string[] = [];
 
   readonly EntityClass: typeof BaseEntity;
@@ -41,7 +37,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
   }
 
   get repository(): Repository<T> {
-    if (!this._repository) throw UNSET_ERROR;
+    assertIsDefined(this._repository);
     return this._repository;
   }
 
@@ -54,12 +50,11 @@ export default abstract class BaseTable<T extends BaseEntity> {
     if (this.EntityClass.params.archive) {
       this.archiveName = "archive" + _.upperFirst(this.name);
     }
-    if (!this.Class.schemaOptions)
-      throw new Error("schemaOptionsが指定されていません");
-    this.schema = new EntitySchema(this.Class.schemaOptions);
+    const schemaOptions = this.makeSchemaOptions();
+    this.schema = new EntitySchema(schemaOptions);
     if (this.EntityClass.params.archive) {
       const archiveSchemaOptions: EntitySchemaOptions<T> = _.clone(
-        this.Class.schemaOptions
+        schemaOptions
       );
       const addIndexes: EntitySchemaIndexOptions[] = [];
       archiveSchemaOptions.columns = {};
@@ -68,7 +63,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
         primary: true,
         generated: true,
       };
-      _.each(this.Class.schemaOptions.columns, (column, name) => {
+      _.each(schemaOptions.columns, (column, name) => {
         const addColumn = _.clone(column);
         if (!addColumn) return;
         if (addColumn.primary || addColumn.unique)
@@ -77,12 +72,41 @@ export default abstract class BaseTable<T extends BaseEntity> {
         addColumn.unique = false;
         _.set(archiveSchemaOptions.columns, name, addColumn);
       });
-      archiveSchemaOptions.indices = _.union(
-        addIndexes,
-        this.Class.schemaOptions.indices
-      );
+      archiveSchemaOptions.indices = _.union(addIndexes, schemaOptions.indices);
       this.archiveSchema = new EntitySchema(archiveSchemaOptions);
     }
+  }
+
+  private makeSchemaOptions(): EntitySchemaOptions<T> {
+    return {
+      name: this.name,
+      columns: {
+        ..._.mapValues(
+          this.EntityClass.params.columns,
+          (column, name): EntitySchemaColumnOptions => {
+            assertIsDefined(column);
+            return {
+              name,
+              type: column.type,
+              primary: column.primary,
+              generated: column.generated,
+            };
+          }
+        ),
+        createdAt: {
+          type: "datetime",
+          createDate: true,
+        },
+        updatedAt: {
+          type: "datetime",
+          updateDate: true,
+        },
+      },
+      indices: this.EntityClass.params.indicies?.map(index => ({
+        columns: index.columns,
+        unique: index.unique,
+      })),
+    };
   }
 
   initialize() {
@@ -144,7 +168,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
     const repository = options.archive
       ? this.archiveRepository
       : this.repository;
-    if (!repository) throw UNSET_ERROR;
+    assertIsDefined(repository);
     return repository;
   }
 

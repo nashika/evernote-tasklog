@@ -1,8 +1,8 @@
 import BaseEvernoteEntity from "./base-evernote.entity";
-import { IBaseEntityParams } from "./base.entity";
+import { IEntityParams } from "./base.entity";
 
 export default class NotebookEntity extends BaseEvernoteEntity {
-  static params: IBaseEntityParams<NotebookEntity> = {
+  static readonly params: IEntityParams<NotebookEntity> = {
     name: "notebook",
     primaryKey: "guid",
     displayField: "name",
