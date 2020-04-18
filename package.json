@@ -1,9 +1,13 @@
 {
   "name": "evernote-tasklog",
-  "version": "1.0.0",
-  "description": "My swell Nuxt.js project",
-  "author": "nashika",
+  "version": "0.3.0",
+  "description": "Evernote Tasklog is now construction.",
+  "author": "nashila <info@nashika.net>",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nashika/evernote-tasklog.git"
+  },
   "scripts": {
     "dev": "nuxt-ts",
     "build": "nuxt-ts build",
