@@ -1,9 +1,14 @@
 import { injectable } from "inversify";
 import _ from "lodash";
+import { FindConditions } from "typeorm";
 
 import BaseSService from "~/src/server/s-service/base.s-service";
 import TableSService from "~/src/server/s-service/table.s-service";
 import logger from "~/src/server/logger";
+import NoteEntity from "~/src/common/entity/note.entity";
+import { assertIsDefined } from "~/src/common/util/assert";
+import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
+import configLoader from "~/src/common/util/config-loader";
 
 @injectable()
 export default class ConstraintSService extends BaseSService {
@@ -13,55 +18,80 @@ export default class ConstraintSService extends BaseSService {
 
   async checkAll(): Promise<void> {
     logger.info(`Delete all constraintResult datas.`);
-    await this.tableSService.constraintResultTable.remove({where: {}});
-    let noteCount = await this.tableSService.noteTable.count();
+    await this.tableSService.constraintResultTable.delete({});
+    const noteCount = await this.tableSService.noteTable.count();
     let notes: NoteEntity[];
     let i = 0;
     do {
       logger.info(`Checking constraint ${i * 100} / ${noteCount}.`);
-      notes = await this.tableSService.noteTable.findAll({limit: 100, offset: 100 * i});
-      for (let note of notes)
-        await this.check(note);
+      notes = await this.tableSService.noteTable.findAll({
+        take: 100,
+        skip: 100 * i,
+      });
+      for (const note of notes) await this.check(note);
       i++;
-    } while (notes.length > 0)
+    } while (notes.length > 0);
   }
 
   async checkOne(note: NoteEntity): Promise<void> {
-    await this.tableSService.constraintResultTable.remove({where: {noteGuid: note.guid}});
-    this.check(note);
+    assertIsDefined(note.guid);
+    // TODO: FindConditionsへの変換でエラーが出てしまう
+    const cond: FindConditions<ConstraintResultEntity> = <any>{
+      noteGuid: note.guid,
+    };
+    await this.tableSService.constraintResultTable.delete(cond);
+    await this.check(note);
   }
 
   async removeOne(guid: string): Promise<void> {
-    await this.tableSService.constraintResultTable.remove({where: {noteGuid: guid}});
+    // TODO: FindConditionsへの変換でエラーが出てしまう
+    const cond: FindConditions<ConstraintResultEntity> = <any>{
+      noteGuid: guid,
+    };
+    await this.tableSService.constraintResultTable.delete(cond);
   }
 
   private async check(note: NoteEntity): Promise<void> {
     if (note.deleted) return;
-    for (let constraint of configLoader.app.constraints) {
+    for (const constraint of configLoader.app.constraints) {
       if (!this.eval(note, constraint.query)) continue;
-      let constraintResult = new ConstraintResultEntity();
+      const constraintResult = new ConstraintResultEntity();
       constraintResult.noteGuid = note.guid;
       constraintResult.constraintId = constraint.id;
       await this.tableSService.constraintResultTable.save(constraintResult);
     }
   }
 
-  private eval(note: NoteEntity, query: config.IConstraintConfigQuery): boolean {
+  private eval(
+    note: NoteEntity,
+    query: AppConfig.IConstraintConfigQuery
+  ): boolean {
     if (!this.evalString(note.title, query.title)) return false;
     if (!this.evalNumber(note.created, query.created)) return false;
     if (!this.evalNumber(note.updated, query.updated)) return false;
-    if (!this.evalNumber(note.attributes.reminderOrder, query.reminderOrder)) return false;
-    if (!this.evalNumber(note.attributes.reminderDoneTime, query.reminderDoneTime)) return false;
-    if (!this.evalNumber(note.attributes.reminderTime, query.reminderTime)) return false;
+    if (!this.evalNumber(note.attributes?.reminderOrder, query.reminderOrder))
+      return false;
+    if (
+      !this.evalNumber(
+        note.attributes?.reminderDoneTime,
+        query.reminderDoneTime
+      )
+    )
+      return false;
+    if (!this.evalNumber(note.attributes?.reminderTime, query.reminderTime))
+      return false;
     if (query.notebook || query.stack) {
-      let notebook = this.tableSService.caches.notebooks[note.notebookGuid];
-      if (!this.evalString(notebook ? notebook.name : null, query.notebook)) return false;
-      if (!this.evalString(notebook ? notebook.stack : null, query.stack)) return false;
+      const notebook = note.notebookGuid
+        ? this.tableSService.caches.notebooks[note.notebookGuid]
+        : null;
+      if (!this.evalString(notebook?.name, query.notebook)) return false;
+      if (!this.evalString(notebook?.stack, query.stack)) return false;
     }
     if (query.tag) {
-      let tagNames: string[] = [];
-      for (let tagGuid of _.toArray(note.tagGuids)) {
-        let tag = this.tableSService.caches.tags[tagGuid];
+      const tagNames: string[] = [];
+      for (const tagGuid of _.toArray(note.tagGuids)) {
+        const tag = this.tableSService.caches.tags[tagGuid];
+        if (!tag.name) continue;
         tagNames.push(tag.name);
       }
       if (!this.evalArray(tagNames, query.tag)) return false;
@@ -69,79 +99,138 @@ export default class ConstraintSService extends BaseSService {
     return true;
   }
 
-  private evalNumber(target: number, query: config.TConstraintConfigNumberOperator): boolean {
+  private evalNumber(
+    target: number | undefined,
+    query: AppConfig.TConstraintConfigNumberOperator
+  ): boolean {
     if (_.isUndefined(target)) return true;
     if (_.isNull(query)) return _.isNull(target);
-    if (_.isNumber(query)) return target == query;
+    if (_.isNumber(query)) return target === query;
     if (_.isObject(query)) {
-      if (!_.isUndefined(query.$eq) && !(target == query.$eq)) return false;
-      if (!_.isUndefined(query.$ne) && !(target != query.$ne)) return false;
+      if (!_.isUndefined(query.$eq) && !(target === query.$eq)) return false;
+      if (!_.isUndefined(query.$ne) && !(target !== query.$ne)) return false;
       if (!_.isUndefined(query.$gt) && !(target > query.$gt)) return false;
       if (!_.isUndefined(query.$gte) && !(target >= query.$gte)) return false;
       if (!_.isUndefined(query.$lt) && !(target < query.$lt)) return false;
       if (!_.isUndefined(query.$lte) && !(target <= query.$lte)) return false;
-      if (!_.isUndefined(query.$between) && !(target >= query.$between[0] && target <= query.$between[1])) return false;
-      if (!_.isUndefined(query.$notBetween) && (target >= query.$notBetween[0] && target <= query.$notBetween[1])) return false;
-      if (!_.isUndefined(query.$in) && !(_.includes(query.$in, target))) return false;
-      if (!_.isUndefined(query.$notIn) && (_.includes(query.$in, target))) return false;
-      if (!_.isUndefined(query.$not) && this.evalNumber(target, query.$not)) return false;
+      if (
+        !_.isUndefined(query.$between) &&
+        !(target >= query.$between[0] && target <= query.$between[1])
+      )
+        return false;
+      if (
+        !_.isUndefined(query.$notBetween) &&
+        target >= query.$notBetween[0] &&
+        target <= query.$notBetween[1]
+      )
+        return false;
+      if (!_.isUndefined(query.$in) && !_.includes(query.$in, target))
+        return false;
+      if (!_.isUndefined(query.$notIn) && _.includes(query.$in, target))
+        return false;
+      if (!_.isUndefined(query.$not) && this.evalNumber(target, query.$not))
+        return false;
     }
     return true;
   }
 
-  private evalString(target: string, query: config.TConstraintConfigStringOperator): boolean {
+  private evalString(
+    target: string | undefined,
+    query: AppConfig.TConstraintConfigStringOperator
+  ): boolean {
     if (_.isUndefined(target)) return true;
     if (_.isNull(query)) return _.isNull(target);
     if (_.isArray(query)) return _.includes(query, target);
     if (_.isRegExp(query)) return query.test(target);
-    if (_.isString(query)) return target == query;
+    if (_.isString(query)) return target === query;
     if (_.isObject(query)) {
-      if (!_.isUndefined(query.$eq) && !(target == query.$eq)) return false;
-      if (!_.isUndefined(query.$ne) && !(target != query.$ne)) return false;
-      if (!_.isUndefined(query.$in) && !(_.includes(query.$in, target))) return false;
-      if (!_.isUndefined(query.$notIn) && (_.includes(query.$notIn, target))) return false;
-      if (!_.isUndefined(query.$not) && this.evalString(target, query.$not)) return false;
+      if (!_.isUndefined(query.$eq) && !(target === query.$eq)) return false;
+      if (!_.isUndefined(query.$ne) && !(target !== query.$ne)) return false;
+      if (!_.isUndefined(query.$in) && !_.includes(query.$in, target))
+        return false;
+      if (!_.isUndefined(query.$notIn) && _.includes(query.$notIn, target))
+        return false;
+      if (!_.isUndefined(query.$not) && this.evalString(target, query.$not))
+        return false;
     }
     return true;
   }
 
-  private evalArray(target: string[], query: config.TConstraintConfigArrayOperator): boolean {
+  private evalArray(
+    target: string[],
+    query: AppConfig.TConstraintConfigArrayOperator
+  ): boolean {
     if (_.isUndefined(target)) return true;
     if (_.isNull(query)) return _.isNull(target);
     if (_.isString(query)) return _.includes(target, query);
     if (_.isArray(query)) return _.every(query, q => _.includes(target, q));
     if (_.isObject(query)) {
-      if (!_.isUndefined(query.$in) && !(_.some(this.evalTree(query.$in),q => _.includes(target, q)))) return false;
-      if (!_.isUndefined(query.$notIn) && (_.some(this.evalTree(query.$notIn), q => _.includes(target, q)))) return false;
-      if (!_.isUndefined(query.$all) && !(_.every(this.evalTree(query.$all), q => _.includes(target, q)))) return false;
-      if (!_.isUndefined(query.$notAll) && (_.every(this.evalTree(query.$notAll), q => _.includes(target, q)))) return false;
+      if (
+        !_.isUndefined(query.$in) &&
+        !_.some(this.evalTree(query.$in), q => _.includes(target, q))
+      )
+        return false;
+      if (
+        !_.isUndefined(query.$notIn) &&
+        _.some(this.evalTree(query.$notIn), q => _.includes(target, q))
+      )
+        return false;
+      if (
+        !_.isUndefined(query.$all) &&
+        !_.every(this.evalTree(query.$all), q => _.includes(target, q))
+      )
+        return false;
+      if (
+        !_.isUndefined(query.$notAll) &&
+        _.every(this.evalTree(query.$notAll), q => _.includes(target, q))
+      )
+        return false;
     }
     return true;
   }
 
-  private evalTree(target: config.TConstraintConfigTreeOperator): string[] {
+  private evalTree(target: AppConfig.TConstraintConfigTreeOperator): string[] {
     if (_.isArray(target)) return target;
     if (_.isObject(target)) {
       if (target.$children) return this.evalTreeRoots(target.$children, false);
-      if (target.$descendants) return this.evalTreeRoots(target.$descendants, true);
+      if (target.$descendants)
+        return this.evalTreeRoots(target.$descendants, true);
     }
     return [];
   }
 
-  private evalTreeRoots(names: string | string[], recursive: boolean): string[] {
+  private evalTreeRoots(
+    names: string | string[],
+    recursive: boolean
+  ): string[] {
     if (_.isString(names)) return this.evalTreeRecursive(names, recursive);
-    if (_.isArray(names)) return _.flatMap(names, name => this.evalTreeRecursive(name, recursive));
+    if (_.isArray(names))
+      return _.flatMap(names, name => this.evalTreeRecursive(name, recursive));
     return [];
   }
 
-  private evalTreeRecursive(name: string, recursive: boolean): string[] {
-    let currentTag = _.find(this.tableSService.caches.tags, tag => tag.name == name);
-    let childTags = _.filter(this.tableSService.caches.tags, tag => tag.parentGuid == currentTag.guid);
-    let childTagNames = _.map(childTags, tag => tag.name);
+  private evalTreeRecursive(
+    name: string | undefined,
+    recursive: boolean
+  ): string[] {
+    if (!name) return [];
+    const currentTag = _.find(
+      this.tableSService.caches.tags,
+      tag => tag.name === name
+    );
+    if (!currentTag) return [];
+    const childTags = _.filter(
+      this.tableSService.caches.tags,
+      tag => tag.parentGuid === currentTag.guid
+    );
+    const childTagNames = childTags
+      .map(tag => tag.name ?? "")
+      .filter(name => !!name);
     if (recursive)
-      return _.concat(childTagNames, _.flatMap(childTagNames, name => this.evalTreeRecursive(name, true)));
-    else
-      return childTagNames;
+      return [
+        ...childTagNames,
+        ...childTagNames.flatMap(name => this.evalTreeRecursive(name, true)),
+      ];
+    else return childTagNames;
   }
-
 }

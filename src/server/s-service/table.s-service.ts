@@ -1,4 +1,5 @@
 import path from "path";
+import _ from "lodash";
 import { injectable } from "inversify";
 import { Connection, createConnection } from "typeorm";
 
@@ -126,7 +127,6 @@ export default class TableSService extends BaseSService {
     return <TTable>this.tables[EntityClass.params.name];
   }
 
-  /* TODO: コメント解除
   async reloadCache(type: "tag" | "notebook" | "all" = "all"): Promise<void> {
     if (type === "tag" || type === "all")
       this.caches.tags = _.keyBy(await this.tagTable.findAll(), "guid");
@@ -136,7 +136,6 @@ export default class TableSService extends BaseSService {
         "guid"
       );
   }
-   */
 
   async sync(): Promise<void> {
     const connection = await this.getConnection();

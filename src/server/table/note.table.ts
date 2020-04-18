@@ -7,6 +7,7 @@ import NoteEntity from "~/src/common/entity/note.entity";
 import BaseEvernoteTable from "~/src/server/table/base-evernote.table";
 import { IFindManyEntityOptions } from "~/src/common/entity/base.entity";
 import logger from "~/src/server/logger";
+import EvernoteClientSService from "~/src/server/s-service/evernote-client.s-service";
 
 export interface IFindManyNoteEntityOptions
   extends IFindManyEntityOptions<NoteEntity> {

@@ -52,6 +52,7 @@ declare namespace AppConfig {
   }
 
   type TConstraintConfigStringOperator =
+    | undefined
     | string
     | string[]
     | RegExp
@@ -65,6 +66,7 @@ declare namespace AppConfig {
 
   type TConstraintConfigNumberOperator =
     | null
+    | undefined
     | number
     | {
         $gt?: number;
@@ -81,6 +83,7 @@ declare namespace AppConfig {
       };
 
   type TConstraintConfigArrayOperator =
+    | undefined
     | string
     | string[]
     | {
@@ -91,6 +94,7 @@ declare namespace AppConfig {
       };
 
   type TConstraintConfigTreeOperator =
+    | undefined
     | string[]
     | {
         $children?: string | string[];
