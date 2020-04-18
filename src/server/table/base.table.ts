@@ -85,6 +85,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
               type: this.makeSchemaColumnType(column.type),
               primary: column.primary,
               generated: column.generated,
+              nullable: column.nullable,
             };
           }
         ),

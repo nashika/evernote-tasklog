@@ -16,6 +16,7 @@ export default class ProfitLogEntity extends BaseEntity {
         type: "integer",
         primary: true,
         generated: true,
+        nullable: false,
       },
       noteGuid: {
         type: "string",

@@ -16,22 +16,27 @@ export default class LinkedNotebookEntity extends BaseEvernoteEntity {
       guid: {
         type: "string",
         primary: true,
-        generated: true,
+        nullable: false,
       },
       shareName: {
         type: "string",
+        nullable: true,
       },
       username: {
         type: "string",
+        nullable: true,
       },
       shareId: {
         type: "string",
+        nullable: true,
       },
       sharedNotebookGlobalId: {
         type: "string",
+        nullable: true,
       },
       uri: {
         type: "string",
+        nullable: true,
       },
       updateSequenceNum: {
         type: "integer",
@@ -39,15 +44,19 @@ export default class LinkedNotebookEntity extends BaseEvernoteEntity {
       },
       noteStoreUrl: {
         type: "string",
+        nullable: true,
       },
       webApiUrlPrefix: {
         type: "string",
+        nullable: true,
       },
       stack: {
         type: "string",
+        nullable: true,
       },
       businessId: {
         type: "integer",
+        nullable: true,
       },
     },
   };

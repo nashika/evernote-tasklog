@@ -90,7 +90,7 @@ export default class TableSService extends BaseSService {
     return this.getTable(TimeLogEntity);
   }
 
-  async initialize(): Promise<void> {
+  async initialize(reloadCache: boolean = true): Promise<void> {
     await this.getConnection();
     for (const table of container.getAll<BaseTable<BaseEntity>>(
       SYMBOL_TYPES.Table
@@ -98,7 +98,7 @@ export default class TableSService extends BaseSService {
       await table.initialize();
       this.tables[table.EntityClass.params.name] = table;
     }
-    await this.reloadCache();
+    if (reloadCache) await this.reloadCache();
   }
 
   private async getConnection(): Promise<Connection> {

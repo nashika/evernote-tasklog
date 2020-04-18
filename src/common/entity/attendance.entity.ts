@@ -15,6 +15,7 @@ export default class AttendanceEntity extends BaseEntity {
         type: "integer",
         primary: true,
         generated: true,
+        nullable: false,
       },
       personId: {
         type: "integer",

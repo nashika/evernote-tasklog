@@ -16,6 +16,7 @@ export default class SavedSearchEntity extends BaseEvernoteEntity {
       guid: {
         type: "string",
         primary: true,
+        nullable: false,
       },
       name: {
         type: "string",
@@ -23,9 +24,11 @@ export default class SavedSearchEntity extends BaseEvernoteEntity {
       },
       query: {
         type: "string",
+        nullable: true,
       },
       format: {
         type: "integer",
+        nullable: true,
       },
       updateSequenceNum: {
         type: "integer",
@@ -33,6 +36,7 @@ export default class SavedSearchEntity extends BaseEvernoteEntity {
       },
       scope: {
         type: "text",
+        nullable: true,
       },
     },
     jsonFields: ["scope"],

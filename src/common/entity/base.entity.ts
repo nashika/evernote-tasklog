@@ -22,7 +22,7 @@ export interface IEntityColumnParams<T extends BaseEntity> {
   type: IEntityColumnType;
   primary?: boolean;
   generated?: true;
-  nullable?: boolean;
+  nullable: boolean;
 }
 
 export type IEntityColumnType =

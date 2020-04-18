@@ -14,9 +14,11 @@ export default class OptionEntity extends BaseEntity {
       key: {
         type: "string",
         primary: true,
+        nullable: false,
       },
       value: {
         type: "text",
+        nullable: true,
       },
     },
     jsonFields: ["value"],

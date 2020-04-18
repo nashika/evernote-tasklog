@@ -16,6 +16,7 @@ export default class NotebookEntity extends BaseEvernoteEntity {
       guid: {
         type: "string",
         primary: true,
+        nullable: false,
       },
       name: {
         type: "string",
@@ -31,36 +32,47 @@ export default class NotebookEntity extends BaseEvernoteEntity {
       },
       serviceCreated: {
         type: "integer",
+        nullable: true,
       },
       serviceUpdated: {
         type: "integer",
+        nullable: true,
       },
       publishing: {
         type: "text",
+        nullable: true,
       },
       published: {
         type: "boolean",
+        nullable: true,
       },
       stack: {
         type: "string",
+        nullable: true,
       },
       sharedNotebookIds: {
         type: "text",
+        nullable: true,
       },
       sharedNotebooks: {
         type: "text",
+        nullable: true,
       },
       businessNotebooks: {
         type: "text",
+        nullable: true,
       },
       contact: {
         type: "text",
+        nullable: true,
       },
       restrictions: {
         type: "text",
+        nullable: true,
       },
       recipientSettings: {
         type: "text",
+        nullable: true,
       },
     },
     jsonFields: [

@@ -16,6 +16,7 @@ export default class TagEntity extends BaseEvernoteEntity {
       guid: {
         type: "string",
         primary: true,
+        nullable: false,
       },
       name: {
         type: "string",

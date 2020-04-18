@@ -18,6 +18,7 @@ export default class NoteEntity extends BaseEvernoteEntity {
       guid: {
         type: "integer",
         primary: true,
+        nullable: false,
       },
       title: {
         type: "string",
@@ -25,6 +26,7 @@ export default class NoteEntity extends BaseEvernoteEntity {
       },
       content: {
         type: "text",
+        nullable: true,
       },
       contentHash: {
         type: "text",
@@ -36,12 +38,15 @@ export default class NoteEntity extends BaseEvernoteEntity {
       },
       created: {
         type: "integer",
+        nullable: true,
       },
       updated: {
         type: "integer",
+        nullable: true,
       },
       deleted: {
         type: "integer",
+        nullable: true,
       },
       active: {
         type: "boolean",
@@ -53,87 +58,115 @@ export default class NoteEntity extends BaseEvernoteEntity {
       },
       notebookGuid: {
         type: "string",
+        nullable: true,
       },
       tagGuids: {
         type: "text",
+        nullable: true,
       },
       resources: {
         type: "text",
+        nullable: true,
       },
       attributes__subjectDate: {
         type: "real",
+        nullable: true,
       },
       attributes__latitude: {
         type: "real",
+        nullable: true,
       },
       attributes__longitude: {
         type: "real",
+        nullable: true,
       },
       attributes__altitude: {
         type: "real",
+        nullable: true,
       },
       attributes__author: {
         type: "string",
+        nullable: true,
       },
       attributes__source: {
         type: "string",
+        nullable: true,
       },
       attributes__sourceURL: {
         type: "string",
+        nullable: true,
       },
       attributes__sourceApplication: {
         type: "string",
+        nullable: true,
       },
       attributes__shareDate: {
         type: "integer",
+        nullable: true,
       },
       attributes__reminderOrder: {
         type: "integer",
+        nullable: true,
       },
       attributes__reminderDoneTime: {
         type: "integer",
+        nullable: true,
       },
       attributes__reminderTime: {
         type: "integer",
+        nullable: true,
       },
       attributes__placeName: {
         type: "string",
+        nullable: true,
       },
       attributes__contentClass: {
         type: "string",
+        nullable: true,
       },
       attributes__applicationData: {
         type: "text",
+        nullable: true,
       },
       attributes__classifications: {
         type: "text",
+        nullable: true,
       },
       attributes__creatorId: {
         type: "integer",
+        nullable: true,
       },
       attributes__lastEditorId: {
         type: "integer",
+        nullable: true,
       },
       attributes__sharedWithBusiness: {
         type: "boolean",
+        nullable: true,
       },
       attributes__conflictSourceNoteGuid: {
         type: "string",
+        nullable: true,
       },
       attributes__noteTitleQuality: {
         type: "integer",
+        nullable: true,
       },
       tagNames: {
         type: "text",
+        nullable: true,
       },
       sharedNotes: {
         type: "text",
+        nullable: true,
       },
       restrictions: {
         type: "text",
+        nullable: true,
       },
       limits: {
         type: "text",
+        nullable: true,
       },
     },
     jsonFields: [
