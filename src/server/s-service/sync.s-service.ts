@@ -66,7 +66,7 @@ export default class SyncSService extends BaseSService {
       let localSyncState: Evernote.NoteStore.SyncState = await this.tableSService.optionTable.findValueByKey(
         "syncState"
       );
-      if (localSyncState) localSyncState = { updateCount: 0 };
+      if (!localSyncState) localSyncState = { updateCount: 0 };
       const remoteSyncState = await this.evernoteClientSService.getSyncState();
       const updateEventHash: { [event: string]: boolean } = {};
       // Sync process
@@ -120,25 +120,25 @@ export default class SyncSService extends BaseSService {
     await this.tableSService.noteTable.saveAll(
       _.map(lastSyncChunk.notes, note => new NoteEntity(note))
     );
-    await this.tableSService.noteTable.removeByGuid(
+    await this.tableSService.noteTable.delete(
       lastSyncChunk.expungedNotes ?? []
     );
     await this.tableSService.notebookTable.saveAll(
       _.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook))
     );
-    await this.tableSService.notebookTable.removeByGuid(
+    await this.tableSService.notebookTable.delete(
       lastSyncChunk.expungedNotebooks ?? []
     );
     await this.tableSService.tagTable.saveAll(
       _.map(lastSyncChunk.tags, tag => new TagEntity(tag))
     );
-    await this.tableSService.tagTable.removeByGuid(
+    await this.tableSService.tagTable.delete(
       lastSyncChunk.expungedTags ?? []
     );
     await this.tableSService.savedSearchTable.saveAll(
       _.map(lastSyncChunk.searches, search => new SavedSearchEntity(search))
     );
-    await this.tableSService.savedSearchTable.removeByGuid(
+    await this.tableSService.savedSearchTable.delete(
       lastSyncChunk.expungedSearches ?? []
     );
     await this.tableSService.linkedNotebookTable.saveAll(
@@ -147,7 +147,7 @@ export default class SyncSService extends BaseSService {
         linkedNotebook => new LinkedNotebookEntity(linkedNotebook)
       )
     );
-    await this.tableSService.linkedNotebookTable.removeByGuid(
+    await this.tableSService.linkedNotebookTable.delete(
       lastSyncChunk.expungedLinkedNotebooks ?? []
     );
     if (

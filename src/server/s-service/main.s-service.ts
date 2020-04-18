@@ -23,25 +23,10 @@ export default class MainSService extends BaseSService {
   async initialize(server: Server): Promise<void> {
     await this.socketIoSService.initialize(server);
     await this.tableSService.initialize();
-    // await this.evernoteClientService.initialize();
-    // const remoteUser = await this.evernoteClientService.getUser();
-    // await this.tableService.optionTable.saveValueByKey("user", remoteUser);
-    // await this.syncService.sync(true);
-    // const attendanceRepository = this.tableService.attendanceRepository;
-    // const attendances = await attendanceRepository.find();
-    // console.log(attendances.length);
-    /*
-    const attendance = new AttendanceSEntity();
-    attendance.personId = 4;
-    attendance.year = 2020;
-    attendance.month = 12;
-    attendance.day = 31;
-    attendance.arrivalTime = 600;
-    attendance.departureTime = 1200;
-    attendance.restTime = 60;
-    attendance.remarks = "";
-    let createdAttendance = await attendanceRepository.save(attendance);
-     */
+    await this.evernoteClientSService.initialize();
+    const remoteUser = await this.evernoteClientSService.getUser();
+    await this.tableSService.optionTable.saveValueByKey("user", remoteUser);
+    await this.syncSService.sync(true);
     logger.info(`Init user finished. data was initialized.`);
   }
 }

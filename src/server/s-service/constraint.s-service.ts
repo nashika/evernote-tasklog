@@ -18,7 +18,7 @@ export default class ConstraintSService extends BaseSService {
 
   async checkAll(): Promise<void> {
     logger.info(`Delete all constraintResult datas.`);
-    await this.tableSService.constraintResultTable.delete({});
+    await this.tableSService.constraintResultTable.clear();
     const noteCount = await this.tableSService.noteTable.count();
     let notes: NoteEntity[];
     let i = 0;

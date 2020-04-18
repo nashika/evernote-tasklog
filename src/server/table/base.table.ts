@@ -11,6 +11,7 @@ import { injectable } from "inversify";
 
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseEntity, {
+  IEntityColumnType,
   IFindManyEntityOptions,
   IFindOneEntityOptions,
 } from "~/src/common/entity/base.entity";
@@ -21,8 +22,6 @@ import { assertIsDefined } from "~/src/common/util/assert";
 @injectable()
 export default abstract class BaseTable<T extends BaseEntity> {
   readonly EntityClass: typeof BaseEntity;
-  readonly name: string;
-  readonly archiveName?: string;
 
   readonly schema: EntitySchema<T>;
   readonly archiveSchema: EntitySchema<T> | null = null;
@@ -40,20 +39,18 @@ export default abstract class BaseTable<T extends BaseEntity> {
   }
 
   constructor() {
-    this.name = _.lowerFirst(_.replace(this.Class.name, /Table$/, ""));
+    const name = _.lowerFirst(_.replace(this.Class.name, /Table$/, ""));
     this.EntityClass = container.getNamed(
       SYMBOL_TYPES.Entity,
-      _.get(SYMBOL_TABLES, this.name)
+      _.get(SYMBOL_TABLES, name)
     );
-    if (this.EntityClass.params.archive) {
-      this.archiveName = "archive" + _.upperFirst(this.name);
-    }
     const schemaOptions = this.makeSchemaOptions();
     this.schema = new EntitySchema(schemaOptions);
     if (this.EntityClass.params.archive) {
       const archiveSchemaOptions: EntitySchemaOptions<T> = _.clone(
         schemaOptions
       );
+      archiveSchemaOptions.name = "archive" + _.upperFirst(name);
       const addIndexes: EntitySchemaIndexOptions[] = [];
       archiveSchemaOptions.columns = {};
       archiveSchemaOptions.columns.archiveId = {
@@ -77,7 +74,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
 
   private makeSchemaOptions(): EntitySchemaOptions<T> {
     return {
-      name: this.name,
+      name: this.EntityClass.params.name,
       columns: {
         ..._.mapValues(
           this.EntityClass.params.columns,
@@ -85,7 +82,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
             assertIsDefined(column);
             return {
               name,
-              type: column.type,
+              type: this.makeSchemaColumnType(column.type),
               primary: column.primary,
               generated: column.generated,
             };
@@ -105,6 +102,13 @@ export default abstract class BaseTable<T extends BaseEntity> {
         unique: index.unique,
       })),
     };
+  }
+
+  private makeSchemaColumnType(
+    type: IEntityColumnType
+  ): EntitySchemaColumnOptions["type"] {
+    if (type === "string") return "text";
+    return type;
   }
 
   initialize() {
@@ -243,15 +247,21 @@ export default abstract class BaseTable<T extends BaseEntity> {
   async delete(
     criteria: Parameters<Repository<T>["delete"]>[0]
   ): Promise<void> {
-    if (!criteria) return;
+    if (!criteria || (Array.isArray(criteria) && criteria.length === 0)) return;
     this.message("remove", ["local"], this.EntityClass.params.name, true, {
       criteria,
     });
-    const numRemoved = await this.repository.delete(criteria);
+    const deleteResult = await this.repository.delete(criteria);
     this.message("remove", ["local"], this.EntityClass.params.name, false, {
       criteria,
-      numRemoved,
+      deleteResult,
     });
+  }
+
+  async clear(): Promise<void> {
+    this.message("clear", ["local"], this.EntityClass.params.name, true);
+    await this.repository.clear();
+    this.message("clear", ["local"], this.EntityClass.params.name, false);
   }
 
   protected message(

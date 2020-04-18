@@ -1,7 +1,7 @@
 import path from "path";
 import _ from "lodash";
 import { injectable } from "inversify";
-import { Connection, createConnection } from "typeorm";
+import { Connection, createConnection, EntitySchema } from "typeorm";
 
 import BaseSService from "./base.s-service";
 import container from "~/src/server/inversify.config";
@@ -98,7 +98,7 @@ export default class TableSService extends BaseSService {
       await table.initialize();
       this.tables[table.EntityClass.params.name] = table;
     }
-    // await this.reloadCache(); TODO: コメント解除
+    await this.reloadCache();
   }
 
   private async getConnection(): Promise<Connection> {
@@ -112,11 +112,18 @@ export default class TableSService extends BaseSService {
     const filePath = path.join(__dirname, "../../../db/database.db");
     const tables = container.getAll<BaseTable<BaseEntity>>(SYMBOL_TYPES.Table);
     const schemas = tables.map(table => table.schema);
+    const archiveSchemas = tables
+      .map(table => table.archiveSchema)
+      .filter(
+        (
+          schema: EntitySchema<BaseEntity> | null
+        ): schema is EntitySchema<BaseEntity> => !!schema
+      );
     this.connection = await createConnection({
       type: "sqlite",
       database: filePath,
-      entities: schemas,
-      logging: true,
+      entities: [...schemas, ...archiveSchemas],
+      logging: false,
     });
     return this.connection;
   }
