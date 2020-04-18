@@ -1,8 +1,4 @@
 {
-  "name": "evernote-tasklog",
-  "version": "0.2.2",
-  "private": true,
-  "description": "Evernote Tasklog is now construction.",
   "main": "./bin/evernote-tasklog",
   "scripts": {
     "build": "npm-run-all build:*",
@@ -13,31 +9,13 @@
     "build:webpack-dll": "npm run webpack-dll",
     "build:webpack": "npm run webpack",
     "ncu": "ncu",
-    "script:check-constraint": "node ./src/server/script/check-constraint.js",
-    "script:sequelize-sync": "node ./src/server/script/sequelize-sync.js",
     "sequelize": "sequelize",
-    "start": "node ./bin/evernote-tasklog",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc",
     "webpack": "webpack --config webpack.config.js",
     "webpack-watch": "webpack --watch",
     "webpack-production": "cross-env NODE_ENV=production webpack",
     "webpack-dev-server": "webpack-dev-server",
     "webpack-dll": "cross-env WEBPACK_DLL=true webpack"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nashika/evernote-tasklog.git"
-  },
-  "keywords": [
-    "evernote"
-  ],
-  "author": "nashila <info@nashika.net>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/nashika/evernote-tasklog/issues"
-  },
-  "homepage": "https://github.com/nashika/evernote-tasklog#readme",
   "dependencies": {
     "body-parser": "~1.17.2",
     "connect-session-sequelize": "~4.1.0",
