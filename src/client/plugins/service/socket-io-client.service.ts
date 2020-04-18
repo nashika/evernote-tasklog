@@ -1,8 +1,9 @@
 import SocketIOClient from "socket.io-client";
-import logger from "./logger";
+
+import logger from "../logger";
 import configLoader from "~/src/common/util/config-loader";
 
-export class SocketIoClientService {
+export default class SocketIoClientService {
   private socket: SocketIOClient.Socket;
 
   constructor() {
@@ -37,9 +38,3 @@ export class SocketIoClientService {
     return data;
   }
 }
-
-let socketIoService: SocketIoClientService;
-export default (_app: any, inject: any) => {
-  socketIoService = socketIoService || new SocketIoClientService();
-  inject("socketIoService", socketIoService);
-};

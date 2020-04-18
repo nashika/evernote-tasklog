@@ -49,7 +49,7 @@ const conf: Configuration = {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ["~/src/client/plugins/vendor", "~/src/client/plugins/socket-io"],
+  plugins: ["~/src/client/plugins/vendor", "~/src/client/plugins/service"],
   /*
    ** Nuxt.js dev-modules
    */
