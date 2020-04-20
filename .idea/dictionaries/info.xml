@@ -2,7 +2,9 @@
   <dictionary name="info">
     <words>
       <w>datas</w>
+      <w>datastore</w>
       <w>evernote</w>
+      <w>guids</w>
       <w>inversify</w>
       <w>sequelize</w>
     </words>
