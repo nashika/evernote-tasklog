@@ -86,17 +86,17 @@ export default class NotebookEntity extends BaseEvernoteEntity {
     ],
   };
 
-  name?: string;
-  defaultNotebook?: boolean;
-  serviceCreated?: number;
-  serviceUpdated?: number;
-  publishing?: Object;
-  published?: boolean;
-  stack?: string;
-  sharedNotebookIds?: number[];
-  sharedNotebooks?: Object[];
-  businessNotebooks?: Object;
-  contact?: Object;
-  restrictions?: Object;
-  recipientSettings?: Object;
+  name!: string;
+  defaultNotebook!: boolean;
+  serviceCreated!: number | null;
+  serviceUpdated!: number | null;
+  publishing!: Object | null;
+  published!: boolean | null;
+  stack!: string | null;
+  sharedNotebookIds!: number[] | null;
+  sharedNotebooks!: Object[] | null;
+  businessNotebooks!: Object | null;
+  contact!: Object | null;
+  restrictions!: Object | null;
+  recipientSettings!: Object | null;
 }

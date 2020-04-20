@@ -33,8 +33,8 @@ export default class ProfitLogEntity extends BaseEntity {
     },
   };
 
-  id?: number;
-  noteGuid?: string;
-  comment?: string;
-  profit?: number;
+  id!: number;
+  noteGuid!: string;
+  comment!: string | null;
+  profit!: number;
 }

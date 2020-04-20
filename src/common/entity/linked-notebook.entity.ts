@@ -61,13 +61,13 @@ export default class LinkedNotebookEntity extends BaseEvernoteEntity {
     },
   };
 
-  shareName?: string;
-  username?: string;
-  shareId?: string;
-  sharedNotebookGlobalId?: string;
-  uri?: string;
-  noteStoreUrl?: string;
-  webApiUrlPrefix?: string;
-  stack?: string;
-  businessId?: number;
+  shareName!: string;
+  username!: string | null;
+  shareId!: string | null;
+  sharedNotebookGlobalId!: string | null;
+  uri!: string | null;
+  noteStoreUrl!: string | null;
+  webApiUrlPrefix!: string | null;
+  stack!: string | null;
+  businessId!: number | null;
 }

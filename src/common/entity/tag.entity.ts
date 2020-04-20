@@ -33,6 +33,6 @@ export default class TagEntity extends BaseEvernoteEntity {
     },
   };
 
-  name?: string;
-  parentGuid?: string;
+  name!: string;
+  parentGuid!: string | null;
 }

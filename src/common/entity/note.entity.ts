@@ -38,11 +38,11 @@ export default class NoteEntity extends BaseEvernoteEntity {
       },
       created: {
         type: "integer",
-        nullable: true,
+        nullable: false,
       },
       updated: {
         type: "integer",
-        nullable: true,
+        nullable: false,
       },
       deleted: {
         type: "integer",
@@ -58,7 +58,7 @@ export default class NoteEntity extends BaseEvernoteEntity {
       },
       notebookGuid: {
         type: "string",
-        nullable: true,
+        nullable: false,
       },
       tagGuids: {
         type: "text",
@@ -181,44 +181,44 @@ export default class NoteEntity extends BaseEvernoteEntity {
     ],
   };
 
-  title?: string;
-  content?: string | null;
-  contentHash?: Object;
-  contentLength?: number;
-  created?: number;
-  updated?: number;
-  deleted?: number;
-  active?: boolean;
-  notebookGuid?: string;
-  tagGuids?: string[];
-  resources?: Object[];
-  attributes?: {
-    subjectDate?: number;
-    latitude?: number;
-    longitude?: number;
-    author?: string;
-    source?: string;
-    sourceURL?: string;
-    sourceApplication?: string;
-    shareDate?: number;
-    reminderOrder?: number;
-    reminderDoneTime?: number;
-    reminderTime?: number;
-    placeName?: string;
-    contentClass?: string;
-    applicationData?: string;
-    classifications?: string;
-    creatorId?: number;
-    lastEditorId?: number;
-    sharedWithBusiness?: boolean;
-    conflictSourceNoteGuid?: string;
-    noteTitleQuality?: number;
+  title!: string;
+  content!: string | null;
+  contentHash!: Object;
+  contentLength!: number;
+  created!: number;
+  updated!: number;
+  deleted!: number | null;
+  active!: boolean;
+  notebookGuid!: string;
+  tagGuids!: string[] | null;
+  resources!: Object[] | null;
+  attributes!: {
+    subjectDate: number | null;
+    latitude: number | null;
+    longitude: number | null;
+    author: string | null;
+    source: string | null;
+    sourceURL: string | null;
+    sourceApplication: string | null;
+    shareDate: number | null;
+    reminderOrder: number | null;
+    reminderDoneTime: number | null;
+    reminderTime: number | null;
+    placeName: string | null;
+    contentClass: string | null;
+    applicationData: string | null;
+    classifications: string | null;
+    creatorId: number | null;
+    lastEditorId: number | null;
+    sharedWithBusiness: boolean | null;
+    conflictSourceNoteGuid: string | null;
+    noteTitleQuality: number | null;
   };
 
-  tagNames?: string[];
-  sharedNotes?: Object[];
-  restrictions?: any;
-  limits?: any;
+  tagNames!: string[] | null;
+  sharedNotes!: Object[] | null;
+  restrictions!: any | null;
+  limits!: any | null;
 
-  hasContent?: boolean;
+  hasContent!: boolean;
 }

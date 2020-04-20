@@ -16,7 +16,6 @@ import ProgressService from "~/src/client/plugins/service/progress.service";
 import SocketIoClientService from "~/src/client/plugins/service/socket-io-client.service";
 import configLoader from "~/src/common/util/config-loader";
 import logger from "~/src/client/plugins/logger";
-import { assertIsDefined } from "~/src/common/util/assert";
 import { IFindManyNoteEntityOptions } from "~/src/server/table/note.table";
 import { IFindManyEntityOptions } from "~/src/common/entity/base.entity";
 
@@ -225,12 +224,8 @@ export class DatastoreService extends BaseClientService {
       notes = _.filter(notes, (filterNote: NoteEntity) => {
         return !_.find(notes, (findNote: NoteEntity) => {
           if (filterNote.guid !== findNote.guid) return false;
-          assertIsDefined(filterNote.updateSequenceNum);
-          assertIsDefined(findNote.updateSequenceNum);
           if (filterNote.updateSequenceNum >= findNote.updateSequenceNum)
             return false;
-          assertIsDefined(findNote.updated);
-          assertIsDefined(filterNote.updated);
           return (
             findNote.updated - filterNote.updated <
             (params.archiveMinStepMinute ?? 0) * 60 * 1000
@@ -251,7 +246,6 @@ export class DatastoreService extends BaseClientService {
       );
       if (!note.hasContent) {
         const note = await this.requestService.getNoteContent(noteGuid);
-        assertIsDefined(note?.guid);
         notes[note.guid] = note;
       }
     }
@@ -265,7 +259,6 @@ export class DatastoreService extends BaseClientService {
     const guids: string[] = [];
     for (const noteGuid in notes) {
       const note = notes[noteGuid];
-      assertIsDefined(note.guid);
       guids.push(note.guid);
     }
     const options = this.makeTimeLogFindOptions(
@@ -277,8 +270,6 @@ export class DatastoreService extends BaseClientService {
     );
     const result: TTimeLogsResult = {};
     for (const timeLog of timeLogs) {
-      assertIsDefined(timeLog.noteGuid);
-      assertIsDefined(timeLog.id);
       if (!result[timeLog.noteGuid]) result[timeLog.noteGuid] = {};
       result[timeLog.noteGuid][timeLog.id] = timeLog;
     }
@@ -290,7 +281,6 @@ export class DatastoreService extends BaseClientService {
     const guids: string[] = [];
     for (const noteGuid in notes) {
       const note = notes[noteGuid];
-      assertIsDefined(note.guid);
       guids.push(note.guid);
     }
     const profitLogs = await this.requestService.find<ProfitLogEntity>(
@@ -299,8 +289,6 @@ export class DatastoreService extends BaseClientService {
     );
     const result: TProfitLogsResult = {};
     for (const profitLog of profitLogs) {
-      assertIsDefined(profitLog.noteGuid);
-      assertIsDefined(profitLog.id);
       if (!result[profitLog.noteGuid]) result[profitLog.noteGuid] = {};
       result[profitLog.noteGuid][profitLog.id] = profitLog;
     }
@@ -328,8 +316,6 @@ export class DatastoreService extends BaseClientService {
     const prevNote: NoteEntity | undefined = _.find(
       archiveNotes,
       (searchNote: NoteEntity) => {
-        assertIsDefined(searchNote.updateSequenceNum);
-        assertIsDefined(note.updateSequenceNum);
         return (
           searchNote.guid === note.guid &&
           searchNote.updateSequenceNum < note.updateSequenceNum
@@ -337,7 +323,6 @@ export class DatastoreService extends BaseClientService {
       }
     );
     if (prevNote) return Promise.resolve(prevNote);
-    assertIsDefined(note.updated);
     const options: IFindManyNoteEntityOptions = {
       where: {
         guid: note.guid,

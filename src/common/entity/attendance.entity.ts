@@ -58,13 +58,13 @@ export default class AttendanceEntity extends BaseEntity {
     ],
   };
 
-  id?: number;
-  personId?: number;
-  year?: number;
-  month?: number;
-  day?: number;
-  arrivalTime?: number;
-  departureTime?: number;
-  restTime?: number;
-  remarks?: string;
+  id!: number;
+  personId!: number;
+  year!: number;
+  month!: number;
+  day!: number;
+  arrivalTime!: number | null;
+  departureTime!: number | null;
+  restTime!: number | null;
+  remarks!: string | null;
 }

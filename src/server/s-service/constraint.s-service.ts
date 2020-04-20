@@ -6,7 +6,6 @@ import BaseSService from "~/src/server/s-service/base.s-service";
 import TableSService from "~/src/server/s-service/table.s-service";
 import logger from "~/src/server/logger";
 import NoteEntity from "~/src/common/entity/note.entity";
-import { assertIsDefined } from "~/src/common/util/assert";
 import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
 import configLoader from "~/src/common/util/config-loader";
 
@@ -34,7 +33,6 @@ export default class ConstraintSService extends BaseSService {
   }
 
   async checkOne(note: NoteEntity): Promise<void> {
-    assertIsDefined(note.guid);
     // TODO: FindConditionsへの変換でエラーが出てしまう
     const cond: FindConditions<ConstraintResultEntity> = <any>{
       noteGuid: note.guid,
@@ -100,11 +98,11 @@ export default class ConstraintSService extends BaseSService {
   }
 
   private evalNumber(
-    target: number | undefined,
+    target: number | undefined | null,
     query: AppConfig.TConstraintConfigNumberOperator
   ): boolean {
-    if (_.isUndefined(target)) return true;
-    if (_.isNull(query)) return _.isNull(target);
+    if (_.isNil(target)) return true;
+    if (_.isNil(query)) return _.isNil(target);
     if (_.isNumber(query)) return target === query;
     if (_.isObject(query)) {
       if (!_.isUndefined(query.$eq) && !(target === query.$eq)) return false;
@@ -135,11 +133,11 @@ export default class ConstraintSService extends BaseSService {
   }
 
   private evalString(
-    target: string | undefined,
+    target: string | undefined | null,
     query: AppConfig.TConstraintConfigStringOperator
   ): boolean {
-    if (_.isUndefined(target)) return true;
-    if (_.isNull(query)) return _.isNull(target);
+    if (_.isNil(target)) return true;
+    if (_.isNil(query)) return _.isNil(target);
     if (_.isArray(query)) return _.includes(query, target);
     if (_.isRegExp(query)) return query.test(target);
     if (_.isString(query)) return target === query;
@@ -160,8 +158,8 @@ export default class ConstraintSService extends BaseSService {
     target: string[],
     query: AppConfig.TConstraintConfigArrayOperator
   ): boolean {
-    if (_.isUndefined(target)) return true;
-    if (_.isNull(query)) return _.isNull(target);
+    if (_.isNil(target)) return true;
+    if (_.isNil(query)) return _.isNil(target);
     if (_.isString(query)) return _.includes(target, query);
     if (_.isArray(query)) return _.every(query, q => _.includes(target, q));
     if (_.isObject(query)) {
@@ -223,9 +221,7 @@ export default class ConstraintSService extends BaseSService {
       this.tableSService.caches.tags,
       tag => tag.parentGuid === currentTag.guid
     );
-    const childTagNames = childTags
-      .map(tag => tag.name ?? "")
-      .filter(name => !!name);
+    const childTagNames = childTags.map(tag => tag.name).filter(name => !!name);
     if (recursive)
       return [
         ...childTagNames,

@@ -24,6 +24,6 @@ export default class OptionEntity extends BaseEntity {
     jsonFields: ["value"],
   };
 
-  key?: string;
-  value?: any;
+  key!: string;
+  value!: any | null;
 }

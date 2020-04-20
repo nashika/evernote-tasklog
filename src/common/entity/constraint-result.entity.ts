@@ -28,7 +28,7 @@ export default class ConstraintResultEntity extends BaseEntity {
     },
   };
 
-  id?: number;
-  noteGuid?: string;
-  constraintId?: number;
+  id!: number;
+  noteGuid!: string;
+  constraintId!: number;
 }

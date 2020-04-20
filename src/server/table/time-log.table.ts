@@ -49,7 +49,6 @@ export default class TimeLogTable extends BaseTable<TimeLogEntity> {
         if (timeLog.date && timeLog.personId) timeLogs.push(timeLog);
       }
     }
-    assertIsDefined(note.guid);
     await this.delete(note.guid);
     await this.saveAll(timeLogs);
   }

@@ -42,8 +42,8 @@ export default class SavedSearchEntity extends BaseEvernoteEntity {
     jsonFields: ["scope"],
   };
 
-  name?: string;
-  query?: string;
-  format?: number;
-  scope?: Object;
+  name!: string;
+  query!: string | null;
+  format!: number | null;
+  scope!: Object | null;
 }

@@ -9,7 +9,7 @@ export interface IEntityParams<T extends BaseEntity> {
   default: IFindManyEntityOptions<T>;
   append: IFindManyEntityOptions<T>;
   columns?: {
-    [P in keyof T]?: IEntityColumnParams<T>;
+    [P in keyof T | string]: IEntityColumnParams<T>;
   };
   indicies?: {
     columns: string[];
@@ -64,7 +64,7 @@ export default abstract class BaseEntity {
   }
 
   archiveId?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
   [key: string]: any;
 }

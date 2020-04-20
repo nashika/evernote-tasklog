@@ -45,11 +45,11 @@ export default class TimeLogEntity extends BaseEntity {
     },
   };
 
-  id?: number;
-  noteGuid?: string;
-  comment?: string;
-  allDay?: boolean;
-  date?: number;
-  personId?: number;
-  spentTime?: number;
+  id!: number;
+  noteGuid!: string;
+  comment!: string | null;
+  allDay!: boolean;
+  date!: number;
+  personId!: number;
+  spentTime!: number | null;
 }

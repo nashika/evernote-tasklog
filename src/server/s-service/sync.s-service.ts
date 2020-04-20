@@ -132,9 +132,7 @@ export default class SyncSService extends BaseSService {
     await this.tableSService.tagTable.saveAll(
       _.map(lastSyncChunk.tags, tag => new TagEntity(tag))
     );
-    await this.tableSService.tagTable.delete(
-      lastSyncChunk.expungedTags ?? []
-    );
+    await this.tableSService.tagTable.delete(lastSyncChunk.expungedTags ?? []);
     await this.tableSService.savedSearchTable.saveAll(
       _.map(lastSyncChunk.searches, search => new SavedSearchEntity(search))
     );
@@ -206,7 +204,6 @@ export default class SyncSService extends BaseSService {
         take: numNote,
       });
       for (const note of notes) {
-        assertIsDefined(note.guid);
         await this.tableSService.noteTable.loadRemote(note.guid);
       }
       logger.info(`Auto get note content was finished.`);
