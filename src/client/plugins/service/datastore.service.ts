@@ -18,6 +18,7 @@ import configLoader from "~/src/common/util/config-loader";
 import logger from "~/src/client/plugins/logger";
 import { IFindManyNoteEntityOptions } from "~/src/server/table/note.table";
 import { IFindManyEntityOptions } from "~/src/common/entity/base.entity";
+import { assertIsDefined } from "~/src/common/util/assert";
 
 export interface IDatastoreServiceNoteFilterParams {
   start?: moment.Moment;
@@ -246,6 +247,7 @@ export class DatastoreService extends BaseClientService {
       );
       if (!note.hasContent) {
         const note = await this.requestService.getNoteContent(noteGuid);
+        assertIsDefined(note);
         notes[note.guid] = note;
       }
     }
@@ -305,7 +307,7 @@ export class DatastoreService extends BaseClientService {
 
   async countNotes(params: IDatastoreServiceNoteFilterParams): Promise<number> {
     const options = this.makeNoteFindOptions(params);
-    return await this.requestService.count(NoteEntity, options);
+    return this.requestService.count(NoteEntity, options);
   }
 
   async getPrevNote(

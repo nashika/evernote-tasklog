@@ -31,7 +31,7 @@ export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
   ): Promise<NoteEntity | null> {
     if (!guid) return null;
     await this.syncSService.lock();
-    const note = await this.getTable().loadRemote(guid);
+    const note = await this.table.loadRemote(guid);
     await this.syncSService.unlock();
     return note;
   }
@@ -41,7 +41,7 @@ export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
     query: FindConditions<NoteEntity>
   ): Promise<boolean> {
     await this.syncSService.lock();
-    await this.getTable().reParseNotes(query);
+    await this.table.reParseNotes(query);
     await this.syncSService.unlock();
     return true;
   }

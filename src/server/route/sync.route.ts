@@ -10,7 +10,7 @@ export default class SyncRoute extends BaseRoute {
     super();
   }
 
-  getBasePath(): string {
+  get basePath(): string {
     return "sync";
   }
 

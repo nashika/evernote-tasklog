@@ -10,7 +10,7 @@ export default class SessionRoute extends BaseRoute {
     super();
   }
 
-  getBasePath(): string {
+  get basePath(): string {
     return "session";
   }
 

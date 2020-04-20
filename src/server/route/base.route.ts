@@ -25,7 +25,7 @@ export class Code500Error extends CodeError {
 
 @injectable()
 export default abstract class BaseRoute {
-  abstract getBasePath(): string;
+  abstract get basePath(): string;
 
   abstract async connect(_socket: SocketIO.Socket): Promise<void>;
 
@@ -34,7 +34,7 @@ export default abstract class BaseRoute {
     action: string,
     func: (...args: any[]) => Promise<any>
   ) {
-    const event = this.getBasePath() + "::" + action;
+    const event = this.basePath + "::" + action;
     socket.on(event, (...args: any[]) => {
       const ack: (data: any) => void = _.last(args);
       const funcArgs: any[] = _.initial(args);

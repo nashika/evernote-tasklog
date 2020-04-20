@@ -33,12 +33,12 @@ export default abstract class BaseEntityRoute<
     return <typeof BaseEntityRoute>this.constructor;
   }
 
-  getBasePath(): string {
-    return this.EntityClass.params.name;
+  get table(): TTable {
+    return this.tableSService.getTable<TEntity, TTable>(this.EntityClass);
   }
 
-  getTable(): TTable {
-    return this.tableSService.getTable<TEntity, TTable>(this.EntityClass);
+  get basePath(): string {
+    return this.EntityClass.params.name;
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
@@ -53,7 +53,7 @@ export default abstract class BaseEntityRoute<
     _socket: SocketIO.Socket,
     options: IFindManyEntityOptions<TEntity>
   ): Promise<TEntity[]> {
-    const entities = await this.getTable().findAll(options);
+    const entities = await this.table.findAll(options);
     return entities;
   }
 
@@ -61,7 +61,7 @@ export default abstract class BaseEntityRoute<
     _socket: SocketIO.Socket,
     options: IFindManyEntityOptions<TEntity>
   ): Promise<number> {
-    const count = await this.getTable().count(options);
+    const count = await this.table.count(options);
     return count;
   }
 
@@ -70,7 +70,7 @@ export default abstract class BaseEntityRoute<
     data: Object
   ): Promise<boolean> {
     const entity: TEntity = new (<any>this.EntityClass)(data);
-    await this.getTable().save(<any>entity);
+    await this.table.save(<any>entity);
     return true;
   }
 
@@ -79,7 +79,7 @@ export default abstract class BaseEntityRoute<
     id: number | string
   ): Promise<boolean> {
     if (!id) throw new Error("削除対象のIDが指定されていません");
-    await this.getTable().delete(<any>{
+    await this.table.delete(<any>{
       [this.EntityClass.params.primaryKey]: id,
     });
     return true;
