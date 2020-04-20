@@ -12,10 +12,10 @@ import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
-import BaseClientService from "~/src/client/plugins/service/base-client.service";
-import RequestService from "~/src/client/plugins/service/request.service";
-import ProgressService from "~/src/client/plugins/service/progress.service";
-import SocketIoClientService from "~/src/client/plugins/service/socket-io-client.service";
+import BaseClientService from "~/src/client/service/base-client.service";
+import RequestService from "~/src/client/service/request.service";
+import ProgressService from "~/src/client/service/progress.service";
+import SocketIoClientService from "~/src/client/service/socket-io-client.service";
 import configLoader from "~/src/common/util/config-loader";
 import logger from "~/src/client/plugins/logger";
 import {

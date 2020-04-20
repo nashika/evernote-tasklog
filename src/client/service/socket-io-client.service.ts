@@ -1,6 +1,6 @@
 import SocketIOClient from "socket.io-client";
 
-import logger from "../logger";
+import logger from "../plugins/logger";
 import configLoader from "~/src/common/util/config-loader";
 
 export default class SocketIoClientService {

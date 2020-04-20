@@ -1,9 +1,9 @@
 import { Plugin } from "@nuxt/types";
 
-import SocketIoClientService from "~/src/client/plugins/service/socket-io-client.service";
-import RequestService from "~/src/client/plugins/service/request.service";
-import ProgressService from "~/src/client/plugins/service/progress.service";
-import PushService from "~/src/client/plugins/service/push.service";
+import SocketIoClientService from "~/src/client/service/socket-io-client.service";
+import RequestService from "~/src/client/service/request.service";
+import ProgressService from "~/src/client/service/progress.service";
+import PushService from "~/src/client/service/push.service";
 
 const socketIoClientService: SocketIoClientService = new SocketIoClientService();
 const progressService: ProgressService = new ProgressService();
