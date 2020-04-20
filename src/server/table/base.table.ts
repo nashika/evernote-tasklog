@@ -132,7 +132,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
 
   async findByPrimary(primaryKey: number | string): Promise<T | null> {
     return this.findOne({
-      where: { [this.EntityClass.params.primaryKey]: primaryKey },
+      where: <any>{ [this.EntityClass.params.primaryKey]: primaryKey },
     });
   }
 
@@ -187,6 +187,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
     options.order =
       options.order || _.clone(this.EntityClass.params.default.order);
     _.merge(options.order || {}, this.EntityClass.params.append.order || {});
+    // TODO: $gte等を処理する機能を組み込む
     return options;
   }
 

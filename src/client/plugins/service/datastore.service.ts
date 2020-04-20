@@ -5,7 +5,9 @@ import _ from "lodash";
 import moment from "moment";
 import Evernote from "evernote";
 
-import NoteEntity from "~/src/common/entity/note.entity";
+import NoteEntity, {
+  IFindManyNoteEntityOptions,
+} from "~/src/common/entity/note.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
@@ -16,8 +18,10 @@ import ProgressService from "~/src/client/plugins/service/progress.service";
 import SocketIoClientService from "~/src/client/plugins/service/socket-io-client.service";
 import configLoader from "~/src/common/util/config-loader";
 import logger from "~/src/client/plugins/logger";
-import { IFindManyNoteEntityOptions } from "~/src/server/table/note.table";
-import { IFindManyEntityOptions } from "~/src/common/entity/base.entity";
+import {
+  IFindManyEntityOptions,
+  TFindEntityWhereOptions,
+} from "~/src/common/entity/base.entity";
 import { assertIsDefined } from "~/src/common/util/assert";
 
 export interface IDatastoreServiceNoteFilterParams {
@@ -340,18 +344,15 @@ export class DatastoreService extends BaseClientService {
   private makeNoteFindOptions(
     params: IDatastoreServiceNoteFilterParams
   ): IFindManyNoteEntityOptions {
-    const options: IFindManyEntityOptions<any> = { where: { $and: [] } };
-    if (params.start)
-      (<any>options.where.$and).push({
-        updated: { $gte: params.start.valueOf() },
-      });
-    if (params.end)
-      (<any>options.where.$and).push({
-        updated: { $lte: params.end.valueOf() },
-      });
+    const where: TFindEntityWhereOptions<NoteEntity> = {};
+    if (params.start && params.end)
+      where.updated = {
+        $between: [params.start.valueOf(), params.end.valueOf()],
+      };
+    else if (params.start) where.updated = { $gte: params.start.valueOf() };
+    else if (params.end) where.updated = { $lte: params.end.valueOf() };
     // set hasContent query
-    if (params.hasContent)
-      (<any>options.where.$and).push({ content: { $ne: null } });
+    if (params.hasContent) where.content = { $ne: null };
     // check notebooks
     const notebooksHash: { [notebookGuid: string]: boolean } = {};
     if (params.stacks)
@@ -359,31 +360,26 @@ export class DatastoreService extends BaseClientService {
         for (const notebook of _.values(this.$vm.notebooks))
           if (notebook.stack === stack) notebooksHash[notebook.guid] = true;
     if (_.size(params.notebookGuids) > 0)
-      for (const notebookGuid of params.notebookGuids)
+      for (const notebookGuid of params.notebookGuids ?? [])
         notebooksHash[notebookGuid] = true;
     // set notebooks query
     if (_.size(notebooksHash) > 0)
-      (<any>options.where.$and).push({
-        notebookGuid: { $in: _.keys(notebooksHash) },
-      });
-    return options;
+      where.notebookGuid = { $in: _.keys(notebooksHash) };
+    return { where };
   }
 
   private makeTimeLogFindOptions(
     params: IDatastoreServiceTimeLogFilterParams
   ): IFindManyEntityOptions<TimeLogEntity> {
-    const options: IFindManyEntityOptions<any> = { where: { $and: [] } };
+    const where: TFindEntityWhereOptions<TimeLogEntity> = {};
     // set date query
-    if (params.start)
-      (<any>options.where.$and).push({
-        date: { $gte: params.start.valueOf() },
-      });
-    if (params.end)
-      (<any>options.where.$and).push({ date: { $lte: params.end.valueOf() } });
+    if (params.start && params.end)
+      where.date = { $between: [params.start.valueOf(), params.end.valueOf()] };
+    else if (params.start) where.date = { $gte: params.start.valueOf() };
+    else if (params.end) where.date = { $lte: params.end.valueOf() };
     // set note guids query
-    if (params.noteGuids)
-      if (params.noteGuids.length > 0)
-        _.merge(options.where, { noteGuid: { $in: params.noteGuids } });
-    return options;
+    if (params.noteGuids && params.noteGuids.length > 0)
+      where.noteGuid = { $in: params.noteGuids };
+    return { where };
   }
 }

@@ -1,18 +1,14 @@
 import { injectable } from "inversify";
 import _ from "lodash";
-import { FindConditions } from "typeorm/find-options/FindConditions";
 
 import TableSService from "~/src/server/s-service/table.s-service";
-import NoteEntity from "~/src/common/entity/note.entity";
+import NoteEntity, {
+  IFindManyNoteEntityOptions,
+} from "~/src/common/entity/note.entity";
 import BaseEvernoteTable from "~/src/server/table/base-evernote.table";
-import { IFindManyEntityOptions } from "~/src/common/entity/base.entity";
 import logger from "~/src/server/logger";
 import EvernoteClientSService from "~/src/server/s-service/evernote-client.s-service";
-
-export interface IFindManyNoteEntityOptions
-  extends IFindManyEntityOptions<NoteEntity> {
-  includeContent?: boolean;
-}
+import { TFindEntityWhereOptions } from "~/src/common/entity/base.entity";
 
 @injectable()
 export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
@@ -68,7 +64,9 @@ export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
     return lastNote;
   }
 
-  async reParseNotes(query: FindConditions<NoteEntity> = {}): Promise<void> {
+  async reParseNotes(
+    query: TFindEntityWhereOptions<NoteEntity> = {}
+  ): Promise<void> {
     const options: IFindManyNoteEntityOptions = {};
     options.where = query;
     options.take = -1;

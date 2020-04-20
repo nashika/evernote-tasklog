@@ -4,7 +4,6 @@ import BaseTable from "~/src/server/table/base.table";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import NoteEntity from "~/src/common/entity/note.entity";
 import configLoader from "~/src/common/util/config-loader";
-import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
 export default class TimeLogTable extends BaseTable<TimeLogEntity> {

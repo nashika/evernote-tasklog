@@ -1,5 +1,10 @@
 import BaseEvernoteEntity from "./base-evernote.entity";
-import { IEntityParams } from "./base.entity";
+import { IEntityParams, IFindManyEntityOptions } from "./base.entity";
+
+export interface IFindManyNoteEntityOptions
+  extends IFindManyEntityOptions<NoteEntity> {
+  includeContent?: boolean;
+}
 
 export default class NoteEntity extends BaseEvernoteEntity {
   static readonly params: IEntityParams<NoteEntity> = {

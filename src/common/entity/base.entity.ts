@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { FindManyOptions, FindOneOptions } from "typeorm";
 
 export interface IEntityParams<T extends BaseEntity> {
   name: string;
@@ -34,13 +33,36 @@ export type IEntityColumnType =
   | "date"
   | "datetime";
 
-export interface IFindManyEntityOptions<T> extends FindManyOptions<T> {
+export interface IFindManyEntityOptions<T extends BaseEntity>
+  extends IFindOneEntityOptions<T> {
+  take?: number;
+  skip?: number;
+}
+
+export interface IFindOneEntityOptions<T extends BaseEntity> {
+  where?: TFindEntityWhereOptions<T>;
+  order?: {
+    [P in keyof T]?: "ASC" | "DESC";
+  };
   archive?: boolean;
 }
 
-export interface IFindOneEntityOptions<T> extends FindOneOptions<T> {
-  archive?: boolean;
-}
+export type TFindEntityWhereOptions<T extends BaseEntity> = {
+  [P in keyof T]?: TFindEntityWhereColumnOptions<T[P]>;
+};
+
+export type TFindEntityWhereColumnOptions<T> =
+  | T
+  | {
+      $eq?: T;
+      $ne?: T;
+      $lt?: number;
+      $lte?: number;
+      $gt?: number;
+      $gte?: number;
+      $between?: [number, number];
+      $in?: T[];
+    };
 
 export default abstract class BaseEntity {
   static readonly params: IEntityParams<BaseEntity>;
