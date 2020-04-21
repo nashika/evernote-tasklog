@@ -1,10 +1,10 @@
 <template lang="pug">
-  section.app
-    navigation
-    // filter-modal
-    // person-modal
-    // progress-modal
-    nuxt
+section.app
+  navigation
+  // filter-modal
+  // person-modal
+  // progress-modal
+  nuxt
 </template>
 
 <style>

@@ -1,12 +1,12 @@
 <template lang="pug">
-  .container
-    div
-      logo
-      h1.title evernote-tasklog
-      h2.subtitle My swell Nuxt.js project
-      .links
-        a.button--green(href="https://nuxtjs.org/", target="_blank") Documentation
-        a.button--grey(href="https://github.com/nuxt/nuxt.js", target="_blank") GitHub
+.container
+  div
+    logo
+    h1.title evernote-tasklog
+    h2.subtitle My swell Nuxt.js project
+    .links
+      a.button--green(href="https://nuxtjs.org/", target="_blank") Documentation
+      a.button--grey(href="https://github.com/nuxt/nuxt.js", target="_blank") GitHub
 </template>
 
 <style>

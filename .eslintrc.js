@@ -17,6 +17,7 @@ module.exports = {
   // add your custom rules here
   rules: {
     "nuxt/no-cjs-in-config": "off",
+    "unicorn/number-literal-case": "off",
     "space-before-function-paren": ["error", {
       "anonymous": "never",
       "named": "never",

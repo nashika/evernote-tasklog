@@ -23,7 +23,7 @@
     "tsc": "tsc"
   },
   "lint-staged": {
-    "*.{js,vue}": "npm run lint",
+    "*.{ts,js,vue}": "npm run lint",
     "*.{css,vue}": "stylelint"
   },
   "husky": {
