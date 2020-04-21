@@ -19,8 +19,8 @@ import SocketIoClientService from "~/src/client/service/socket-io-client.service
 import configLoader from "~/src/common/util/config-loader";
 import logger from "~/src/client/plugins/logger";
 import {
-  IFindManyEntityOptions,
-  TFindEntityWhereOptions,
+  FindManyEntityOptions,
+  FindEntityWhereOptions,
 } from "~/src/common/entity/base.entity";
 import { assertIsDefined } from "~/src/common/util/assert";
 
@@ -344,7 +344,7 @@ export class DatastoreService extends BaseClientService {
   private makeNoteFindOptions(
     params: IDatastoreServiceNoteFilterParams
   ): IFindManyNoteEntityOptions {
-    const where: TFindEntityWhereOptions<NoteEntity> = {};
+    const where: FindEntityWhereOptions<NoteEntity> = {};
     if (params.start && params.end)
       where.updated = {
         $between: [params.start.valueOf(), params.end.valueOf()],
@@ -370,8 +370,8 @@ export class DatastoreService extends BaseClientService {
 
   private makeTimeLogFindOptions(
     params: IDatastoreServiceTimeLogFilterParams
-  ): IFindManyEntityOptions<TimeLogEntity> {
-    const where: TFindEntityWhereOptions<TimeLogEntity> = {};
+  ): FindManyEntityOptions<TimeLogEntity> {
+    const where: FindEntityWhereOptions<TimeLogEntity> = {};
     // set date query
     if (params.start && params.end)
       where.date = { $between: [params.start.valueOf(), params.end.valueOf()] };

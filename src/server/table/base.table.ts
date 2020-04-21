@@ -1,9 +1,19 @@
 import _ from "lodash";
 import {
+  Between,
   EntitySchema,
   EntitySchemaColumnOptions,
   EntitySchemaIndexOptions,
+  Equal,
+  FindConditions,
+  FindManyOptions,
   getRepository,
+  In,
+  LessThan,
+  LessThanOrEqual,
+  MoreThan,
+  MoreThanOrEqual,
+  Not,
   Repository,
 } from "typeorm";
 import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
@@ -11,9 +21,11 @@ import { injectable } from "inversify";
 
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseEntity, {
-  IEntityColumnType,
-  IFindManyEntityOptions,
-  IFindOneEntityOptions,
+  EntityColumnType,
+  FindEntityWhereColumnOperators,
+  FindEntityWhereOptions,
+  FindManyEntityOptions,
+  FindOneEntityOptions,
 } from "~/src/common/entity/base.entity";
 import container from "~/src/server/inversify.config";
 import logger from "~/src/server/logger";
@@ -106,7 +118,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
   }
 
   private makeSchemaColumnType(
-    type: IEntityColumnType
+    type: EntityColumnType
   ): EntitySchemaColumnOptions["type"] {
     if (type === "string") return "text";
     return type;
@@ -118,14 +130,14 @@ export default abstract class BaseTable<T extends BaseEntity> {
       this.archiveRepository = getRepository(this.archiveSchema);
   }
 
-  async findOne(options: IFindOneEntityOptions<T> = {}): Promise<T | null> {
-    options = this.parseFindOptions(options);
+  async findOne(argOptions: FindOneEntityOptions<T> = {}): Promise<T | null> {
     this.message("find", ["local"], this.EntityClass.params.name, true, {
-      query: options,
+      query: argOptions,
     });
+    const options = this.parseFindOptions(argOptions);
     const data: Partial<T> | undefined = await this.repository.findOne(options);
     this.message("find", ["local"], this.EntityClass.params.name, false, {
-      query: options,
+      query: argOptions,
     });
     return data ? this.prepareLoadEntity(data) : null;
   }
@@ -136,33 +148,30 @@ export default abstract class BaseTable<T extends BaseEntity> {
     });
   }
 
-  async findAll(options: IFindManyEntityOptions<T> = {}): Promise<T[]> {
-    options = this.parseFindOptions(options);
-    const repository = this.chooseRepository(options);
+  async findAll(argOptions: FindManyEntityOptions<T> = {}): Promise<T[]> {
+    const repository = this.chooseRepository(argOptions);
     this.message("find", ["local"], this.EntityClass.params.name, true, {
-      options,
+      query: argOptions,
     });
+    const options = this.parseFindOptions(argOptions);
     const datas: Partial<T>[] = await repository.find(options);
     this.message("find", ["local"], this.EntityClass.params.name, false, {
       length: datas.length,
-      options,
+      query: argOptions,
     });
     return _.map(datas, data => this.prepareLoadEntity(data));
   }
 
-  async count(options: IFindManyEntityOptions<T> = {}): Promise<number> {
-    options = this.parseFindOptions(options);
-    const repository = this.chooseRepository(options);
-    this.message(
-      "count",
-      ["local"],
-      this.EntityClass.params.name,
-      true,
-      options
-    );
+  async count(argOptions: FindManyEntityOptions<T> = {}): Promise<number> {
+    const repository = this.chooseRepository(argOptions);
+    this.message("count", ["local"], this.EntityClass.params.name, true, {
+      query: argOptions,
+    });
+    const options = this.parseFindOptions(argOptions);
     const count = await repository.count(options);
     this.message("count", ["local"], this.EntityClass.params.name, false, {
       count,
+      query: argOptions,
     });
     return count;
   }
@@ -176,19 +185,54 @@ export default abstract class BaseTable<T extends BaseEntity> {
   }
 
   private parseFindOptions(
-    options: IFindManyEntityOptions<T> = {}
-  ): IFindManyEntityOptions<T> {
-    options.where =
-      options.where || _.clone(this.EntityClass.params.default.where);
-    options.where = _.merge(
-      options.where || {},
+    argOptions: FindManyEntityOptions<T> = {}
+  ): FindManyOptions<T> {
+    argOptions.where =
+      argOptions.where ?? _.clone(this.EntityClass.params.default.where);
+    argOptions.where = _.merge(
+      argOptions.where || {},
       this.EntityClass.params.append.where || {}
     );
-    options.order =
-      options.order || _.clone(this.EntityClass.params.default.order);
-    _.merge(options.order || {}, this.EntityClass.params.append.order || {});
+    argOptions.order =
+      argOptions.order || _.clone(this.EntityClass.params.default.order);
+    _.merge(argOptions.order || {}, this.EntityClass.params.append.order || {});
     // TODO: $gte等を処理する機能を組み込む
+    const options: FindManyOptions<T> = {
+      where: this.parseFindWhereOptions(argOptions.where),
+      order: argOptions.order,
+      take: argOptions.take,
+      skip: argOptions.skip,
+    };
     return options;
+  }
+
+  private parseFindWhereOptions(
+    where: FindEntityWhereOptions<T> | undefined
+  ): FindConditions<T> | undefined {
+    if (where === undefined) return undefined;
+    const result: FindConditions<T> = {};
+    for (const key in where) {
+      const whereColumn = where[key];
+      if (whereColumn === undefined) continue;
+      else if (typeof whereColumn !== "object") {
+        result[key] = <T[keyof T]>whereColumn;
+        continue;
+      }
+      const wc: FindEntityWhereColumnOperators<T[keyof T]> = whereColumn ?? {};
+      // TODO: 型変換が上手くいっていないのでanyにしている
+      if (wc.$eq !== undefined) result[key] = <any>Equal(wc.$eq);
+      else if (wc.$ne !== undefined) result[key] = <any>Not(wc.$ne);
+      else if (wc.$gt !== undefined) result[key] = <any>MoreThan(wc.$gt);
+      else if (wc.$gte !== undefined)
+        result[key] = <any>MoreThanOrEqual(wc.$gte);
+      else if (wc.$lt !== undefined) result[key] = <any>LessThan(wc.$lt);
+      else if (wc.$lte !== undefined)
+        result[key] = <any>LessThanOrEqual(wc.$lte);
+      else if (wc.$between !== undefined)
+        result[key] = <any>Between(wc.$between[0], wc.$between[1]);
+      else if (wc.$in !== undefined) result[key] = <any>In(wc.$in);
+    }
+    return result;
   }
 
   async save(entity: T, archive: boolean = false): Promise<T | null> {

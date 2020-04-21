@@ -1,14 +1,14 @@
 import _ from "lodash";
 
-export interface IEntityParams<T extends BaseEntity> {
+export interface EntityParams<T extends BaseEntity> {
   name: string;
   primaryKey: keyof T;
   displayField: keyof T;
   archive: boolean;
-  default: IFindManyEntityOptions<T>;
-  append: IFindManyEntityOptions<T>;
+  default: FindManyEntityOptions<T>;
+  append: FindManyEntityOptions<T>;
   columns?: {
-    [P in keyof T | string]: IEntityColumnParams<T>;
+    [P in keyof T | string]: EntityColumnParams<T>;
   };
   indicies?: {
     columns: string[];
@@ -17,14 +17,14 @@ export interface IEntityParams<T extends BaseEntity> {
   jsonFields?: string[];
 }
 
-export interface IEntityColumnParams<T extends BaseEntity> {
-  type: IEntityColumnType;
+export interface EntityColumnParams<T extends BaseEntity> {
+  type: EntityColumnType;
   primary?: boolean;
   generated?: true;
   nullable: boolean;
 }
 
-export type IEntityColumnType =
+export type EntityColumnType =
   | "integer"
   | "real"
   | "boolean"
@@ -33,39 +33,41 @@ export type IEntityColumnType =
   | "date"
   | "datetime";
 
-export interface IFindManyEntityOptions<T extends BaseEntity>
-  extends IFindOneEntityOptions<T> {
+export interface FindManyEntityOptions<T extends BaseEntity>
+  extends FindOneEntityOptions<T> {
   take?: number;
   skip?: number;
 }
 
-export interface IFindOneEntityOptions<T extends BaseEntity> {
-  where?: TFindEntityWhereOptions<T>;
+export interface FindOneEntityOptions<T extends BaseEntity> {
+  where?: FindEntityWhereOptions<T>;
   order?: {
     [P in keyof T]?: "ASC" | "DESC";
   };
   archive?: boolean;
 }
 
-export type TFindEntityWhereOptions<T extends BaseEntity> = {
-  [P in keyof T]?: TFindEntityWhereColumnOptions<T[P]>;
+export type FindEntityWhereOptions<T extends BaseEntity> = {
+  [P in keyof T]?: FindEntityWhereColumnOptions<T[P]>;
 };
 
-export type TFindEntityWhereColumnOptions<T> =
-  | T
-  | {
-      $eq?: T;
-      $ne?: T;
-      $lt?: number;
-      $lte?: number;
-      $gt?: number;
-      $gte?: number;
-      $between?: [number, number];
-      $in?: T[];
-    };
+export type FindEntityWhereColumnOptions<P extends string | number | null> =
+  | P
+  | FindEntityWhereColumnOperators<P>;
+
+export type FindEntityWhereColumnOperators<P extends string | number | null> = {
+  $eq?: P;
+  $ne?: P;
+  $lt?: P extends number ? P : never;
+  $lte?: P extends number ? P : never;
+  $gt?: P extends number ? P : never;
+  $gte?: P extends number ? P : never;
+  $between?: P extends number ? [P, P] : never;
+  $in?: P[];
+};
 
 export default abstract class BaseEntity {
-  static readonly params: IEntityParams<BaseEntity>;
+  static readonly params: EntityParams<BaseEntity>;
 
   constructor(data: any = {}) {
     for (const key of _.keys(data)) {

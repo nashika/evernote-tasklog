@@ -5,8 +5,8 @@ import BaseClientService from "./base-client.service";
 import NoteEntity from "~/src/common/entity/note.entity";
 import OptionEntity from "~/src/common/entity/option.entity";
 import BaseEntity, {
-  IFindManyEntityOptions,
-  IFindOneEntityOptions,
+  FindManyEntityOptions,
+  FindOneEntityOptions,
 } from "~/src/common/entity/base.entity";
 
 export default class RequestService extends BaseClientService {
@@ -16,7 +16,7 @@ export default class RequestService extends BaseClientService {
 
   async find<T extends BaseEntity>(
     EntityClass: typeof BaseEntity,
-    options: IFindManyEntityOptions<T> = {}
+    options: FindManyEntityOptions<T> = {}
   ): Promise<T[]> {
     const datas = await this.socketIoClientService.request<Partial<T>[]>(
       `${EntityClass.params.name}::find`,
@@ -27,9 +27,9 @@ export default class RequestService extends BaseClientService {
 
   async findOne<T extends BaseEntity>(
     EntityClass: typeof BaseEntity,
-    options: IFindOneEntityOptions<T> = {}
+    options: FindOneEntityOptions<T> = {}
   ): Promise<T> {
-    const findOneOptions: IFindManyEntityOptions<T> = _.clone(options);
+    const findOneOptions: FindManyEntityOptions<T> = _.clone(options);
     findOneOptions.take = 1;
     const datas = await this.socketIoClientService.request<Partial<T>>(
       `${EntityClass.params.name}::find`,
@@ -41,7 +41,7 @@ export default class RequestService extends BaseClientService {
 
   async count<T extends BaseEntity>(
     EntityClass: typeof BaseEntity,
-    options: IFindManyEntityOptions<T>
+    options: FindManyEntityOptions<T>
   ): Promise<number> {
     return this.socketIoClientService.request<number>(
       `${EntityClass.params.name}::count`,
@@ -70,7 +70,7 @@ export default class RequestService extends BaseClientService {
   }
 
   async loadOption(key: string): Promise<any> {
-    const options: IFindOneEntityOptions<any> = { where: { key } };
+    const options: FindOneEntityOptions<any> = { where: { key } };
     const optionEntity = await this.findOne<OptionEntity>(
       OptionEntity,
       options

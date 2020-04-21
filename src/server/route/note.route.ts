@@ -7,7 +7,7 @@ import SessionSService from "~/src/server/s-service/session.s-service";
 import TableSService from "~/src/server/s-service/table.s-service";
 import NoteTable from "~/src/server/table/note.table";
 import SyncSService from "~/src/server/s-service/sync.s-service";
-import { TFindEntityWhereOptions } from "~/src/common/entity/base.entity";
+import { FindEntityWhereOptions } from "~/src/common/entity/base.entity";
 
 @injectable()
 export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
@@ -38,7 +38,7 @@ export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
 
   protected async onReParse(
     _socket: SocketIO.Socket,
-    query: TFindEntityWhereOptions<NoteEntity>
+    query: FindEntityWhereOptions<NoteEntity>
   ): Promise<boolean> {
     await this.syncSService.lock();
     await this.table.reParseNotes(query);

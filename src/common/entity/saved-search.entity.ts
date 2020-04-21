@@ -1,8 +1,8 @@
 import BaseEvernoteEntity from "./base-evernote.entity";
-import { IEntityParams } from "./base.entity";
+import { EntityParams } from "./base.entity";
 
 export default class SavedSearchEntity extends BaseEvernoteEntity {
-  static readonly params: IEntityParams<SavedSearchEntity> = {
+  static readonly params: EntityParams<SavedSearchEntity> = {
     name: "savedSearch",
     primaryKey: "guid",
     displayField: "name",

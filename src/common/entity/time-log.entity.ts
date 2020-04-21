@@ -1,7 +1,7 @@
-import BaseEntity, { IEntityParams } from "./base.entity";
+import BaseEntity, { EntityParams } from "./base.entity";
 
 export default class TimeLogEntity extends BaseEntity {
-  static readonly params: IEntityParams<TimeLogEntity> = {
+  static readonly params: EntityParams<TimeLogEntity> = {
     name: "timeLog",
     primaryKey: "id",
     displayField: "comment",

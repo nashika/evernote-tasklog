@@ -6,7 +6,7 @@ import container from "~/src/server/inversify.config";
 import TableSService from "~/src/server/s-service/table.s-service";
 import SessionSService from "~/src/server/s-service/session.s-service";
 import BaseEntity, {
-  IFindManyEntityOptions,
+  FindManyEntityOptions,
 } from "~/src/common/entity/base.entity";
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseTable from "~/src/server/table/base.table";
@@ -51,7 +51,7 @@ export default abstract class BaseEntityRoute<
 
   protected async onFind(
     _socket: SocketIO.Socket,
-    options: IFindManyEntityOptions<TEntity>
+    options: FindManyEntityOptions<TEntity>
   ): Promise<TEntity[]> {
     const entities = await this.table.findAll(options);
     return entities;
@@ -59,7 +59,7 @@ export default abstract class BaseEntityRoute<
 
   protected async onCount(
     _socket: SocketIO.Socket,
-    options: IFindManyEntityOptions<TEntity>
+    options: FindManyEntityOptions<TEntity>
   ): Promise<number> {
     const count = await this.table.count(options);
     return count;

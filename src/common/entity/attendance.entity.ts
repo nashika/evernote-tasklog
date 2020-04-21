@@ -1,7 +1,7 @@
-import BaseEntity, { IEntityParams } from "./base.entity";
+import BaseEntity, { EntityParams } from "./base.entity";
 
 export default class AttendanceEntity extends BaseEntity {
-  static readonly params: IEntityParams<AttendanceEntity> = {
+  static readonly params: EntityParams<AttendanceEntity> = {
     name: "attendance",
     primaryKey: "id",
     displayField: "id",

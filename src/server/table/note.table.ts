@@ -8,7 +8,7 @@ import NoteEntity, {
 import BaseEvernoteTable from "~/src/server/table/base-evernote.table";
 import logger from "~/src/server/logger";
 import EvernoteClientSService from "~/src/server/s-service/evernote-client.s-service";
-import { TFindEntityWhereOptions } from "~/src/common/entity/base.entity";
+import { FindEntityWhereOptions } from "~/src/common/entity/base.entity";
 
 @injectable()
 export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
@@ -65,7 +65,7 @@ export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
   }
 
   async reParseNotes(
-    query: TFindEntityWhereOptions<NoteEntity> = {}
+    query: FindEntityWhereOptions<NoteEntity> = {}
   ): Promise<void> {
     const options: IFindManyNoteEntityOptions = {};
     options.where = query;
