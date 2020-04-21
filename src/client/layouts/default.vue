@@ -1,6 +1,9 @@
 <template lang="pug">
   section.app
     navigation
+    // filter-modal
+    // person-modal
+    // progress-modal
     nuxt
 </template>
 
@@ -52,6 +55,12 @@ html {
   color: #fff;
   background-color: #35495e;
 }
+
+@media screen {
+  section.app {
+    padding-top: 56px;
+  }
+}
 </style>
 
 <script lang="ts">
@@ -64,5 +73,13 @@ import BaseComponent from "~/src/client/components/base.component";
     Navigation,
   },
 })
-export default class extends BaseComponent {}
+export default class extends BaseComponent {
+  // TODO: 書き換え
+  isReady: boolean = false;
+  showMenu: boolean = false;
+
+  reload() {
+    // this.$refs.main.reload();
+  }
+}
 </script>

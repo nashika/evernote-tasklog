@@ -58,9 +58,11 @@
     "typeorm": "^0.2.24"
   },
   "devDependencies": {
+    "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@nuxt/typescript-build": "^0.6.0",
     "@nuxtjs/eslint-config-typescript": "^1.0.0",
     "@nuxtjs/eslint-module": "^1.0.0",
+    "@nuxtjs/fontawesome": "^1.1.2",
     "@nuxtjs/stylelint-module": "^3.1.0",
     "@types/evernote": "^2.0.0",
     "@types/lodash": "^4.14.149",

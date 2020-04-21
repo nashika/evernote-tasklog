@@ -1,17 +1,16 @@
 <template lang="pug">
   mixin item(to, icon, label)
     b-nav-item(to=to)
-      i.fa(class="fa-" + icon)
+      fa(:icon="['fas', '"+ icon +"']")
       | &nbsp;#{label}
 
   b-navbar.d-print-none(toggleable="sm", type="dark", variant="dark", fixed="top")
-    b-navbar-brand Evernote-tasklog
     b-navbar-toggle(target="nav-collapse")
     b-collapse#nav-collapse(is-nav)
       b-navbar-nav
-        +item("/attendance", "vcard", "{{$t('common.attendance')}}")
-        +item("/timeline", "clock-o", "{{$t('common.timeline')}}")
-        +item("/notes", "files-o", "{{$tc('common.note')}}")
+        +item("/attendance", "id-card", "{{$t('common.attendance')}}")
+        +item("/timeline", "clock", "{{$t('common.timeline')}}")
+        +item("/notes", "sticky-note", "{{$tc('common.note')}}")
         +item("/activity", "history", "{{$t('common.activity')}}")
         +item("/constraint", "check-circle", "{{$t('common.constraint')}}")
     b-button(:variant="$datastoreService.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$root.$emit('show::modal', 'person-modal')")

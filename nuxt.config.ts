@@ -1,6 +1,7 @@
 import { Configuration } from "@nuxt/types";
 import webpack from "webpack";
-import message from "~/src/client/lang/ja";
+import icons from "./src/client/icons";
+import messages from "./src/client/messages";
 
 const webpackConfig: webpack.Configuration = {
   /*
@@ -72,6 +73,7 @@ const conf: Configuration = {
     "@nuxtjs/pwa",
     // Doc: https://github.com/nuxt-community/dotenv-module
     "@nuxtjs/dotenv",
+    "@nuxtjs/fontawesome",
     "nuxt-i18n",
   ],
   /*
@@ -79,13 +81,17 @@ const conf: Configuration = {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {},
+  fontawesome: {
+    component: "fa",
+    icons,
+  },
   i18n: {
     locales: ["ja"],
     defaultLocale: "ja",
     vueI18n: {
       fallbackLocale: "ja",
       messages: {
-        ja: message,
+        ja: messages,
       },
     },
   },

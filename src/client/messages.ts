@@ -1,6 +1,6 @@
 import { LocaleMessageObject } from "vue-i18n";
 
-const message: LocaleMessageObject = {
+const messages: LocaleMessageObject = {
   common: {
     action: "機能",
     activity: "活動",
@@ -34,4 +34,4 @@ const message: LocaleMessageObject = {
     },
   },
 };
-export default message;
+export default messages;
