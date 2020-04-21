@@ -1,4 +1,3 @@
-import { injectable } from "inversify";
 import Vue from "vue";
 import Component from "vue-class-component";
 import _ from "lodash";
@@ -74,8 +73,7 @@ export class DatastoreServiceEventBus extends Vue {
   tags: { [guid: string]: TagEntity } = {};
 }
 
-@injectable()
-export class DatastoreService extends BaseClientService {
+export default class DatastoreService extends BaseClientService {
   $vm = new DatastoreServiceEventBus();
 
   constructor(

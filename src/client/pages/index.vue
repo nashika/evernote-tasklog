@@ -9,40 +9,6 @@
         a.button--grey(href="https://github.com/nuxt/nuxt.js", target="_blank") GitHub
 </template>
 
-<script lang="ts">
-import { Component } from "nuxt-property-decorator";
-import Logo from "~/src/client/components/Logo.vue";
-import BaseComponent from "~/src/client/components/base.component";
-import AttendanceEntity from "~/src/common/entity/attendance.entity";
-
-@Component({
-  components: {
-    Logo,
-  },
-})
-export default class extends BaseComponent {
-  async fetch() {}
-
-  async mounted(): Promise<void> {
-    await super.mounted();
-    this.logger.info("request start");
-    const datas = await this.$socketIoService.request("attendance::find");
-    const attendances: AttendanceEntity[] = [];
-    for (const data of datas) {
-      const attendance = new AttendanceEntity();
-      Object.assign(attendance, data);
-      attendances.push(attendance);
-    }
-    this.logger.info("request ok");
-    this.logger.info(attendances);
-    // await this.datastoreService.initialize();
-    // this.$on("reload", () => this.reload());
-    // await this.pushService.initialize(this);
-    // this.isReady = true;
-  }
-}
-</script>
-
 <style>
 .container {
   margin: 0 auto;
@@ -75,3 +41,37 @@ export default class extends BaseComponent {
   padding-top: 15px;
 }
 </style>
+
+<script lang="ts">
+import { Component } from "nuxt-property-decorator";
+import Logo from "~/src/client/components/Logo.vue";
+import BaseComponent from "~/src/client/components/base.component";
+import AttendanceEntity from "~/src/common/entity/attendance.entity";
+
+@Component({
+  components: {
+    Logo,
+  },
+})
+export default class extends BaseComponent {
+  async fetch() {}
+
+  async mounted(): Promise<void> {
+    await super.mounted();
+    this.logger.info("request start");
+    const datas = await this.$requestService.find(AttendanceEntity);
+    const attendances: AttendanceEntity[] = [];
+    for (const data of datas) {
+      const attendance = new AttendanceEntity();
+      Object.assign(attendance, data);
+      attendances.push(attendance);
+    }
+    this.logger.info("request ok");
+    this.logger.info(attendances);
+    // await this.datastoreService.initialize();
+    // this.$on("reload", () => this.reload());
+    // await this.pushService.initialize(this);
+    // this.isReady = true;
+  }
+}
+</script>

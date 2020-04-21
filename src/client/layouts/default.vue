@@ -1,5 +1,6 @@
 <template lang="pug">
-  div
+  section.app
+    navigation
     nuxt
 </template>
 
@@ -52,3 +53,16 @@ html {
   background-color: #35495e;
 }
 </style>
+
+<script lang="ts">
+import { Component } from "nuxt-property-decorator";
+import Navigation from "~/src/client/components/navigation.component.vue";
+import BaseComponent from "~/src/client/components/base.component";
+
+@Component({
+  components: {
+    Navigation,
+  },
+})
+export default class extends BaseComponent {}
+</script>

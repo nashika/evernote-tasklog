@@ -1,5 +1,6 @@
 import { Configuration } from "@nuxt/types";
 import webpack from "webpack";
+import message from "~/src/client/lang/ja";
 
 const webpackConfig: webpack.Configuration = {
   /*
@@ -71,12 +72,23 @@ const conf: Configuration = {
     "@nuxtjs/pwa",
     // Doc: https://github.com/nuxt-community/dotenv-module
     "@nuxtjs/dotenv",
+    "nuxt-i18n",
   ],
   /*
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
   axios: {},
+  i18n: {
+    locales: ["ja"],
+    defaultLocale: "ja",
+    vueI18n: {
+      fallbackLocale: "ja",
+      messages: {
+        ja: message,
+      },
+    },
+  },
   /*
    ** Build configuration
    */
