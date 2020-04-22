@@ -214,7 +214,10 @@ export default abstract class BaseTable<T extends BaseEntity> {
     for (const key in where) {
       const whereColumn = where[key];
       if (whereColumn === undefined) continue;
-      else if (typeof whereColumn !== "object") {
+      else if (whereColumn === null) {
+        result[key] = <T[keyof T]>null;
+        continue;
+      } else if (typeof whereColumn !== "object") {
         result[key] = <T[keyof T]>whereColumn;
         continue;
       }
