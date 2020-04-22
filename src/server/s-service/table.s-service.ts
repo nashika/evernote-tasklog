@@ -28,6 +28,7 @@ import TimeLogTable from "~/src/server/table/time-log.table";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import AttendanceTable from "~/src/server/table/attendance.table";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
+import configLoader from "~/src/common/util/config-loader";
 
 @injectable()
 export default class TableSService extends BaseSService {
@@ -123,7 +124,7 @@ export default class TableSService extends BaseSService {
       type: "sqlite",
       database: filePath,
       entities: [...schemas, ...archiveSchemas],
-      logging: false,
+      logging: configLoader.app.sqlLogging,
     });
     return this.connection;
   }

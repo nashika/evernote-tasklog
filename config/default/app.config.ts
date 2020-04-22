@@ -1,7 +1,8 @@
 const appConfig: AppConfig.IAppConfigs = {
   "*": {
     port: 3000,
-    logLevel: "trace",
+    logLevel: "info",
+    sqlLogging: false,
     sandbox: false,
     token: "",
     persons: [

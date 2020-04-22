@@ -7,6 +7,7 @@ declare namespace AppConfig {
     baseUrl: string;
     port: number;
     logLevel: string;
+    sqlLogging: boolean;
     sandbox: boolean;
     token: string;
     persons: IPersonConfig[];
