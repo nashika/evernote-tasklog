@@ -1,14 +1,4 @@
 -- we don't know how to generate schema main (class Schema) :(
-create table Sessions
-(
-    sid VARCHAR(32)
-        primary key,
-    expires DATETIME,
-    data TEXT,
-    createdAt DATETIME not null,
-    updatedAt DATETIME not null
-);
-
 create table archive_note
 (
     archiveId INTEGER

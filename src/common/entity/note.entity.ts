@@ -74,7 +74,7 @@ export default class NoteEntity extends BaseEvernoteEntity {
         nullable: true,
       },
       attributes__subjectDate: {
-        type: "real",
+        type: "integer",
         nullable: true,
       },
       attributes__latitude: {

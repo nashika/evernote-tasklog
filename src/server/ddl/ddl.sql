@@ -8,15 +8,15 @@ create table archive_note
     content text,
     contentHash text not null,
     contentLength integer not null,
-    created integer,
-    updated integer,
+    created integer not null,
+    updated integer not null,
     deleted integer,
     active boolean not null,
     updateSequenceNum integer not null,
-    notebookGuid text,
+    notebookGuid text not null,
     tagGuids text,
     resources text,
-    attributes__subjectDate real,
+    attributes__subjectDate integer,
     attributes__latitude real,
     attributes__longitude real,
     attributes__altitude real,
@@ -64,7 +64,7 @@ create table attendance
     updatedAt datetime default datetime('now') not null
 );
 
-create unique index IDX_e5e0fc6e42e37e29bb878066a3
+create unique index "unique"
     on attendance (personId, year, month, day);
 
 create table constraint_result
@@ -103,15 +103,15 @@ create table note
     content text,
     contentHash text not null,
     contentLength integer not null,
-    created integer,
-    updated integer,
+    created integer not null,
+    updated integer not null,
     deleted integer,
     active boolean not null,
     updateSequenceNum integer not null,
-    notebookGuid text,
+    notebookGuid text not null,
     tagGuids text,
     resources text,
-    attributes__subjectDate real,
+    attributes__subjectDate integer,
     attributes__latitude real,
     attributes__longitude real,
     attributes__altitude real,
@@ -194,6 +194,19 @@ create table saved_search
     createdAt datetime default datetime('now') not null,
     updatedAt datetime default datetime('now') not null
 );
+
+create table session
+(
+    expiredAt integer not null,
+    id text not null
+        primary key,
+    json text not null,
+    createdAt datetime default datetime('now') not null,
+    updatedAt datetime default datetime('now') not null
+);
+
+create index idx_expiredAt
+    on session (expiredAt);
 
 create table tag
 (
