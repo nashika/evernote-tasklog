@@ -1,10 +1,10 @@
 <template lang="pug">
 section.app
-  navigation
+  navigation-component
   // filter-modal
-  // person-modal
+  person-modal-component(v-on:reload="reload()")
   // progress-modal
-  nuxt
+  nuxt(ref="main")
 </template>
 
 <style>
@@ -65,15 +65,18 @@ html {
 
 <script lang="ts">
 import { Component } from "nuxt-property-decorator";
-import Navigation from "~/src/client/components/navigation.component.vue";
+
+import NavigationComponent from "~/src/client/components/navigation.component.vue";
 import BaseComponent from "~/src/client/components/base.component";
+import PersonModalComponent from "~/src/client/components/modal/person-modal.component.vue";
 
 @Component({
   components: {
-    Navigation,
+    NavigationComponent,
+    PersonModalComponent,
   },
 })
-export default class extends BaseComponent {
+export default class DefaultLayoutComponent extends BaseComponent {
   // TODO: 書き換え
   isReady: boolean = false;
   showMenu: boolean = false;
@@ -85,8 +88,9 @@ export default class extends BaseComponent {
     // this.isReady = true;
   }
 
-  reload() {
-    // this.$refs.main.reload();
+  async reload(): Promise<void> {
+    const mainComponent: any = this.$refs.main;
+    await mainComponent.reload();
   }
 }
 </script>

@@ -13,7 +13,7 @@ b-navbar.d-print-none(toggleable="sm", type="dark", variant="dark", fixed="top")
       +item("/notes", "sticky-note", "{{$tc('common.note')}}")
       +item("/activity", "history", "{{$t('common.activity')}}")
       +item("/constraint", "check-circle", "{{$t('common.constraint')}}")
-  b-button(:variant="$datastoreService.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$root.$emit('show::modal', 'person-modal')")
+  b-button(:variant="$datastoreService.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$bvModal.show('person-modal')")
     i.fa.fa-user
     span.d-none.d-sm-inline &nbsp;{{personLabel}}
 </template>
