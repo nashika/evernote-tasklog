@@ -23,7 +23,7 @@ import Component from "vue-class-component";
 import BaseComponent from "~/src/client/components/base.component";
 
 @Component({})
-export default class extends BaseComponent {
+export default class NavigationComponent extends BaseComponent {
   get personLabel(): string | undefined {
     if (this.$datastoreService.$vm.currentPersonId)
       return this.$datastoreService.currentPerson?.name?.substr(0, 1);

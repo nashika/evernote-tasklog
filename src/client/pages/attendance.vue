@@ -20,17 +20,17 @@ section#attendance-mode
       .col-sm-6
         b-button(variant="primary", size="lg", block, :disabled="!todayAttendance.arrivalTime || !!todayAttendance.departureTime", @click="departure()") #[i.fa.fa-sign-out] {{$t('common.departure')}}
     b-table(bordered, small, striped, hover, responsive, head-variant="inverse", :fields="fields", :items="attendances")
-      template(slot="day", scope="data")
+      template(v-slot:cell(day)="data")
         | {{data.item.day}} ({{moment({year: data.item.year, month: data.item.month - 1, day: data.item.day}).format('ddd')}})
-      template(slot="arrival", scope="data")
-        app-timepicker-attendance-mode(v-model="data.item.arrivalTime", @change="changeRow(data.index)")
-      template(slot="departure", scope="data")
-        app-timepicker-attendance-mode(v-model="data.item.departureTime", @change="changeRow(data.index)")
-      template(slot="rest", scope="data")
-        app-timepicker-attendance-mode(v-model="data.item.restTime", @change="changeRow(data.index)")
-      template(slot="remarks", scope="data")
+      template(v-slot:cell(arrival)="data")
+        attendance-time-picker-component(v-model="data.item.arrivalTime", @change="changeRow(data.index)")
+      template(v-slot:cell(departure)="data")
+        attendance-time-picker-component(v-model="data.item.departureTime", @change="changeRow(data.index)")
+      template(v-slot:cell(rest)="data")
+        attendance-time-picker-component(v-model="data.item.restTime", @change="changeRow(data.index)")
+      template(v-slot:cell(remarks)="data")
         b-form-input(size="sm", v-model="data.item.remarks", @change="changeRow(data.index)")
-      template(slot="action", scope="data")
+      template(v-slot:cell(action)="data")
         b-button(variant="primary", size="sm", :disabled="!updateFlags[data.index]", @click="save(data.item)") {{$t('common.update')}}
         b-button(variant="danger", size="sm", :disabled="!createFlags[data.index]", @click="remove(data.item)") {{$t('common.delete')}}
     .my-3.text-right
@@ -47,17 +47,17 @@ import BaseComponent from "../components/base.component";
 import AttendanceEntity from "../../common/entity/attendance.entity";
 import configLoader from "../../common/util/config-loader";
 import { assertIsDefined } from "~/src/common/util/assert";
+import AttendanceTimePickerComponent from "~/src/client/components/attendance-time-picker.component.vue";
 
 @Component({
   components: {
-    "app-timepicker-attendance-mode": require("./timepicker-attendance-mode.component.vue")
-      .default,
+    AttendanceTimePickerComponent,
   },
   watch: {
     personId: "reload",
   },
 })
-export default class AttendanceModeComponent extends BaseComponent {
+export default class AttendancePageComponent extends BaseComponent {
   attendances: AttendanceEntity[] = [];
   todayAttendance: AttendanceEntity | null = null;
   updateFlags: boolean[] = [];
@@ -66,26 +66,7 @@ export default class AttendanceModeComponent extends BaseComponent {
   year: number = 0;
   month: number = 0;
 
-  fields = {
-    day: {
-      label: this.$t("common.day"),
-    },
-    arrival: {
-      label: this.$t("common.arrival"),
-    },
-    departure: {
-      label: this.$t("common.departure"),
-    },
-    rest: {
-      label: this.$t("common.rest"),
-    },
-    remarks: {
-      label: this.$t("common.remarks"),
-    },
-    action: {
-      label: this.$t("common.action"),
-    },
-  };
+  fields!: Array<Object>;
 
   get strYear(): string {
     return _.toString(this.year);
@@ -119,8 +100,38 @@ export default class AttendanceModeComponent extends BaseComponent {
     return _.find(this.persons, { id: this.personId });
   }
 
+  async beforeCreate(): Promise<void> {
+    this.fields = [
+      {
+        key: "day",
+        label: this.$t("common.day"),
+      },
+      {
+        key: "arrival",
+        label: this.$t("common.arrival"),
+      },
+      {
+        key: "departure",
+        label: this.$t("common.departure"),
+      },
+      {
+        key: "rest",
+        label: this.$t("common.rest"),
+      },
+      {
+        key: "remarks",
+        label: this.$t("common.remarks"),
+      },
+      {
+        key: "action",
+        label: this.$t("common.action"),
+      },
+    ];
+  }
+
   async mounted(): Promise<void> {
     await super.mounted();
+
     await this.reload();
   }
 
