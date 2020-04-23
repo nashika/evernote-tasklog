@@ -24,6 +24,11 @@ export interface EntityColumnParams<T extends BaseEntity> {
   nullable: boolean;
 }
 
+export type TEntityClass<T extends BaseEntity> = {
+  new (data: any): T;
+  readonly params: EntityParams<T>;
+};
+
 export type EntityColumnType =
   | "integer"
   | "real"

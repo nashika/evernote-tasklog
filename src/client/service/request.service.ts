@@ -5,6 +5,7 @@ import BaseClientService from "./base-client.service";
 import NoteEntity from "~/src/common/entity/note.entity";
 import OptionEntity from "~/src/common/entity/option.entity";
 import BaseEntity, {
+  TEntityClass,
   FindManyEntityOptions,
   FindOneEntityOptions,
 } from "~/src/common/entity/base.entity";
@@ -15,18 +16,18 @@ export default class RequestService extends BaseClientService {
   }
 
   async find<T extends BaseEntity>(
-    EntityClass: typeof BaseEntity,
+    EntityClass: TEntityClass<T>,
     options: FindManyEntityOptions<T> = {}
   ): Promise<T[]> {
     const datas = await this.socketIoClientService.request<Partial<T>[]>(
       `${EntityClass.params.name}::find`,
       options
     );
-    return _.map(datas, data => new (<any>EntityClass)(data));
+    return _.map(datas, data => new EntityClass(data));
   }
 
   async findOne<T extends BaseEntity>(
-    EntityClass: typeof BaseEntity,
+    EntityClass: TEntityClass<T>,
     options: FindOneEntityOptions<T> = {}
   ): Promise<T> {
     const findOneOptions: FindManyEntityOptions<T> = _.clone(options);
@@ -35,12 +36,12 @@ export default class RequestService extends BaseClientService {
       `${EntityClass.params.name}::find`,
       findOneOptions
     );
-    const results: T[] = _.map(datas, data => new (<any>EntityClass)(data));
+    const results: T[] = _.map(datas, data => new EntityClass(data));
     return results[0] || null;
   }
 
   async count<T extends BaseEntity>(
-    EntityClass: typeof BaseEntity,
+    EntityClass: TEntityClass<T>,
     options: FindManyEntityOptions<T>
   ): Promise<number> {
     return this.socketIoClientService.request<number>(
@@ -50,7 +51,7 @@ export default class RequestService extends BaseClientService {
   }
 
   async save<T extends BaseEntity>(
-    EntityClass: typeof BaseEntity,
+    EntityClass: TEntityClass<T>,
     entity: T
   ): Promise<void> {
     await this.socketIoClientService.request(
@@ -59,8 +60,8 @@ export default class RequestService extends BaseClientService {
     );
   }
 
-  async remove(
-    EntityClass: typeof BaseEntity,
+  async remove<T extends BaseEntity>(
+    EntityClass: TEntityClass<T>,
     id: number | string
   ): Promise<void> {
     await this.socketIoClientService.request(

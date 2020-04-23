@@ -7,7 +7,7 @@ import BaseServerService from "./base-server.service";
 import container from "~/src/server/inversify.config";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
-import BaseEntity from "~/src/common/entity/base.entity";
+import BaseEntity, { TEntityClass } from "~/src/common/entity/base.entity";
 import { SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseTable from "~/src/server/table/base.table";
 import ConstraintResultTable from "~/src/server/table/constraint-result.table";
@@ -130,7 +130,7 @@ export default class TableService extends BaseServerService {
   }
 
   getTable<TEntity extends BaseEntity, TTable extends BaseTable<TEntity>>(
-    EntityClass: typeof BaseEntity
+    EntityClass: TEntityClass<TEntity>
   ): TTable {
     return <TTable>this.tables[EntityClass.params.name];
   }

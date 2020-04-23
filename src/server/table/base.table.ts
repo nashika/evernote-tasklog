@@ -21,6 +21,7 @@ import { injectable } from "inversify";
 
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 import BaseEntity, {
+  TEntityClass,
   EntityColumnType,
   FindEntityWhereColumnOperators,
   FindEntityWhereOptions,
@@ -33,7 +34,7 @@ import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
 export default abstract class BaseTable<T extends BaseEntity> {
-  readonly EntityClass: typeof BaseEntity;
+  readonly EntityClass: TEntityClass<T>;
 
   readonly schema: EntitySchema<T>;
   readonly archiveSchema: EntitySchema<T> | null = null;
@@ -352,6 +353,6 @@ export default abstract class BaseTable<T extends BaseEntity> {
         typeof json === "string" ? JSON.parse(json) : null
       );
     }
-    return new (<any>this.EntityClass)(data);
+    return new this.EntityClass(data);
   }
 }

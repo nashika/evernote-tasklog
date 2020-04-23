@@ -6,6 +6,7 @@ import container from "~/src/server/inversify.config";
 import TableService from "~/src/server/service/table.service";
 import SessionService from "~/src/server/service/session.service";
 import BaseEntity, {
+  TEntityClass,
   FindManyEntityOptions,
 } from "~/src/common/entity/base.entity";
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
@@ -15,7 +16,7 @@ export default abstract class BaseEntityRoute<
   TEntity extends BaseEntity,
   TTable extends BaseTable<TEntity>
 > extends BaseRoute {
-  EntityClass: typeof BaseEntity;
+  EntityClass: TEntityClass<TEntity>;
 
   protected constructor(
     protected tableService: TableService,
@@ -23,7 +24,7 @@ export default abstract class BaseEntityRoute<
   ) {
     super();
     const name = _.lowerFirst(_.replace(this.Class.name, /Route$/, ""));
-    this.EntityClass = container.getNamed<typeof BaseEntity>(
+    this.EntityClass = container.getNamed(
       SYMBOL_TYPES.Entity,
       _.get(SYMBOL_TABLES, name)
     );
@@ -69,8 +70,8 @@ export default abstract class BaseEntityRoute<
     _socket: SocketIO.Socket,
     data: Object
   ): Promise<boolean> {
-    const entity: TEntity = new (<any>this.EntityClass)(data);
-    await this.table.save(<any>entity);
+    const entity: TEntity = new this.EntityClass(data);
+    await this.table.save(entity);
     return true;
   }
 
