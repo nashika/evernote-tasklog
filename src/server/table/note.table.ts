@@ -1,20 +1,20 @@
 import { injectable } from "inversify";
 import _ from "lodash";
 
-import TableSService from "~/src/server/s-service/table.s-service";
+import TableService from "~/src/server/service/table.service";
 import NoteEntity, {
   IFindManyNoteEntityOptions,
 } from "~/src/common/entity/note.entity";
 import BaseEvernoteTable from "~/src/server/table/base-evernote.table";
 import logger from "~/src/server/logger";
-import EvernoteClientSService from "~/src/server/s-service/evernote-client.s-service";
+import EvernoteClientService from "~/src/server/service/evernote-client.service";
 import { FindEntityWhereOptions } from "~/src/common/entity/base.entity";
 
 @injectable()
 export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
   constructor(
-    protected tableSService: TableSService,
-    protected evernoteClientSService: EvernoteClientSService
+    protected tableService: TableService,
+    protected evernoteClientService: EvernoteClientService
   ) {
     super();
   }
@@ -53,7 +53,7 @@ export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
 
   async loadRemote(guid: string): Promise<NoteEntity> {
     this.message("load", ["remote"], "note", true, { guid });
-    const note = await this.evernoteClientSService.getNote(guid);
+    const note = await this.evernoteClientService.getNote(guid);
     const lastNote: NoteEntity = note;
     await this.save(note, true);
     await this.parseNote(lastNote);
@@ -92,8 +92,8 @@ export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
     for (const line of content.split("<>")) {
       lines.push(line.replace(/<[^>]*>/g, ""));
     }
-    await this.tableSService.timeLogTable.parse(note, lines);
-    await this.tableSService.profitLogTable.parse(note, lines);
+    await this.tableService.timeLogTable.parse(note, lines);
+    await this.tableService.profitLogTable.parse(note, lines);
     this.message("parse", ["local"], "note", false, {
       guid: note.guid,
       title: note.title,

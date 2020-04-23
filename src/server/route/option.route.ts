@@ -3,8 +3,8 @@ import { injectable } from "inversify";
 import OptionTable from "~/src/server/table/option.table";
 import OptionEntity from "~/src/common/entity/option.entity";
 import BaseEntityRoute from "~/src/server/route/base-entity.route";
-import TableSService from "~/src/server/s-service/table.s-service";
-import SessionSService from "~/src/server/s-service/session.s-service";
+import TableService from "~/src/server/service/table.service";
+import SessionService from "~/src/server/service/session.service";
 
 @injectable()
 export default class OptionRoute extends BaseEntityRoute<
@@ -12,9 +12,9 @@ export default class OptionRoute extends BaseEntityRoute<
   OptionTable
 > {
   constructor(
-    protected tableSService: TableSService,
-    protected sessionSService: SessionSService
+    protected tableService: TableService,
+    protected sessionService: SessionService
   ) {
-    super(tableSService, sessionSService);
+    super(tableService, sessionService);
   }
 }

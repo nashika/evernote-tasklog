@@ -2,11 +2,11 @@ import { injectable } from "inversify";
 import { Socket } from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
-import SyncSService from "~/src/server/s-service/sync.s-service";
+import SyncService from "~/src/server/service/sync.service";
 
 @injectable()
 export default class SyncRoute extends BaseRoute {
-  constructor(protected syncSService: SyncSService) {
+  constructor(protected syncService: SyncService) {
     super();
   }
 
@@ -19,7 +19,7 @@ export default class SyncRoute extends BaseRoute {
   }
 
   protected async onRun(_socket: Socket): Promise<boolean> {
-    await this.syncSService.sync(true);
+    await this.syncService.sync(true);
     return true;
   }
 }

@@ -3,20 +3,20 @@ import SocketIO from "socket.io";
 
 import BaseEntityRoute from "~/src/server/route/base-entity.route";
 import NoteEntity from "~/src/common/entity/note.entity";
-import SessionSService from "~/src/server/s-service/session.s-service";
-import TableSService from "~/src/server/s-service/table.s-service";
+import SessionService from "~/src/server/service/session.service";
+import TableService from "~/src/server/service/table.service";
 import NoteTable from "~/src/server/table/note.table";
-import SyncSService from "~/src/server/s-service/sync.s-service";
+import SyncService from "~/src/server/service/sync.service";
 import { FindEntityWhereOptions } from "~/src/common/entity/base.entity";
 
 @injectable()
 export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
   constructor(
-    protected tableSService: TableSService,
-    protected sessionSService: SessionSService,
-    protected syncSService: SyncSService
+    protected tableService: TableService,
+    protected sessionService: SessionService,
+    protected syncService: SyncService
   ) {
-    super(tableSService, sessionSService);
+    super(tableService, sessionService);
   }
 
   async connect(socket: SocketIO.Socket): Promise<void> {
@@ -30,9 +30,9 @@ export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
     guid: string
   ): Promise<NoteEntity | null> {
     if (!guid) return null;
-    await this.syncSService.lock();
+    await this.syncService.lock();
     const note = await this.table.loadRemote(guid);
-    await this.syncSService.unlock();
+    await this.syncService.unlock();
     return note;
   }
 
@@ -40,9 +40,9 @@ export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
     _socket: SocketIO.Socket,
     query: FindEntityWhereOptions<NoteEntity>
   ): Promise<boolean> {
-    await this.syncSService.lock();
+    await this.syncService.lock();
     await this.table.reParseNotes(query);
-    await this.syncSService.unlock();
+    await this.syncService.unlock();
     return true;
   }
 }

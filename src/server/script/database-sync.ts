@@ -1,13 +1,13 @@
 import "reflect-metadata";
 
 import container from "~/src/server/inversify.config";
-import TableSService from "~/src/server/s-service/table.s-service";
+import TableService from "~/src/server/service/table.service";
 
-const tableSService = container.get<TableSService>(TableSService);
+const tableService = container.get<TableService>(TableService);
 
 (async () => {
-  await tableSService.initialize(false);
+  await tableService.initialize(false);
   console.log("Synchronize database started.");
-  await tableSService.sync();
+  await tableService.sync();
   console.log("Synchronize database finished.");
 })();

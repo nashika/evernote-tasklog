@@ -2,28 +2,28 @@ import { injectable } from "inversify";
 import _ from "lodash";
 import { FindConditions } from "typeorm";
 
-import BaseSService from "~/src/server/s-service/base.s-service";
-import TableSService from "~/src/server/s-service/table.s-service";
+import BaseServerService from "~/src/server/service/base-server.service";
+import TableService from "~/src/server/service/table.service";
 import logger from "~/src/server/logger";
 import NoteEntity from "~/src/common/entity/note.entity";
 import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
 import configLoader from "~/src/common/util/config-loader";
 
 @injectable()
-export default class ConstraintSService extends BaseSService {
-  constructor(protected tableSService: TableSService) {
+export default class ConstraintService extends BaseServerService {
+  constructor(protected tableService: TableService) {
     super();
   }
 
   async checkAll(): Promise<void> {
     logger.info(`Delete all constraintResult datas.`);
-    await this.tableSService.constraintResultTable.clear();
-    const noteCount = await this.tableSService.noteTable.count();
+    await this.tableService.constraintResultTable.clear();
+    const noteCount = await this.tableService.noteTable.count();
     let notes: NoteEntity[];
     let i = 0;
     do {
       logger.info(`Checking constraint ${i * 100} / ${noteCount}.`);
-      notes = await this.tableSService.noteTable.findAll({
+      notes = await this.tableService.noteTable.findAll({
         take: 100,
         skip: 100 * i,
       });
@@ -37,7 +37,7 @@ export default class ConstraintSService extends BaseSService {
     const cond: FindConditions<ConstraintResultEntity> = <any>{
       noteGuid: note.guid,
     };
-    await this.tableSService.constraintResultTable.delete(cond);
+    await this.tableService.constraintResultTable.delete(cond);
     await this.check(note);
   }
 
@@ -46,7 +46,7 @@ export default class ConstraintSService extends BaseSService {
     const cond: FindConditions<ConstraintResultEntity> = <any>{
       noteGuid: guid,
     };
-    await this.tableSService.constraintResultTable.delete(cond);
+    await this.tableService.constraintResultTable.delete(cond);
   }
 
   private async check(note: NoteEntity): Promise<void> {
@@ -56,7 +56,7 @@ export default class ConstraintSService extends BaseSService {
       const constraintResult = new ConstraintResultEntity();
       constraintResult.noteGuid = note.guid;
       constraintResult.constraintId = constraint.id;
-      await this.tableSService.constraintResultTable.save(constraintResult);
+      await this.tableService.constraintResultTable.save(constraintResult);
     }
   }
 
@@ -80,7 +80,7 @@ export default class ConstraintSService extends BaseSService {
       return false;
     if (query.notebook || query.stack) {
       const notebook = note.notebookGuid
-        ? this.tableSService.caches.notebooks[note.notebookGuid]
+        ? this.tableService.caches.notebooks[note.notebookGuid]
         : null;
       if (!this.evalString(notebook?.name, query.notebook)) return false;
       if (!this.evalString(notebook?.stack, query.stack)) return false;
@@ -88,7 +88,7 @@ export default class ConstraintSService extends BaseSService {
     if (query.tag) {
       const tagNames: string[] = [];
       for (const tagGuid of _.toArray(note.tagGuids)) {
-        const tag = this.tableSService.caches.tags[tagGuid];
+        const tag = this.tableService.caches.tags[tagGuid];
         if (!tag.name) continue;
         tagNames.push(tag.name);
       }
@@ -213,12 +213,12 @@ export default class ConstraintSService extends BaseSService {
   ): string[] {
     if (!name) return [];
     const currentTag = _.find(
-      this.tableSService.caches.tags,
+      this.tableService.caches.tags,
       tag => tag.name === name
     );
     if (!currentTag) return [];
     const childTags = _.filter(
-      this.tableSService.caches.tags,
+      this.tableService.caches.tags,
       tag => tag.parentGuid === currentTag.guid
     );
     const childTagNames = childTags.map(tag => tag.name).filter(name => !!name);

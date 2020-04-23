@@ -1,17 +1,15 @@
 import "reflect-metadata";
 
 import container from "~/src/server/inversify.config";
-import TableSService from "~/src/server/s-service/table.s-service";
-import ConstraintSService from "~/src/server/s-service/constraint.s-service";
+import TableService from "~/src/server/service/table.service";
+import ConstraintService from "~/src/server/service/constraint.service";
 
-const tableSService = container.get<TableSService>(TableSService);
-const constraintSService = container.get<ConstraintSService>(
-  ConstraintSService
-);
+const tableService = container.get<TableService>(TableService);
+const constraintService = container.get<ConstraintService>(ConstraintService);
 
 (async () => {
-  await tableSService.initialize();
+  await tableService.initialize();
   console.log("Check constraint started.");
-  await constraintSService.checkAll();
+  await constraintService.checkAll();
   console.log("Check constraint finished.");
 })();

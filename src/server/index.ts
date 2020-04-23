@@ -7,7 +7,7 @@ import { Nuxt, Builder } from "nuxt";
 // Import and Set Nuxt.js options
 import config from "../../nuxt.config";
 import container from "~/src/server/inversify.config";
-import MainSService from "~/src/server/s-service/main.s-service";
+import MainService from "~/src/server/service/main.service";
 import logger from "~/src/server/logger";
 
 const app = express();
@@ -38,7 +38,7 @@ async function start() {
   });
 
   // main logic
-  const mainService: MainSService = container.get<MainSService>(MainSService);
+  const mainService: MainService = container.get<MainService>(MainService);
   try {
     await mainService.initialize(server);
     logger.info(`Initialize web server finished.`);

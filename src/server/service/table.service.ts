@@ -3,7 +3,7 @@ import _ from "lodash";
 import { injectable } from "inversify";
 import { Connection, createConnection, EntitySchema } from "typeorm";
 
-import BaseSService from "./base.s-service";
+import BaseServerService from "./base-server.service";
 import container from "~/src/server/inversify.config";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
@@ -31,7 +31,7 @@ import AttendanceEntity from "~/src/common/entity/attendance.entity";
 import configLoader from "~/src/common/util/config-loader";
 
 @injectable()
-export default class TableSService extends BaseSService {
+export default class TableService extends BaseServerService {
   caches: {
     tags: { [guid: string]: TagEntity };
     notebooks: { [guid: string]: NotebookEntity };

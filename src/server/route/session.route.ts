@@ -2,11 +2,11 @@ import { injectable } from "inversify";
 import SocketIO from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
-import SessionSService from "~/src/server/s-service/session.s-service";
+import SessionService from "~/src/server/service/session.service";
 
 @injectable()
 export default class SessionRoute extends BaseRoute {
-  constructor(protected sessionSService: SessionSService) {
+  constructor(protected sessionService: SessionService) {
     super();
   }
 
@@ -20,7 +20,7 @@ export default class SessionRoute extends BaseRoute {
   }
 
   protected async onLoad(socket: SocketIO.Socket, key: string): Promise<any> {
-    return this.sessionSService.load(socket, key);
+    return this.sessionService.load(socket, key);
   }
 
   protected async onSave(
@@ -28,7 +28,7 @@ export default class SessionRoute extends BaseRoute {
     key: string,
     value: any
   ): Promise<boolean> {
-    await this.sessionSService.save(socket, key, value);
+    await this.sessionService.save(socket, key, value);
     return true;
   }
 }

@@ -7,16 +7,16 @@ import TagEntity from "~/src/common/entity/tag.entity";
 import NoteEntity from "~/src/common/entity/note.entity";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
-import BaseSService from "~/src/server/s-service/base.s-service";
-import TableSService from "~/src/server/s-service/table.s-service";
-import EvernoteClientSService from "~/src/server/s-service/evernote-client.s-service";
-import ConstraintSService from "~/src/server/s-service/constraint.s-service";
-import SocketIoSService from "~/src/server/s-service/socket-io.s-service";
+import BaseServerService from "~/src/server/service/base-server.service";
+import TableService from "~/src/server/service/table.service";
+import EvernoteClientService from "~/src/server/service/evernote-client.service";
+import ConstraintService from "~/src/server/service/constraint.service";
+import SocketIoService from "~/src/server/service/socket-io.service";
 import logger from "~/src/server/logger";
 import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
-export default class SyncSService extends BaseSService {
+export default class SyncService extends BaseServerService {
   private static startInterval = 5 * 1000;
   private static maxInterval = 5 * 60 * 1000;
 
@@ -25,20 +25,20 @@ export default class SyncSService extends BaseSService {
   private nextLockPromise: Promise<void> = Promise.resolve();
   private lockResolves: Array<() => void>;
   private timer: any;
-  private interval: number = SyncSService.startInterval;
+  private interval: number = SyncService.startInterval;
 
   constructor(
-    protected tableSService: TableSService,
-    protected evernoteClientSService: EvernoteClientSService,
-    protected socketIoSService: SocketIoSService,
-    protected constraintSService: ConstraintSService
+    protected tableService: TableService,
+    protected evernoteClientService: EvernoteClientService,
+    protected socketIoService: SocketIoService,
+    protected constraintService: ConstraintService
   ) {
     super();
     this.lockResolves = [];
   }
 
-  get Class(): typeof SyncSService {
-    return <typeof SyncSService>this.constructor;
+  get Class(): typeof SyncService {
+    return <typeof SyncService>this.constructor;
   }
 
   async lock(): Promise<void> {
@@ -63,11 +63,11 @@ export default class SyncSService extends BaseSService {
     clearTimeout(this.timer);
     await this.lock();
     try {
-      let localSyncState: Evernote.NoteStore.SyncState = await this.tableSService.optionTable.findValueByKey(
+      let localSyncState: Evernote.NoteStore.SyncState = await this.tableService.optionTable.findValueByKey(
         "syncState"
       );
       if (!localSyncState) localSyncState = { updateCount: 0 };
-      const remoteSyncState = await this.evernoteClientSService.getSyncState();
+      const remoteSyncState = await this.evernoteClientService.getSyncState();
       const updateEventHash: { [event: string]: boolean } = {};
       // Sync process
       logger.info(
@@ -79,7 +79,7 @@ export default class SyncSService extends BaseSService {
       ) {
         await this.getSyncChunk(localSyncState, updateEventHash);
       }
-      await this.tableSService.optionTable.saveValueByKey(
+      await this.tableService.optionTable.saveValueByKey(
         "syncState",
         remoteSyncState
       );
@@ -88,11 +88,11 @@ export default class SyncSService extends BaseSService {
       );
       assertIsDefined(localSyncState.updateCount);
       this.updateCount = localSyncState.updateCount;
-      this.socketIoSService.emitAll("sync::updateCount", this.updateCount);
-      for (const event in updateEventHash) this.socketIoSService.emitAll(event);
+      this.socketIoService.emitAll("sync::updateCount", this.updateCount);
+      for (const event in updateEventHash) this.socketIoService.emitAll(event);
       if (updateEventHash["sync::updateNotes"]) {
-        if ((await this.tableSService.constraintResultTable.count()) > 0)
-          this.socketIoSService.emitAll("constraint::notify");
+        if ((await this.tableService.constraintResultTable.count()) > 0)
+          this.socketIoService.emitAll("constraint::notify");
       }
     } finally {
       await this.unlock();
@@ -114,38 +114,36 @@ export default class SyncSService extends BaseSService {
   ): Promise<void> {
     logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
     assertIsDefined(localSyncState.updateCount);
-    const lastSyncChunk: Evernote.NoteStore.SyncChunk = await this.evernoteClientSService.getFilteredSyncChunk(
+    const lastSyncChunk: Evernote.NoteStore.SyncChunk = await this.evernoteClientService.getFilteredSyncChunk(
       localSyncState.updateCount
     );
-    await this.tableSService.noteTable.saveAll(
+    await this.tableService.noteTable.saveAll(
       _.map(lastSyncChunk.notes, note => new NoteEntity(note))
     );
-    await this.tableSService.noteTable.delete(
-      lastSyncChunk.expungedNotes ?? []
-    );
-    await this.tableSService.notebookTable.saveAll(
+    await this.tableService.noteTable.delete(lastSyncChunk.expungedNotes ?? []);
+    await this.tableService.notebookTable.saveAll(
       _.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook))
     );
-    await this.tableSService.notebookTable.delete(
+    await this.tableService.notebookTable.delete(
       lastSyncChunk.expungedNotebooks ?? []
     );
-    await this.tableSService.tagTable.saveAll(
+    await this.tableService.tagTable.saveAll(
       _.map(lastSyncChunk.tags, tag => new TagEntity(tag))
     );
-    await this.tableSService.tagTable.delete(lastSyncChunk.expungedTags ?? []);
-    await this.tableSService.savedSearchTable.saveAll(
+    await this.tableService.tagTable.delete(lastSyncChunk.expungedTags ?? []);
+    await this.tableService.savedSearchTable.saveAll(
       _.map(lastSyncChunk.searches, search => new SavedSearchEntity(search))
     );
-    await this.tableSService.savedSearchTable.delete(
+    await this.tableService.savedSearchTable.delete(
       lastSyncChunk.expungedSearches ?? []
     );
-    await this.tableSService.linkedNotebookTable.saveAll(
+    await this.tableService.linkedNotebookTable.saveAll(
       _.map(
         lastSyncChunk.linkedNotebooks,
         linkedNotebook => new LinkedNotebookEntity(linkedNotebook)
       )
     );
-    await this.tableSService.linkedNotebookTable.delete(
+    await this.tableService.linkedNotebookTable.delete(
       lastSyncChunk.expungedLinkedNotebooks ?? []
     );
     if (
@@ -158,14 +156,14 @@ export default class SyncSService extends BaseSService {
       _.size(lastSyncChunk.expungedNotebooks) > 0
     ) {
       updateEventHash["sync::updateNotebooks"] = true;
-      await this.tableSService.reloadCache("notebook");
+      await this.tableService.reloadCache("notebook");
     }
     if (
       _.size(lastSyncChunk.tags) > 0 ||
       _.size(lastSyncChunk.expungedTags) > 0
     ) {
       updateEventHash["sync::updateTags"] = true;
-      await this.tableSService.reloadCache("tag");
+      await this.tableService.reloadCache("tag");
     }
     if (
       _.size(lastSyncChunk.searches) > 0 ||
@@ -179,12 +177,12 @@ export default class SyncSService extends BaseSService {
       updateEventHash["sync::updateLinkedNotebooks"] = true;
     if (_.size(lastSyncChunk.notes) > 0)
       for (const note of lastSyncChunk.notes ?? [])
-        await this.constraintSService.checkOne(new NoteEntity(note));
+        await this.constraintService.checkOne(new NoteEntity(note));
     if (_.size(lastSyncChunk.expungedNotes) > 0)
       for (const guid of lastSyncChunk.expungedNotes ?? [])
-        await this.constraintSService.removeOne(guid);
+        await this.constraintService.removeOne(guid);
     localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
-    await this.tableSService.optionTable.saveValueByKey(
+    await this.tableService.optionTable.saveValueByKey(
       "syncState",
       localSyncState
     );
@@ -198,13 +196,13 @@ export default class SyncSService extends BaseSService {
       logger.info(
         `Auto get note content was started. Number of note is ${numNote}.`
       );
-      const notes = await this.tableSService.noteTable.findAll({
+      const notes = await this.tableService.noteTable.findAll({
         where: { content: null },
         order: { updated: "DESC" },
         take: numNote,
       });
       for (const note of notes) {
-        await this.tableSService.noteTable.loadRemote(note.guid);
+        await this.tableService.noteTable.loadRemote(note.guid);
       }
       logger.info(`Auto get note content was finished.`);
     } finally {

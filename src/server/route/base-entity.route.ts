@@ -3,8 +3,8 @@ import SocketIO from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
 import container from "~/src/server/inversify.config";
-import TableSService from "~/src/server/s-service/table.s-service";
-import SessionSService from "~/src/server/s-service/session.s-service";
+import TableService from "~/src/server/service/table.service";
+import SessionService from "~/src/server/service/session.service";
 import BaseEntity, {
   FindManyEntityOptions,
 } from "~/src/common/entity/base.entity";
@@ -18,8 +18,8 @@ export default abstract class BaseEntityRoute<
   EntityClass: typeof BaseEntity;
 
   protected constructor(
-    protected tableSService: TableSService,
-    protected sessionSService: SessionSService
+    protected tableService: TableService,
+    protected sessionService: SessionService
   ) {
     super();
     const name = _.lowerFirst(_.replace(this.Class.name, /Route$/, ""));
@@ -34,7 +34,7 @@ export default abstract class BaseEntityRoute<
   }
 
   get table(): TTable {
-    return this.tableSService.getTable<TEntity, TTable>(this.EntityClass);
+    return this.tableService.getTable<TEntity, TTable>(this.EntityClass);
   }
 
   get basePath(): string {

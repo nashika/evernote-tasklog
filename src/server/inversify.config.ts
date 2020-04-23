@@ -14,13 +14,13 @@ import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 
-import ConstraintSService from "~/src/server/s-service/constraint.s-service";
-import EvernoteClientSService from "~/src/server/s-service/evernote-client.s-service";
-import MainSService from "~/src/server/s-service/main.s-service";
-import TableSService from "~/src/server/s-service/table.s-service";
-import SocketIoSService from "~/src/server/s-service/socket-io.s-service";
-import SessionSService from "~/src/server/s-service/session.s-service";
-import SyncSService from "~/src/server/s-service/sync.s-service";
+import ConstraintService from "~/src/server/service/constraint.service";
+import EvernoteClientService from "~/src/server/service/evernote-client.service";
+import MainService from "~/src/server/service/main.service";
+import TableService from "~/src/server/service/table.service";
+import SocketIoService from "~/src/server/service/socket-io.service";
+import SessionService from "~/src/server/service/session.service";
+import SyncService from "~/src/server/service/sync.service";
 
 import BaseRoute from "~/src/server/route/base.route";
 import AttendanceRoute from "~/src/server/route/attendance.route";
@@ -90,33 +90,33 @@ container
   .toConstructor(TimeLogEntity)
   .whenTargetNamed(SYMBOL_TABLES.timeLog);
 
-// SService系
+// Service系
 container
-  .bind<ConstraintSService>(ConstraintSService)
+  .bind<ConstraintService>(ConstraintService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<EvernoteClientSService>(EvernoteClientSService)
+  .bind<EvernoteClientService>(EvernoteClientService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<MainSService>(MainSService)
+  .bind<MainService>(MainService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<TableSService>(TableSService)
+  .bind<TableService>(TableService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<SocketIoSService>(SocketIoSService)
+  .bind<SocketIoService>(SocketIoService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<SessionSService>(SessionSService)
+  .bind<SessionService>(SessionService)
   .toSelf()
   .inSingletonScope();
 container
-  .bind<SyncSService>(SyncSService)
+  .bind<SyncService>(SyncService)
   .toSelf()
   .inSingletonScope();
 

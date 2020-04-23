@@ -5,7 +5,7 @@ import { RequestHandler } from "express";
 
 import logger from "../logger";
 
-import BaseSService from "./base.s-service";
+import BaseServerService from "./base-server.service";
 import container from "~/src/server/inversify.config";
 import BaseRoute from "~/src/server/route/base.route";
 import { SYMBOL_TYPES } from "~/src/common/symbols";
@@ -14,7 +14,7 @@ import { SYMBOL_TYPES } from "~/src/common/symbols";
 // const expressSocketIoSession = require("express-socket.io-session");
 
 @injectable()
-export default class SocketIoSService extends BaseSService {
+export default class SocketIoService extends BaseServerService {
   sessionMiddleware: RequestHandler | null = null;
 
   private io: SocketIo.Server | null = null;

@@ -1,4 +1,4 @@
 import { injectable } from "inversify";
 
 @injectable()
-export default abstract class BaseSService {}
+export default abstract class BaseServerService {}

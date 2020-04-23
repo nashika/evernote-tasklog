@@ -3,12 +3,12 @@ import Evernote from "evernote";
 
 import NoteEntity from "~/src/common/entity/note.entity";
 import configLoader from "~/src/common/util/config-loader";
-import BaseSService from "~/src/server/s-service/base.s-service";
+import BaseServerService from "~/src/server/service/base-server.service";
 import { assertIsDefined } from "~/src/common/util/assert";
 import logger from "~/src/server/logger";
 
 @injectable()
-export default class EvernoteClientSService extends BaseSService {
+export default class EvernoteClientService extends BaseServerService {
   SYNC_CHUNK_COUNT = 100;
 
   private _client: Evernote.Client | null = null;
