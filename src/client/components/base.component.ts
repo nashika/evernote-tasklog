@@ -4,13 +4,10 @@ import moment from "moment";
 import numeral from "numeral";
 import VueI18n from "vue-i18n";
 
-import logger from "~/src/client/plugins/logger";
-
 export default abstract class BaseComponent extends Vue {
   lodash = _;
   moment = moment;
   numeral = numeral;
-  logger = logger;
 
   /**
    * vud-i18nで$tだとstringではなく専用オブジェクトが返却されるのでstringを無理矢理返却するための関数

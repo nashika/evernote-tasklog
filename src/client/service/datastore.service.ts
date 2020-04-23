@@ -16,7 +16,7 @@ import RequestService from "~/src/client/service/request.service";
 import ProgressService from "~/src/client/service/progress.service";
 import SocketIoClientService from "~/src/client/service/socket-io-client.service";
 import configLoader from "~/src/common/util/config-loader";
-import logger from "~/src/client/plugins/logger";
+import { logger } from "~/src/client/plugins/logger";
 import {
   FindManyEntityOptions,
   FindEntityWhereOptions,

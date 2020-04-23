@@ -6,7 +6,7 @@ declare namespace AppConfig {
   interface IAppConfig {
     baseUrl: string;
     port: number;
-    logLevel: string;
+    logLevel: "trace" | "debug" | "info" | "warn" | "error";
     sqlLogging: boolean;
     sandbox: boolean;
     token: string;
