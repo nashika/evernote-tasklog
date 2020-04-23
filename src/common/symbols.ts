@@ -14,6 +14,7 @@ export const SYMBOL_TABLES = {
   option: Symbol.for("option"),
   profitLog: Symbol.for("profitLog"),
   savedSearch: Symbol.for("savedSearch"),
+  session: Symbol.for("session"),
   tag: Symbol.for("tag"),
   timeLog: Symbol.for("timeLog"),
 };

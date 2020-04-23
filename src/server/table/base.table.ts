@@ -112,6 +112,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
         },
       },
       indices: this.EntityClass.params.indicies?.map(index => ({
+        name: index.name,
         columns: index.columns,
         unique: index.unique,
       })),

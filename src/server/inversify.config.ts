@@ -11,6 +11,7 @@ import NotebookEntity from "~/src/common/entity/notebook.entity";
 import OptionEntity from "~/src/common/entity/option.entity";
 import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
+import SessionEntity from "~/src/common/entity/session.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 
@@ -43,6 +44,7 @@ import NotebookTable from "~/src/server/table/notebook.table";
 import OptionTable from "~/src/server/table/option.table";
 import ProfitLogTable from "~/src/server/table/profit-log.table";
 import SavedSearchTable from "~/src/server/table/saved-search.table";
+import SessionTable from "~/src/server/table/session.table";
 import TagTable from "~/src/server/table/tag.table";
 import TimeLogTable from "~/src/server/table/time-log.table";
 
@@ -81,6 +83,10 @@ container
   .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(SavedSearchEntity)
   .whenTargetNamed(SYMBOL_TABLES.savedSearch);
+container
+  .bind<BaseEntity>(SYMBOL_TYPES.Entity)
+  .toConstructor(SessionEntity)
+  .whenTargetNamed(SYMBOL_TABLES.session);
 container
   .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(TagEntity)
@@ -191,6 +197,10 @@ container
   .bind<BaseTable<SavedSearchEntity>>(SYMBOL_TYPES.Table)
   .to(SavedSearchTable)
   .whenTargetNamed(SYMBOL_TABLES.savedSearch);
+container
+  .bind<BaseTable<SessionEntity>>(SYMBOL_TYPES.Table)
+  .to(SessionTable)
+  .whenTargetNamed(SYMBOL_TABLES.session);
 container
   .bind<BaseTable<OptionEntity>>(SYMBOL_TYPES.Table)
   .to(OptionTable)

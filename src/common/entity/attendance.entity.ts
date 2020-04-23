@@ -52,6 +52,7 @@ export default class AttendanceEntity extends BaseEntity {
     },
     indicies: [
       {
+        name: "unique",
         columns: ["personId", "year", "month", "day"],
         unique: true,
       },

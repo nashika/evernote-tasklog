@@ -11,6 +11,7 @@ export interface EntityParams<T extends BaseEntity> {
     [P in keyof T | string]: EntityColumnParams<T>;
   };
   indicies?: {
+    name: string;
     columns: string[];
     unique?: boolean;
   }[];

@@ -11,6 +11,7 @@ ALTER TABLE "tags" RENAME TO "tag";
 ALTER TABLE "timeLogs" RENAME TO "time_log";
 
 DROP TABLE "SequelizeMeta";
+DROP TABLE "Sessions";
 
 DELETE FROM "archive_note";
 
