@@ -1,19 +1,37 @@
-ALTER TABLE "archiveNotes" RENAME TO "archive_note";
-ALTER TABLE "attendances" RENAME TO "attendance";
-ALTER TABLE "constraintResults" RENAME TO "constraint_result";
-ALTER TABLE "linkedNotebooks" RENAME TO "linked_notebook";
-ALTER TABLE "notebooks" RENAME TO "notebook";
-ALTER TABLE "notes" RENAME TO "note";
-ALTER TABLE "options" RENAME TO "option";
-ALTER TABLE "profitLogs" RENAME TO "profit_log";
-ALTER TABLE "savedSearches" RENAME TO "saved_search";
-ALTER TABLE "tags" RENAME TO "tag";
-ALTER TABLE "timeLogs" RENAME TO "time_log";
+ATTACH "C:\Users\info\Documents\workspace\evernote-tasklog-nuxt\db\database_old.db" AS old;
 
-DROP TABLE "SequelizeMeta";
-DROP TABLE "Sessions";
+INSERT INTO archive_note
+SELECT * FROM old.archiveNotes;
 
-DELETE FROM "archive_note";
+INSERT INTO attendance
+SELECT * FROM old.attendances;
+
+INSERT INTO constraint_result
+SELECT * FROM old.constraintResults;
+
+INSERT INTO linked_notebook
+SELECT * FROM old.linkedNotebooks;
+
+INSERT INTO note
+SELECT * FROM old.notes;
+
+INSERT INTO notebook
+SELECT * FROM old.notebooks;
+
+INSERT INTO option
+SELECT * FROM old.options;
+
+INSERT INTO profit_log
+SELECT * FROM old.profitLogs;
+
+INSERT INTO saved_search
+SELECT * FROM old.savedSearches;
+
+INSERT INTO tag
+SELECT * FROM old.tags;
+
+INSERT INTO time_log
+SELECT * FROM old.timeLogs;
 
 UPDATE
     "attendance"
