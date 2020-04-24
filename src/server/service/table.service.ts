@@ -29,6 +29,8 @@ import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import AttendanceTable from "~/src/server/table/attendance.table";
 import AttendanceEntity from "~/src/common/entity/attendance.entity";
 import configLoader from "~/src/common/util/config-loader";
+import SessionEntity from "~/src/common/entity/session.entity";
+import SessionTable from "~/src/server/table/session.table";
 
 @injectable()
 export default class TableService extends BaseServerService {
@@ -81,6 +83,10 @@ export default class TableService extends BaseServerService {
 
   get savedSearchTable(): SavedSearchTable {
     return this.getTable(SavedSearchEntity);
+  }
+
+  get sessionTable(): SessionTable {
+    return this.getTable(SessionEntity);
   }
 
   get tagTable(): TagTable {

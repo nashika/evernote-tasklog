@@ -28,7 +28,7 @@ export default class SessionEntity extends BaseEntity implements ISession {
     },
     indicies: [
       {
-        name: "idx_expiredAt",
+        name: "expired_at",
         columns: ["expiredAt"],
       },
     ],

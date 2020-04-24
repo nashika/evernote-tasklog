@@ -21,7 +21,7 @@ export default class NoteEntity extends BaseEvernoteEntity {
     },
     columns: {
       guid: {
-        type: "integer",
+        type: "string",
         primary: true,
         nullable: false,
       },

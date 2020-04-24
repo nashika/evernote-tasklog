@@ -3,7 +3,7 @@ create table archive_note
 (
     archiveId integer not null
         primary key autoincrement,
-    guid integer not null,
+    guid text not null,
     title text not null,
     content text,
     contentHash text not null,
@@ -45,7 +45,7 @@ create table archive_note
     updatedAt datetime default datetime('now') not null
 );
 
-create index IDX_8d266d3f81c3081264d5c1680a
+create index archive_note_guid
     on archive_note (guid);
 
 create table attendance
@@ -64,7 +64,7 @@ create table attendance
     updatedAt datetime default datetime('now') not null
 );
 
-create unique index "unique"
+create unique index attendance_unique
     on attendance (personId, year, month, day);
 
 create table constraint_result
@@ -97,7 +97,7 @@ create table linked_notebook
 
 create table note
 (
-    guid integer not null
+    guid text not null
         primary key,
     title text not null,
     content text,
@@ -205,7 +205,7 @@ create table session
     updatedAt datetime default datetime('now') not null
 );
 
-create index idx_expiredAt
+create index session_expired_at
     on session (expiredAt);
 
 create table tag

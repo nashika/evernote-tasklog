@@ -75,7 +75,14 @@ export default abstract class BaseTable<T extends BaseEntity> {
         const addColumn = _.clone(column);
         if (!addColumn) return;
         if (addColumn.primary || addColumn.unique)
-          addIndexes.push({ unique: false, columns: [name] });
+          addIndexes.push({
+            name:
+              _.snakeCase(archiveSchemaOptions.name) +
+              "_" +
+              _.snakeCase(addColumn.name),
+            unique: false,
+            columns: [name],
+          });
         addColumn.primary = false;
         addColumn.unique = false;
         _.set(archiveSchemaOptions.columns, name, addColumn);
@@ -112,7 +119,10 @@ export default abstract class BaseTable<T extends BaseEntity> {
         },
       },
       indices: this.EntityClass.params.indicies?.map(index => ({
-        name: index.name,
+        name:
+          _.snakeCase(this.EntityClass.params.name) +
+          "_" +
+          _.snakeCase(index.name),
         columns: index.columns,
         unique: index.unique,
       })),
