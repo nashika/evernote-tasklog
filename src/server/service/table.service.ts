@@ -31,6 +31,7 @@ import AttendanceEntity from "~/src/common/entity/attendance.entity";
 import configLoader from "~/src/common/util/config-loader";
 import SessionEntity from "~/src/common/entity/session.entity";
 import SessionTable from "~/src/server/table/session.table";
+import logger from "~/src/server/logger";
 
 @injectable()
 export default class TableService extends BaseServerService {
@@ -98,6 +99,7 @@ export default class TableService extends BaseServerService {
   }
 
   async initialize(reloadCache: boolean = true): Promise<void> {
+    logger.info("テーブルサービスの初期化を開始しました.");
     await this.getConnection();
     for (const table of container.getAll<BaseTable<BaseEntity>>(
       SYMBOL_TYPES.Table
@@ -106,6 +108,7 @@ export default class TableService extends BaseServerService {
       this.tables[table.EntityClass.params.name] = table;
     }
     if (reloadCache) await this.reloadCache();
+    logger.info("テーブルサービスの初期化を完了しました.");
   }
 
   private async getConnection(): Promise<Connection> {

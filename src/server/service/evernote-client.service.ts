@@ -18,11 +18,13 @@ export default class EvernoteClientService extends BaseServerService {
     return this._client;
   }
 
-  async initialize(): Promise<void> {
+  initialize(): void {
+    logger.info("Evernoteクライアントサービスの初期化を開始しました.");
     this._client = new Evernote.Client({
       token: configLoader.app.token,
       sandbox: configLoader.app.sandbox,
     });
+    logger.info("Evernoteクライアントサービスの初期化を完了しました.");
   }
 
   async getUser(): Promise<Evernote.Types.User> {

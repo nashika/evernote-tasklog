@@ -37,14 +37,13 @@ async function start() {
     badge: true,
   });
 
-  // main logic
-  const mainService: MainService = container.get<MainService>(MainService);
   try {
-    await mainService.initialize(server);
-    logger.info(`Initialize web server finished.`);
-    logger.info(`Server address is http://localhost:${port}/`);
+    // サービスの起動処理
+    const mainService = container.get(MainService);
+    await mainService.initialize(app, server);
+    logger.info(`Webサーバのアドレスは http://localhost:${port}/`);
   } catch (err) {
-    logger.error(`Initialize web server failed. err=${err}`);
+    logger.error(`Webサーバの起動に失敗しました. err=${err}`);
     if (err.stack) logger.error(err.stack);
   }
 }
