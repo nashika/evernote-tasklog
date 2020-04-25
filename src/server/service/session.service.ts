@@ -30,7 +30,7 @@ export default class SessionService extends BaseServerService {
       name: "evernote-tasklog.connect.sid",
       secret: "keyboard cat",
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
       store: new TypeormStore({
         cleanupLimit: 100,
       }).connect(sessionRepository),
@@ -45,15 +45,13 @@ export default class SessionService extends BaseServerService {
 
   load(socket: socketIo.Socket, key: string): ISession {
     // @ts-ignore TODO: 動作確認
-    return socket.handshake.session[key];
+    return socket.request.session[key];
   }
 
   async save(socket: socketIo.Socket, key: string, value: any): Promise<void> {
     await new Promise<void>((resolve, reject) => {
-      // @ts-ignore
-      socket.handshake.session[key] = value;
-      // @ts-ignore
-      socket.handshake.session.save(err => {
+      socket.request.session[key] = value;
+      socket.request.session.save((err: any) => {
         if (err) reject(err);
         resolve();
       });

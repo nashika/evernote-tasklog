@@ -10,11 +10,6 @@ import container from "~/src/server/inversify.config";
 import BaseRoute from "~/src/server/route/base.route";
 import { SYMBOL_TYPES } from "~/src/common/symbols";
 
-const expressSocketIoSession = require("express-socket.io-session");
-
-// TODO: セッション復旧
-// const expressSocketIoSession = require("express-socket.io-session");
-
 @injectable()
 export default class SocketIoService extends BaseServerService {
   private io!: SocketIo.Server;
@@ -27,7 +22,9 @@ export default class SocketIoService extends BaseServerService {
   }
 
   initializeSession(sessionMiddleware: RequestHandler) {
-    this.io.use(expressSocketIoSession(sessionMiddleware));
+    this.io.use(function(socket, next) {
+      sessionMiddleware(socket.request, socket.request.res, next);
+    });
   }
 
   private async connect(socket: SocketIo.Socket): Promise<void> {

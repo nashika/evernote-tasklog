@@ -82,10 +82,10 @@ export default class DefaultLayoutComponent extends BaseComponent {
   showMenu: boolean = false;
 
   async mounted(): Promise<void> {
-    // await this.datastoreService.initialize();
-    // this.$on("reload", () => this.reload());
-    // await this.pushService.initialize(this);
-    // this.isReady = true;
+    await this.$datastoreService.initialize();
+    this.$on("reload", () => this.reload());
+    // await this.$pushService.initialize(this);
+    this.isReady = true;
   }
 
   async reload(): Promise<void> {
