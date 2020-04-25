@@ -4,6 +4,8 @@ import moment from "moment";
 import numeral from "numeral";
 import VueI18n from "vue-i18n";
 
+import { NuxtContext } from "~/src/types/nuxt";
+
 export default abstract class BaseComponent extends Vue {
   lodash = _;
   moment = moment;
@@ -29,4 +31,8 @@ export default abstract class BaseComponent extends Vue {
   async updated(): Promise<void> {}
   async beforeDestroy(): Promise<void> {}
   async destroyed(): Promise<void> {}
+
+  // nuxt独自の処理を定義
+  async fetch(_context: NuxtContext): Promise<void> {}
+  async asyncData(_context: NuxtContext): Promise<void> {}
 }
