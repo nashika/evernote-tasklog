@@ -4,6 +4,7 @@ section#attendance-mode
     .row.my-2
       .col-sm-4
         .form-group
+          b aa {{store}} bb
           label {{$t('common.person')}}
           b-form-select(v-model="personId", :options="persons", value-field="id", text-field="name")
       .col-sm-4
@@ -38,7 +39,7 @@ section#attendance-mode
 </template>
 
 <script lang="ts">
-import Component from "vue-class-component";
+import { Component } from "nuxt-property-decorator";
 import moment from "moment";
 import _ from "lodash";
 import Vue from "vue";
@@ -55,6 +56,11 @@ import AttendanceTimePickerComponent from "~/src/client/components/attendance-ti
   },
   watch: {
     personId: "reload",
+  },
+  computed: {
+    store() {
+      return this.$store.state.test.wheels;
+    },
   },
 })
 export default class AttendancePageComponent extends BaseComponent {

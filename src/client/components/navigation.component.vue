@@ -19,7 +19,8 @@ b-navbar.d-print-none(toggleable="sm", type="dark", variant="dark", fixed="top")
 </template>
 
 <script lang="ts">
-import Component from "vue-class-component";
+import { Component } from "nuxt-property-decorator";
+
 import BaseComponent from "~/src/client/components/base.component";
 
 @Component({})

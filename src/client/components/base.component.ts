@@ -1,4 +1,4 @@
-import Vue from "vue";
+import { Vue } from "nuxt-property-decorator";
 import _ from "lodash";
 import moment from "moment";
 import numeral from "numeral";

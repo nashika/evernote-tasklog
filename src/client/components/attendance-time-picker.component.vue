@@ -6,8 +6,8 @@
 </template>
 
 <script lang="ts">
-import Component from "vue-class-component";
 import _ from "lodash";
+import { Component } from "nuxt-property-decorator";
 
 import BaseComponent from "~/src/client/components/base.component";
 
