@@ -4,7 +4,7 @@ section#attendance-mode
     .row.my-2
       .col-sm-4
         .form-group
-          b aa {{store}} bb
+          b aa {{test}} bb
           label {{$t('common.person')}}
           b-form-select(v-model="personId", :options="persons", value-field="id", text-field="name")
       .col-sm-4
@@ -49,6 +49,7 @@ import AttendanceEntity from "../../common/entity/attendance.entity";
 import configLoader from "../../common/util/config-loader";
 import { assertIsDefined } from "~/src/common/util/assert";
 import AttendanceTimePickerComponent from "~/src/client/components/attendance-time-picker.component.vue";
+import { testStore } from "~/src/client/store-accessor";
 
 @Component({
   components: {
@@ -56,11 +57,6 @@ import AttendanceTimePickerComponent from "~/src/client/components/attendance-ti
   },
   watch: {
     personId: "reload",
-  },
-  computed: {
-    store() {
-      return this.$store.state.test.wheels;
-    },
   },
 })
 export default class AttendancePageComponent extends BaseComponent {
@@ -73,6 +69,10 @@ export default class AttendancePageComponent extends BaseComponent {
   month: number = 0;
 
   fields!: Array<Object>;
+
+  get test() {
+    return testStore.axles;
+  }
 
   get strYear(): string {
     return _.toString(this.year);
