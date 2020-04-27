@@ -49,7 +49,6 @@ import AttendanceEntity from "../../common/entity/attendance.entity";
 import configLoader from "../../common/util/config-loader";
 import { assertIsDefined } from "~/src/common/util/assert";
 import AttendanceTimePickerComponent from "~/src/client/components/attendance-time-picker.component.vue";
-import { testStore } from "~/src/client/store-accessor";
 
 @Component({
   components: {
@@ -71,7 +70,7 @@ export default class AttendancePageComponent extends BaseComponent {
   fields!: Array<Object>;
 
   get test() {
-    return testStore.axles;
+    return this.$myStore.test.axles;
   }
 
   get strYear(): string {
