@@ -44,7 +44,7 @@ export default class PersonModalComponent extends BaseComponent {
   }
 
   async hidden(): Promise<void> {
-    if (this.changed) await this.$emit("reload");
+    if (this.changed) this.$myStore.datastore.startReload();
     this.changed = false;
   }
 

@@ -4,7 +4,7 @@ section#attendance-mode
     .row.my-2
       .col-sm-4
         .form-group
-          b aa {{test}} bb
+          b aa {{$myStore.datastore.reloadFlag}} bb
           label {{$t('common.person')}}
           b-form-select(v-model="personId", :options="persons", value-field="id", text-field="name")
       .col-sm-4
@@ -54,9 +54,6 @@ import AttendanceTimePickerComponent from "~/src/client/components/attendance-ti
   components: {
     AttendanceTimePickerComponent,
   },
-  watch: {
-    personId: "reload",
-  },
 })
 export default class AttendancePageComponent extends BaseComponent {
   attendances: AttendanceEntity[] = [];
@@ -68,10 +65,6 @@ export default class AttendancePageComponent extends BaseComponent {
   month: number = 0;
 
   fields!: Array<Object>;
-
-  get test() {
-    return this.$myStore.test.axles;
-  }
 
   get strYear(): string {
     return _.toString(this.year);
@@ -136,7 +129,9 @@ export default class AttendancePageComponent extends BaseComponent {
 
   async mounted(): Promise<void> {
     await super.mounted();
-
+    this.$store.subscribe(async (mutation, _state) => {
+      if (mutation.type === "datastore/startReload") await this.reload();
+    });
     await this.reload();
   }
 

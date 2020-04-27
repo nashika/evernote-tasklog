@@ -9,7 +9,7 @@ export interface ITestState {
   stateFactory: true,
   namespaced: true,
 })
-export default class Test extends VuexModule {
+export default class TestModule extends VuexModule {
   wheels = 2;
 
   @Mutation
