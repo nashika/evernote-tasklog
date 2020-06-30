@@ -47,7 +47,7 @@ const conf: Configuration = {
   /*
    ** Global CSS
    */
-  css: [],
+  css: ["~/src/client/scss/style.scss"],
   /*
    ** Plugins to load before mounting the App
    */
@@ -71,7 +71,7 @@ const conf: Configuration = {
    */
   modules: [
     // Doc: https://bootstrap-vue.js.org
-    "bootstrap-vue/nuxt",
+    ["bootstrap-vue/nuxt", { css: false }],
     // Doc: https://axios.nuxtjs.org/usage
     "@nuxtjs/axios",
     "@nuxtjs/pwa",
@@ -103,5 +103,6 @@ const conf: Configuration = {
    ** Build configuration
    */
   build: <any>webpackConfig,
+  telemetry: true,
 };
 export default conf;
