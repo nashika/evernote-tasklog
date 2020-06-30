@@ -3,41 +3,41 @@
     b-input-group.mb-2
       b-input-group-addon(slot="left"): i.fa.fa-search
       b-form-input(v-model="filterText", placeholder="Type to Search")
-    //
-      b-table(bordered, striped, hover, small, responsive, head-variant="inverse", foot-clone, foot-variant="default",
-        :fields="fields", :items="lodash.values(records)", :filter="filterText")
-        template(slot="title", scope="row")
-          a(:href="'evernote:///view/' + datastoreService.$vm.user.id + '/' + datastoreService.$vm.user.shardId + '/' + row.item.guid + '/' + row.item.guid + '/'") {{row.item.title}}
-        template(slot="updated", scope="row")
-          .text-right {{moment(row.item.updated).format('M/DD HH:mm')}}
-        template(v-for="person in existPersons", :slot="'person-' + person.id", scope="row")
-          .text-right(v-if="row.item.persons['$' + person.id].spentTime")
-            small ({{Math.round(row.item.persons['$' + person.id].spentTime / row.item.total.spentTime * 100)}}%)&nbsp;
-            | {{row.item.persons['$' + person.id].spentTime | spentTime}}
-          .text-right(v-if="row.item.persons['$' + person.id].profit")
-            | {{row.item.persons['$' + person.id].profit | numeral('0,0')}}
-        template(slot="total", scope="row")
-          .text-right(v-if="row.item.total.spentTime")
-            | {{row.item.total.spentTime | spentTime}}
-          .text-right(v-if="row.item.total.profit")
-            small(v-if="row.item.total.profit && row.item.total.spentTime")
-              | ({{row.item.total.profit / row.item.total.spentTime * 60 | numeral('0,0')}}/h)&nbsp;
-            | {{row.item.total.profit | numeral('0,0')}}
-        template(slot="FOOT_title", scope="row") Total
-        template(v-for="person in existPersons", :slot="'FOOT_person-' + person.id", scope="row")
-          .text-right(v-if="totalRecord.persons['$' + person.id].spentTime")
-            small ({{Math.round(totalRecord.persons['$' + person.id].spentTime / totalRecord.total.spentTime * 100)}}%)&nbsp;
-            | {{totalRecord.persons['$' + person.id].spentTime | spentTime}}
-          .text-right(v-if="totalRecord.persons['$' + person.id].profit")
-            | {{totalRecord.persons['$' + person.id].profit | numeral('0,0')}}
-        template(slot="FOOT_total", scope="row")
-          template(v-if="totalRecord.total")
-            .text-right(v-if="totalRecord.total.spentTime")
-              | {{totalRecord.total.spentTime | spentTime}}
-            .text-right(v-if="totalRecord.total.profit")
-              small(v-if="totalRecord.total.profit && totalRecord.total.spentTime")
-                | ({{totalRecord.total.profit / totalRecord.total.spentTime * 60 | numeral('0,0')}}/h)&nbsp;
-              | {{totalRecord.total.profit | numeral('0,0')}}
+    b-table(bordered, striped, hover, small, responsive, head-variant="dark", foot-clone, foot-variant="default",
+      :fields="fields", :items="lodash.values(records)", :filter="filterText")
+      template(v-slot:cell(title)="data")
+        a(:href="'evernote:///view/' + $datastoreService.$vm.user.id + '/' + $datastoreService.$vm.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
+      template(v-slot:cell(updated)="data")
+        .text-right {{moment(data.item.updated).format('M/DD HH:mm')}}
+      template(v-slot:cell(time)="data")
+        .mr-3(v-for="person in existPersons")
+          .text-right(v-if="data.item.persons['$' + person.id].spentTime")
+            small ({{Math.round(data.item.persons['$' + person.id].spentTime / data.item.total.spentTime * 100)}}%)&nbsp;
+            | {{data.item.persons['$' + person.id].spentTime | spentTime}}
+          .text-right(v-if="data.item.persons['$' + person.id].profit")
+            | {{data.item.persons['$' + person.id].profit | numeral('0,0')}}
+      //template(slot="total", scope="row")
+        .text-right(v-if="row.item.total.spentTime")
+          | {{row.item.total.spentTime | spentTime}}
+        .text-right(v-if="row.item.total.profit")
+          small(v-if="row.item.total.profit && row.item.total.spentTime")
+            | ({{row.item.total.profit / row.item.total.spentTime * 60 | numeral('0,0')}}/h)&nbsp;
+          | {{row.item.total.profit | numeral('0,0')}}
+      //template(slot="FOOT_title", scope="row") Total
+      //template(v-for="person in existPersons", :slot="'FOOT_person-' + person.id", scope="row")
+        .text-right(v-if="totalRecord.persons['$' + person.id].spentTime")
+          small ({{Math.round(totalRecord.persons['$' + person.id].spentTime / totalRecord.total.spentTime * 100)}}%)&nbsp;
+          | {{totalRecord.persons['$' + person.id].spentTime | spentTime}}
+        .text-right(v-if="totalRecord.persons['$' + person.id].profit")
+          | {{totalRecord.persons['$' + person.id].profit | numeral('0,0')}}
+      //template(slot="FOOT_total", scope="row")
+        template(v-if="totalRecord.total")
+          .text-right(v-if="totalRecord.total.spentTime")
+            | {{totalRecord.total.spentTime | spentTime}}
+          .text-right(v-if="totalRecord.total.profit")
+            small(v-if="totalRecord.total.profit && totalRecord.total.spentTime")
+              | ({{totalRecord.total.profit / totalRecord.total.spentTime * 60 | numeral('0,0')}}/h)&nbsp;
+            | {{totalRecord.total.profit | numeral('0,0')}}
     b-modal(id="menu-modal", title="Menu", ok-only, @hidden="reload()")
       .h6 表示する列
       b-form-checkbox(v-model="displayColumns.notebook") ノートブック
@@ -101,7 +101,7 @@ export default class NotesModeComponent extends BaseComponent {
   };
 
   notes: TNotesResult = {};
-  existPersons!: AppConfig.IPersonConfig[];
+  existPersons: AppConfig.IPersonConfig[] = [];
   records: { [guid: string]: INoteRecord } = {};
   totalRecord!: INoteRecord;
   filterProfitTypeOptions: { text: string; value: TProfitType }[] = [
@@ -121,18 +121,17 @@ export default class NotesModeComponent extends BaseComponent {
     result.push({ key: "title", label: "タイトル", sortable: true });
     if (this.displayColumns.updated)
       result.push({ key: "updated", label: "更新日", sortable: true });
-    for (const person of this.existPersons)
-      result.push({
-        key: "person-" + person.id,
-        label: person.name,
-        personId: person.id,
-        sortable: true,
-      });
+    result.push({
+      key: "time",
+      label: "作業時間",
+      sortable: false,
+    });
     result.push({ key: "total", label: "合計", sortable: true });
     return result;
   }
 
   async mounted(): Promise<void> {
+    this.$logger.info("start mounted");
     await super.mounted();
     this.existPersons = [];
     this.filterParams = this.$datastoreService.makeDefaultNoteFilterParams(

@@ -20,7 +20,7 @@ section#attendance-mode
         b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] {{$t('common.arrival')}}
       .col-sm-6
         b-button(variant="primary", size="lg", block, :disabled="!todayAttendance.arrivalTime || !!todayAttendance.departureTime", @click="departure()") #[i.fa.fa-sign-out] {{$t('common.departure')}}
-    b-table(bordered, small, striped, hover, responsive, head-variant="inverse", :fields="fields", :items="attendances")
+    b-table(bordered, small, striped, hover, responsive, head-variant="dark", :fields="fields", :items="attendances")
       template(v-slot:cell(day)="data")
         | {{data.item.day}} ({{moment({year: data.item.year, month: data.item.month - 1, day: data.item.day}).format('ddd')}})
       template(v-slot:cell(arrival)="data")
