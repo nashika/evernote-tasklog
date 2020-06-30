@@ -7,16 +7,13 @@
 
 <script lang="ts">
 import _ from "lodash";
-import { Component } from "nuxt-property-decorator";
+import { Component, Prop } from "nuxt-property-decorator";
 
 import BaseComponent from "~/src/client/components/base.component";
 
-@Component({
-  props: {
-    value: Number,
-  },
-})
+@Component
 export default class AttendanceTimePickerComponent extends BaseComponent {
+  @Prop({ type: Number })
   value!: number | null;
 
   hour: string = "";

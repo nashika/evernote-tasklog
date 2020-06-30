@@ -23,7 +23,7 @@ import { Component } from "nuxt-property-decorator";
 
 import BaseComponent from "~/src/client/components/base.component";
 
-@Component({})
+@Component
 export default class NavigationComponent extends BaseComponent {
   get personLabel(): string | undefined {
     if (this.$datastoreService.$vm.currentPersonId)
