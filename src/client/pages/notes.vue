@@ -39,11 +39,11 @@
                 | ({{totalRecord.total.profit / totalRecord.total.spentTime * 60 | numeral('0,0')}}/h)&nbsp;
               | {{totalRecord.total.profit | numeral('0,0')}}
     b-modal(id="menu-modal", title="Menu", ok-only, @hidden="reload()")
-      .h6 Display columns
-      b-form-checkbox(v-model="displayColumns.notebook") Notebook
-      b-form-checkbox(v-model="displayColumns.updated") Updated
-      .h6 Filter profit type
-      b-form-radio(v-model="filterProfitType", :options="filterProfitTypeOptions", stacked)
+      .h6 表示する列
+      b-form-checkbox(v-model="displayColumns.notebook") ノートブック
+      b-form-checkbox(v-model="displayColumns.updated") 更新日
+      .h6.mt-3 利益によるフィルター
+      b-form-radio-group(v-model="filterProfitType", :options="filterProfitTypeOptions", stacked)
     floating-action-button-component(enableReload, enableFilter, enableMenu, :filterParams="filterParams", @changeFilter="reload($event)")
 </template>
 
