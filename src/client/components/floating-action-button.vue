@@ -1,11 +1,11 @@
 <template lang="pug">
   nav#actions
     #menu-button.action.rounded-circle(v-if="enableMenu", @click="$root.$emit('show::modal', 'menu-modal')")
-      i.fa.fa-bars
+      fa(:icon="['fas', 'bars']")
     #filter-button.action.rounded-circle(v-if="enableFilter", @click="showFilterModal()")
-      i.fa.fa-filter
+      fa(:icon="['fas', 'filter']")
     #reload-button.action.rounded-circle(v-if="enableReload", @click="$root.$emit('reload')")
-      i.fa.fa-refresh
+      fa(:icon="['fas', 'sync']")
 </template>
 
 <style lang="scss">
