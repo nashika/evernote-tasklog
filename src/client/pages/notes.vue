@@ -96,7 +96,7 @@ type TFieldDefinition = {
     FloatingActionButtonComponent,
   },
 })
-export default class NotesModeComponent extends BaseComponent {
+export default class NotesComponent extends BaseComponent {
   filterText: string = "";
   filterParams: IDatastoreServiceNoteFilterParams = {};
   filterProfitType: TProfitType = "all";

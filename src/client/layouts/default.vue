@@ -1,8 +1,8 @@
 <template lang="pug">
 section.app
   navigation-component
-  // filter-modal
   person-modal-component(v-on:reload="reload()")
+  filter-modal-component
   // progress-modal
   nuxt(ref="main")
 </template>
@@ -40,11 +40,13 @@ import { Component } from "nuxt-property-decorator";
 import NavigationComponent from "~/src/client/components/navigation.component.vue";
 import BaseComponent from "~/src/client/components/base.component";
 import PersonModalComponent from "~/src/client/components/modal/person-modal.component.vue";
+import FilterModalComponent from "~/src/client/components/modal/filter-modal.component.vue";
 
 @Component({
   components: {
     NavigationComponent,
     PersonModalComponent,
+    FilterModalComponent,
   },
 })
 export default class DefaultLayoutComponent extends BaseComponent {
