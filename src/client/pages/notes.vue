@@ -10,34 +10,39 @@
       template(v-slot:cell(updated)="data")
         .text-right {{moment(data.item.updated).format('M/DD HH:mm')}}
       template(v-slot:cell(time)="data")
-        .mr-3(v-for="person in existPersons")
-          .text-right(v-if="data.item.persons['$' + person.id].spentTime")
-            small ({{Math.round(data.item.persons['$' + person.id].spentTime / data.item.total.spentTime * 100)}}%)&nbsp;
-            | {{data.item.persons['$' + person.id].spentTime | spentTime}}
-          .text-right(v-if="data.item.persons['$' + person.id].profit")
-            | {{data.item.persons['$' + person.id].profit | numeral('0,0')}}
-      //template(slot="total", scope="row")
-        .text-right(v-if="row.item.total.spentTime")
-          | {{row.item.total.spentTime | spentTime}}
-        .text-right(v-if="row.item.total.profit")
-          small(v-if="row.item.total.profit && row.item.total.spentTime")
-            | ({{row.item.total.profit / row.item.total.spentTime * 60 | numeral('0,0')}}/h)&nbsp;
-          | {{row.item.total.profit | numeral('0,0')}}
-      //template(slot="FOOT_title", scope="row") Total
-      //template(v-for="person in existPersons", :slot="'FOOT_person-' + person.id", scope="row")
-        .text-right(v-if="totalRecord.persons['$' + person.id].spentTime")
-          small ({{Math.round(totalRecord.persons['$' + person.id].spentTime / totalRecord.total.spentTime * 100)}}%)&nbsp;
-          | {{totalRecord.persons['$' + person.id].spentTime | spentTime}}
-        .text-right(v-if="totalRecord.persons['$' + person.id].profit")
-          | {{totalRecord.persons['$' + person.id].profit | numeral('0,0')}}
-      //template(slot="FOOT_total", scope="row")
-        template(v-if="totalRecord.total")
-          .text-right(v-if="totalRecord.total.spentTime")
-            | {{totalRecord.total.spentTime | spentTime}}
-          .text-right(v-if="totalRecord.total.profit")
-            small(v-if="totalRecord.total.profit && totalRecord.total.spentTime")
-              | ({{totalRecord.total.profit / totalRecord.total.spentTime * 60 | numeral('0,0')}}/h)&nbsp;
-            | {{totalRecord.total.profit | numeral('0,0')}}
+        template(v-for="person in existPersons")
+          span.mr-2(v-if="data.item.persons['$' + person.id].spentTime")
+            b {{person.name}}
+            | &nbsp;{{data.item.persons['$' + person.id].spentTime | spentTime}}
+            small ({{Math.round(data.item.persons['$' + person.id].spentTime / data.item.total.spentTime * 100)}}%)
+            template(v-if="data.item.persons['$' + person.id].profit")
+              | &nbsp;{{data.item.persons['$' + person.id].profit | numeral('0,0')}}
+        span(v-if="data.item.total.spentTime")
+          b 計
+          | &nbsp;{{data.item.total.spentTime | spentTime}}
+          template(v-if="data.item.total.profit")
+            small(v-if="data.item.total.spentTime")
+              | ({{data.item.total.profit / data.item.total.spentTime * 60 | numeral('0,0')}}/h)
+            | &nbsp;{{data.item.total.profit | numeral('0,0')}}
+      template(v-slot:foot()) &nbsp;
+      template(v-slot:foot(title)) 合計
+      template(v-slot:foot(time))
+        template(v-if="totalRecord && totalRecord.total")
+          template(v-for="person in existPersons")
+            span.mr-2.text-nowrap(v-if="totalRecord.persons['$' + person.id].spentTime")
+              b {{person.name}}
+              | &nbsp;{{totalRecord.persons['$' + person.id].spentTime | spentTime}}
+              small ({{Math.round(totalRecord.persons['$' + person.id].spentTime / totalRecord.total.spentTime * 100)}}%)
+              template(v-if="totalRecord.persons['$' + person.id].profit")
+                | &nbsp;{{totalRecord.persons['$' + person.id].profit | numeral('0,0')}}
+          span.text-nowrap
+            b 計
+            template(v-if="totalRecord.total.spentTime")
+              | &nbsp;{{totalRecord.total.spentTime | spentTime}}
+            template(v-if="totalRecord.total.profit")
+              | &nbsp;{{totalRecord.total.profit | numeral('0,0')}}
+              small(v-if="totalRecord.total.profit && totalRecord.total.spentTime")
+                | ({{totalRecord.total.profit / totalRecord.total.spentTime * 60 | numeral('0,0')}}/h)
     b-modal(id="menu-modal", title="Menu", ok-only, @hidden="reload()")
       .h6 表示する列
       b-form-checkbox(v-model="displayColumns.notebook") ノートブック
@@ -103,7 +108,7 @@ export default class NotesModeComponent extends BaseComponent {
   notes: TNotesResult = {};
   existPersons: AppConfig.IPersonConfig[] = [];
   records: { [guid: string]: INoteRecord } = {};
-  totalRecord!: INoteRecord;
+  totalRecord: INoteRecord | null = null;
   filterProfitTypeOptions: { text: string; value: TProfitType }[] = [
     { text: "Show all notes.", value: "all" },
     { text: "Show notes with profit.", value: "withProfit" },
@@ -126,7 +131,6 @@ export default class NotesModeComponent extends BaseComponent {
       label: "作業時間",
       sortable: false,
     });
-    result.push({ key: "total", label: "合計", sortable: true });
     return result;
   }
 
@@ -208,8 +212,10 @@ export default class NotesModeComponent extends BaseComponent {
         const spentTime = timeLog.spentTime ?? 0;
         record.total.spentTime += spentTime;
         record.persons[personKey].spentTime += spentTime;
-        this.totalRecord.total.spentTime += spentTime;
-        this.totalRecord.persons[personKey].spentTime += spentTime;
+        if (this.totalRecord) {
+          this.totalRecord.total.spentTime += spentTime;
+          this.totalRecord.persons[personKey].spentTime += spentTime;
+        }
         if (spentTime > 0) personsHash[timeLog.personId] = true;
       }
     }
@@ -226,7 +232,7 @@ export default class NotesModeComponent extends BaseComponent {
       for (const profitLogId in noteProfitLogs) {
         const profitLog = noteProfitLogs[profitLogId];
         record.total.profit += profitLog.profit;
-        this.totalRecord.total.profit += profitLog.profit;
+        if (this.totalRecord) this.totalRecord.total.profit += profitLog.profit;
       }
       for (const person of this.existPersons) {
         const personKey = "$" + person.id;
@@ -235,8 +241,9 @@ export default class NotesModeComponent extends BaseComponent {
             (record.total.profit * record.persons[personKey].spentTime) /
               record.total.spentTime
           );
-          this.totalRecord.persons[personKey].profit +=
-            record.persons[personKey].profit;
+          if (this.totalRecord)
+            this.totalRecord.persons[personKey].profit +=
+              record.persons[personKey].profit;
         }
       }
     }
