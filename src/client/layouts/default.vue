@@ -56,14 +56,14 @@ export default class DefaultLayoutComponent extends BaseComponent {
 
   async mounted(): Promise<void> {
     await this.$datastoreService.initialize();
-    this.$on("reload", () => this.reload());
+    this.$root.$on("reload", () => this.reload());
     // await this.$pushService.initialize(this);
     this.isReady = true;
   }
 
   async reload(): Promise<void> {
     const mainComponent: any = this.$refs.main;
-    await mainComponent.reload();
+    await mainComponent.$children[0].reload();
   }
 }
 </script>

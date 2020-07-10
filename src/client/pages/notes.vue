@@ -135,7 +135,6 @@ export default class NotesComponent extends BaseComponent {
   }
 
   async mounted(): Promise<void> {
-    this.$logger.info("start mounted");
     await super.mounted();
     this.existPersons = [];
     this.filterParams = this.$datastoreService.makeDefaultNoteFilterParams(
