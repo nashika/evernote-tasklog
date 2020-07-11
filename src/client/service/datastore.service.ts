@@ -13,7 +13,6 @@ import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
 import BaseClientService from "~/src/client/service/base-client.service";
 import RequestService from "~/src/client/service/request.service";
-import ProgressService from "~/src/client/service/progress.service";
 import SocketIoClientService from "~/src/client/service/socket-io-client.service";
 import configLoader from "~/src/common/util/config-loader";
 import { logger } from "~/src/client/plugins/logger";
@@ -22,6 +21,7 @@ import {
   FindEntityWhereOptions,
 } from "~/src/common/entity/base.entity";
 import { assertIsDefined } from "~/src/common/util/assert";
+import { myStore } from "~/src/client/store";
 
 export interface IDatastoreServiceNoteFilterParams {
   start?: moment.Moment;
@@ -78,7 +78,6 @@ export default class DatastoreService extends BaseClientService {
 
   constructor(
     protected requestService: RequestService,
-    protected progressService: ProgressService,
     protected socketIoClientService: SocketIoClientService
   ) {
     super();
@@ -139,13 +138,13 @@ export default class DatastoreService extends BaseClientService {
   async getNoteLogs(
     params: IDatastoreServiceNoteFilterParams = {}
   ): Promise<INoteLogsResult | null> {
-    if (this.progressService.isActive) return null;
+    if (myStore.progress.isActive) return null;
     const result: INoteLogsResult = {
       notes: null,
       timeLogs: null,
       profitLogs: null,
     };
-    this.progressService.open(7);
+    myStore.progress.open(7);
     try {
       await this.runSync();
       await this.checkNoteCount(params);
@@ -153,12 +152,12 @@ export default class DatastoreService extends BaseClientService {
       await this.getNoteContents(result.notes);
       result.timeLogs = await this.getTimeLogs(result.notes, params);
       result.profitLogs = await this.getProfitLogs(result.notes);
-      this.progressService.next("Done.");
+      myStore.progress.next("Done.");
     } catch (err) {
       alert(err);
       if (!(err instanceof TerminateResult)) throw err;
     } finally {
-      this.progressService.close();
+      myStore.progress.close();
     }
     return result;
   }
@@ -166,32 +165,32 @@ export default class DatastoreService extends BaseClientService {
   async getArchiveLogs(
     params: IDatastoreServiceNoteFilterParams = {}
   ): Promise<NoteEntity[] | null> {
-    if (this.progressService.isActive) return null;
-    this.progressService.open(4);
+    if (myStore.progress.isActive) return null;
+    myStore.progress.open(4);
     let archiveNotes;
     try {
       await this.runSync();
       await this.checkNoteCount(params);
       archiveNotes = await this.getArchiveNotes(params);
-      this.progressService.next("Done.");
+      myStore.progress.next("Done.");
     } catch (err) {
       alert(err);
       if (!(err instanceof TerminateResult)) throw err;
     } finally {
-      this.progressService.close();
+      myStore.progress.close();
     }
     return archiveNotes ?? null;
   }
 
   private async runSync(): Promise<void> {
-    this.progressService.next("Syncing remote server.");
+    myStore.progress.next("Syncing remote server.");
     await this.requestService.sync();
   }
 
   private async checkNoteCount(
     params: IDatastoreServiceNoteFilterParams
   ): Promise<void> {
-    this.progressService.next("Checking notes count.");
+    myStore.progress.next("Checking notes count.");
     const options = this.makeNoteFindOptions(params);
     const count = await this.requestService.count(NoteEntity, options);
     if (count > configLoader.app.warningNoteCount)
@@ -206,7 +205,7 @@ export default class DatastoreService extends BaseClientService {
   protected async getNotes(
     params: IDatastoreServiceNoteFilterParams
   ): Promise<TNotesResult> {
-    this.progressService.next("Getting notes.");
+    myStore.progress.next("Getting notes.");
     const options = this.makeNoteFindOptions(params);
     const notes = await this.requestService.find<NoteEntity>(
       NoteEntity,
@@ -218,7 +217,7 @@ export default class DatastoreService extends BaseClientService {
   private async getArchiveNotes(
     params: IDatastoreServiceNoteFilterParams
   ): Promise<NoteEntity[]> {
-    this.progressService.next("Getting arcguve notes.");
+    myStore.progress.next("Getting arcguve notes.");
     const options = this.makeNoteFindOptions(params);
     options.archive = true;
     options.includeContent = true;
@@ -240,13 +239,13 @@ export default class DatastoreService extends BaseClientService {
   }
 
   private async getNoteContents(notes: TNotesResult): Promise<void> {
-    this.progressService.next("Request remote contents.");
+    myStore.progress.next("Request remote contents.");
     let count = 0;
     for (const noteGuid in notes) {
       const note = notes[noteGuid];
-      this.progressService.set(
-        `Request remote contents. ${++count} / ${_.size(notes)}`
-      );
+      myStore.progress.set({
+        message: `Request remote contents. ${++count} / ${_.size(notes)}`,
+      });
       if (!note.hasContent) {
         const note = await this.requestService.getNoteContent(noteGuid);
         assertIsDefined(note);
@@ -259,7 +258,7 @@ export default class DatastoreService extends BaseClientService {
     notes: TNotesResult,
     params: IDatastoreServiceTimeLogFilterParams
   ): Promise<TTimeLogsResult> {
-    this.progressService.next("Getting time logs.");
+    myStore.progress.next("Getting time logs.");
     const guids: string[] = [];
     for (const noteGuid in notes) {
       const note = notes[noteGuid];
@@ -281,7 +280,7 @@ export default class DatastoreService extends BaseClientService {
   }
 
   private async getProfitLogs(notes: TNotesResult): Promise<TProfitLogsResult> {
-    this.progressService.next("Getting profit logs.");
+    myStore.progress.next("Getting profit logs.");
     const guids: string[] = [];
     for (const noteGuid in notes) {
       const note = notes[noteGuid];
@@ -300,11 +299,11 @@ export default class DatastoreService extends BaseClientService {
   }
 
   async reParse(): Promise<void> {
-    this.progressService.open(2);
-    this.progressService.next("Re Parse notes...");
+    myStore.progress.open(2);
+    myStore.progress.next("Re Parse notes...");
     await this.requestService.reParseNote();
-    this.progressService.next("Done.");
-    this.progressService.close();
+    myStore.progress.next("Done.");
+    myStore.progress.close();
   }
 
   async countNotes(params: IDatastoreServiceNoteFilterParams): Promise<number> {

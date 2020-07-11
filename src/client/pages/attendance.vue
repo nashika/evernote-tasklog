@@ -142,8 +142,8 @@ export default class AttendancePageComponent extends BaseComponent {
     this.attendances = [];
     this.createFlags = [];
     this.todayAttendance = null;
-    this.$progressService.open(1);
-    this.$progressService.next("Request from server.");
+    this.$myStore.progress.open(1);
+    this.$myStore.progress.next("Request from server.");
     const requestAttendances = await this.$requestService.find<
       AttendanceEntity
     >(AttendanceEntity, {
@@ -181,7 +181,7 @@ export default class AttendancePageComponent extends BaseComponent {
       this.attendances.push(attendance);
     }
     this.updateFlags = _.fill(Array(this.lastDayOfMonth - 1), false);
-    this.$progressService.close();
+    this.$myStore.progress.close();
   }
 
   async arrival(): Promise<void> {

@@ -3,7 +3,7 @@ section.app
   navigation-component
   person-modal-component
   filter-modal-component
-  // progress-modal
+  progress-modal-component
   nuxt(ref="main")
 </template>
 
@@ -41,12 +41,14 @@ import NavigationComponent from "~/src/client/components/navigation.component.vu
 import BaseComponent from "~/src/client/components/base.component";
 import PersonModalComponent from "~/src/client/components/modal/person-modal.component.vue";
 import FilterModalComponent from "~/src/client/components/modal/filter-modal.component.vue";
+import ProgressModalComponent from "~/src/client/components/modal/progress-modal.component.vue";
 
 @Component({
   components: {
     NavigationComponent,
     PersonModalComponent,
     FilterModalComponent,
+    ProgressModalComponent,
   },
 })
 export default class DefaultLayoutComponent extends BaseComponent {

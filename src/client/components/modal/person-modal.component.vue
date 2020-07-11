@@ -11,7 +11,7 @@ b-modal(id="person-modal", title="Person", ok-only, @shown="shown()", @hidden="h
 </template>
 
 <script lang="ts">
-import Component from "vue-class-component";
+import { Component } from "nuxt-property-decorator";
 
 import BaseComponent from "~/src/client/components/base.component";
 import configLoader from "~/src/common/util/config-loader";

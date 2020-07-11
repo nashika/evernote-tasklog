@@ -47,6 +47,7 @@ nav#actions {
 
 <script lang="ts">
 import { Component, Prop } from "nuxt-property-decorator";
+
 import BaseComponent from "~/src/client/components/base.component";
 import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/datastore.service";
 
