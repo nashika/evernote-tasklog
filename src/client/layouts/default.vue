@@ -1,7 +1,7 @@
 <template lang="pug">
 section.app
   navigation-component
-  person-modal-component(v-on:reload="reload()")
+  person-modal-component
   filter-modal-component
   // progress-modal
   nuxt(ref="main")
@@ -50,15 +50,10 @@ import FilterModalComponent from "~/src/client/components/modal/filter-modal.com
   },
 })
 export default class DefaultLayoutComponent extends BaseComponent {
-  // TODO: 書き換え
-  isReady: boolean = false;
-  showMenu: boolean = false;
-
   async mounted(): Promise<void> {
     await this.$datastoreService.initialize();
     this.$root.$on("reload", () => this.reload());
     // await this.$pushService.initialize(this);
-    this.isReady = true;
   }
 
   async reload(): Promise<void> {

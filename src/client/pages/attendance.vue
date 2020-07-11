@@ -4,7 +4,6 @@ section#attendance-mode
     .row.my-2
       .col-sm-4
         .form-group
-          b aa {{$myStore.datastore.reloadFlag}} bb
           label {{$t('common.person')}}
           b-form-select(v-model="personId", :options="persons", value-field="id", text-field="name")
       .col-sm-4
