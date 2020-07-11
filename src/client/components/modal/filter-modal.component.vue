@@ -96,7 +96,7 @@ export default class FilterModalComponent extends BaseComponent {
 
   async show(filterParams: IDatastoreServiceNoteFilterParams): Promise<void> {
     this.filterParams = filterParams;
-    this.stacks = _(this.$datastoreService.$vm.stacks)
+    this.stacks = _(this.$myService.datastore.$vm.stacks)
       .filter(stack => !!stack)
       .map(stack => {
         return {
@@ -108,7 +108,7 @@ export default class FilterModalComponent extends BaseComponent {
         };
       })
       .value();
-    this.notebooks = _(this.$datastoreService.$vm.notebooks)
+    this.notebooks = _(this.$myService.datastore.$vm.notebooks)
       .map((notebook: NotebookEntity) => {
         return {
           guid: notebook.guid,
@@ -161,20 +161,22 @@ export default class FilterModalComponent extends BaseComponent {
     this.allNoteCount = 0;
     this.loadedNoteCount = 0;
     this.allLoadedNoteCount = 0;
-    this.noteCount = await this.$datastoreService.countNotes(this.filterParams);
-    this.allNoteCount = await this.$datastoreService.countNotes({});
+    this.noteCount = await this.$myService.datastore.countNotes(
+      this.filterParams
+    );
+    this.allNoteCount = await this.$myService.datastore.countNotes({});
     const hasContentFilterParams = _.clone(this.filterParams);
     hasContentFilterParams.hasContent = true;
-    this.loadedNoteCount = await this.$datastoreService.countNotes(
+    this.loadedNoteCount = await this.$myService.datastore.countNotes(
       hasContentFilterParams
     );
-    this.allLoadedNoteCount = await this.$datastoreService.countNotes({
+    this.allLoadedNoteCount = await this.$myService.datastore.countNotes({
       hasContent: true,
     });
   }
 
   async reParse(): Promise<void> {
-    await this.$datastoreService.reParse();
+    await this.$myService.datastore.reParse();
   }
 }
 </script>

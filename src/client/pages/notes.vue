@@ -6,7 +6,7 @@
     b-table(bordered, striped, hover, small, responsive, head-variant="dark", foot-clone, foot-variant="default",
       :fields="fields", :items="lodash.values(records)", :filter="filterText")
       template(v-slot:cell(title)="data")
-        a(:href="'evernote:///view/' + $datastoreService.$vm.user.id + '/' + $datastoreService.$vm.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
+        a(:href="'evernote:///view/' + $myService.datastore.$vm.user.id + '/' + $myService.datastore.$vm.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
       template(v-slot:cell(updated)="data")
         .text-right {{moment(data.item.updated).format('M/DD HH:mm')}}
       template(v-slot:cell(time)="data")
@@ -137,7 +137,7 @@ export default class NotesComponent extends BaseComponent {
   async mounted(): Promise<void> {
     await super.mounted();
     this.existPersons = [];
-    this.filterParams = this.$datastoreService.makeDefaultNoteFilterParams(
+    this.filterParams = this.$myService.datastore.makeDefaultNoteFilterParams(
       configLoader.app.defaultFilterParams.notes
     );
     await this.reload();
@@ -147,7 +147,7 @@ export default class NotesComponent extends BaseComponent {
     filterParams: IDatastoreServiceNoteFilterParams | null = null
   ): Promise<void> {
     if (filterParams) this.filterParams = filterParams;
-    const noteLogsResult = await this.$datastoreService.getNoteLogs(
+    const noteLogsResult = await this.$myService.datastore.getNoteLogs(
       this.filterParams
     );
     if (!noteLogsResult) return;
@@ -175,7 +175,7 @@ export default class NotesComponent extends BaseComponent {
       const record: INoteRecord = {
         guid: note.guid,
         title: note.title,
-        notebookName: this.$datastoreService.$vm.notebooks[note.notebookGuid]
+        notebookName: this.$myService.datastore.$vm.notebooks[note.notebookGuid]
           .name,
         updated: note.updated,
         persons: _(configLoader.app.persons)

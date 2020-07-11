@@ -1,4 +1,5 @@
 import { Module, Mutation, VuexModule } from "vuex-module-decorators";
+
 import { myStore } from "~/src/client/store/index";
 
 @Module({

@@ -13,7 +13,7 @@ b-navbar.d-print-none(toggleable="sm", type="dark", variant="dark", fixed="top")
       +item("/notes", "sticky-note", "{{$tc('common.note')}}")
       +item("/activity", "history", "{{$t('common.activity')}}")
       +item("/constraint", "check-circle", "{{$t('common.constraint')}}")
-  b-button(:variant="$datastoreService.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$bvModal.show('person-modal')")
+  b-button(:variant="$myService.datastore.$vm.currentPersonId ? 'warning' : 'outline-warning'", @click="$bvModal.show('person-modal')")
     i.fa.fa-user
     span.d-none.d-sm-inline &nbsp;{{personLabel}}
 </template>
@@ -26,8 +26,8 @@ import BaseComponent from "~/src/client/components/base.component";
 @Component
 export default class NavigationComponent extends BaseComponent {
   get personLabel(): string | undefined {
-    if (this.$datastoreService.$vm.currentPersonId)
-      return this.$datastoreService.currentPerson?.name?.substr(0, 1);
+    if (this.$myService.datastore.$vm.currentPersonId)
+      return this.$myService.datastore.currentPerson?.name?.substr(0, 1);
     else return this.$ts("common.person");
   }
 }

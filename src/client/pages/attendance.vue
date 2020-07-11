@@ -14,7 +14,7 @@ section#attendance-mode
         .form-group
           label {{$t('common.month')}}
           b-form-input(v-model="strMonth", type="number", min="1", max="12", step="1", @change="reload()")
-    .row.my-2(v-if="todayAttendance && personId == $datastoreService.$vm.currentPersonId && year == moment().year() && month == moment().month() + 1")
+    .row.my-2(v-if="todayAttendance && personId == $myService.datastore.$vm.currentPersonId && year == moment().year() && month == moment().month() + 1")
       .col-sm-6
         b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] {{$t('common.arrival')}}
       .col-sm-6
@@ -136,7 +136,7 @@ export default class AttendancePageComponent extends BaseComponent {
 
   async reload(): Promise<void> {
     if (!this.personId)
-      this.personId = this.$datastoreService.$vm.currentPersonId;
+      this.personId = this.$myService.datastore.$vm.currentPersonId;
     if (!this.year) this.year = moment().year();
     if (!this.month) this.month = moment().month() + 1;
     this.attendances = [];
@@ -144,7 +144,7 @@ export default class AttendancePageComponent extends BaseComponent {
     this.todayAttendance = null;
     this.$myStore.progress.open(1);
     this.$myStore.progress.next("Request from server.");
-    const requestAttendances = await this.$requestService.find<
+    const requestAttendances = await this.$myService.request.find<
       AttendanceEntity
     >(AttendanceEntity, {
       where: { personId: this.personId, year: this.year, month: this.month },
@@ -209,12 +209,12 @@ export default class AttendancePageComponent extends BaseComponent {
     attendance.personId = this.personId;
     attendance.year = this.year;
     attendance.month = this.month;
-    await this.$requestService.save(AttendanceEntity, attendance);
+    await this.$myService.request.save(AttendanceEntity, attendance);
     await this.reload();
   }
 
   async remove(attendance: AttendanceEntity): Promise<void> {
-    await this.$requestService.remove(AttendanceEntity, attendance.id);
+    await this.$myService.request.remove(AttendanceEntity, attendance.id);
     await this.reload();
   }
 
