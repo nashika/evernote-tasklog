@@ -6,55 +6,11 @@ import {
 } from "vuex-module-decorators";
 import Evernote from "evernote";
 import _ from "lodash";
-import moment from "moment";
 
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
-import NoteEntity from "~/src/common/entity/note.entity";
-import TimeLogEntity from "~/src/common/entity/time-log.entity";
-import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import configLoader from "~/src/common/util/config-loader";
 import { myService } from "~/src/client/service";
-
-export interface IDatastoreServiceNoteFilterParams {
-  start?: moment.Moment;
-  end?: moment.Moment;
-  notebookGuids?: string[];
-  stacks?: string[];
-  hasContent?: boolean;
-  archiveMinStepMinute?: number;
-}
-
-export interface IDatastoreServiceTimeLogFilterParams {
-  start?: moment.Moment;
-  end?: moment.Moment;
-  noteGuids?: string[];
-}
-
-export class TerminateResult {
-  data: any;
-  constructor(argData: any = null) {
-    this.data = argData;
-  }
-
-  toString(): string {
-    return this.data;
-  }
-}
-
-export type TNotesResult = { [guid: string]: NoteEntity };
-export type TTimeLogsResult = {
-  [noteGuid: string]: { [id: number]: TimeLogEntity };
-};
-export type TProfitLogsResult = {
-  [noteGuid: string]: { [id: number]: ProfitLogEntity };
-};
-
-export interface INoteLogsResult {
-  notes: TNotesResult | null;
-  timeLogs: TTimeLogsResult | null;
-  profitLogs: TProfitLogsResult | null;
-}
 
 @Module({
   name: "datastore",

@@ -65,7 +65,7 @@ import {
   TNotesResult,
   TProfitLogsResult,
   TTimeLogsResult,
-} from "~/src/client/store/datastore";
+} from "~/src/client/service/datastore.service";
 
 interface INoteRecord {
   guid: string;

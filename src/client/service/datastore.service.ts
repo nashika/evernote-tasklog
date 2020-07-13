@@ -1,4 +1,5 @@
 import _ from "lodash";
+import moment from "moment";
 
 import NoteEntity, {
   IFindManyNoteEntityOptions,
@@ -15,15 +16,46 @@ import {
 } from "~/src/common/entity/base.entity";
 import { assertIsDefined } from "~/src/common/util/assert";
 import { myStore } from "~/src/client/store";
-import {
-  IDatastoreServiceNoteFilterParams,
-  IDatastoreServiceTimeLogFilterParams,
-  INoteLogsResult,
-  TerminateResult,
-  TNotesResult,
-  TProfitLogsResult,
-  TTimeLogsResult,
-} from "~/src/client/store/datastore";
+
+export interface IDatastoreServiceNoteFilterParams {
+  start?: moment.Moment;
+  end?: moment.Moment;
+  notebookGuids?: string[];
+  stacks?: string[];
+  hasContent?: boolean;
+  archiveMinStepMinute?: number;
+}
+
+interface IDatastoreServiceTimeLogFilterParams {
+  start?: moment.Moment;
+  end?: moment.Moment;
+  noteGuids?: string[];
+}
+
+class TerminateResult {
+  data: any;
+  constructor(argData: any = null) {
+    this.data = argData;
+  }
+
+  toString(): string {
+    return this.data;
+  }
+}
+
+export type TNotesResult = { [guid: string]: NoteEntity };
+export type TTimeLogsResult = {
+  [noteGuid: string]: { [id: number]: TimeLogEntity };
+};
+export type TProfitLogsResult = {
+  [noteGuid: string]: { [id: number]: ProfitLogEntity };
+};
+
+interface INoteLogsResult {
+  notes: TNotesResult | null;
+  timeLogs: TTimeLogsResult | null;
+  profitLogs: TProfitLogsResult | null;
+}
 
 export default class DatastoreService extends BaseClientService {
   constructor(

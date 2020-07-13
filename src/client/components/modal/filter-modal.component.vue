@@ -38,7 +38,7 @@ import _ from "lodash";
 
 import BaseComponent from "~/src/client/components/base.component";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/store/datastore";
+import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/datastore.service";
 
 interface IStackItem {
   stack: string;
