@@ -8,7 +8,6 @@ import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import BaseClientService from "~/src/client/service/base-client.service";
 import RequestService from "~/src/client/service/request.service";
-import SocketIoClientService from "~/src/client/service/socket-io-client.service";
 import configLoader from "~/src/common/util/config-loader";
 import {
   FindManyEntityOptions,
@@ -58,15 +57,8 @@ interface INoteLogsResult {
 }
 
 export default class DatastoreService extends BaseClientService {
-  constructor(
-    protected requestService: RequestService,
-    protected socketIoClientService: SocketIoClientService
-  ) {
+  constructor(protected requestService: RequestService) {
     super();
-  }
-
-  async initialize(): Promise<void> {
-    await myStore.datastore.initialize();
   }
 
   makeDefaultNoteFilterParams(

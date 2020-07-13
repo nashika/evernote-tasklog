@@ -55,8 +55,8 @@ const conf: Configuration = {
     "~/src/client/plugins/logger",
     "~/src/client/plugins/filter",
     "~/src/client/plugins/vendor",
-    "~/src/client/plugins/my-store",
     "~/src/client/plugins/service",
+    "~/src/client/plugins/my-store",
   ],
   /*
    ** Nuxt.js dev-modules

@@ -14,7 +14,4 @@ export const myService: IMyService = <any>{};
 myService.socketIoClient = new SocketIoClientService();
 myService.request = new RequestService(myService.socketIoClient);
 myService.push = new PushService(myService.socketIoClient);
-myService.datastore = new DatastoreService(
-  myService.request,
-  myService.socketIoClient
-);
+myService.datastore = new DatastoreService(myService.request);
