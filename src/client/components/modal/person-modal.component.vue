@@ -40,17 +40,17 @@ export default class PersonModalComponent extends BaseComponent {
   ];
 
   async shown(): Promise<void> {
-    this.currentPersonId = this.$myService.datastore.$vm.currentPersonId;
+    this.currentPersonId = this.$myStore.datastore.currentPersonId;
   }
 
   async hidden(): Promise<void> {
-    if (this.changed) this.$myStore.datastore.startReload();
+    if (this.changed) this.$root.$emit("reload");
     this.changed = false;
   }
 
   async select(id: number): Promise<void> {
     this.currentPersonId = id;
-    this.$myService.datastore.$vm.currentPersonId = id;
+    this.$myStore.datastore.setCurrentPersonId(id);
     this.changed = true;
     await this.$myService.request.saveSession("currentPersonId", id);
   }

@@ -49,7 +49,7 @@ nav#actions {
 import { Component, Prop } from "nuxt-property-decorator";
 
 import BaseComponent from "~/src/client/components/base.component";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/datastore.service";
+import { IDatastoreServiceNoteFilterParams } from "~/src/client/store/datastore";
 
 @Component
 export default class FloatingActionButtonComponent extends BaseComponent {

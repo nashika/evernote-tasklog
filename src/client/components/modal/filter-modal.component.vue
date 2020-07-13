@@ -37,8 +37,8 @@ import { Component } from "nuxt-property-decorator";
 import _ from "lodash";
 
 import BaseComponent from "~/src/client/components/base.component";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/datastore.service";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
+import { IDatastoreServiceNoteFilterParams } from "~/src/client/store/datastore";
 
 interface IStackItem {
   stack: string;
@@ -96,7 +96,7 @@ export default class FilterModalComponent extends BaseComponent {
 
   async show(filterParams: IDatastoreServiceNoteFilterParams): Promise<void> {
     this.filterParams = filterParams;
-    this.stacks = _(this.$myService.datastore.$vm.stacks)
+    this.stacks = _(this.$myStore.datastore.stacks)
       .filter(stack => !!stack)
       .map(stack => {
         return {
@@ -108,7 +108,7 @@ export default class FilterModalComponent extends BaseComponent {
         };
       })
       .value();
-    this.notebooks = _(this.$myService.datastore.$vm.notebooks)
+    this.notebooks = _(this.$myStore.datastore.notebooks)
       .map((notebook: NotebookEntity) => {
         return {
           guid: notebook.guid,

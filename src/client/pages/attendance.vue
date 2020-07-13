@@ -14,7 +14,7 @@ section#attendance-mode
         .form-group
           label {{$t('common.month')}}
           b-form-input(v-model="strMonth", type="number", min="1", max="12", step="1", @change="reload()")
-    .row.my-2(v-if="todayAttendance && personId == $myService.datastore.$vm.currentPersonId && year == moment().year() && month == moment().month() + 1")
+    .row.my-2(v-if="todayAttendance && personId == $myStore.datastore.currentPersonId && year == moment().year() && month == moment().month() + 1")
       .col-sm-6
         b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] {{$t('common.arrival')}}
       .col-sm-6
@@ -135,8 +135,7 @@ export default class AttendancePageComponent extends BaseComponent {
   }
 
   async reload(): Promise<void> {
-    if (!this.personId)
-      this.personId = this.$myService.datastore.$vm.currentPersonId;
+    if (!this.personId) this.personId = this.$myStore.datastore.currentPersonId;
     if (!this.year) this.year = moment().year();
     if (!this.month) this.month = moment().month() + 1;
     this.attendances = [];

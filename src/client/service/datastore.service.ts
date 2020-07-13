@@ -1,8 +1,4 @@
-import Vue from "vue";
-import Component from "vue-class-component";
 import _ from "lodash";
-import moment from "moment";
-import Evernote from "evernote";
 
 import NoteEntity, {
   IFindManyNoteEntityOptions,
@@ -22,71 +18,22 @@ import {
 } from "~/src/common/entity/base.entity";
 import { assertIsDefined } from "~/src/common/util/assert";
 import { myStore } from "~/src/client/store";
-
-export interface IDatastoreServiceNoteFilterParams {
-  start?: moment.Moment;
-  end?: moment.Moment;
-  notebookGuids?: string[];
-  stacks?: string[];
-  hasContent?: boolean;
-  archiveMinStepMinute?: number;
-}
-
-interface IDatastoreServiceTimeLogFilterParams {
-  start?: moment.Moment;
-  end?: moment.Moment;
-  noteGuids?: string[];
-}
-
-export class TerminateResult {
-  data: any;
-  constructor(argData: any = null) {
-    this.data = argData;
-  }
-
-  toString(): string {
-    return this.data;
-  }
-}
-
-export type TNotesResult = { [guid: string]: NoteEntity };
-export type TTimeLogsResult = {
-  [noteGuid: string]: { [id: number]: TimeLogEntity };
-};
-export type TProfitLogsResult = {
-  [noteGuid: string]: { [id: number]: ProfitLogEntity };
-};
-
-export interface INoteLogsResult {
-  notes: TNotesResult | null;
-  timeLogs: TTimeLogsResult | null;
-  profitLogs: TProfitLogsResult | null;
-}
-
-@Component({})
-export class DatastoreServiceEventBus extends Vue {
-  lastUpdateCount: number = 0;
-  user: Evernote.Types.User | null = null;
-  currentPersonId: number = 0;
-  notebooks: { [guid: string]: NotebookEntity } = {};
-  stacks: string[] = [];
-  tags: { [guid: string]: TagEntity } = {};
-}
+import {
+  IDatastoreServiceNoteFilterParams,
+  IDatastoreServiceTimeLogFilterParams,
+  INoteLogsResult,
+  TerminateResult,
+  TNotesResult,
+  TProfitLogsResult,
+  TTimeLogsResult,
+} from "~/src/client/store/datastore";
 
 export default class DatastoreService extends BaseClientService {
-  $vm = new DatastoreServiceEventBus();
-
   constructor(
     protected requestService: RequestService,
     protected socketIoClientService: SocketIoClientService
   ) {
     super();
-  }
-
-  get currentPerson(): AppConfig.IPersonConfig | null {
-    return (
-      _.find(configLoader.app.persons, { id: this.$vm.currentPersonId }) ?? null
-    );
   }
 
   async initialize(): Promise<void> {
@@ -96,9 +43,9 @@ export default class DatastoreService extends BaseClientService {
       this.syncNotebooks
     );
     this.socketIoClientService.on(this, "sync::updateTags", this.syncTags);
-    this.$vm.user = await this.requestService.loadOption("user");
-    this.$vm.currentPersonId = _.toInteger(
-      await this.requestService.loadSession("currentPersonId")
+    myStore.datastore.setUser(await this.requestService.loadOption("user"));
+    myStore.datastore.setCurrentPersonId(
+      _.toInteger(await this.requestService.loadSession("currentPersonId"))
     );
     await this.syncNotebooks();
     await this.syncTags();
@@ -110,7 +57,9 @@ export default class DatastoreService extends BaseClientService {
     const result: IDatastoreServiceNoteFilterParams = {};
     result.stacks = params.stacks || [];
     result.notebookGuids = _(params.notebooks || [])
-      .map((notebookName: string) => this.$vm.notebooks[notebookName].guid)
+      .map(
+        (notebookName: string) => myStore.datastore.notebooks[notebookName].guid
+      )
       .filter(_.isString)
       .value();
     return result;
@@ -121,18 +70,20 @@ export default class DatastoreService extends BaseClientService {
     const notebooks = await this.requestService.find<NotebookEntity>(
       NotebookEntity
     );
-    this.$vm.notebooks = _.keyBy(notebooks, "guid");
-    this.$vm.stacks = _(notebooks)
-      .map("stack")
-      .uniq()
-      .filter(_.isString)
-      .value();
+    myStore.datastore.setNotebooks(_.keyBy(notebooks, "guid"));
+    myStore.datastore.setStacks(
+      _(notebooks)
+        .map("stack")
+        .uniq()
+        .filter(_.isString)
+        .value()
+    );
   }
 
   private async syncTags(): Promise<void> {
     logger.debug(`Synchronizing tags.`);
     const tags = await this.requestService.find<TagEntity>(TagEntity);
-    this.$vm.tags = _.keyBy(tags, "guid");
+    myStore.datastore.setTags(_.keyBy(tags, "guid"));
   }
 
   async getNoteLogs(
@@ -354,7 +305,7 @@ export default class DatastoreService extends BaseClientService {
     const notebooksHash: { [notebookGuid: string]: boolean } = {};
     if (params.stacks)
       for (const stack of params.stacks)
-        for (const notebook of _.values(this.$vm.notebooks))
+        for (const notebook of _.values(myStore.datastore.notebooks))
           if (notebook.stack === stack) notebooksHash[notebook.guid] = true;
     if (_.size(params.notebookGuids) > 0)
       for (const notebookGuid of params.notebookGuids ?? [])

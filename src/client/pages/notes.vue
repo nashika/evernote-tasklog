@@ -6,7 +6,7 @@
     b-table(bordered, striped, hover, small, responsive, head-variant="dark", foot-clone, foot-variant="default",
       :fields="fields", :items="lodash.values(records)", :filter="filterText")
       template(v-slot:cell(title)="data")
-        a(:href="'evernote:///view/' + $myService.datastore.$vm.user.id + '/' + $myService.datastore.$vm.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
+        a(:href="'evernote:///view/' + $myStore.datastore.user.id + '/' + $myStore.datastore.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
       template(v-slot:cell(updated)="data")
         .text-right {{moment(data.item.updated).format('M/DD HH:mm')}}
       template(v-slot:cell(time)="data")
@@ -57,15 +57,15 @@ import { Component } from "nuxt-property-decorator";
 import _ from "lodash";
 
 import BaseComponent from "~/src/client/components/base.component";
+import configLoader from "~/src/common/util/config-loader";
+import NoteEntity from "~/src/common/entity/note.entity";
+import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 import {
   IDatastoreServiceNoteFilterParams,
   TNotesResult,
   TProfitLogsResult,
   TTimeLogsResult,
-} from "~/src/client/service/datastore.service";
-import configLoader from "~/src/common/util/config-loader";
-import NoteEntity from "~/src/common/entity/note.entity";
-import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
+} from "~/src/client/store/datastore";
 
 interface INoteRecord {
   guid: string;
@@ -175,8 +175,7 @@ export default class NotesComponent extends BaseComponent {
       const record: INoteRecord = {
         guid: note.guid,
         title: note.title,
-        notebookName: this.$myService.datastore.$vm.notebooks[note.notebookGuid]
-          .name,
+        notebookName: this.$myStore.datastore.notebooks[note.notebookGuid].name,
         updated: note.updated,
         persons: _(configLoader.app.persons)
           .keyBy(person => "$" + person.id)
