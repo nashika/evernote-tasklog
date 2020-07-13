@@ -1,4 +1,9 @@
-import { Module, Mutation, VuexModule } from "vuex-module-decorators";
+import {
+  Module,
+  Mutation,
+  MutationAction,
+  VuexModule,
+} from "vuex-module-decorators";
 import Evernote from "evernote";
 import _ from "lodash";
 import moment from "moment";
@@ -9,6 +14,7 @@ import NoteEntity from "~/src/common/entity/note.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import configLoader from "~/src/common/util/config-loader";
+import { myService } from "~/src/client/service";
 
 export interface IDatastoreServiceNoteFilterParams {
   start?: moment.Moment;
@@ -56,7 +62,6 @@ export interface INoteLogsResult {
   namespaced: true,
 })
 export default class DatastoreModule extends VuexModule {
-  lastUpdateCount: number = 0;
   user: Evernote.Types.User | null = null;
   currentPersonId: number = 0;
   notebooks: { [guid: string]: NotebookEntity } = {};
@@ -70,32 +75,32 @@ export default class DatastoreModule extends VuexModule {
   }
 
   @Mutation
-  setLastUpdateCount(count: number) {
-    this.lastUpdateCount = count;
-  }
-
-  @Mutation
-  setUser(user: Evernote.Types.User) {
-    this.user = user;
-  }
-
-  @Mutation
   setCurrentPersonId(id: number) {
     this.currentPersonId = id;
   }
 
-  @Mutation
-  setNotebooks(notebooks: { [guid: string]: NotebookEntity }) {
-    this.notebooks = notebooks;
-  }
-
-  @Mutation
-  setStacks(stacks: string[]) {
-    this.stacks = stacks;
-  }
-
-  @Mutation
-  setTags(tags: { [guid: string]: TagEntity }) {
-    this.tags = tags;
+  @MutationAction({
+    mutate: ["user", "currentPersonId", "notebooks", "stacks", "tags"],
+  })
+  async initialize() {
+    const user = await myService.request.loadOption("user");
+    const currentPersonId = _.toInteger(
+      (await myService.request.loadSession("currentPersonId")) || 0
+    );
+    const notebooks = await myService.request.find<NotebookEntity>(
+      NotebookEntity
+    );
+    const tags = await myService.request.find<TagEntity>(TagEntity);
+    return {
+      user,
+      currentPersonId,
+      notebooks: _.keyBy(notebooks, "guid"),
+      stacks: _(notebooks)
+        .map("stack")
+        .uniq()
+        .filter(_.isString)
+        .value(),
+      tags: _.keyBy(tags, "guid"),
+    };
   }
 }

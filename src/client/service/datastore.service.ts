@@ -5,13 +5,10 @@ import NoteEntity, {
 } from "~/src/common/entity/note.entity";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
-import NotebookEntity from "~/src/common/entity/notebook.entity";
-import TagEntity from "~/src/common/entity/tag.entity";
 import BaseClientService from "~/src/client/service/base-client.service";
 import RequestService from "~/src/client/service/request.service";
 import SocketIoClientService from "~/src/client/service/socket-io-client.service";
 import configLoader from "~/src/common/util/config-loader";
-import { logger } from "~/src/client/plugins/logger";
 import {
   FindManyEntityOptions,
   FindEntityWhereOptions,
@@ -37,18 +34,7 @@ export default class DatastoreService extends BaseClientService {
   }
 
   async initialize(): Promise<void> {
-    this.socketIoClientService.on(
-      this,
-      "sync::updateNotebooks",
-      this.syncNotebooks
-    );
-    this.socketIoClientService.on(this, "sync::updateTags", this.syncTags);
-    myStore.datastore.setUser(await this.requestService.loadOption("user"));
-    myStore.datastore.setCurrentPersonId(
-      _.toInteger(await this.requestService.loadSession("currentPersonId"))
-    );
-    await this.syncNotebooks();
-    await this.syncTags();
+    await myStore.datastore.initialize();
   }
 
   makeDefaultNoteFilterParams(
@@ -63,27 +49,6 @@ export default class DatastoreService extends BaseClientService {
       .filter(_.isString)
       .value();
     return result;
-  }
-
-  private async syncNotebooks(): Promise<void> {
-    logger.debug(`Synchronizing notebooks.`);
-    const notebooks = await this.requestService.find<NotebookEntity>(
-      NotebookEntity
-    );
-    myStore.datastore.setNotebooks(_.keyBy(notebooks, "guid"));
-    myStore.datastore.setStacks(
-      _(notebooks)
-        .map("stack")
-        .uniq()
-        .filter(_.isString)
-        .value()
-    );
-  }
-
-  private async syncTags(): Promise<void> {
-    logger.debug(`Synchronizing tags.`);
-    const tags = await this.requestService.find<TagEntity>(TagEntity);
-    myStore.datastore.setTags(_.keyBy(tags, "guid"));
   }
 
   async getNoteLogs(
