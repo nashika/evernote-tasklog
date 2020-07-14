@@ -65,7 +65,7 @@ import {
   TNotesResult,
   TProfitLogsResult,
   TTimeLogsResult,
-} from "~/src/client/service/datastore.service";
+} from "~/src/client/service/note-logs.service";
 
 interface INoteRecord {
   guid: string;
@@ -137,7 +137,7 @@ export default class NotesComponent extends BaseComponent {
   async mounted(): Promise<void> {
     await super.mounted();
     this.existPersons = [];
-    this.filterParams = this.$myService.datastore.makeDefaultNoteFilterParams(
+    this.filterParams = this.$myService.noteLogs.makeDefaultNoteFilterParams(
       configLoader.app.defaultFilterParams.notes
     );
     await this.reload();
@@ -147,7 +147,7 @@ export default class NotesComponent extends BaseComponent {
     filterParams: IDatastoreServiceNoteFilterParams | null = null
   ): Promise<void> {
     if (filterParams) this.filterParams = filterParams;
-    const noteLogsResult = await this.$myService.datastore.getNoteLogs(
+    const noteLogsResult = await this.$myService.noteLogs.getNoteLogs(
       this.filterParams
     );
     if (!noteLogsResult) return;

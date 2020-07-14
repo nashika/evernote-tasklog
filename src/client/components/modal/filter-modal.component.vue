@@ -38,7 +38,7 @@ import _ from "lodash";
 
 import BaseComponent from "~/src/client/components/base.component";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/datastore.service";
+import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 
 interface IStackItem {
   stack: string;
@@ -161,22 +161,22 @@ export default class FilterModalComponent extends BaseComponent {
     this.allNoteCount = 0;
     this.loadedNoteCount = 0;
     this.allLoadedNoteCount = 0;
-    this.noteCount = await this.$myService.datastore.countNotes(
+    this.noteCount = await this.$myService.noteLogs.countNotes(
       this.filterParams
     );
-    this.allNoteCount = await this.$myService.datastore.countNotes({});
+    this.allNoteCount = await this.$myService.noteLogs.countNotes({});
     const hasContentFilterParams = _.clone(this.filterParams);
     hasContentFilterParams.hasContent = true;
-    this.loadedNoteCount = await this.$myService.datastore.countNotes(
+    this.loadedNoteCount = await this.$myService.noteLogs.countNotes(
       hasContentFilterParams
     );
-    this.allLoadedNoteCount = await this.$myService.datastore.countNotes({
+    this.allLoadedNoteCount = await this.$myService.noteLogs.countNotes({
       hasContent: true,
     });
   }
 
   async reParse(): Promise<void> {
-    await this.$myService.datastore.reParse();
+    await this.$myService.noteLogs.reParse();
   }
 }
 </script>

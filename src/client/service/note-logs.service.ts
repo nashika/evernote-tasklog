@@ -56,7 +56,7 @@ interface INoteLogsResult {
   profitLogs: TProfitLogsResult | null;
 }
 
-export default class DatastoreService extends BaseClientService {
+export default class NoteLogsService extends BaseClientService {
   constructor(protected requestService: RequestService) {
     super();
   }
