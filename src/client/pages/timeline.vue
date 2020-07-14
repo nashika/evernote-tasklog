@@ -1,15 +1,23 @@
 <template lang="pug">
 section#timeline-mode
   #timeline
-  app-floating-action-button(enableReload, enableFilter, :filterParams="filterParams", @changeFilter="reload($event)")
+  floating-action-button-component(enableReload, enableFilter, :filterParams="filterParams", @changeFilter="reload($event)")
 </template>
+
+<style lang="scss">
+@import "../../../node_modules/vis-timeline/styles/vis-timeline-graph2d.css";
+</style>
 
 <script lang="ts">
 import moment from "moment";
 import _ from "lodash";
 import { Component } from "nuxt-property-decorator";
-import { DataSet } from "vis-data";
-import { Timeline } from "vis-timeline";
+import {
+  DataGroup,
+  DataItem,
+  Timeline,
+  TimelineHiddenDateOption,
+} from "vis-timeline";
 
 import BaseComponent from "~/src/client/components/base.component";
 import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
@@ -17,22 +25,18 @@ import configLoader from "~/src/common/util/config-loader";
 import NoteEntity from "~/src/common/entity/note.entity";
 import { abbreviateFilter } from "~/src/client/filter/abbreviate.filter";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
+import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 
-interface TimelineItem {
-  id: string;
-  group: number | string;
-  content: string;
-  start: Date;
-  end?: Date;
-  type: string;
-}
-
-@Component
+@Component({
+  components: {
+    FloatingActionButtonComponent,
+  },
+})
 export default class TimelineModeComponent extends BaseComponent {
   filterParams: IDatastoreServiceNoteFilterParams = {};
   timeline: any = null;
-  timelineItems: any = null;
-  timelineGroups: any = null;
+  timelineItems: DataItem[] = [];
+  timelineGroups: DataGroup[] = [];
   start: moment.Moment = moment().startOf("day");
   end: moment.Moment = moment().endOf("day");
   startView: moment.Moment = moment().startOf("day");
@@ -46,31 +50,31 @@ export default class TimelineModeComponent extends BaseComponent {
     filterParams: IDatastoreServiceNoteFilterParams | null = null
   ): Promise<void> {
     if (filterParams) this.filterParams = filterParams;
-    let noteFilterParams = _.clone(this.filterParams);
+    const noteFilterParams = _.clone(this.filterParams);
     noteFilterParams.start = this.start;
     noteFilterParams.end = this.end;
-    let noteLogsResult = await this.$myService.noteLogs.getNoteLogs(
+    const noteLogsResult = await this.$myService.noteLogs.getNoteLogs(
       noteFilterParams
     );
     if (!noteLogsResult) return;
     if (this.timeline) this.timeline.destroy();
-    this.timelineGroups = new DataSet();
-    this.timelineItems = new DataSet();
-    let sortedPersons: AppConfig.IPersonConfig[] = _.sortBy(
+    this.timelineGroups = [];
+    this.timelineItems = [];
+    const sortedPersons: AppConfig.IPersonConfig[] = _.sortBy(
       configLoader.app.persons,
-      person => (this.$myStore.datastore.currentPersonId == person.id ? 1 : 2)
+      person => (this.$myStore.datastore.currentPersonId === person.id ? 1 : 2)
     );
-    for (let person of sortedPersons)
-      this.timelineGroups.add({
+    for (const person of sortedPersons)
+      this.timelineGroups.push({
         id: `person-${person.id}`,
         content: person.name,
       });
-    this.timelineGroups.add({ id: "updated", content: "Update" });
-    let notes: { [noteGuid: string]: NoteEntity } = {};
-    for (let noteGuid in noteLogsResult.notes) {
-      let note: NoteEntity = noteLogsResult.notes[noteGuid];
+    this.timelineGroups.push({ id: "updated", content: "Update" });
+    const notes: { [noteGuid: string]: NoteEntity } = {};
+    for (const noteGuid in noteLogsResult.notes) {
+      const note: NoteEntity = noteLogsResult.notes[noteGuid];
       notes[note.guid] = note;
-      let timelineItem: TimelineItem = {
+      const timelineItem: DataItem = {
         id: note.guid,
         group: "updated",
         content: `<a href="evernote:///view/${
@@ -81,15 +85,15 @@ export default class TimelineModeComponent extends BaseComponent {
         start: moment(note.updated).toDate(),
         type: "point",
       };
-      this.timelineItems.add(timelineItem);
+      this.timelineItems.push(timelineItem);
     }
-    for (let noteGuid in noteLogsResult.timeLogs) {
-      let noteTimeLogs = noteLogsResult.timeLogs[noteGuid];
-      for (let timeLogId in noteTimeLogs) {
-        let timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
-        let note: NoteEntity = notes[timeLog.noteGuid];
+    for (const noteGuid in noteLogsResult.timeLogs) {
+      const noteTimeLogs = noteLogsResult.timeLogs[noteGuid];
+      for (const timeLogId in noteTimeLogs) {
+        const timeLog: TimeLogEntity = noteTimeLogs[timeLogId];
+        const note: NoteEntity = notes[timeLog.noteGuid];
         if (!note) continue;
-        let timelineItem: TimelineItem = {
+        const timelineItem: DataItem = {
           id: String(timeLog.id),
           group: `person-${timeLog.personId}`,
           content: `<a href="evernote:///view/${
@@ -103,53 +107,50 @@ export default class TimelineModeComponent extends BaseComponent {
           start: moment(timeLog.date).toDate(),
           end: timeLog.spentTime
             ? moment(timeLog.date)
-              .add(timeLog.spentTime, "minutes")
-              .toDate()
+                .add(timeLog.spentTime, "minutes")
+                .toDate()
             : undefined,
           type: timeLog.spentTime ? "range" : "point",
         };
-        this.timelineItems.add(timelineItem);
+        this.timelineItems.push(timelineItem);
       }
     }
-    let container: HTMLElement = <HTMLElement>(
-      this.$el.querySelector("#timeline")
-    );
-    // set working time
-    let hiddenDates: {
-      start: moment.Moment;
-      end: moment.Moment;
-      repeat: string;
-    }[];
+    const container: HTMLElement | null = this.$el.querySelector("#timeline");
+    // 稼働時間以外を隠す設定
+    let hiddenDates: TimelineHiddenDateOption[];
     if (configLoader.app.workingTimeStart && configLoader.app.workingTimeEnd)
       hiddenDates = [
         {
           start: moment()
             .subtract(1, "days")
             .startOf("day")
-            .hour(configLoader.app.workingTimeEnd),
+            .hour(configLoader.app.workingTimeEnd)
+            .toDate(),
           end: moment()
             .startOf("day")
-            .hour(configLoader.app.workingTimeStart),
+            .hour(configLoader.app.workingTimeStart)
+            .toDate(),
           repeat: "daily",
         },
       ];
     else hiddenDates = [];
-    this.timeline = new Timeline(
-      container,
-      this.timelineItems,
-      this.timelineGroups,
-      <any>{
-        margin: { item: 5 },
-        height: window.innerHeight - 57,
-        orientation: { axis: "both", item: "top" },
-        start: this.startView.toDate(),
-        end: this.endView.toDate(),
-        order: (a: TimelineItem, b: TimelineItem) => {
-          return a.start.getTime() - b.start.getTime();
-        },
-        hiddenDates: hiddenDates,
-      }
-    );
+    if (container)
+      this.timeline = new Timeline(
+        container,
+        this.timelineItems,
+        this.timelineGroups,
+        {
+          margin: { item: 5 },
+          height: window.innerHeight - 57,
+          orientation: { axis: "both", item: "top" },
+          start: this.startView.toDate(),
+          end: this.endView.toDate(),
+          order: (a: DataItem, b: DataItem) => {
+            return moment(a.start).valueOf() - moment(b.start).valueOf();
+          },
+          hiddenDates,
+        }
+      );
     this.timeline.on("rangechanged", (properties: { start: Date; end: Date }) =>
       this.onRangeChanged(properties)
     );
@@ -158,8 +159,8 @@ export default class TimelineModeComponent extends BaseComponent {
   onRangeChanged(properties: { start: Date; end: Date }) {
     this.startView = moment(properties.start);
     this.endView = moment(properties.end);
-    let currentStart = moment(properties.start).startOf("day");
-    let currentEnd = moment(properties.end).endOf("day");
+    const currentStart = moment(properties.start).startOf("day");
+    const currentEnd = moment(properties.end).endOf("day");
     if (
       currentStart.isSameOrAfter(this.start) &&
       currentEnd.isSameOrBefore(this.end)
