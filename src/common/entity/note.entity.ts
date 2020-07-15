@@ -7,6 +7,26 @@ export interface IFindManyNoteEntityOptions
 }
 
 export default class NoteEntity extends BaseEvernoteEntity {
+  FIELD_NAMES!:
+    | "title"
+    | "content"
+    | "contentHash"
+    | "contentLength"
+    | "created"
+    | "updated"
+    | "deleted"
+    | "active"
+    | "notebookGuid"
+    | "tagGuids"
+    | "resources"
+    | "attributes"
+    | "tagNames"
+    | "sharedNotes"
+    | "restrictions"
+    | "limits"
+    | "hasContent"
+    | BaseEvernoteEntity["FIELD_NAMES3"];
+
   static readonly params: EntityParams<NoteEntity> = {
     name: "note",
     primaryKey: "guid",

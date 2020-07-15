@@ -2,6 +2,8 @@ import BaseEvernoteEntity from "./base-evernote.entity";
 import { EntityParams } from "./base.entity";
 
 export default class TagEntity extends BaseEvernoteEntity {
+  FIELD_NAMES!: "name" | "parentGuid" | BaseEvernoteEntity["FIELD_NAMES3"];
+
   static readonly params: EntityParams<TagEntity> = {
     name: "tag",
     primaryKey: "guid",

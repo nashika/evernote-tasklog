@@ -1,6 +1,18 @@
 import BaseEntity, { EntityParams } from "./base.entity";
 
 export default class AttendanceEntity extends BaseEntity {
+  FIELD_NAMES!:
+    | "id"
+    | "personId"
+    | "year"
+    | "month"
+    | "day"
+    | "arrivalTime"
+    | "departureTime"
+    | "restTime"
+    | "remarks"
+    | BaseEntity["FIELD_NAMES"];
+
   static readonly params: EntityParams<AttendanceEntity> = {
     name: "attendance",
     primaryKey: "id",

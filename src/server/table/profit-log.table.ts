@@ -22,7 +22,7 @@ export default class ProfitLogTable extends BaseTable<ProfitLogEntity> {
       }
     }
     if (!note.guid) return;
-    await this.delete(note.guid);
+    await this.delete({ noteGuid: note.guid });
     await this.saveAll(profitLogs);
   }
 }

@@ -1,6 +1,13 @@
 import BaseEntity, { EntityParams } from "./base.entity";
 
 export default class ProfitLogEntity extends BaseEntity {
+  FIELD_NAMES!:
+    | "id"
+    | "noteGuid"
+    | "comment"
+    | "profit"
+    | BaseEntity["FIELD_NAMES2"];
+
   static readonly params: EntityParams<ProfitLogEntity> = {
     name: "profitLog",
     primaryKey: "id",

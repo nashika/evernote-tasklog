@@ -33,7 +33,7 @@ export default class SessionService extends BaseServerService {
       saveUninitialized: true,
       store: new TypeormStore({
         cleanupLimit: 100,
-      }).connect(sessionRepository),
+      }).connect(<any>sessionRepository),
       cookie: {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       },

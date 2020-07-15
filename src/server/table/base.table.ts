@@ -36,17 +36,19 @@ import { assertIsDefined } from "~/src/common/util/assert";
 export default abstract class BaseTable<T extends BaseEntity> {
   readonly EntityClass: TEntityClass<T>;
 
-  readonly schema: EntitySchema<T>;
-  readonly archiveSchema: EntitySchema<T> | null = null;
+  readonly schema: EntitySchema<Pick<T, T["FIELD_NAMES"]>>;
+  readonly archiveSchema: EntitySchema<Pick<T, T["FIELD_NAMES"]>> | null = null;
 
-  private _repository: Repository<T> | null = null;
-  private archiveRepository: Repository<T> | null = null;
+  private _repository: Repository<Pick<T, T["FIELD_NAMES"]>> | null = null;
+  private archiveRepository: Repository<
+    Pick<T, T["FIELD_NAMES"]>
+  > | null = null;
 
   get Class(): typeof BaseTable {
     return <typeof BaseTable>this.constructor;
   }
 
-  get repository(): Repository<T> {
+  get repository(): Repository<Pick<T, T["FIELD_NAMES"]>> {
     assertIsDefined(this._repository);
     return this._repository;
   }
@@ -147,7 +149,9 @@ export default abstract class BaseTable<T extends BaseEntity> {
       query: argOptions,
     });
     const options = this.parseFindOptions(argOptions);
-    const data: Partial<T> | undefined = await this.repository.findOne(options);
+    const data:
+      | Partial<Pick<T, T["FIELD_NAMES"]>>
+      | undefined = await this.repository.findOne(options);
     this.message("find", ["local"], this.EntityClass.params.name, false, {
       query: argOptions,
     });
@@ -166,7 +170,9 @@ export default abstract class BaseTable<T extends BaseEntity> {
       query: argOptions,
     });
     const options = this.parseFindOptions(argOptions);
-    const datas: Partial<T>[] = await repository.find(options);
+    const datas: Partial<Pick<T, T["FIELD_NAMES"]>>[] = await repository.find(
+      options
+    );
     this.message("find", ["local"], this.EntityClass.params.name, false, {
       length: datas.length,
       query: argOptions,
@@ -188,7 +194,9 @@ export default abstract class BaseTable<T extends BaseEntity> {
     return count;
   }
 
-  private chooseRepository(options: { archive?: boolean }): Repository<T> {
+  private chooseRepository(options: {
+    archive?: boolean;
+  }): Repository<Pick<T, T["FIELD_NAMES"]>> {
     const repository = options.archive
       ? this.archiveRepository
       : this.repository;
@@ -198,7 +206,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
 
   private parseFindOptions(
     argOptions: FindManyEntityOptions<T> = {}
-  ): FindManyOptions<T> {
+  ): FindManyOptions<Pick<T, T["FIELD_NAMES"]>> {
     argOptions.where =
       argOptions.where ?? _.clone(this.EntityClass.params.default.where);
     argOptions.where = _.merge(
@@ -209,7 +217,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
       argOptions.order || _.clone(this.EntityClass.params.default.order);
     _.merge(argOptions.order || {}, this.EntityClass.params.append.order || {});
     // TODO: $gte等を処理する機能を組み込む
-    const options: FindManyOptions<T> = {
+    const options: FindManyOptions<Pick<T, T["FIELD_NAMES"]>> = {
       where: this.parseFindWhereOptions(argOptions.where),
       order: argOptions.order,
       take: argOptions.take,
@@ -306,7 +314,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
   }
 
   async delete(
-    criteria: Parameters<Repository<T>["delete"]>[0]
+    criteria: Parameters<Repository<Pick<T, T["FIELD_NAMES"]>>["delete"]>[0]
   ): Promise<void> {
     if (!criteria || (Array.isArray(criteria) && criteria.length === 0)) return;
     this.message("remove", ["local"], this.EntityClass.params.name, true, {
@@ -352,7 +360,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
     return data;
   }
 
-  protected prepareLoadEntity(data: Partial<T>): T {
+  protected prepareLoadEntity(data: Partial<Pick<T, T["FIELD_NAMES"]>>): T {
     for (const jsonField of _.defaultTo(
       this.EntityClass.params.jsonFields,
       []

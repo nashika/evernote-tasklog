@@ -73,6 +73,8 @@ export type FindEntityWhereColumnOperators<P extends string | number | null> = {
 };
 
 export default abstract class BaseEntity {
+  FIELD_NAMES!: string;
+  FIELD_NAMES2!: "archiveId" | "createdAt" | "updatedAt";
   static readonly params: EntityParams<BaseEntity>;
 
   constructor(data: any = {}) {

@@ -1,6 +1,16 @@
 import BaseEntity, { EntityParams } from "./base.entity";
 
 export default class TimeLogEntity extends BaseEntity {
+  FIELD_NAMES!:
+    | "id"
+    | "noteGuid"
+    | "comment"
+    | "allDay"
+    | "date"
+    | "personId"
+    | "spentTime"
+    | BaseEntity["FIELD_NAMES2"];
+
   static readonly params: EntityParams<TimeLogEntity> = {
     name: "timeLog",
     primaryKey: "id",

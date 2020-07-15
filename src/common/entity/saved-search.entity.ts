@@ -2,6 +2,13 @@ import BaseEvernoteEntity from "./base-evernote.entity";
 import { EntityParams } from "./base.entity";
 
 export default class SavedSearchEntity extends BaseEvernoteEntity {
+  FIELD_NAMES!:
+    | "name"
+    | "query"
+    | "format"
+    | "scope"
+    | BaseEvernoteEntity["FIELD_NAMES3"];
+
   static readonly params: EntityParams<SavedSearchEntity> = {
     name: "savedSearch",
     primaryKey: "guid",

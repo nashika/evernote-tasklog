@@ -2,6 +2,21 @@ import BaseEvernoteEntity from "./base-evernote.entity";
 import { EntityParams } from "./base.entity";
 
 export default class NotebookEntity extends BaseEvernoteEntity {
+  FIELD_NAMES!:
+    | "name"
+    | "defaultNotebook"
+    | "serviceCreated"
+    | "serviceUpdated"
+    | "publishing"
+    | "stack"
+    | "sharedNotebookIds"
+    | "sharedNotebooks"
+    | "businessNotebooks"
+    | "contact"
+    | "restrictions"
+    | "recipientSettings"
+    | BaseEvernoteEntity["FIELD_NAMES3"];
+
   static readonly params: EntityParams<NotebookEntity> = {
     name: "notebook",
     primaryKey: "guid",
