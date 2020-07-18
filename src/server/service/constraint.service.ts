@@ -15,13 +15,13 @@ export default class ConstraintService extends BaseServerService {
   }
 
   async checkAll(): Promise<void> {
-    logger.info(`Delete all constraintResult datas.`);
+    logger.info(`全ての制約違反データを削除します.`);
     await this.tableService.constraintResultTable.clear();
     const noteCount = await this.tableService.noteTable.count();
     let notes: NoteEntity[];
     let i = 0;
     do {
-      logger.info(`Checking constraint ${i * 100} / ${noteCount}.`);
+      logger.info(`ノートの制約をチェック中 ${i * 100} / ${noteCount}.`);
       notes = await this.tableService.noteTable.findAll({
         take: 100,
         skip: 100 * i,
