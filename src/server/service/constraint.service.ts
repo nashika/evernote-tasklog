@@ -1,6 +1,5 @@
 import { injectable } from "inversify";
 import _ from "lodash";
-import { FindConditions } from "typeorm";
 
 import BaseServerService from "~/src/server/service/base-server.service";
 import TableService from "~/src/server/service/table.service";
@@ -33,20 +32,16 @@ export default class ConstraintService extends BaseServerService {
   }
 
   async checkOne(note: NoteEntity): Promise<void> {
-    // TODO: FindConditionsへの変換でエラーが出てしまう
-    const cond: FindConditions<ConstraintResultEntity> = <any>{
+    await this.tableService.constraintResultTable.delete({
       noteGuid: note.guid,
-    };
-    await this.tableService.constraintResultTable.delete(cond);
+    });
     await this.check(note);
   }
 
   async removeOne(guid: string): Promise<void> {
-    // TODO: FindConditionsへの変換でエラーが出てしまう
-    const cond: FindConditions<ConstraintResultEntity> = <any>{
+    await this.tableService.constraintResultTable.delete({
       noteGuid: guid,
-    };
-    await this.tableService.constraintResultTable.delete(cond);
+    });
   }
 
   private async check(note: NoteEntity): Promise<void> {
