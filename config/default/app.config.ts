@@ -40,5 +40,6 @@ const appConfig: AppConfig.IAppConfigs = {
   },
   "production-pre": {},
   production: {},
+  test: {},
 };
 export default appConfig;
