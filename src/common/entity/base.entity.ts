@@ -30,6 +30,8 @@ export type TEntityClass<T extends BaseEntity> = {
   readonly params: EntityParams<T>;
 };
 
+export type EntityToInterface<T extends BaseEntity> = Pick<T, T["FIELD_NAMES"]>;
+
 export type EntityColumnType =
   | "integer"
   | "real"
@@ -96,7 +98,7 @@ export default abstract class BaseEntity {
   }
 
   archiveId?: number;
-  createdAt!: Date;
-  updatedAt!: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
   [key: string]: any;
 }

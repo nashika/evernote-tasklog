@@ -27,12 +27,11 @@ import BaseEntity, {
   FindEntityWhereOptions,
   FindManyEntityOptions,
   FindOneEntityOptions,
+  EntityToInterface,
 } from "~/src/common/entity/base.entity";
 import container from "~/src/server/inversify.config";
 import logger from "~/src/server/logger";
 import { assertIsDefined } from "~/src/common/util/assert";
-
-type EntityToInterface<T extends BaseEntity> = Pick<T, T["FIELD_NAMES"]>;
 
 @injectable()
 export default abstract class BaseTable<T extends BaseEntity> {

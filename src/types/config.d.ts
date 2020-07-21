@@ -42,7 +42,7 @@ declare namespace AppConfig {
     title?: TConstraintConfigStringOperator;
     notebook?: TConstraintConfigStringOperator;
     stack?: TConstraintConfigStringOperator;
-    tag?: TConstraintConfigArrayOperator;
+    tag?: TConstraintConfigTagsOperator;
     created?: TConstraintConfigNumberOperator;
     updated?: TConstraintConfigNumberOperator;
     reminderOrder?: TConstraintConfigNumberOperator;
@@ -53,7 +53,7 @@ declare namespace AppConfig {
   }
 
   type TConstraintConfigStringOperator =
-    | undefined
+    | null
     | string
     | string[]
     | RegExp
@@ -67,7 +67,6 @@ declare namespace AppConfig {
 
   type TConstraintConfigNumberOperator =
     | null
-    | undefined
     | number
     | {
         $gt?: number;
@@ -84,7 +83,16 @@ declare namespace AppConfig {
       };
 
   type TConstraintConfigArrayOperator =
-    | undefined
+    | string
+    | string[]
+    | {
+        $in?: string[];
+        $notIn?: string[];
+        $all?: string[];
+        $notAll?: string[];
+      };
+
+  type TConstraintConfigTagsOperator =
     | string
     | string[]
     | {
@@ -95,7 +103,6 @@ declare namespace AppConfig {
       };
 
   type TConstraintConfigTreeOperator =
-    | undefined
     | string[]
     | {
         $children?: string | string[];

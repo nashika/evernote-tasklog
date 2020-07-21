@@ -128,7 +128,7 @@ export default class SyncService extends BaseServerService {
       lastSyncChunk.expungedNotebooks ?? []
     );
     await this.tableService.tagTable.saveAll(
-      _.map(lastSyncChunk.tags, tag => new TagEntity(tag))
+      _.map(lastSyncChunk.tags, tag => new TagEntity(<any>tag))
     );
     await this.tableService.tagTable.delete(lastSyncChunk.expungedTags ?? []);
     await this.tableService.savedSearchTable.saveAll(

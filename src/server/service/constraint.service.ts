@@ -59,26 +59,35 @@ export default class ConstraintService extends BaseServerService {
     note: NoteEntity,
     query: AppConfig.IConstraintConfigQuery
   ): boolean {
-    if (!this.evalString(note.title, query.title)) return false;
-    if (!this.evalNumber(note.created, query.created)) return false;
-    if (!this.evalNumber(note.updated, query.updated)) return false;
-    if (!this.evalNumber(note.attributes?.reminderOrder, query.reminderOrder))
-      return false;
-    if (
-      !this.evalNumber(
-        note.attributes?.reminderDoneTime,
-        query.reminderDoneTime
+    debugger;
+    if (!_.isUndefined(query.title))
+      if (!this.evalString(note.title, query.title)) return false;
+    if (!_.isUndefined(query.created))
+      if (!this.evalNumber(note.created, query.created)) return false;
+    if (!_.isUndefined(query.updated))
+      if (!this.evalNumber(note.updated, query.updated)) return false;
+    if (!_.isUndefined(query.reminderOrder))
+      if (!this.evalNumber(note.attributes?.reminderOrder, query.reminderOrder))
+        return false;
+    if (!_.isUndefined(query.reminderDoneTime))
+      if (
+        !this.evalNumber(
+          note.attributes?.reminderDoneTime,
+          query.reminderDoneTime
+        )
       )
-    )
-      return false;
-    if (!this.evalNumber(note.attributes?.reminderTime, query.reminderTime))
-      return false;
+        return false;
+    if (!_.isUndefined(query.reminderTime))
+      if (!this.evalNumber(note.attributes?.reminderTime, query.reminderTime))
+        return false;
     if (query.notebook || query.stack) {
       const notebook = note.notebookGuid
         ? this.tableService.caches.notebooks[note.notebookGuid]
         : null;
-      if (!this.evalString(notebook?.name, query.notebook)) return false;
-      if (!this.evalString(notebook?.stack, query.stack)) return false;
+      if (!_.isUndefined(query.notebook))
+        if (!this.evalString(notebook?.name, query.notebook)) return false;
+      if (!_.isUndefined(query.stack))
+        if (!this.evalString(notebook?.stack, query.stack)) return false;
     }
     if (query.tag) {
       const tagNames: string[] = [];
@@ -87,7 +96,7 @@ export default class ConstraintService extends BaseServerService {
         if (!tag.name) continue;
         tagNames.push(tag.name);
       }
-      if (!this.evalArray(tagNames, query.tag)) return false;
+      if (!this.evalTags(tagNames, query.tag)) return false;
     }
     return true;
   }
@@ -96,8 +105,8 @@ export default class ConstraintService extends BaseServerService {
     target: number | undefined | null,
     query: AppConfig.TConstraintConfigNumberOperator
   ): boolean {
-    if (_.isNil(target)) return true;
     if (_.isNil(query)) return _.isNil(target);
+    if (_.isNil(target)) return _.isNil(query);
     if (_.isNumber(query)) return target === query;
     if (_.isObject(query)) {
       if (!_.isUndefined(query.$eq) && !(target === query.$eq)) return false;
@@ -119,7 +128,7 @@ export default class ConstraintService extends BaseServerService {
         return false;
       if (!_.isUndefined(query.$in) && !_.includes(query.$in, target))
         return false;
-      if (!_.isUndefined(query.$notIn) && _.includes(query.$in, target))
+      if (!_.isUndefined(query.$notIn) && _.includes(query.$notIn, target))
         return false;
       if (!_.isUndefined(query.$not) && this.evalNumber(target, query.$not))
         return false;
@@ -131,7 +140,7 @@ export default class ConstraintService extends BaseServerService {
     target: string | undefined | null,
     query: AppConfig.TConstraintConfigStringOperator
   ): boolean {
-    if (_.isNil(target)) return true;
+    if (_.isNil(target)) return _.isNil(query);
     if (_.isNil(query)) return _.isNil(target);
     if (_.isArray(query)) return _.includes(query, target);
     if (_.isRegExp(query)) return query.test(target);
@@ -150,59 +159,69 @@ export default class ConstraintService extends BaseServerService {
   }
 
   private evalArray(
-    target: string[],
+    target: string[] | undefined | null,
     query: AppConfig.TConstraintConfigArrayOperator
   ): boolean {
-    if (_.isNil(target)) return true;
-    if (_.isNil(query)) return _.isNil(target);
+    if (_.isNil(target)) return false;
     if (_.isString(query)) return _.includes(target, query);
     if (_.isArray(query)) return _.every(query, q => _.includes(target, q));
     if (_.isObject(query)) {
-      if (
-        !_.isUndefined(query.$in) &&
-        !_.some(this.evalTree(query.$in), q => _.includes(target, q))
-      )
-        return false;
-      if (
-        !_.isUndefined(query.$notIn) &&
-        _.some(this.evalTree(query.$notIn), q => _.includes(target, q))
-      )
-        return false;
-      if (
-        !_.isUndefined(query.$all) &&
-        !_.every(this.evalTree(query.$all), q => _.includes(target, q))
-      )
-        return false;
-      if (
-        !_.isUndefined(query.$notAll) &&
-        _.every(this.evalTree(query.$notAll), q => _.includes(target, q))
-      )
-        return false;
+      if (!_.isUndefined(query.$in))
+        if (!_.some(query.$in, q => _.includes(target, q)))
+          return false;
+      if (!_.isUndefined(query.$notIn))
+        if (_.some(query.$notIn, q => _.includes(target, q)))
+          return false;
+      if (!_.isUndefined(query.$all))
+        if (!_.every(query.$all, q => _.includes(target, q)))
+          return false;
+      if (!_.isUndefined(query.$notAll))
+        if (_.every(query.$notAll, q => _.includes(target, q)))
+          return false;
     }
     return true;
   }
 
-  private evalTree(target: AppConfig.TConstraintConfigTreeOperator): string[] {
+  private evalTags(
+    target: string[] | undefined | null,
+    query: AppConfig.TConstraintConfigTagsOperator
+  ): boolean {
+    let expandQuery: AppConfig.TConstraintConfigArrayOperator = [];
+    if (_.isString(query)) expandQuery = query;
+    else if (_.isArray(query)) expandQuery = query;
+    else if (_.isObject(query))
+      expandQuery = _.mapValues(query, value =>
+        _.isUndefined(value) ? undefined : this.expandTagTree(value)
+      );
+    return this.evalArray(target, expandQuery);
+  }
+
+  private expandTagTree(
+    target: AppConfig.TConstraintConfigTreeOperator
+  ): string[] {
     if (_.isArray(target)) return target;
     if (_.isObject(target)) {
-      if (target.$children) return this.evalTreeRoots(target.$children, false);
+      if (target.$children)
+        return this.expandTagTreeRoots(target.$children, false);
       if (target.$descendants)
-        return this.evalTreeRoots(target.$descendants, true);
+        return this.expandTagTreeRoots(target.$descendants, true);
     }
     return [];
   }
 
-  private evalTreeRoots(
+  private expandTagTreeRoots(
     names: string | string[],
     recursive: boolean
   ): string[] {
-    if (_.isString(names)) return this.evalTreeRecursive(names, recursive);
+    if (_.isString(names)) return this.expandTagTreeRecursive(names, recursive);
     if (_.isArray(names))
-      return _.flatMap(names, name => this.evalTreeRecursive(name, recursive));
+      return _.flatMap(names, name =>
+        this.expandTagTreeRecursive(name, recursive)
+      );
     return [];
   }
 
-  private evalTreeRecursive(
+  private expandTagTreeRecursive(
     name: string | undefined,
     recursive: boolean
   ): string[] {
@@ -220,7 +239,9 @@ export default class ConstraintService extends BaseServerService {
     if (recursive)
       return [
         ...childTagNames,
-        ...childTagNames.flatMap(name => this.evalTreeRecursive(name, true)),
+        ...childTagNames.flatMap(name =>
+          this.expandTagTreeRecursive(name, true)
+        ),
       ];
     else return childTagNames;
   }

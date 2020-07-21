@@ -1,8 +1,13 @@
 import BaseEvernoteEntity from "./base-evernote.entity";
-import { EntityParams } from "./base.entity";
+import { EntityParams, EntityToInterface } from "./base.entity";
 
 export default class TagEntity extends BaseEvernoteEntity {
   FIELD_NAMES!: "name" | "parentGuid" | BaseEvernoteEntity["FIELD_NAMES3"];
+
+  // eslint-disable-next-line no-useless-constructor
+  constructor(data: EntityToInterface<TagEntity>) {
+    super(data);
+  }
 
   static readonly params: EntityParams<TagEntity> = {
     name: "tag",
