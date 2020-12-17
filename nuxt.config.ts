@@ -15,7 +15,7 @@ const webpackConfig: webpack.Configuration = {
 };
 
 const conf: Configuration = {
-  mode: "spa",
+  ssr: false,
   dir: {
     assets: "src/client/assets",
     layouts: "src/client/layouts",
