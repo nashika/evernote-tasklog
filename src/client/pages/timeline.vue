@@ -178,4 +178,8 @@ export default class TimelineModeComponent extends BaseComponent {
 
 <style lang="scss">
 @import "../../../node_modules/vis-timeline/styles/vis-timeline-graph2d.css";
+
+.vis-item .vis-item-overflow {
+  overflow: visible;
+}
 </style>
