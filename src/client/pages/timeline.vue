@@ -4,10 +4,6 @@ section#timeline-mode
   floating-action-button-component(enableReload, enableFilter, :filterParams="filterParams", @changeFilter="reload($event)")
 </template>
 
-<style lang="scss">
-@import "../../../node_modules/vis-timeline/styles/vis-timeline-graph2d.css";
-</style>
-
 <script lang="ts">
 import moment from "moment";
 import _ from "lodash";
@@ -179,3 +175,7 @@ export default class TimelineModeComponent extends BaseComponent {
   }
 }
 </script>
+
+<style lang="scss">
+@import "../../../node_modules/vis-timeline/styles/vis-timeline-graph2d.css";
+</style>

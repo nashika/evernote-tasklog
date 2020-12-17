@@ -167,17 +167,13 @@ export default class ConstraintService extends BaseServerService {
     if (_.isArray(query)) return _.every(query, q => _.includes(target, q));
     if (_.isObject(query)) {
       if (!_.isUndefined(query.$in))
-        if (!_.some(query.$in, q => _.includes(target, q)))
-          return false;
+        if (!_.some(query.$in, q => _.includes(target, q))) return false;
       if (!_.isUndefined(query.$notIn))
-        if (_.some(query.$notIn, q => _.includes(target, q)))
-          return false;
+        if (_.some(query.$notIn, q => _.includes(target, q))) return false;
       if (!_.isUndefined(query.$all))
-        if (!_.every(query.$all, q => _.includes(target, q)))
-          return false;
+        if (!_.every(query.$all, q => _.includes(target, q))) return false;
       if (!_.isUndefined(query.$notAll))
-        if (_.every(query.$notAll, q => _.includes(target, q)))
-          return false;
+        if (_.every(query.$notAll, q => _.includes(target, q))) return false;
     }
     return true;
   }

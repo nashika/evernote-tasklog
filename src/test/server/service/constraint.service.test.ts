@@ -165,7 +165,10 @@ describe("expandTagTree", () => {
   };
   myTest([], []);
   myTest(["Tag-a001"], ["Tag-a001"]);
-  myTest(["Tag-a001", "Tag-a002", "Tag-a003"], ["Tag-a001", "Tag-a002", "Tag-a003"]);
+  myTest(
+    ["Tag-a001", "Tag-a002", "Tag-a003"],
+    ["Tag-a001", "Tag-a002", "Tag-a003"]
+  );
   myTest({ $children: "Tag-a001" }, ["Tag-a002", "Tag-a003"]);
   myTest({ $descendants: "Tag-a001" }, ["Tag-a002", "Tag-a003", "Tag-a004"]);
 });

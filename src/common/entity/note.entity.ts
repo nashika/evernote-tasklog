@@ -1,11 +1,6 @@
 import BaseEvernoteEntity from "./base-evernote.entity";
 import { EntityParams, FindManyEntityOptions } from "./base.entity";
 
-export interface IFindManyNoteEntityOptions
-  extends FindManyEntityOptions<NoteEntity> {
-  includeContent?: boolean;
-}
-
 export default class NoteEntity extends BaseEvernoteEntity {
   FIELD_NAMES!:
     | "title"
@@ -217,7 +212,7 @@ export default class NoteEntity extends BaseEvernoteEntity {
   notebookGuid!: string;
   tagGuids!: string[] | null;
   resources!: Object[] | null;
-  attributes!: {
+  attributes?: {
     subjectDate: number | null;
     latitude: number | null;
     longitude: number | null;
@@ -246,4 +241,9 @@ export default class NoteEntity extends BaseEvernoteEntity {
   limits!: any | null;
 
   hasContent!: boolean;
+}
+
+export interface IFindManyNoteEntityOptions
+  extends FindManyEntityOptions<NoteEntity> {
+  includeContent?: boolean;
 }

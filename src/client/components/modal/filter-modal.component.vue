@@ -25,13 +25,6 @@ b-modal(id="filter-modal", title="Filter", ok-only, @shown="shown()", @hidden="h
           b-form-checkbox(:checked="data.item.selected", @change="toggleNotebookItem(data.item)")
 </template>
 
-<style lang="scss">
-.scroll {
-  overflow-y: auto;
-  max-height: 200px;
-}
-</style>
-
 <script lang="ts">
 import { Component } from "nuxt-property-decorator";
 import _ from "lodash";
@@ -180,3 +173,10 @@ export default class FilterModalComponent extends BaseComponent {
   }
 }
 </script>
+
+<style lang="scss">
+.scroll {
+  overflow-y: auto;
+  max-height: 200px;
+}
+</style>
