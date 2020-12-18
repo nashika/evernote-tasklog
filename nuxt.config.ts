@@ -104,7 +104,12 @@ const conf: Configuration = {
   /*
    ** Build configuration
    */
-  build: <any>webpackConfig,
+  build: <any>{
+    babel: {
+      compact: false,
+    },
+    ...webpackConfig,
+  },
   telemetry: true,
 };
 export default conf;

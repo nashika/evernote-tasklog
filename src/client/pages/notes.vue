@@ -61,7 +61,7 @@ import configLoader from "~/src/common/util/config-loader";
 import NoteEntity from "~/src/common/entity/note.entity";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 import {
-  IDatastoreServiceNoteFilterParams,
+  INoteLogsServiceNoteFilterParams,
   TNotesResult,
   TProfitLogsResult,
   TTimeLogsResult,
@@ -98,7 +98,7 @@ type TFieldDefinition = {
 })
 export default class NotesComponent extends BaseComponent {
   filterText: string = "";
-  filterParams: IDatastoreServiceNoteFilterParams = {};
+  filterParams: INoteLogsServiceNoteFilterParams = {};
   filterProfitType: TProfitType = "all";
   displayColumns = {
     notebook: true,
@@ -144,7 +144,7 @@ export default class NotesComponent extends BaseComponent {
   }
 
   async reload(
-    filterParams: IDatastoreServiceNoteFilterParams | null = null
+    filterParams: INoteLogsServiceNoteFilterParams | null = null
   ): Promise<void> {
     if (filterParams) this.filterParams = filterParams;
     const noteLogsResult = await this.$myService.noteLogs.getNoteLogs(

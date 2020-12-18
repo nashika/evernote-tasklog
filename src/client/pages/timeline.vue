@@ -16,7 +16,7 @@ import {
 } from "vis-timeline";
 
 import BaseComponent from "~/src/client/components/base.component";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
+import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 import configLoader from "~/src/common/util/config-loader";
 import NoteEntity from "~/src/common/entity/note.entity";
 import { abbreviateFilter } from "~/src/client/filter/abbreviate.filter";
@@ -29,7 +29,7 @@ import FloatingActionButtonComponent from "~/src/client/components/floating-acti
   },
 })
 export default class TimelineModeComponent extends BaseComponent {
-  filterParams: IDatastoreServiceNoteFilterParams = {};
+  filterParams: INoteLogsServiceNoteFilterParams = {};
   timeline: any = null;
   timelineItems: DataItem[] = [];
   timelineGroups: DataGroup[] = [];
@@ -43,7 +43,7 @@ export default class TimelineModeComponent extends BaseComponent {
   }
 
   async reload(
-    filterParams: IDatastoreServiceNoteFilterParams | null = null
+    filterParams: INoteLogsServiceNoteFilterParams | null = null
   ): Promise<void> {
     if (filterParams) this.filterParams = filterParams;
     const noteFilterParams = _.clone(this.filterParams);

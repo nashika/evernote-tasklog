@@ -16,7 +16,7 @@ import {
 import { assertIsDefined } from "~/src/common/util/assert";
 import { myStore } from "~/src/client/store";
 
-export interface IDatastoreServiceNoteFilterParams {
+export interface INoteLogsServiceNoteFilterParams {
   start?: moment.Moment;
   end?: moment.Moment;
   notebookGuids?: string[];
@@ -63,8 +63,8 @@ export default class NoteLogsService extends BaseClientService {
 
   makeDefaultNoteFilterParams(
     params: AppConfig.IDefaultFilterParamsConfig
-  ): IDatastoreServiceNoteFilterParams {
-    const result: IDatastoreServiceNoteFilterParams = {};
+  ): INoteLogsServiceNoteFilterParams {
+    const result: INoteLogsServiceNoteFilterParams = {};
     result.stacks = params.stacks || [];
     result.notebookGuids = _(params.notebooks || [])
       .map(
@@ -76,7 +76,7 @@ export default class NoteLogsService extends BaseClientService {
   }
 
   async getNoteLogs(
-    params: IDatastoreServiceNoteFilterParams = {}
+    params: INoteLogsServiceNoteFilterParams = {}
   ): Promise<INoteLogsResult | null> {
     if (myStore.progress.isActive) return null;
     const result: INoteLogsResult = {
@@ -103,7 +103,7 @@ export default class NoteLogsService extends BaseClientService {
   }
 
   async getArchiveLogs(
-    params: IDatastoreServiceNoteFilterParams = {}
+    params: INoteLogsServiceNoteFilterParams = {}
   ): Promise<NoteEntity[] | null> {
     if (myStore.progress.isActive) return null;
     myStore.progress.open(4);
@@ -128,7 +128,7 @@ export default class NoteLogsService extends BaseClientService {
   }
 
   private async checkNoteCount(
-    params: IDatastoreServiceNoteFilterParams
+    params: INoteLogsServiceNoteFilterParams
   ): Promise<void> {
     myStore.progress.next("Checking notes count.");
     const options = this.makeNoteFindOptions(params);
@@ -143,7 +143,7 @@ export default class NoteLogsService extends BaseClientService {
   }
 
   protected async getNotes(
-    params: IDatastoreServiceNoteFilterParams
+    params: INoteLogsServiceNoteFilterParams
   ): Promise<TNotesResult> {
     myStore.progress.next("Getting notes.");
     const options = this.makeNoteFindOptions(params);
@@ -155,7 +155,7 @@ export default class NoteLogsService extends BaseClientService {
   }
 
   private async getArchiveNotes(
-    params: IDatastoreServiceNoteFilterParams
+    params: INoteLogsServiceNoteFilterParams
   ): Promise<NoteEntity[]> {
     myStore.progress.next("Getting arcguve notes.");
     const options = this.makeNoteFindOptions(params);
@@ -246,7 +246,7 @@ export default class NoteLogsService extends BaseClientService {
     myStore.progress.close();
   }
 
-  async countNotes(params: IDatastoreServiceNoteFilterParams): Promise<number> {
+  async countNotes(params: INoteLogsServiceNoteFilterParams): Promise<number> {
     const options = this.makeNoteFindOptions(params);
     return this.requestService.count(NoteEntity, options);
   }
@@ -279,7 +279,7 @@ export default class NoteLogsService extends BaseClientService {
   }
 
   private makeNoteFindOptions(
-    params: IDatastoreServiceNoteFilterParams
+    params: INoteLogsServiceNoteFilterParams
   ): IFindManyNoteEntityOptions {
     const where: FindEntityWhereOptions<NoteEntity> = {};
     if (params.start && params.end)

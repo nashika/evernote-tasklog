@@ -12,7 +12,7 @@
 import { Component, Prop } from "nuxt-property-decorator";
 
 import BaseComponent from "~/src/client/components/base.component";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
+import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 
 @Component
 export default class FloatingActionButtonComponent extends BaseComponent {
@@ -26,13 +26,13 @@ export default class FloatingActionButtonComponent extends BaseComponent {
   enableMenu!: boolean;
 
   @Prop({ type: Object })
-  filterParams!: IDatastoreServiceNoteFilterParams;
+  filterParams!: INoteLogsServiceNoteFilterParams;
 
   async mounted(): Promise<void> {
     await super.mounted();
     this.$root.$on(
       "filter-modal::hide",
-      (param: IDatastoreServiceNoteFilterParams) => this.hideFilterModal(param)
+      (param: INoteLogsServiceNoteFilterParams) => this.hideFilterModal(param)
     );
   }
 
@@ -40,7 +40,7 @@ export default class FloatingActionButtonComponent extends BaseComponent {
     this.$root.$emit("filter-modal::show", this.filterParams);
   }
 
-  hideFilterModal(param: IDatastoreServiceNoteFilterParams) {
+  hideFilterModal(param: INoteLogsServiceNoteFilterParams) {
     this.$emit("changeFilter", param);
   }
 }

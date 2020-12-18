@@ -38,7 +38,7 @@ import diff2html from "diff2html";
 
 import BaseComponent from "~/src/client/components/base.component";
 import NoteEntity from "~/src/common/entity/note.entity";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
+import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 
 interface IActivityModifyData {
@@ -53,7 +53,7 @@ interface IActivityModifyData {
   },
 })
 export default class ActivityComponent extends BaseComponent {
-  filterParams: IDatastoreServiceNoteFilterParams = {};
+  filterParams: INoteLogsServiceNoteFilterParams = {};
   date: Date = new Date();
   modifies: { [archiveId: string]: IActivityModifyData } = {};
   archiveNotes: NoteEntity[] | null = [];
@@ -66,7 +66,7 @@ export default class ActivityComponent extends BaseComponent {
   }
 
   async reload(
-    filterParams: IDatastoreServiceNoteFilterParams = {}
+    filterParams: INoteLogsServiceNoteFilterParams = {}
   ): Promise<void> {
     if (filterParams) this.filterParams = filterParams;
     const noteFilterParams = _.clone(this.filterParams);

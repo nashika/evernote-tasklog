@@ -31,7 +31,7 @@ import _ from "lodash";
 
 import BaseComponent from "~/src/client/components/base.component";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
-import { IDatastoreServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
+import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 
 interface IStackItem {
   stack: string;
@@ -46,7 +46,7 @@ interface INotebookItem {
 
 @Component({})
 export default class FilterModalComponent extends BaseComponent {
-  filterParams: IDatastoreServiceNoteFilterParams = {};
+  filterParams: INoteLogsServiceNoteFilterParams = {};
   stacks: IStackItem[] | null = null;
   notebooks: INotebookItem[] | null = null;
 
@@ -82,12 +82,12 @@ export default class FilterModalComponent extends BaseComponent {
     await super.mounted();
     this.$root.$on(
       "filter-modal::show",
-      (filterParams: IDatastoreServiceNoteFilterParams) =>
+      (filterParams: INoteLogsServiceNoteFilterParams) =>
         this.show(filterParams)
     );
   }
 
-  async show(filterParams: IDatastoreServiceNoteFilterParams): Promise<void> {
+  async show(filterParams: INoteLogsServiceNoteFilterParams): Promise<void> {
     this.filterParams = filterParams;
     this.stacks = _(this.$myStore.datastore.stacks)
       .filter(stack => !!stack)
