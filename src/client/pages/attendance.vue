@@ -143,11 +143,12 @@ export default class AttendancePageComponent extends BaseComponent {
     this.todayAttendance = null;
     this.$myStore.progress.open(1);
     this.$myStore.progress.next("Request from server.");
-    const requestAttendances = await this.$myService.request.find<
-      AttendanceEntity
-    >(AttendanceEntity, {
-      where: { personId: this.personId, year: this.year, month: this.month },
-    });
+    const requestAttendances = await this.$myService.request.find<AttendanceEntity>(
+      AttendanceEntity,
+      {
+        where: { personId: this.personId, year: this.year, month: this.month },
+      }
+    );
     for (let i = 1; i <= this.lastDayOfMonth; i++) {
       let attendance = _.find(requestAttendances, { day: i });
       this.createFlags.push(!!attendance);

@@ -164,16 +164,16 @@ export default class ConstraintService extends BaseServerService {
   ): boolean {
     if (_.isNil(target)) return false;
     if (_.isString(query)) return _.includes(target, query);
-    if (_.isArray(query)) return _.every(query, q => _.includes(target, q));
+    if (_.isArray(query)) return _.every(query, (q) => _.includes(target, q));
     if (_.isObject(query)) {
       if (!_.isUndefined(query.$in))
-        if (!_.some(query.$in, q => _.includes(target, q))) return false;
+        if (!_.some(query.$in, (q) => _.includes(target, q))) return false;
       if (!_.isUndefined(query.$notIn))
-        if (_.some(query.$notIn, q => _.includes(target, q))) return false;
+        if (_.some(query.$notIn, (q) => _.includes(target, q))) return false;
       if (!_.isUndefined(query.$all))
-        if (!_.every(query.$all, q => _.includes(target, q))) return false;
+        if (!_.every(query.$all, (q) => _.includes(target, q))) return false;
       if (!_.isUndefined(query.$notAll))
-        if (_.every(query.$notAll, q => _.includes(target, q))) return false;
+        if (_.every(query.$notAll, (q) => _.includes(target, q))) return false;
     }
     return true;
   }
@@ -186,7 +186,7 @@ export default class ConstraintService extends BaseServerService {
     if (_.isString(query)) expandQuery = query;
     else if (_.isArray(query)) expandQuery = query;
     else if (_.isObject(query))
-      expandQuery = _.mapValues(query, value =>
+      expandQuery = _.mapValues(query, (value) =>
         _.isUndefined(value) ? undefined : this.expandTagTree(value)
       );
     return this.evalArray(target, expandQuery);
@@ -211,7 +211,7 @@ export default class ConstraintService extends BaseServerService {
   ): string[] {
     if (_.isString(names)) return this.expandTagTreeRecursive(names, recursive);
     if (_.isArray(names))
-      return _.flatMap(names, name =>
+      return _.flatMap(names, (name) =>
         this.expandTagTreeRecursive(name, recursive)
       );
     return [];
@@ -224,18 +224,20 @@ export default class ConstraintService extends BaseServerService {
     if (!name) return [];
     const currentTag = _.find(
       this.tableService.caches.tags,
-      tag => tag.name === name
+      (tag) => tag.name === name
     );
     if (!currentTag) return [];
     const childTags = _.filter(
       this.tableService.caches.tags,
-      tag => tag.parentGuid === currentTag.guid
+      (tag) => tag.parentGuid === currentTag.guid
     );
-    const childTagNames = childTags.map(tag => tag.name).filter(name => !!name);
+    const childTagNames = childTags
+      .map((tag) => tag.name)
+      .filter((name) => !!name);
     if (recursive)
       return [
         ...childTagNames,
-        ...childTagNames.flatMap(name =>
+        ...childTagNames.flatMap((name) =>
           this.expandTagTreeRecursive(name, true)
         ),
       ];

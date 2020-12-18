@@ -121,9 +121,9 @@ export default class TableService extends BaseServerService {
   private async initConnection(): Promise<Connection> {
     const filePath = path.join(__dirname, "../../../db/database.db");
     const tables = container.getAll<BaseTable<BaseEntity>>(SYMBOL_TYPES.Table);
-    const schemas = tables.map(table => table.schema);
+    const schemas = tables.map((table) => table.schema);
     const archiveSchemas = tables
-      .map(table => table.archiveSchema)
+      .map((table) => table.archiveSchema)
       .filter(
         (
           schema: EntitySchema<BaseEntity> | null

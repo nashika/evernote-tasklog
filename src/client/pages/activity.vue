@@ -113,7 +113,7 @@ export default class ActivityComponent extends BaseComponent {
 Title: ${note.title}
 Notebook: [${this.notebookName(note)}]
 Tags: ${_.join(
-      _.map(this.tagNames(note), tagName => `[${tagName}]`),
+      _.map(this.tagNames(note), (tagName) => `[${tagName}]`),
       " "
     )}
 
@@ -142,7 +142,7 @@ UpdateSequenceNum: ${note.updateSequenceNum}`;
   tagNames(note: NoteEntity): string[] {
     return _.map(
       note.tagGuids,
-      tagGuid => this.$myStore.datastore.tags[tagGuid].name
+      (tagGuid) => this.$myStore.datastore.tags[tagGuid].name
     );
   }
 }

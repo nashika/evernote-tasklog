@@ -90,13 +90,13 @@ export default class FilterModalComponent extends BaseComponent {
   async show(filterParams: INoteLogsServiceNoteFilterParams): Promise<void> {
     this.filterParams = filterParams;
     this.stacks = _(this.$myStore.datastore.stacks)
-      .filter(stack => !!stack)
-      .map(stack => {
+      .filter((stack) => !!stack)
+      .map((stack) => {
         return {
           stack,
           selected: !!_.find(
             this.filterParams.stacks,
-            filterStack => stack === filterStack
+            (filterStack) => stack === filterStack
           ),
         };
       })
@@ -108,7 +108,7 @@ export default class FilterModalComponent extends BaseComponent {
           name: notebook.name,
           selected: !!_.find(
             this.filterParams.notebookGuids,
-            notebookGuid => notebook.guid === notebookGuid
+            (notebookGuid) => notebook.guid === notebookGuid
           ),
         };
       })
@@ -139,12 +139,12 @@ export default class FilterModalComponent extends BaseComponent {
   reloadConditions(): void {
     this.filterParams = {};
     this.filterParams.stacks = _(this.stacks)
-      .filter(stack => stack.selected)
-      .map(stack => stack.stack)
+      .filter((stack) => stack.selected)
+      .map((stack) => stack.stack)
       .value();
     this.filterParams.notebookGuids = _(this.notebooks)
-      .filter(notebook => notebook.selected)
-      .map(notebook => notebook.guid)
+      .filter((notebook) => notebook.selected)
+      .map((notebook) => notebook.guid)
       .value();
   }
 

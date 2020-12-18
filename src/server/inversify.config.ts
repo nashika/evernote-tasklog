@@ -105,26 +105,11 @@ container
   .bind<EvernoteClientService>(EvernoteClientService)
   .toSelf()
   .inSingletonScope();
-container
-  .bind<MainService>(MainService)
-  .toSelf()
-  .inSingletonScope();
-container
-  .bind<TableService>(TableService)
-  .toSelf()
-  .inSingletonScope();
-container
-  .bind<SocketIoService>(SocketIoService)
-  .toSelf()
-  .inSingletonScope();
-container
-  .bind<SessionService>(SessionService)
-  .toSelf()
-  .inSingletonScope();
-container
-  .bind<SyncService>(SyncService)
-  .toSelf()
-  .inSingletonScope();
+container.bind<MainService>(MainService).toSelf().inSingletonScope();
+container.bind<TableService>(TableService).toSelf().inSingletonScope();
+container.bind<SocketIoService>(SocketIoService).toSelf().inSingletonScope();
+container.bind<SessionService>(SessionService).toSelf().inSingletonScope();
+container.bind<SyncService>(SyncService).toSelf().inSingletonScope();
 
 // Route系
 container

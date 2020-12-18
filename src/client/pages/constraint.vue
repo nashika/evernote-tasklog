@@ -56,11 +56,12 @@ export default class ConstraintModeComponent extends BaseComponent {
       this.$myStore.progress.next("リモートサーバと同期しています.");
       await this.$myService.request.sync();
       this.$myStore.progress.next("制約違反ノートの情報を取得しています.");
-      const constraintResults = await this.$myService.request.find<
-        ConstraintResultEntity
-      >(ConstraintResultEntity, {});
+      const constraintResults = await this.$myService.request.find<ConstraintResultEntity>(
+        ConstraintResultEntity,
+        {}
+      );
       const noteGuids: string[] = _(constraintResults)
-        .map(constraintResult => constraintResult.noteGuid)
+        .map((constraintResult) => constraintResult.noteGuid)
         .uniq()
         .value();
       const noteArray = await this.$myService.request.find<NoteEntity>(

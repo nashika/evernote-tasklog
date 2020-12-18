@@ -51,11 +51,7 @@ export default class DatastoreModule extends VuexModule {
       user,
       currentPersonId,
       notebooks: _.keyBy(notebooks, "guid"),
-      stacks: _(notebooks)
-        .map("stack")
-        .uniq()
-        .filter(_.isString)
-        .value(),
+      stacks: _(notebooks).map("stack").uniq().filter(_.isString).value(),
       tags: _.keyBy(tags, "guid"),
     };
   }

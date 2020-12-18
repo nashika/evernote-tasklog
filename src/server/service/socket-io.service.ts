@@ -16,14 +16,14 @@ export default class SocketIoService extends BaseServerService {
 
   initialize(server: HttpServer) {
     logger.info("Socket.IOサービスの初期化を開始しました.");
-    this.io = SocketIo(server);
-    this.io.sockets.on("connect", socket => this.connect(socket));
+    this.io = new SocketIo.Server(server);
+    this.io.sockets.on("connect", (socket) => this.connect(socket));
     logger.info("Socket.IOサービスの初期化を完了しました.");
   }
 
-  initializeSession(sessionMiddleware: RequestHandler) {
-    this.io.use(function(socket, next) {
-      sessionMiddleware(socket.request, socket.request.res, next);
+  initializeSession(sessionMiddleware: any) {
+    this.io.use((socket, next) => {
+      sessionMiddleware(socket.request, {}, next);
     });
   }
 

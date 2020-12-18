@@ -43,8 +43,8 @@ export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
   protected prepareLoadEntity(data: Partial<NoteEntity>): NoteEntity {
     const entity = super.prepareLoadEntity(data);
     _(_.keys(entity))
-      .filter(key => _.includes(key, "__"))
-      .each(key => {
+      .filter((key) => _.includes(key, "__"))
+      .each((key) => {
         _.set(entity, key.replace("__", "."), _.get(entity, key));
         _.unset(entity, key);
       });

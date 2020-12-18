@@ -58,7 +58,8 @@ export default class TimelineModeComponent extends BaseComponent {
     this.timelineItems = [];
     const sortedPersons: AppConfig.IPersonConfig[] = _.sortBy(
       configLoader.app.persons,
-      person => (this.$myStore.datastore.currentPersonId === person.id ? 1 : 2)
+      (person) =>
+        this.$myStore.datastore.currentPersonId === person.id ? 1 : 2
     );
     for (const person of sortedPersons)
       this.timelineGroups.push({
@@ -102,9 +103,7 @@ export default class TimelineModeComponent extends BaseComponent {
           )} ${abbreviateFilter(timeLog.comment ?? "", 20)}</a>`,
           start: moment(timeLog.date).toDate(),
           end: timeLog.spentTime
-            ? moment(timeLog.date)
-                .add(timeLog.spentTime, "minutes")
-                .toDate()
+            ? moment(timeLog.date).add(timeLog.spentTime, "minutes").toDate()
             : undefined,
           type: timeLog.spentTime ? "range" : "point",
         };

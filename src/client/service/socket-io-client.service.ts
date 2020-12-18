@@ -1,14 +1,14 @@
-import SocketIOClient from "socket.io-client";
+import SocketIoClient from "socket.io-client";
 
 import { logger } from "../plugins/logger";
 import configLoader from "~/src/common/util/config-loader";
 
 export default class SocketIoClientService {
-  private socket: SocketIOClient.Socket;
+  private socket: SocketIoClient.Socket;
 
   constructor() {
     logger.debug("socket.io client connection started.");
-    this.socket = SocketIOClient.connect(
+    this.socket = SocketIoClient.io(
       configLoader.app.baseUrl || "http://localhost:3000"
     );
     this.on(this, "connect", this.onConnect);
@@ -30,7 +30,7 @@ export default class SocketIoClientService {
   }
 
   async request<T = any>(event: string, ...params: any[]): Promise<T> {
-    const data = await new Promise<T>(resolve => {
+    const data = await new Promise<T>((resolve) => {
       this.socket.emit(event, ...params, (data: T) => resolve(data));
     });
     if (data && (<any>data).$$errOccurred === true)

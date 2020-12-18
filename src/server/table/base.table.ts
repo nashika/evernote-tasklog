@@ -119,7 +119,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
           updateDate: true,
         },
       },
-      indices: this.EntityClass.params.indicies?.map(index => ({
+      indices: this.EntityClass.params.indicies?.map((index) => ({
         name:
           _.snakeCase(this.EntityClass.params.name) +
           "_" +
@@ -176,7 +176,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
       length: datas.length,
       query: argOptions,
     });
-    return _.map(datas, data => this.prepareLoadEntity(data));
+    return _.map(datas, (data) => this.prepareLoadEntity(data));
   }
 
   async count(argOptions: FindManyEntityOptions<T> = {}): Promise<number> {
@@ -267,18 +267,20 @@ export default abstract class BaseTable<T extends BaseEntity> {
     if (!entities || entities.length === 0) return [];
     this.message("save", ["local"], this.EntityClass.params.name, true, {
       count: entities.length,
-      entities: entities.map(entity =>
+      entities: entities.map((entity) =>
         _.pick(entity, ["primaryKey", "displayField"])
       ),
     });
-    const saveDatas = _.map(entities, entity => this.prepareSaveEntity(entity));
+    const saveDatas = _.map(entities, (entity) =>
+      this.prepareSaveEntity(entity)
+    );
     const savedDatas: Partial<T>[] = await this.repository.save(saveDatas);
-    const savedEntities = _.map(savedDatas, savedData =>
+    const savedEntities = _.map(savedDatas, (savedData) =>
       this.prepareLoadEntity(savedData)
     );
     this.message("save", ["local"], this.EntityClass.params.name, false, {
       count: entities.length,
-      entities: savedEntities.map(savedEntity =>
+      entities: savedEntities.map((savedEntity) =>
         _.pick(savedEntity, ["primaryKey", "displayField"])
       ),
     });
@@ -290,7 +292,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
         true,
         {
           count: savedDatas.length,
-          entities: savedDatas.map(savedData =>
+          entities: savedDatas.map((savedData) =>
             _.pick(savedData, ["primaryKey", "displayField"])
           ),
         }
@@ -303,7 +305,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
         false,
         {
           count: savedArchiveDatas.length,
-          entities: savedArchiveDatas.map(data =>
+          entities: savedArchiveDatas.map((data) =>
             _.pick(data, ["primaryKey", "displayField"])
           ),
         }

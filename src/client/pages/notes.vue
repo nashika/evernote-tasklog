@@ -171,15 +171,15 @@ export default class NotesComponent extends BaseComponent {
         (note: NoteEntity) => profitLogs && !profitLogs[note.guid]
       );
     else this.notes = notes ?? {};
-    this.records = _.mapValues(this.notes, note => {
+    this.records = _.mapValues(this.notes, (note) => {
       const record: INoteRecord = {
         guid: note.guid,
         title: note.title,
         notebookName: this.$myStore.datastore.notebooks[note.notebookGuid].name,
         updated: note.updated,
         persons: _(configLoader.app.persons)
-          .keyBy(person => "$" + person.id)
-          .mapValues(_person => ({ spentTime: 0, profit: 0 }))
+          .keyBy((person) => "$" + person.id)
+          .mapValues((_person) => ({ spentTime: 0, profit: 0 }))
           .value(),
         total: { spentTime: 0, profit: 0 },
       };
@@ -191,8 +191,8 @@ export default class NotesComponent extends BaseComponent {
       notebookName: "",
       updated: 0,
       persons: _(configLoader.app.persons)
-        .keyBy(person => "$" + person.id)
-        .mapValues(_person => ({ spentTime: 0, profit: 0 }))
+        .keyBy((person) => "$" + person.id)
+        .mapValues((_person) => ({ spentTime: 0, profit: 0 }))
         .value(),
       total: { spentTime: 0, profit: 0 },
     };
@@ -217,7 +217,7 @@ export default class NotesComponent extends BaseComponent {
         if (spentTime > 0) personsHash[timeLog.personId] = true;
       }
     }
-    this.existPersons = _.filter(configLoader.app.persons, person =>
+    this.existPersons = _.filter(configLoader.app.persons, (person) =>
       _.has(personsHash, person.id)
     );
   }

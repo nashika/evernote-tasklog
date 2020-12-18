@@ -23,7 +23,7 @@ export default class RequestService extends BaseClientService {
       `${EntityClass.params.name}::find`,
       options
     );
-    return _.map(datas, data => new EntityClass(data));
+    return _.map(datas, (data) => new EntityClass(data));
   }
 
   async findOne<T extends BaseEntity>(
@@ -36,7 +36,7 @@ export default class RequestService extends BaseClientService {
       `${EntityClass.params.name}::find`,
       findOneOptions
     );
-    const results: T[] = _.map(datas, data => new EntityClass(data));
+    const results: T[] = _.map(datas, (data) => new EntityClass(data));
     return results[0] || null;
   }
 

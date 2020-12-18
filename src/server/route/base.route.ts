@@ -44,16 +44,16 @@ export default abstract class BaseRoute {
         }", event="${event}", args=${JSON.stringify(funcArgs)}}`
       );
       (<Promise<any>>func.call(this, socket, ...funcArgs))
-        .then(data => {
+        .then((data) => {
           ack(data);
         })
-        .catch(err => {
+        .catch((err) => {
           logger.error(
             `Error occurred in socket.io request. id="${
               socket.id
-            }", event="${event}", args="${JSON.stringify(
-              funcArgs
-            )}".\n${err.stack || err}`
+            }", event="${event}", args="${JSON.stringify(funcArgs)}".\n${
+              err.stack || err
+            }`
           );
           ack({ $$err: true, $$errMessage: err.toString() });
         });

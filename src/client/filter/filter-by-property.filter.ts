@@ -8,12 +8,7 @@ const checkItemMatches = (
   for (const prop in props) {
     let text: string = props[prop];
     text = text.toLowerCase();
-    if (
-      item[prop]
-        .toString()
-        .toLowerCase()
-        .includes(text)
-    ) {
+    if (item[prop].toString().toLowerCase().includes(text)) {
       return true;
     }
   }
@@ -29,7 +24,7 @@ export function filterByPropertyFilter(
   let arrItems: Array<{ [property: string]: any }> = [];
   if (_.isArray(items)) arrItems = <Array<{ [property: string]: any }>>items;
   else if (_.isObject(items))
-    _.forEach(items, item => {
+    _.forEach(items, (item) => {
       arrItems.push(item);
     });
   else return [];

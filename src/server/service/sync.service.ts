@@ -43,7 +43,7 @@ export default class SyncService extends BaseServerService {
 
   async lock(): Promise<void> {
     const next = this.nextLockPromise;
-    this.nextLockPromise = new Promise<void>(resolve => {
+    this.nextLockPromise = new Promise<void>((resolve) => {
       this.lockResolves.push(resolve);
     });
     logger.debug(`sync lock count=${this.lockResolves.length}`);
@@ -100,7 +100,7 @@ export default class SyncService extends BaseServerService {
         ? this.Class.startInterval
         : Math.min(Math.round(this.interval * 1.5), this.Class.maxInterval);
       this.timer = setTimeout(
-        () => this.sync(false).catch(err => logger.error(err)),
+        () => this.sync(false).catch((err) => logger.error(err)),
         this.interval
       );
       logger.info(`Next auto reload will run after ${this.interval} msec.`);
@@ -118,21 +118,21 @@ export default class SyncService extends BaseServerService {
       localSyncState.updateCount
     );
     await this.tableService.noteTable.saveAll(
-      _.map(lastSyncChunk.notes, note => new NoteEntity(note))
+      _.map(lastSyncChunk.notes, (note) => new NoteEntity(note))
     );
     await this.tableService.noteTable.delete(lastSyncChunk.expungedNotes ?? []);
     await this.tableService.notebookTable.saveAll(
-      _.map(lastSyncChunk.notebooks, notebook => new NotebookEntity(notebook))
+      _.map(lastSyncChunk.notebooks, (notebook) => new NotebookEntity(notebook))
     );
     await this.tableService.notebookTable.delete(
       lastSyncChunk.expungedNotebooks ?? []
     );
     await this.tableService.tagTable.saveAll(
-      _.map(lastSyncChunk.tags, tag => new TagEntity(<any>tag))
+      _.map(lastSyncChunk.tags, (tag) => new TagEntity(<any>tag))
     );
     await this.tableService.tagTable.delete(lastSyncChunk.expungedTags ?? []);
     await this.tableService.savedSearchTable.saveAll(
-      _.map(lastSyncChunk.searches, search => new SavedSearchEntity(search))
+      _.map(lastSyncChunk.searches, (search) => new SavedSearchEntity(search))
     );
     await this.tableService.savedSearchTable.delete(
       lastSyncChunk.expungedSearches ?? []
@@ -140,7 +140,7 @@ export default class SyncService extends BaseServerService {
     await this.tableService.linkedNotebookTable.saveAll(
       _.map(
         lastSyncChunk.linkedNotebooks,
-        linkedNotebook => new LinkedNotebookEntity(linkedNotebook)
+        (linkedNotebook) => new LinkedNotebookEntity(linkedNotebook)
       )
     );
     await this.tableService.linkedNotebookTable.delete(
