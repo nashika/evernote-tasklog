@@ -59,18 +59,20 @@ export type FindEntityWhereOptions<T extends BaseEntity> = {
   [P in keyof T]?: FindEntityWhereColumnOptions<T[P]>;
 };
 
-export type FindEntityWhereColumnOptions<P extends string | number | null> =
-  | P
-  | FindEntityWhereColumnOperators<P>;
+export type FindEntityWhereColumnOptions<
+  P extends string | number | Date | null
+> = P | FindEntityWhereColumnOperators<P>;
 
-export type FindEntityWhereColumnOperators<P extends string | number | null> = {
+export type FindEntityWhereColumnOperators<
+  P extends string | number | Date | null
+> = {
   $eq?: P;
   $ne?: P;
   $lt?: P extends number ? P : never;
   $lte?: P extends number ? P : never;
   $gt?: P extends number ? P : never;
   $gte?: P extends number ? P : never;
-  $between?: P extends number ? [P, P] : never;
+  $between?: P extends number | Date ? [P, P] : never;
   $in?: P[];
 };
 
@@ -98,7 +100,7 @@ export default abstract class BaseEntity {
   }
 
   archiveId?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date | number;
+  updatedAt?: Date | number;
   [key: string]: any;
 }

@@ -157,7 +157,7 @@ export default class NoteLogsService extends BaseClientService {
   private async getArchiveNotes(
     params: INoteLogsServiceNoteFilterParams
   ): Promise<NoteEntity[]> {
-    myStore.progress.next("Getting arcguve notes.");
+    myStore.progress.next("ノート履歴を取得しています.");
     const options = this.makeNoteFindOptions(params);
     options.archive = true;
     options.includeContent = true;

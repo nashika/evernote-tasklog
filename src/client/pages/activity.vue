@@ -11,13 +11,12 @@ section#activity-mode.p-3
   .body
     section.activity-mode-item(v-for="note in archiveNotes")
       .header
-        b-popover(placement="bottom", triggers="hover", title="Info", :content="detail(note)")
-          h1
-            a(:href="'evernote:///view/' + datastoreService.$vm.user.id + '/' + datastoreService.$vm.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
-              | {{moment(note.updated).format('HH:mm')}} {{note.title}}
-            span.label.label-danger(v-if="modifies[note._id] && !modifies[note.archiveId].prevNote") #[i.fa.fa-plus] New
-            span.label.label-primary #[i.fa.fa-book] {{notebookName(note)}}
-            span.label.label-default(v-for="tagName in tagNames(note)") #[i.fa.fa-tag] {{tagName}}
+        h1(v-b-popover.hover.bottom="detail(note)", title="ノート情報")
+          a(:href="'evernote:///view/' + $myStore.datastore.user.id + '/' + $myStore.datastore.user.shardId + '/' + note.guid + '/' + note.guid + '/'")
+            | {{moment(note.updated).format('HH:mm')}} {{note.title}}
+          span.label.label-danger(v-if="modifies[note._id] && !modifies[note.archiveId].prevNote") #[i.fa.fa-plus] New
+          span.label.label-primary #[i.fa.fa-book] {{notebookName(note)}}
+          span.label.label-default(v-for="tagName in tagNames(note)") #[i.fa.fa-tag] {{tagName}}
       .body
         div(v-if="modifies[note.archiveId]")
           div(v-html="modifies[note.archiveId].diffHtml")
@@ -34,7 +33,7 @@ import moment from "moment";
 import Vue from "vue";
 import * as diff from "diff";
 import * as htmlToText from "html-to-text";
-import diff2html from "diff2html";
+import * as diff2html from "diff2html";
 
 import BaseComponent from "~/src/client/components/base.component";
 import NoteEntity from "~/src/common/entity/note.entity";
@@ -130,8 +129,8 @@ ${plainContentText}
   }
 
   detail(note: NoteEntity): string {
-    return `Updated: ${moment(note.updated).format("YYYY/MM/DD HH:mm:ss")}<br />
-Created: ${moment(note.created).format("YYYY/MM/DD HH:mm:ss")}<br />
+    return `Updated: ${moment(note.updated).format("YYYY/MM/DD HH:mm:ss")}
+Created: ${moment(note.created).format("YYYY/MM/DD HH:mm:ss")}
 UpdateSequenceNum: ${note.updateSequenceNum}`;
   }
 
