@@ -286,7 +286,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
     });
     if (archive && this.archiveRepository) {
       this.message(
-        "save",
+        "insert",
         ["local", "archive"],
         this.EntityClass.params.name,
         true,
@@ -297,17 +297,15 @@ export default abstract class BaseTable<T extends BaseEntity> {
           ),
         }
       );
-      const savedArchiveDatas = await this.archiveRepository.create(saveDatas);
+      const insertResult = await this.archiveRepository.insert(saveDatas);
       this.message(
-        "save",
+        "insert",
         ["local", "archive"],
         this.EntityClass.params.name,
         false,
         {
-          count: savedArchiveDatas.length,
-          entities: savedArchiveDatas.map((data) =>
-            _.pick(data, ["primaryKey", "displayField"])
-          ),
+          count: insertResult.identifiers.length,
+          entities: insertResult.identifiers,
         }
       );
     }

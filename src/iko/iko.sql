@@ -1,4 +1,4 @@
-ATTACH "C:\Users\info\workspace\evernote-tasklog\db\database_old.db" AS old;
+ATTACH "C:\Users\makub\workspace\evernote-tasklog\db\database_old.db" AS old;
 
 INSERT INTO archive_note
 SELECT * FROM old.archiveNotes;
@@ -89,6 +89,12 @@ SET
 
 UPDATE
     "time_log"
+SET
+    "createdAt" = strftime('%Y-%m-%d %H:%M:%S', "createdAt"),
+    "updatedAt" = strftime('%Y-%m-%d %H:%M:%S', "updatedAt");
+
+UPDATE
+    "archive_note"
 SET
     "createdAt" = strftime('%Y-%m-%d %H:%M:%S', "createdAt"),
     "updatedAt" = strftime('%Y-%m-%d %H:%M:%S', "updatedAt");
