@@ -95,7 +95,11 @@ export default class ActivityComponent extends BaseComponent {
         "",
         { context: 0 }
       );
-      modify.diffHtml = diff2html.html(modify.diffPatch);
+      modify.diffHtml = diff2html.html(modify.diffPatch, {
+        outputFormat: "side-by-side",
+        drawFileList: false,
+        matchingMaxComparisons: 10,
+      });
       Vue.set(this.modifies, String(note.archiveId), modify);
     }
   }
@@ -149,6 +153,7 @@ UpdateSequenceNum: ${note.updateSequenceNum}`;
 
 <style lang="scss">
 @import "../scss/lib";
+@import "../../../node_modules/diff2html/bundles/css/diff2html.min";
 
 section#activity-mode {
   > .header {
@@ -194,7 +199,7 @@ section#activity-mode {
               display: none;
             }
 
-            div.d2h-file-diff {
+            div.d2h-files-diff {
               max-height: 200px;
               overflow-x: auto;
               overflow-y: auto;
@@ -202,13 +207,12 @@ section#activity-mode {
               table.d2h-diff-table {
                 tbody.d2h-diff-tbody {
                   tr {
-                    td.d2h-code-linenumber {
+                    td.d2h-code-side-linenumber {
                       display: none;
                     }
-
                     td {
-                      div.d2h-code-line {
-                        margin-left: 0;
+                      div.d2h-code-side-line {
+                        padding-left: 0;
                       }
                     }
                   }
