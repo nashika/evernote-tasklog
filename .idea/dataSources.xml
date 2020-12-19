@@ -5,15 +5,15 @@
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:db/database.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
+      <jdbc-url>jdbc:sqlite:database.db</jdbc-url>
+      <working-dir>$ProjectFileDir$/db</working-dir>
     </data-source>
     <data-source source="LOCAL" name="database_old" uuid="590f13f8-9af7-4dae-9fbb-e42d4d840afc">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:db/database_old.db</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
+      <jdbc-url>jdbc:sqlite:database_old.db</jdbc-url>
+      <working-dir>$ProjectFileDir$/db</working-dir>
     </data-source>
   </component>
 </project>
