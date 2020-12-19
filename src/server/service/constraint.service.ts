@@ -59,7 +59,6 @@ export default class ConstraintService extends BaseServerService {
     note: NoteEntity,
     query: AppConfig.IConstraintConfigQuery
   ): boolean {
-    debugger;
     if (!_.isUndefined(query.title))
       if (!this.evalString(note.title, query.title)) return false;
     if (!_.isUndefined(query.created))

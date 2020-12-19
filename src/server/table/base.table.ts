@@ -41,7 +41,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
   readonly archiveSchema: EntitySchema<EntityToInterface<T>> | null = null;
 
   private _repository: Repository<EntityToInterface<T>> | null = null;
-  private archiveRepository: Repository<EntityToInterface<T>> | null = null;
+  private _archiveRepository: Repository<EntityToInterface<T>> | null = null;
 
   get Class(): typeof BaseTable {
     return <typeof BaseTable>this.constructor;
@@ -50,6 +50,11 @@ export default abstract class BaseTable<T extends BaseEntity> {
   get repository(): Repository<EntityToInterface<T>> {
     assertIsDefined(this._repository);
     return this._repository;
+  }
+
+  get archiveRepository(): Repository<EntityToInterface<T>> {
+    assertIsDefined(this._archiveRepository);
+    return this._archiveRepository;
   }
 
   constructor() {
@@ -140,7 +145,7 @@ export default abstract class BaseTable<T extends BaseEntity> {
   initialize() {
     this._repository = getRepository(this.schema);
     if (this.archiveSchema)
-      this.archiveRepository = getRepository(this.archiveSchema);
+      this._archiveRepository = getRepository(this.archiveSchema);
   }
 
   async findOne(argOptions: FindOneEntityOptions<T> = {}): Promise<T | null> {
@@ -271,11 +276,9 @@ export default abstract class BaseTable<T extends BaseEntity> {
         _.pick(entity, ["primaryKey", "displayField"])
       ),
     });
-    const saveDatas = _.map(entities, (entity) =>
-      this.prepareSaveEntity(entity)
-    );
+    const saveDatas = entities.map((entity) => this.prepareSaveEntity(entity));
     const savedDatas: Partial<T>[] = await this.repository.save(saveDatas);
-    const savedEntities = _.map(savedDatas, (savedData) =>
+    const savedEntities = savedDatas.map((savedData) =>
       this.prepareLoadEntity(savedData)
     );
     this.message("save", ["local"], this.EntityClass.params.name, false, {
@@ -297,15 +300,25 @@ export default abstract class BaseTable<T extends BaseEntity> {
           ),
         }
       );
-      const insertResult = await this.archiveRepository.insert(saveDatas);
+      const archiveSaveDatas = savedEntities.map((entity) =>
+        this.prepareSaveEntity(entity)
+      );
+      const archiveSavedDatas = await this.archiveRepository.save(
+        archiveSaveDatas
+      );
+      const archiveSavedEntities = archiveSavedDatas.map((savedData) =>
+        this.prepareLoadEntity(savedData)
+      );
       this.message(
         "insert",
         ["local", "archive"],
         this.EntityClass.params.name,
         false,
         {
-          count: insertResult.identifiers.length,
-          entities: insertResult.identifiers,
+          count: archiveSavedEntities.length,
+          entities: archiveSavedEntities.map((entity) =>
+            _.pick(entity, ["archiveId", "primaryKey", "displayField"])
+          ),
         }
       );
     }

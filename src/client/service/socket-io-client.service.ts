@@ -33,8 +33,7 @@ export default class SocketIoClientService {
     const data = await new Promise<T>((resolve) => {
       this.socket.emit(event, ...params, (data: T) => resolve(data));
     });
-    if (data && (<any>data).$$errOccurred === true)
-      throw (<any>data).$$errMessage;
+    if (data && (<any>data).$$err === true) throw (<any>data).$$errMessage;
     return data;
   }
 }

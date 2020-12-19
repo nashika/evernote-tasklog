@@ -1,4 +1,4 @@
-ATTACH "C:\Users\makub\workspace\evernote-tasklog\db\database_old.db" AS old;
+ATTACH "C:\Users\info\workspace\evernote-tasklog\db\database_old.db" AS old;
 
 INSERT INTO archive_note
 SELECT * FROM old.archiveNotes;
