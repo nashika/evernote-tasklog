@@ -5,7 +5,7 @@ section#attendance-mode
       .col-sm-4
         .form-group
           label {{$t('common.person')}}
-          b-form-select(v-model="personId", :options="persons", value-field="id", text-field="name")
+          b-form-select(v-model="personId", :options="persons", value-field="id", text-field="name", @change="reload()")
       .col-sm-4
         .form-group
           label {{$t('common.year')}}
