@@ -187,7 +187,7 @@ export default class NotesComponent extends BaseComponent {
     });
     this.totalRecord = {
       guid: "total",
-      title: "Total",
+      title: "合計",
       notebookName: "",
       updated: 0,
       persons: _(configLoader.app.persons)

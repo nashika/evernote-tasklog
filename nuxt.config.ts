@@ -1,7 +1,6 @@
 import { Configuration } from "@nuxt/types";
 import webpack from "webpack";
 import icons from "./src/client/icons";
-import messages from "./src/client/messages";
 
 const webpackConfig: webpack.Configuration = {
   /*
@@ -80,7 +79,6 @@ const conf: Configuration = {
     // Doc: https://github.com/nuxt-community/dotenv-module
     "@nuxtjs/dotenv",
     "@nuxtjs/fontawesome",
-    "nuxt-i18n",
   ],
   /*
    ** Axios module configuration
@@ -90,16 +88,6 @@ const conf: Configuration = {
   fontawesome: {
     component: "fa",
     icons,
-  },
-  i18n: {
-    locales: ["ja"],
-    defaultLocale: "ja",
-    vueI18n: {
-      fallbackLocale: "ja",
-      messages: {
-        ja: messages,
-      },
-    },
   },
   /*
    ** Build configuration

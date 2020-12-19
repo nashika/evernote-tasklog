@@ -4,21 +4,21 @@ section#attendance-mode
     .row.my-2
       .col-sm-4
         .form-group
-          label {{$t('common.person')}}
+          label 担当者
           b-form-select(v-model="personId", :options="persons", value-field="id", text-field="name", @change="reload()")
       .col-sm-4
         .form-group
-          label {{$t('common.year')}}
+          label 年
           b-form-input(v-model="strYear", type="number", min="2000", max="2099", step="1", @change="reload()")
       .col-sm-4
         .form-group
-          label {{$t('common.month')}}
+          label 月
           b-form-input(v-model="strMonth", type="number", min="1", max="12", step="1", @change="reload()")
     .row.my-2(v-if="todayAttendance && personId == $myStore.datastore.currentPersonId && year == moment().year() && month == moment().month() + 1")
       .col-sm-6
-        b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] {{$t('common.arrival')}}
+        b-button(variant="primary", size="lg", block, :disabled="!!todayAttendance.arrivalTime", @click="arrival()") #[i.fa.fa-sign-in] 出勤
       .col-sm-6
-        b-button(variant="primary", size="lg", block, :disabled="!todayAttendance.arrivalTime || !!todayAttendance.departureTime", @click="departure()") #[i.fa.fa-sign-out] {{$t('common.departure')}}
+        b-button(variant="primary", size="lg", block, :disabled="!todayAttendance.arrivalTime || !!todayAttendance.departureTime", @click="departure()") #[i.fa.fa-sign-out] 退勤
     b-table(bordered, small, striped, hover, responsive, head-variant="dark", :fields="fields", :items="attendances")
       template(v-slot:cell(day)="data")
         | {{data.item.day}} ({{moment({year: data.item.year, month: data.item.month - 1, day: data.item.day}).format('ddd')}})
@@ -31,10 +31,10 @@ section#attendance-mode
       template(v-slot:cell(remarks)="data")
         b-form-input(size="sm", v-model="data.item.remarks", @change="changeRow(data.index)")
       template(v-slot:cell(action)="data")
-        b-button(variant="primary", size="sm", :disabled="!updateFlags[data.index]", @click="save(data.item)") {{$t('common.update')}}
-        b-button(variant="danger", size="sm", :disabled="!createFlags[data.index]", @click="remove(data.item)") {{$t('common.delete')}}
+        b-button(variant="primary", size="sm", :disabled="!updateFlags[data.index]", @click="save(data.item)") 更新
+        b-button(variant="danger", size="sm", :disabled="!createFlags[data.index]", @click="remove(data.item)") 削除
     .my-3.text-right
-      b-button(variant="secondary", size="sm", @click="exportCsv()") Export CSV
+      b-button(variant="secondary", size="sm", @click="exportCsv()") CSV出力
 </template>
 
 <script lang="ts">
@@ -101,27 +101,27 @@ export default class AttendancePageComponent extends BaseComponent {
     this.fields = [
       {
         key: "day",
-        label: this.$t("common.day"),
+        label: "日",
       },
       {
         key: "arrival",
-        label: this.$t("common.arrival"),
+        label: "出社",
       },
       {
         key: "departure",
-        label: this.$t("common.departure"),
+        label: "退社",
       },
       {
         key: "rest",
-        label: this.$t("common.rest"),
+        label: "休憩",
       },
       {
         key: "remarks",
-        label: this.$t("common.remarks"),
+        label: "備考",
       },
       {
         key: "action",
-        label: this.$t("common.action"),
+        label: "機能",
       },
     ];
   }
