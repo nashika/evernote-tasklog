@@ -26,9 +26,9 @@ import ProgressModalComponent from "~/src/client/components/modal/progress-modal
 })
 export default class DefaultLayoutComponent extends BaseComponent {
   async mounted(): Promise<void> {
+    this.$myService.push.initialize(this);
     await this.$myStore.datastore.initialize();
     this.$root.$on("reload", () => this.reload());
-    // await this.$pushService.initialize(this);
   }
 
   async reload(): Promise<void> {

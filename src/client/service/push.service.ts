@@ -4,9 +4,12 @@ import BaseClientService from "./base-client.service";
 import SocketIoClientService from "./socket-io-client.service";
 import { logger } from "~/src/client/plugins/logger";
 
+import DefaultLayoutComponent from "~/src/client/layouts/default.vue";
+import { assertIsDefined } from "~/src/common/util/assert";
+
 export default class PushService extends BaseClientService {
-  // lastUpdateCount: number = 0;
-  // appComponent: AppComponent;
+  lastUpdateCount: number = 0;
+  rootComponent!: DefaultLayoutComponent;
 
   constructor(protected socketIoClientService: SocketIoClientService) {
     super();
@@ -22,41 +25,38 @@ export default class PushService extends BaseClientService {
     );
   }
 
+  initialize(rootComponent: DefaultLayoutComponent) {
+    this.rootComponent = rootComponent;
+  }
+
   private async checkUpdateCount(updateCount: number): Promise<void> {
     logger.debug(`Update count from server, updateCount=${updateCount}`);
-    await Push.create("Title", {
-      body: "Body",
-      timeout: 3000,
-    });
-    /*
-    if (this.lastUpdateCount < updateCount) {
+    if (this.lastUpdateCount === 0) {
       this.lastUpdateCount = updateCount;
-      this.appComponent.reload();
-      Push.create(i18n.t("push.update.title"), {
-        body: i18n.t("push.update.body"),
-        link: "#/activity",
+    } else if (this.lastUpdateCount < updateCount) {
+      this.lastUpdateCount = updateCount;
+      const this_ = this;
+      await Push.create("Evernote更新通知", {
+        link: "/activity",
         timeout: 3000,
-        onClick: function (this: any) {
-          router.push("activity");
+        onClick(this: any) {
+          this_.rootComponent.$router.push("activity");
           this.close();
         },
       });
     }
-    */
   }
 
   private async notifyConstraint(): Promise<void> {
     logger.debug("Notify constraint from server.");
-    /*
-    Push.create(i18n.t("push.constraint.title"), {
-      body: i18n.t("push.constraint.body"),
-      link: "#/constraint",
+    const this_ = this;
+    await Push.create("Evernote制約違反通知", {
+      link: "/constraint",
       timeout: 10000,
-      onClick: function (this: any) {
-        router.push("constraint");
+      onClick(this: any) {
+        this_.rootComponent?.$router.push("constraint");
         this.close();
       },
     });
-    */
   }
 }
