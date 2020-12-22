@@ -30,7 +30,7 @@ async function start() {
 
     // Listen the server
     logger.info(`Webサーバを起動します.`);
-    const server = app.listen(port, host);
+    const server = app.listen(port);
 
     // サービスの起動処理
     const mainService = container.get(MainService);
