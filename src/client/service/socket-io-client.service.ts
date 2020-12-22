@@ -8,9 +8,7 @@ export default class SocketIoClientService {
 
   constructor() {
     logger.debug("socket.io client connection started.");
-    this.socket = SocketIoClient.io(
-      configLoader.app.baseUrl || "http://localhost:3000"
-    );
+    this.socket = SocketIoClient.io();
     this.on(this, "connect", this.onConnect);
     this.on(this, "disconnect", this.onDisconnect);
   }

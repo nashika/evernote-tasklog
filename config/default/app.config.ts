@@ -32,9 +32,7 @@ const appConfig: AppConfig.IAppConfigs = {
       },
     ],
   },
-  development: {
-    baseUrl: "http://localhost:3000",
-  },
+  development: {},
   "production*": {
     logLevel: "info",
   },
