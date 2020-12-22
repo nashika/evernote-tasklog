@@ -1,7 +1,6 @@
 import { Server as HttpServer } from "http";
 import SocketIo from "socket.io";
 import { injectable } from "inversify";
-import { RequestHandler } from "express";
 
 import logger from "../logger";
 

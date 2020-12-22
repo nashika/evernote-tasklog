@@ -3,9 +3,7 @@ import Push from "push.js";
 import BaseClientService from "./base-client.service";
 import SocketIoClientService from "./socket-io-client.service";
 import { logger } from "~/src/client/plugins/logger";
-
 import DefaultLayoutComponent from "~/src/client/layouts/default.vue";
-import { assertIsDefined } from "~/src/common/util/assert";
 
 export default class PushService extends BaseClientService {
   lastUpdateCount: number = 0;

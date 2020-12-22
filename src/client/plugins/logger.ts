@@ -24,8 +24,10 @@ declare module "@nuxt/types" {
   }
 }
 
+/*
 declare module "vuex/types/index" {
   interface Store<S> {
     $logger: logLevel.Logger;
   }
 }
+*/

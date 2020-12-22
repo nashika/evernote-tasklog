@@ -8,7 +8,7 @@ export interface EntityParams<T extends BaseEntity> {
   default: FindManyEntityOptions<T>;
   append: FindManyEntityOptions<T>;
   columns?: {
-    [P in keyof T | string]: EntityColumnParams<T>;
+    [P in keyof T | string]: EntityColumnParams;
   };
   indicies?: {
     name: string;
@@ -18,7 +18,7 @@ export interface EntityParams<T extends BaseEntity> {
   jsonFields?: string[];
 }
 
-export interface EntityColumnParams<T extends BaseEntity> {
+export interface EntityColumnParams {
   type: EntityColumnType;
   primary?: boolean;
   generated?: true;

@@ -26,8 +26,6 @@ module.exports = {
     ],
     "require-await": "off",
     "no-undef": "off",
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "off",
     "no-use-before-define": "off",
     "no-console": "off",
     "no-debugger": "off",

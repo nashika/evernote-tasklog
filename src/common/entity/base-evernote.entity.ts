@@ -6,5 +6,3 @@ export default abstract class BaseEvernoteEntity extends BaseEntity {
   guid!: string;
   updateSequenceNum!: number;
 }
-
-type keys = keyof BaseEvernoteEntity;

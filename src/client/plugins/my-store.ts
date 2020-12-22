@@ -20,8 +20,10 @@ declare module "@nuxt/types" {
   }
 }
 
+/*
 declare module "vuex/types/index" {
   interface Store<S> {
     $myStore: typeof myStore;
   }
 }
+*/
