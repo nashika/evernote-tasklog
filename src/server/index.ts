@@ -57,7 +57,11 @@ async function start() {
     logger.info(`Webサーバにnuxtミドルウェアを設定します.`);
     app.use(nuxt.render);
 
-    logger.info(`Webサーバの起動を完了しました. http://${host}:${port}`);
+    logger.info(
+      `Webサーバの起動を完了しました. ${
+        configLoader.app.https ? "https" : "http"
+      }://${host}:${port}`
+    );
   } catch (err) {
     logger.error(`Webサーバの起動に失敗しました. err=${err}`);
     if (err.stack) logger.error(err.stack);
