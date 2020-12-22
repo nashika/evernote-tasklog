@@ -1,4 +1,4 @@
-import { Configuration } from "@nuxt/types";
+import { NuxtConfig } from "@nuxt/types";
 import webpack from "webpack";
 import icons from "./src/client/icons";
 
@@ -13,7 +13,7 @@ const webpackConfig: webpack.Configuration = {
   ],
 };
 
-const conf: Configuration = {
+const conf: NuxtConfig = {
   ssr: false,
   dir: {
     assets: "src/client/assets",
