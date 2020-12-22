@@ -1,9 +1,8 @@
-// import logger from "../logger";
+import Push from "push.js";
+
 import BaseClientService from "./base-client.service";
 import SocketIoClientService from "./socket-io-client.service";
-
-// TODO: コメントアウトで無効化しているので解除する
-// let Push = require("push.js");
+import { logger } from "~/src/client/plugins/logger";
 
 export default class PushService extends BaseClientService {
   // lastUpdateCount: number = 0;
@@ -11,16 +10,25 @@ export default class PushService extends BaseClientService {
 
   constructor(protected socketIoClientService: SocketIoClientService) {
     super();
-  }
-  /*
-  initialize(appComponent: AppComponent): void {
-    this.appComponent = appComponent;
-    this.socketIoClientService.on(this, "sync::updateCount", this.checkUpdateCount);
-    this.socketIoClientService.on(this, "constraint::notify", this.notifyConstraint);
+    this.socketIoClientService.on(
+      this,
+      "sync::updateCount",
+      this.checkUpdateCount
+    );
+    this.socketIoClientService.on(
+      this,
+      "constraint::notify",
+      this.notifyConstraint
+    );
   }
 
   private async checkUpdateCount(updateCount: number): Promise<void> {
     logger.debug(`Update count from server, updateCount=${updateCount}`);
+    await Push.create("Title", {
+      body: "Body",
+      timeout: 3000,
+    });
+    /*
     if (this.lastUpdateCount < updateCount) {
       this.lastUpdateCount = updateCount;
       this.appComponent.reload();
@@ -34,10 +42,12 @@ export default class PushService extends BaseClientService {
         },
       });
     }
+    */
   }
 
   private async notifyConstraint(): Promise<void> {
     logger.debug("Notify constraint from server.");
+    /*
     Push.create(i18n.t("push.constraint.title"), {
       body: i18n.t("push.constraint.body"),
       link: "#/constraint",
@@ -47,6 +57,6 @@ export default class PushService extends BaseClientService {
         this.close();
       },
     });
+    */
   }
-  */
 }

@@ -1,4 +1,8 @@
 import "reflect-metadata";
+import * as https from "https";
+import path from "path";
+import * as fs from "fs";
+import * as http from "http";
 import express from "express";
 // @ts-ignore
 import { Nuxt, Builder } from "nuxt";
@@ -8,6 +12,7 @@ import config from "../../nuxt.config";
 import container from "~/src/server/inversify.config";
 import MainService from "~/src/server/service/main.service";
 import logger from "~/src/server/logger";
+import configLoader from "~/src/common/util/config-loader";
 
 const app = express();
 
@@ -30,7 +35,19 @@ async function start() {
 
     // Listen the server
     logger.info(`Webサーバを起動します.`);
-    const server = app.listen(port);
+    let server: http.Server;
+    if (configLoader.app.https) {
+      const httpsServer = https.createServer(
+        {
+          key: fs.readFileSync(path.join(__dirname, "ssl/private_key.pem")),
+          cert: fs.readFileSync(path.join(__dirname, "ssl/server.crt")),
+        },
+        app
+      );
+      server = httpsServer.listen(port);
+    } else {
+      server = app.listen(port);
+    }
 
     // サービスの起動処理
     const mainService = container.get(MainService);

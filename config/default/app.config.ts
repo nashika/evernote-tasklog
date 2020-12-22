@@ -1,6 +1,7 @@
 const appConfig: AppConfig.IAppConfigs = {
   "*": {
     port: 3000,
+    https: false,
     logLevel: "info",
     sqlLogging: false,
     sandbox: false,

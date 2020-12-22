@@ -98,6 +98,7 @@
     "pug": "^3.0.0",
     "pug-loader": "^2.4.0",
     "pug-plain-loader": "^1.0.0",
+    "push.js": "^1.0.12",
     "sass-loader": "^10.0.0",
     "stylelint": "^13.0.0",
     "ts-jest": "^26.0.0",
