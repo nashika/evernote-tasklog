@@ -9,40 +9,35 @@
         a(:href="'evernote:///view/' + $myStore.datastore.user.id + '/' + $myStore.datastore.user.shardId + '/' + data.item.guid + '/' + data.item.guid + '/'") {{data.item.title}}
       template(v-slot:cell(updated)="data")
         .text-right {{moment(data.item.updated).format('M/DD HH:mm')}}
-      template(v-slot:cell(time)="data")
-        template(v-for="person in existPersons")
-          span.mr-2(v-if="data.item.persons['$' + person.id].spentTime")
-            b {{person.name}}
-            | &nbsp;{{data.item.persons['$' + person.id].spentTime | spentTime}}
-            small ({{Math.round(data.item.persons['$' + person.id].spentTime / data.item.total.spentTime * 100)}}%)
-            template(v-if="data.item.persons['$' + person.id].profit")
-              | &nbsp;{{data.item.persons['$' + person.id].profit | numeral('0,0')}}
-        span(v-if="data.item.total.spentTime")
-          b 計
-          | &nbsp;{{data.item.total.spentTime | spentTime}}
-          template(v-if="data.item.total.profit")
-            small(v-if="data.item.total.spentTime")
-              | ({{data.item.total.profit / data.item.total.spentTime * 60 | numeral('0,0')}}/h)
-            | &nbsp;{{data.item.total.profit | numeral('0,0')}}
+      template(v-for="person in existPersons", v-slot:[`cell(person-${person.id})`]="data")
+        .text-nowrap(v-if="data.item.persons['$' + person.id].spentTime")
+          | {{data.item.persons['$' + person.id].spentTime | spentTime}}
+          small ({{Math.round(data.item.persons['$' + person.id].spentTime / data.item.total.spentTime * 100)}}%)
+        .text-nowrap(v-if="data.item.persons['$' + person.id].profit")
+          | {{data.item.persons['$' + person.id].profit | numeral('0,0')}}
+      template(v-slot:cell(total)="data")
+        .text-nowrap {{data.item.total.spentTime | spentTime}}
+          small(v-if="data.item.total.profit && data.item.total.spentTime")
+            | ({{data.item.total.profit / data.item.total.spentTime * 60 | numeral('0,0')}}/h)
+        .text-nowrap(v-if="data.item.total.profit")
+          | {{data.item.total.profit | numeral('0,0')}}
       template(v-slot:foot()) &nbsp;
       template(v-slot:foot(title)) 合計
-      template(v-slot:foot(time))
+      template(v-for="person in existPersons", v-slot:[`foot(person-${person.id})`])
         template(v-if="totalRecord && totalRecord.total")
-          template(v-for="person in existPersons")
-            span.mr-2.text-nowrap(v-if="totalRecord.persons['$' + person.id].spentTime")
-              b {{person.name}}
-              | &nbsp;{{totalRecord.persons['$' + person.id].spentTime | spentTime}}
-              small ({{Math.round(totalRecord.persons['$' + person.id].spentTime / totalRecord.total.spentTime * 100)}}%)
-              template(v-if="totalRecord.persons['$' + person.id].profit")
-                | &nbsp;{{totalRecord.persons['$' + person.id].profit | numeral('0,0')}}
-          span.text-nowrap
-            b 計
-            template(v-if="totalRecord.total.spentTime")
-              | &nbsp;{{totalRecord.total.spentTime | spentTime}}
-            template(v-if="totalRecord.total.profit")
-              | &nbsp;{{totalRecord.total.profit | numeral('0,0')}}
-              small(v-if="totalRecord.total.profit && totalRecord.total.spentTime")
-                | ({{totalRecord.total.profit / totalRecord.total.spentTime * 60 | numeral('0,0')}}/h)
+          .text-nowrap(v-if="totalRecord.persons['$' + person.id].spentTime")
+            | {{totalRecord.persons['$' + person.id].spentTime | spentTime}}
+            small ({{Math.round(totalRecord.persons['$' + person.id].spentTime / totalRecord.total.spentTime * 100)}}%)
+          .text-nowrap(v-if="totalRecord.persons['$' + person.id].profit")
+            | {{totalRecord.persons['$' + person.id].profit | numeral('0,0')}}
+      template(v-slot:foot(total))
+        template(v-if="totalRecord && totalRecord.total")
+          .text-nowrap(v-if="totalRecord.total.spentTime")
+            | {{totalRecord.total.spentTime | spentTime}}
+          .text-nowrap(v-if="totalRecord.total.profit")
+            | {{totalRecord.total.profit | numeral('0,0')}}
+            small(v-if="totalRecord.total.profit && totalRecord.total.spentTime")
+              | ({{totalRecord.total.profit / totalRecord.total.spentTime * 60 | numeral('0,0')}}/h)
     b-modal(id="menu-modal", title="Menu", ok-only, @hidden="reload()")
       .h6 表示する列
       b-form-checkbox(v-model="displayColumns.notebook") ノートブック
@@ -126,11 +121,13 @@ export default class NotesComponent extends BaseComponent {
     result.push({ key: "title", label: "タイトル", sortable: true });
     if (this.displayColumns.updated)
       result.push({ key: "updated", label: "更新日", sortable: true });
-    result.push({
-      key: "time",
-      label: "作業時間",
-      sortable: false,
-    });
+    for (const person of this.existPersons)
+      result.push({
+        key: "person-" + person.id,
+        label: person.name,
+        sortable: false,
+      });
+    result.push({ key: "total", label: "合計", sortable: false });
     return result;
   }
 
