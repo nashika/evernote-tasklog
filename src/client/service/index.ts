@@ -13,5 +13,5 @@ interface IMyService {
 export const myService: IMyService = <any>{};
 myService.socketIoClient = new SocketIoClientService();
 myService.request = new RequestService(myService.socketIoClient);
-myService.push = new PushService(myService.socketIoClient);
+myService.push = new PushService(myService.socketIoClient, myService.request);
 myService.noteLogs = new NoteLogsService(myService.request);

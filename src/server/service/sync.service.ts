@@ -46,14 +46,14 @@ export default class SyncService extends BaseServerService {
     this.nextLockPromise = new Promise<void>((resolve) => {
       this.lockResolves.push(resolve);
     });
-    logger.debug(`sync lock count=${this.lockResolves.length}`);
+    logger.trace(`sync lock count=${this.lockResolves.length}`);
     if (this.lockResolves.length >= 2) return next;
   }
 
   async unlock(): Promise<void> {
     if (this.lockResolves.length < 1)
       throw new Error("Unlock need to lock first.");
-    logger.debug(`sync unlock count=${this.lockResolves.length}`);
+    logger.trace(`sync unlock count=${this.lockResolves.length}`);
     const resolve = this.lockResolves.shift();
     assertIsDefined(resolve);
     resolve();
@@ -68,31 +68,48 @@ export default class SyncService extends BaseServerService {
       );
       if (!localSyncState) localSyncState = { updateCount: 0 };
       const remoteSyncState = await this.evernoteClientService.getSyncState();
-      const updateEventHash: { [event: string]: boolean } = {};
-      // Sync process
-      logger.info(
-        `Sync start. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`
+      logger.debug(
+        `Evernoteサーバ同期の状態を確認しました. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`
       );
-      while (
-        _.defaultTo(localSyncState.updateCount, 0) <
-        _.defaultTo(remoteSyncState.updateCount, 0)
+      if (
+        (localSyncState.updateCount ?? 0) < (remoteSyncState.updateCount ?? 0)
       ) {
-        await this.getSyncChunk(localSyncState, updateEventHash);
-      }
-      await this.tableService.optionTable.saveValueByKey(
-        "syncState",
-        remoteSyncState
-      );
-      logger.info(
-        `Sync end. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`
-      );
-      assertIsDefined(localSyncState.updateCount);
-      this.updateCount = localSyncState.updateCount;
-      this.socketIoService.emitAll("sync::updateCount", this.updateCount);
-      for (const event in updateEventHash) this.socketIoService.emitAll(event);
-      if (updateEventHash["sync::updateNotes"]) {
-        if ((await this.tableService.constraintResultTable.count()) > 0)
-          this.socketIoService.emitAll("constraint::notify");
+        const updateEventHash: { [event: string]: string[] } = {};
+        // Sync process
+        logger.info(
+          `Evernoteサーバ同期を開始します. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`
+        );
+        while (
+          (localSyncState.updateCount ?? 0) < (remoteSyncState.updateCount ?? 0)
+        ) {
+          await this.getSyncChunk(localSyncState, updateEventHash);
+        }
+        await this.tableService.optionTable.saveValueByKey(
+          "syncState",
+          remoteSyncState
+        );
+        logger.info(
+          `Evernoteサーバ同期を完了しました. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`
+        );
+        assertIsDefined(localSyncState.updateCount);
+        this.updateCount = localSyncState.updateCount;
+        this.socketIoService.emitAll("sync::updateCount", this.updateCount);
+        if (
+          updateEventHash["sync::updateNotebooks"] ||
+          updateEventHash["sync::deleteNotebooks"]
+        )
+          await this.tableService.reloadCache("notebook");
+        if (
+          updateEventHash["sync::updateTags"] ||
+          updateEventHash["sync::deleteTags"]
+        )
+          await this.tableService.reloadCache("tag");
+        for (const event in updateEventHash)
+          this.socketIoService.emitAll(event, updateEventHash[event]);
+        if (updateEventHash["sync::updateNotes"]) {
+          if ((await this.tableService.constraintResultTable.count()) > 0)
+            this.socketIoService.emitAll("constraint::notify");
+        }
       }
     } finally {
       await this.unlock();
@@ -103,16 +120,20 @@ export default class SyncService extends BaseServerService {
         () => this.sync(false).catch((err) => logger.error(err)),
         this.interval
       );
-      logger.info(`Next auto reload will run after ${this.interval} msec.`);
+      logger.debug(
+        `次回のEvernoteサーバ同期は ${this.interval} ミリ秒後に実施されます.`
+      );
       await this.autoGetNoteContent(this.interval);
     }
   }
 
   private async getSyncChunk(
     localSyncState: Evernote.NoteStore.SyncState,
-    updateEventHash: { [event: string]: boolean }
+    updateEventHash: { [event: string]: string[] }
   ): Promise<void> {
-    logger.info(`Get sync chunk start. startUSN=${localSyncState.updateCount}`);
+    logger.info(
+      `EvernoteサーバからSyncChunk取得を開始します. startUSN=${localSyncState.updateCount}`
+    );
     assertIsDefined(localSyncState.updateCount);
     const lastSyncChunk: Evernote.NoteStore.SyncChunk = await this.evernoteClientService.getFilteredSyncChunk(
       localSyncState.updateCount
@@ -146,39 +167,70 @@ export default class SyncService extends BaseServerService {
     await this.tableService.linkedNotebookTable.delete(
       lastSyncChunk.expungedLinkedNotebooks ?? []
     );
-    if (
-      _.size(lastSyncChunk.notes) > 0 ||
-      _.size(lastSyncChunk.expungedNotes) > 0
-    )
-      updateEventHash["sync::updateNotes"] = true;
-    if (
-      _.size(lastSyncChunk.notebooks) > 0 ||
-      _.size(lastSyncChunk.expungedNotebooks) > 0
-    ) {
-      updateEventHash["sync::updateNotebooks"] = true;
-      await this.tableService.reloadCache("notebook");
-    }
-    if (
-      _.size(lastSyncChunk.tags) > 0 ||
-      _.size(lastSyncChunk.expungedTags) > 0
-    ) {
-      updateEventHash["sync::updateTags"] = true;
-      await this.tableService.reloadCache("tag");
-    }
-    if (
-      _.size(lastSyncChunk.searches) > 0 ||
-      _.size(lastSyncChunk.expungedSearches) > 0
-    )
-      updateEventHash["sync::updateSearches"] = true;
-    if (
-      _.size(lastSyncChunk.linkedNotebooks) > 0 ||
-      _.size(lastSyncChunk.expungedLinkedNotebooks) > 0
-    )
-      updateEventHash["sync::updateLinkedNotebooks"] = true;
-    if (_.size(lastSyncChunk.notes) > 0)
+    const mergeGuids = (
+      updateEventHash: { [event: string]: string[] },
+      event: string,
+      guids: string[] | undefined
+    ) => {
+      if (!guids || guids.length === 0) return;
+      updateEventHash[event] = updateEventHash[event]
+        ? updateEventHash[event].concat(guids)
+        : guids;
+    };
+    const mergeGuidsUpdate = (
+      updateEventHash: { [event: string]: string[] },
+      event: string,
+      datas: { guid?: string }[] | undefined
+    ) => {
+      if (!datas) return;
+      const guids: string[] = [];
+      datas.forEach((data) => {
+        if (data.guid) guids.push(data.guid);
+      });
+      mergeGuids(updateEventHash, event, guids);
+    };
+    mergeGuidsUpdate(updateEventHash, "sync::updateNotes", lastSyncChunk.notes);
+    mergeGuids(
+      updateEventHash,
+      "sync::deleteNotes",
+      lastSyncChunk.expungedNotes
+    );
+    mergeGuidsUpdate(
+      updateEventHash,
+      "sync::updateNotebooks",
+      lastSyncChunk.notebooks
+    );
+    mergeGuids(
+      updateEventHash,
+      "sync::deleteNotebooks",
+      lastSyncChunk.expungedNotebooks
+    );
+    mergeGuidsUpdate(updateEventHash, "sync:updateTags", lastSyncChunk.tags);
+    mergeGuids(updateEventHash, "sync::deleteTags", lastSyncChunk.expungedTags);
+    mergeGuidsUpdate(
+      updateEventHash,
+      "sync::updateSearches",
+      lastSyncChunk.searches
+    );
+    mergeGuids(
+      updateEventHash,
+      "sync::deleteSearches",
+      lastSyncChunk.expungedSearches
+    );
+    mergeGuidsUpdate(
+      updateEventHash,
+      "sync::updateLinkedNotebooks",
+      lastSyncChunk.linkedNotebooks
+    );
+    mergeGuids(
+      updateEventHash,
+      "sync::deleteLinkedNotebooks",
+      lastSyncChunk.expungedLinkedNotebooks
+    );
+    if ((lastSyncChunk.notes?.length ?? 0) > 0)
       for (const note of lastSyncChunk.notes ?? [])
         await this.constraintService.checkOne(new NoteEntity(note));
-    if (_.size(lastSyncChunk.expungedNotes) > 0)
+    if ((lastSyncChunk.expungedNotes?.length ?? 0) > 0)
       for (const guid of lastSyncChunk.expungedNotes ?? [])
         await this.constraintService.removeOne(guid);
     localSyncState.updateCount = lastSyncChunk.chunkHighUSN;
@@ -186,25 +238,32 @@ export default class SyncService extends BaseServerService {
       "syncState",
       localSyncState
     );
-    logger.info(`Get sync chunk end. endUSN=${localSyncState.updateCount}`);
+    logger.info(
+      `EvernoteサーバからSyncChunk取得を完了しました. endUSN=${localSyncState.updateCount}`
+    );
   }
 
   private async autoGetNoteContent(interval: number): Promise<void> {
     await this.lock();
     try {
       const numNote: number = Math.ceil(interval / (60 * 1000));
-      logger.info(
-        `Auto get note content was started. Number of note is ${numNote}.`
+      logger.debug(
+        `自動ノート内容取得処理の状態を確認します. 取得するノートの最大数: ${numNote}.`
       );
       const notes = await this.tableService.noteTable.findAll({
         where: { content: null },
         order: { updated: "DESC" },
         take: numNote,
       });
-      for (const note of notes) {
-        await this.tableService.noteTable.loadRemote(note.guid);
+      if (notes.length > 0) {
+        logger.info(
+          `自動ノート内容取得処理を開始しました. 取得するノートの数: ${notes.length}.`
+        );
+        for (const note of notes) {
+          await this.tableService.noteTable.loadRemote(note.guid);
+        }
+        logger.info(`自動ノート内容取得処理を完了しました.`);
       }
-      logger.info(`Auto get note content was finished.`);
     } finally {
       await this.unlock();
     }

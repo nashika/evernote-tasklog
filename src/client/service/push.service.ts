@@ -4,18 +4,19 @@ import BaseClientService from "./base-client.service";
 import SocketIoClientService from "./socket-io-client.service";
 import { logger } from "~/src/client/plugins/logger";
 import DefaultLayoutComponent from "~/src/client/layouts/default.vue";
+import RequestService from "~/src/client/service/request.service";
+import NoteEntity from "~/src/common/entity/note.entity";
 
 export default class PushService extends BaseClientService {
   lastUpdateCount: number = 0;
   rootComponent!: DefaultLayoutComponent;
 
-  constructor(protected socketIoClientService: SocketIoClientService) {
+  constructor(
+    protected socketIoClientService: SocketIoClientService,
+    protected requestService: RequestService
+  ) {
     super();
-    this.socketIoClientService.on(
-      this,
-      "sync::updateCount",
-      this.checkUpdateCount
-    );
+    this.socketIoClientService.on(this, "sync::updateNotes", this.updateNotes);
     this.socketIoClientService.on(
       this,
       "constraint::notify",
@@ -27,22 +28,20 @@ export default class PushService extends BaseClientService {
     this.rootComponent = rootComponent;
   }
 
-  private async checkUpdateCount(updateCount: number): Promise<void> {
-    logger.debug(`Update count from server, updateCount=${updateCount}`);
-    if (this.lastUpdateCount === 0) {
-      this.lastUpdateCount = updateCount;
-    } else if (this.lastUpdateCount < updateCount) {
-      this.lastUpdateCount = updateCount;
-      const this_ = this;
-      await Push.create("Evernote更新通知", {
-        link: "/activity",
-        timeout: 3000,
-        onClick(this: any) {
-          this_.rootComponent.$router.push("activity");
-          this.close();
-        },
-      });
-    }
+  private async updateNotes(guids: string[]): Promise<void> {
+    const this_ = this;
+    const notes = await this.requestService.find(NoteEntity, {
+      where: { guid: { $in: guids } },
+    });
+    await Push.create("Evernote更新通知", {
+      body: notes.map((note) => note.title).join("\n"),
+      link: "/activity",
+      timeout: 5000,
+      onClick(this: any) {
+        this_.rootComponent.$router.push("activity");
+        this.close();
+      },
+    });
   }
 
   private async notifyConstraint(): Promise<void> {
