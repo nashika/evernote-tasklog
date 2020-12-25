@@ -17,7 +17,8 @@ import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
 export default class SyncService extends BaseServerService {
-  private static startInterval = 5 * 1000;
+  private static startInterval = 30 * 1000;
+  private static increaseInterval = 1.25;
   private static maxInterval = 5 * 60 * 1000;
 
   public updateCount: number = 0;
@@ -62,6 +63,7 @@ export default class SyncService extends BaseServerService {
   async sync(manual: boolean): Promise<void> {
     clearTimeout(this.timer);
     await this.lock();
+    let updated: boolean = false;
     try {
       let localSyncState: Evernote.NoteStore.SyncState = await this.tableService.optionTable.findValueByKey(
         "syncState"
@@ -110,12 +112,17 @@ export default class SyncService extends BaseServerService {
           if ((await this.tableService.constraintResultTable.count()) > 0)
             this.socketIoService.emitAll("constraint::notify");
         }
+        if (Object.keys(updateEventHash).length > 0) updated = true;
       }
     } finally {
       await this.unlock();
-      this.interval = manual
-        ? this.Class.startInterval
-        : Math.min(Math.round(this.interval * 1.5), this.Class.maxInterval);
+      this.interval =
+        manual || updated
+          ? this.Class.startInterval
+          : Math.min(
+              Math.round(this.interval * this.Class.increaseInterval),
+              this.Class.maxInterval
+            );
       this.timer = setTimeout(
         () => this.sync(false).catch((err) => logger.error(err)),
         this.interval
