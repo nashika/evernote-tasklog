@@ -37,14 +37,18 @@ export default class TimelineModeComponent extends BaseComponent {
   end: moment.Moment = moment().endOf("day");
   startView: moment.Moment = moment().startOf("day");
   endView: moment.Moment = moment().endOf("day");
+  private reloading: boolean = false;
 
   async mounted(): Promise<void> {
     await this.reload();
+    this.$myService.socketIoClient.on(this, "sync::update", this.reload);
   }
 
   async reload(
     filterParams: INoteLogsServiceNoteFilterParams | null = null
   ): Promise<void> {
+    if (this.reloading) return;
+    this.reloading = true;
     if (filterParams) this.filterParams = filterParams;
     const noteFilterParams = _.clone(this.filterParams);
     noteFilterParams.start = this.start;
@@ -149,6 +153,7 @@ export default class TimelineModeComponent extends BaseComponent {
     this.timeline.on("rangechanged", (properties: { start: Date; end: Date }) =>
       this.onRangeChanged(properties)
     );
+    this.reloading = false;
   }
 
   onRangeChanged(properties: { start: Date; end: Date }) {

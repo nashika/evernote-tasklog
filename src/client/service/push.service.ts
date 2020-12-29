@@ -16,7 +16,7 @@ export default class PushService extends BaseClientService {
     protected requestService: RequestService
   ) {
     super();
-    this.socketIoClientService.on(this, "sync::updateNotes", this.updateNotes);
+    this.socketIoClientService.on(this, "sync::update", this.update);
     this.socketIoClientService.on(
       this,
       "constraint::notify",
@@ -28,10 +28,13 @@ export default class PushService extends BaseClientService {
     this.rootComponent = rootComponent;
   }
 
-  private async updateNotes(guids: string[]): Promise<void> {
+  private async update(eventHash: {
+    [event: string]: string[];
+  }): Promise<void> {
+    if (!eventHash["note::update"]) return;
     const this_ = this;
     const notes = await this.requestService.find(NoteEntity, {
-      where: { guid: { $in: guids } },
+      where: { guid: { $in: eventHash["note::update"] } },
     });
     await Push.create("Evernote更新通知", {
       body: notes.map((note) => note.title).join("\n"),

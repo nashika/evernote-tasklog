@@ -76,7 +76,7 @@ export default class SyncService extends BaseServerService {
       if (
         (localSyncState.updateCount ?? 0) < (remoteSyncState.updateCount ?? 0)
       ) {
-        const updateEventHash: { [event: string]: string[] } = {};
+        const eventHash: { [event: string]: string[] } = {};
         // Sync process
         logger.info(
           `Evernoteサーバ同期を開始します. localUSN=${localSyncState.updateCount} remoteUSN=${remoteSyncState.updateCount}`
@@ -84,7 +84,7 @@ export default class SyncService extends BaseServerService {
         while (
           (localSyncState.updateCount ?? 0) < (remoteSyncState.updateCount ?? 0)
         ) {
-          await this.getSyncChunk(localSyncState, updateEventHash);
+          await this.getSyncChunk(localSyncState, eventHash);
         }
         await this.tableService.optionTable.saveValueByKey(
           "syncState",
@@ -96,23 +96,18 @@ export default class SyncService extends BaseServerService {
         assertIsDefined(localSyncState.updateCount);
         this.updateCount = localSyncState.updateCount;
         this.socketIoService.emitAll("sync::updateCount", this.updateCount);
-        if (
-          updateEventHash["sync::updateNotebooks"] ||
-          updateEventHash["sync::deleteNotebooks"]
-        )
+        if (_.has(eventHash, ["notebook::update", "notebook::delete"]))
           await this.tableService.reloadCache("notebook");
-        if (
-          updateEventHash["sync::updateTags"] ||
-          updateEventHash["sync::deleteTags"]
-        )
+        if (_.has(eventHash, ["tag:update", "tag::delete"]))
           await this.tableService.reloadCache("tag");
-        for (const event in updateEventHash)
-          this.socketIoService.emitAll(event, updateEventHash[event]);
-        if (updateEventHash["sync::updateNotes"]) {
+        if (eventHash["note::update"]) {
           if ((await this.tableService.constraintResultTable.count()) > 0)
             this.socketIoService.emitAll("constraint::notify");
         }
-        if (Object.keys(updateEventHash).length > 0) updated = true;
+        if (Object.keys(eventHash).length > 0) {
+          this.socketIoService.emitAll("sync::update", eventHash);
+          updated = true;
+        }
       }
     } finally {
       await this.unlock();
@@ -136,7 +131,7 @@ export default class SyncService extends BaseServerService {
 
   private async getSyncChunk(
     localSyncState: Evernote.NoteStore.SyncState,
-    updateEventHash: { [event: string]: string[] }
+    eventHash: { [event: string]: string[] }
   ): Promise<void> {
     logger.info(
       `EvernoteサーバからSyncChunk取得を開始します. startUSN=${localSyncState.updateCount}`
@@ -196,42 +191,22 @@ export default class SyncService extends BaseServerService {
       });
       mergeGuids(updateEventHash, event, guids);
     };
-    mergeGuidsUpdate(updateEventHash, "sync::updateNotes", lastSyncChunk.notes);
-    mergeGuids(
-      updateEventHash,
-      "sync::deleteNotes",
-      lastSyncChunk.expungedNotes
-    );
+    mergeGuidsUpdate(eventHash, "note::update", lastSyncChunk.notes);
+    mergeGuids(eventHash, "note::delete", lastSyncChunk.expungedNotes);
+    mergeGuidsUpdate(eventHash, "notebook::update", lastSyncChunk.notebooks);
+    mergeGuids(eventHash, "notebook::delete", lastSyncChunk.expungedNotebooks);
+    mergeGuidsUpdate(eventHash, "tag::update", lastSyncChunk.tags);
+    mergeGuids(eventHash, "tag::delete", lastSyncChunk.expungedTags);
+    mergeGuidsUpdate(eventHash, "search::update", lastSyncChunk.searches);
+    mergeGuids(eventHash, "search::delete", lastSyncChunk.expungedSearches);
     mergeGuidsUpdate(
-      updateEventHash,
-      "sync::updateNotebooks",
-      lastSyncChunk.notebooks
-    );
-    mergeGuids(
-      updateEventHash,
-      "sync::deleteNotebooks",
-      lastSyncChunk.expungedNotebooks
-    );
-    mergeGuidsUpdate(updateEventHash, "sync:updateTags", lastSyncChunk.tags);
-    mergeGuids(updateEventHash, "sync::deleteTags", lastSyncChunk.expungedTags);
-    mergeGuidsUpdate(
-      updateEventHash,
-      "sync::updateSearches",
-      lastSyncChunk.searches
-    );
-    mergeGuids(
-      updateEventHash,
-      "sync::deleteSearches",
-      lastSyncChunk.expungedSearches
-    );
-    mergeGuidsUpdate(
-      updateEventHash,
-      "sync::updateLinkedNotebooks",
+      eventHash,
+      "linkedNotebook::update",
       lastSyncChunk.linkedNotebooks
     );
     mergeGuids(
-      updateEventHash,
-      "sync::deleteLinkedNotebooks",
+      eventHash,
+      "linkedNotebook::delete",
       lastSyncChunk.expungedLinkedNotebooks
     );
     if ((lastSyncChunk.notes?.length ?? 0) > 0)
