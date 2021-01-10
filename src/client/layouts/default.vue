@@ -1,10 +1,13 @@
 <template lang="pug">
-section.app
+section.app(v-if="initialized")
   navigation-component
   person-modal-component
   filter-modal-component
   progress-modal-component
   nuxt(ref="main")
+section.initialize(v-else)
+  fa.fa-pulse(:icon="['fas', 'spinner']")
+  | 起動中...
 </template>
 
 <script lang="ts">
@@ -25,10 +28,13 @@ import ProgressModalComponent from "~/src/client/components/modal/progress-modal
   },
 })
 export default class DefaultLayoutComponent extends BaseComponent {
-  async mounted(): Promise<void> {
+  initialized: boolean = false;
+
+  async beforeCreate(): Promise<void> {
     this.$myService.push.initialize(this);
     await this.$myStore.datastore.initialize();
     this.$root.$on("reload", () => this.reload());
+    this.initialized = true;
   }
 
   async reload(): Promise<void> {
@@ -62,5 +68,14 @@ html {
   section.app {
     padding-top: 56px;
   }
+}
+
+section.initialize {
+  color: #888888;
+  font-size: 400%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>

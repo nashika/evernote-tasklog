@@ -7,6 +7,7 @@ const icons = {
     "faHistory",
     "faIdCard",
     "faHome",
+    "faSpinner",
     "faStickyNote",
     "faSync",
   ],
