@@ -73,11 +73,6 @@ const conf: NuxtConfig = {
   modules: [
     // Doc: https://bootstrap-vue.js.org
     ["bootstrap-vue/nuxt", { css: false }],
-    // Doc: https://axios.nuxtjs.org/usage
-    "@nuxtjs/axios",
-    "@nuxtjs/pwa",
-    // Doc: https://github.com/nuxt-community/dotenv-module
-    "@nuxtjs/dotenv",
     "@nuxtjs/fontawesome",
   ],
   /*
