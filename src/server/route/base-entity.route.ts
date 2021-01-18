@@ -2,7 +2,7 @@ import _ from "lodash";
 import SocketIO from "socket.io";
 
 import BaseRoute from "~/src/server/route/base.route";
-import container from "~/src/server/inversify.config";
+import container from "~/src/common/inversify.config";
 import TableService from "~/src/server/service/table.service";
 import SessionService from "~/src/server/service/session.service";
 import BaseEntity, {

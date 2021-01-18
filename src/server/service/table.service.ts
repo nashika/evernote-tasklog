@@ -4,7 +4,7 @@ import { injectable } from "inversify";
 import { Connection, createConnection, EntitySchema } from "typeorm";
 
 import BaseServerService from "./base-server.service";
-import container from "~/src/server/inversify.config";
+import container from "~/src/common/inversify.config";
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
 import BaseEntity, { TEntityClass } from "~/src/common/entity/base.entity";

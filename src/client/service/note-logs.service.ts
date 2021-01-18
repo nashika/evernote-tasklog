@@ -1,6 +1,7 @@
 import _ from "lodash";
 import moment from "moment";
 
+import { injectable } from "inversify";
 import NoteEntity, {
   IFindManyNoteEntityOptions,
 } from "~/src/common/entity/note.entity";
@@ -56,6 +57,7 @@ interface INoteLogsResult {
   profitLogs: TProfitLogsResult | null;
 }
 
+@injectable()
 export default class NoteLogsService extends BaseClientService {
   constructor(protected requestService: RequestService) {
     super();

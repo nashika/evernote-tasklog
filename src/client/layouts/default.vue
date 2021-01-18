@@ -11,6 +11,7 @@ section.initialize(v-else)
 </template>
 
 <script lang="ts">
+import "reflect-metadata";
 import { Component } from "nuxt-property-decorator";
 
 import NavigationComponent from "~/src/client/components/navigation.component.vue";

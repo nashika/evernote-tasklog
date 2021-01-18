@@ -51,9 +51,9 @@ const conf: NuxtConfig = {
    ** Plugins to load before mounting the App
    */
   plugins: [
+    "~/src/client/plugins/vendor",
     "~/src/client/plugins/logger",
     "~/src/client/plugins/filter",
-    "~/src/client/plugins/vendor",
     "~/src/client/plugins/service",
     "~/src/client/plugins/my-store",
   ],

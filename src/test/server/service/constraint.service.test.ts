@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import container from "~/src/server/inversify.config";
+import container from "~/src/common/inversify.config";
 
 import ConstraintService from "~/src/server/service/constraint.service";
 import TableService from "~/src/server/service/table.service";

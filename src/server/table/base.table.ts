@@ -29,7 +29,7 @@ import BaseEntity, {
   FindOneEntityOptions,
   EntityToInterface,
 } from "~/src/common/entity/base.entity";
-import container from "~/src/server/inversify.config";
+import container from "~/src/common/inversify.config";
 import logger from "~/src/server/logger";
 import { assertIsDefined } from "~/src/common/util/assert";
 

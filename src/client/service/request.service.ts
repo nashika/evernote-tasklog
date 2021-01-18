@@ -1,5 +1,6 @@
 import _ from "lodash";
 
+import { injectable } from "inversify";
 import SocketIoClientService from "./socket-io-client.service";
 import BaseClientService from "./base-client.service";
 import NoteEntity from "~/src/common/entity/note.entity";
@@ -10,6 +11,7 @@ import BaseEntity, {
   FindOneEntityOptions,
 } from "~/src/common/entity/base.entity";
 
+@injectable()
 export default class RequestService extends BaseClientService {
   constructor(protected socketIoClientService: SocketIoClientService) {
     super();

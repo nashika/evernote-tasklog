@@ -1,6 +1,5 @@
 import { Route } from "vue-router";
 import { Store } from "vuex";
-import { AxiosInstance } from "axios";
 
 export interface NuxtContext {
   isClient: boolean;
@@ -20,5 +19,4 @@ export interface NuxtContext {
   error: (params: { statusCode?: String; message?: String }) => void;
   // @ts-ignore
   beforeNuxtRender: (params: { Conmponents?: any; nuxtState: any }) => void;
-  $axios: AxiosInstance; // axios-moduleを利用している場合
 }

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import container from "~/src/server/inversify.config";
+import container from "~/src/common/inversify.config";
 import TableService from "~/src/server/service/table.service";
 
 const tableService = container.get<TableService>(TableService);

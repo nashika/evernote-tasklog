@@ -5,7 +5,7 @@ import { injectable } from "inversify";
 import logger from "../logger";
 
 import BaseServerService from "./base-server.service";
-import container from "~/src/server/inversify.config";
+import container from "~/src/common/inversify.config";
 import BaseRoute from "~/src/server/route/base.route";
 import { SYMBOL_TYPES } from "~/src/common/symbols";
 

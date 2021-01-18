@@ -3,6 +3,9 @@ import PushService from "~/src/client/service/push.service";
 import RequestService from "~/src/client/service/request.service";
 import SocketIoClientService from "~/src/client/service/socket-io-client.service";
 
+import "~/src/client/inversify.config";
+import container from "~/src/common/inversify.config";
+
 interface IMyService {
   noteLogs: NoteLogsService;
   push: PushService;
@@ -11,7 +14,7 @@ interface IMyService {
 }
 
 export const myService: IMyService = <any>{};
-myService.socketIoClient = new SocketIoClientService();
-myService.request = new RequestService(myService.socketIoClient);
-myService.push = new PushService(myService.socketIoClient, myService.request);
-myService.noteLogs = new NoteLogsService(myService.request);
+myService.noteLogs = container.get(NoteLogsService);
+myService.push = container.get(PushService);
+myService.request = container.get(RequestService);
+myService.socketIoClient = container.get(SocketIoClientService);
