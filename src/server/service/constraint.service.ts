@@ -92,7 +92,7 @@ export class ConstraintService extends BaseServerService {
       const tagNames: string[] = [];
       for (const tagGuid of _.toArray(note.tagGuids)) {
         const tag = this.tableService.caches.tags[tagGuid];
-        if (!tag.name) continue;
+        if (!tag?.name) continue;
         tagNames.push(tag.name);
       }
       if (!this.evalTags(tagNames, query.tag)) return false;
