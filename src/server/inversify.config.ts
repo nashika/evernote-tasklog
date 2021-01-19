@@ -4,7 +4,7 @@ import { BaseEntity } from "~/src/common/entity/base.entity";
 
 import { container } from "~/src/common/inversify.config";
 import { serverLogger } from "~/src/server/logger";
-import { ILogger } from "~/src/common/logger";
+import { ILogger, initializeLogger } from "~/src/common/logger";
 
 import { ConstraintService } from "~/src/server/service/constraint.service";
 import { EvernoteClientService } from "~/src/server/service/evernote-client.service";
@@ -41,6 +41,7 @@ import { TimeLogTable } from "~/src/server/table/time-log.table";
 
 // Logger
 container.bind<ILogger>(SYMBOL_TYPES.Logger).toConstantValue(serverLogger);
+initializeLogger();
 
 // Service系
 container

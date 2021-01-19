@@ -9,4 +9,9 @@ export interface ILogger {
   error(message: any, ...args: any[]): void;
 }
 
-export const logger = container.get<ILogger>(SYMBOL_TYPES.Logger);
+// eslint-disable-next-line import/no-mutable-exports
+export let logger: ILogger;
+
+export function initializeLogger() {
+  logger = container.get<ILogger>(SYMBOL_TYPES.Logger);
+}
