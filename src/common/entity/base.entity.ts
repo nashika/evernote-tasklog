@@ -76,7 +76,7 @@ export type FindEntityWhereColumnOperators<
   $in?: P[];
 };
 
-export default abstract class BaseEntity {
+export abstract class BaseEntity {
   FIELD_NAMES!: string;
   FIELD_NAMES2!: "archiveId" | "createdAt" | "updatedAt";
   static readonly params: EntityParams<BaseEntity>;

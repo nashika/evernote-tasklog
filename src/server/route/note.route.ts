@@ -1,16 +1,16 @@
 import { injectable } from "inversify";
 import SocketIO from "socket.io";
 
-import BaseEntityRoute from "~/src/server/route/base-entity.route";
-import NoteEntity from "~/src/common/entity/note.entity";
-import SessionService from "~/src/server/service/session.service";
-import TableService from "~/src/server/service/table.service";
-import NoteTable from "~/src/server/table/note.table";
-import SyncService from "~/src/server/service/sync.service";
+import { BaseEntityRoute } from "~/src/server/route/base-entity.route";
+import { NoteEntity } from "~/src/common/entity/note.entity";
+import { SessionService } from "~/src/server/service/session.service";
+import { TableService } from "~/src/server/service/table.service";
+import { NoteTable } from "~/src/server/table/note.table";
+import { SyncService } from "~/src/server/service/sync.service";
 import { FindEntityWhereOptions } from "~/src/common/entity/base.entity";
 
 @injectable()
-export default class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
+export class NoteRoute extends BaseEntityRoute<NoteEntity, NoteTable> {
   constructor(
     protected tableService: TableService,
     protected sessionService: SessionService,

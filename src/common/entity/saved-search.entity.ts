@@ -1,7 +1,7 @@
-import BaseEvernoteEntity from "./base-evernote.entity";
+import { BaseEvernoteEntity } from "./base-evernote.entity";
 import { EntityParams } from "./base.entity";
 
-export default class SavedSearchEntity extends BaseEvernoteEntity {
+export class SavedSearchEntity extends BaseEvernoteEntity {
   FIELD_NAMES!:
     | "name"
     | "query"

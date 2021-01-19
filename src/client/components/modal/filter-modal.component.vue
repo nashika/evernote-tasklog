@@ -29,8 +29,8 @@ b-modal(id="filter-modal", title="Filter", ok-only, @shown="shown()", @hidden="h
 import { Component } from "nuxt-property-decorator";
 import _ from "lodash";
 
-import BaseComponent from "~/src/client/components/base.component";
-import NotebookEntity from "~/src/common/entity/notebook.entity";
+import { BaseComponent } from "~/src/client/components/base.component";
+import { NotebookEntity } from "~/src/common/entity/notebook.entity";
 import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 
 interface IStackItem {

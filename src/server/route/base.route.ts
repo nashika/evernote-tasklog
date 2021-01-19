@@ -2,7 +2,7 @@ import _ from "lodash";
 import SocketIO from "socket.io";
 import { injectable } from "inversify";
 
-import logger from "../logger";
+import { logger } from "../logger";
 
 export abstract class CodeError extends Error {
   code: number = 0;
@@ -24,7 +24,7 @@ export class Code500Error extends CodeError {
 }
 
 @injectable()
-export default abstract class BaseRoute {
+export abstract class BaseRoute {
   abstract get basePath(): string;
 
   abstract async connect(_socket: SocketIO.Socket): Promise<void>;

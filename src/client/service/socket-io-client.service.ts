@@ -4,7 +4,7 @@ import { injectable } from "inversify";
 import { logger } from "../plugins/logger";
 
 @injectable()
-export default class SocketIoClientService {
+export class SocketIoClientService {
   private socket: SocketIoClient.Socket;
 
   constructor() {

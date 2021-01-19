@@ -10,9 +10,9 @@ import { Nuxt, Builder } from "nuxt";
 // Import and Set Nuxt.js options
 import config from "../../nuxt.config";
 import "~/src/server/inversify.config";
-import MainService from "~/src/server/service/main.service";
-import logger from "~/src/server/logger";
-import container from "~/src/common/inversify.config";
+import { MainService } from "~/src/server/service/main.service";
+import { logger } from "~/src/server/logger";
+import { container } from "~/src/common/inversify.config";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 const app = express();

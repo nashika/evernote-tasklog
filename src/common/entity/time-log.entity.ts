@@ -1,6 +1,6 @@
-import BaseEntity, { EntityParams } from "./base.entity";
+import { BaseEntity, EntityParams } from "./base.entity";
 
-export default class TimeLogEntity extends BaseEntity {
+export class TimeLogEntity extends BaseEntity {
   FIELD_NAMES!:
     | "id"
     | "noteGuid"

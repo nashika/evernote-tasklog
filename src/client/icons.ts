@@ -1,4 +1,4 @@
-const icons = {
+export const icons = {
   solid: [
     "faBars",
     "faCheckCircle",
@@ -12,4 +12,3 @@ const icons = {
     "faSync",
   ],
 };
-export default icons;

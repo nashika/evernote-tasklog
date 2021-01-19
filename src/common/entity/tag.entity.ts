@@ -1,7 +1,7 @@
-import BaseEvernoteEntity from "./base-evernote.entity";
+import { BaseEvernoteEntity } from "./base-evernote.entity";
 import { EntityParams, EntityToInterface } from "./base.entity";
 
-export default class TagEntity extends BaseEvernoteEntity {
+export class TagEntity extends BaseEvernoteEntity {
   FIELD_NAMES!: "name" | "parentGuid" | BaseEvernoteEntity["FIELD_NAMES3"];
 
   // eslint-disable-next-line no-useless-constructor

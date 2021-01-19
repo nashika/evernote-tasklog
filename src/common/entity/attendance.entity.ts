@@ -1,6 +1,6 @@
-import BaseEntity, { EntityParams } from "./base.entity";
+import { BaseEntity, EntityParams } from "./base.entity";
 
-export default class AttendanceEntity extends BaseEntity {
+export class AttendanceEntity extends BaseEntity {
   FIELD_NAMES!:
     | "id"
     | "personId"

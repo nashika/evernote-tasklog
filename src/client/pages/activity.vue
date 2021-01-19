@@ -35,8 +35,8 @@ import * as diff from "diff";
 import * as htmlToText from "html-to-text";
 import * as diff2html from "diff2html";
 
-import BaseComponent from "~/src/client/components/base.component";
-import NoteEntity from "~/src/common/entity/note.entity";
+import { BaseComponent } from "~/src/client/components/base.component";
+import { NoteEntity } from "~/src/common/entity/note.entity";
 import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 

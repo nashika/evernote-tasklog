@@ -1,9 +1,9 @@
 import "reflect-metadata";
-import container from "~/src/common/inversify.config";
+import { container } from "~/src/common/inversify.config";
 
-import ConstraintService from "~/src/server/service/constraint.service";
-import TableService from "~/src/server/service/table.service";
-import TagEntity from "~/src/common/entity/tag.entity";
+import { ConstraintService } from "~/src/server/service/constraint.service";
+import { TableService } from "~/src/server/service/table.service";
+import { TagEntity } from "~/src/common/entity/tag.entity";
 
 const constraintService = container.get<ConstraintService>(ConstraintService);
 const tableService = container.get<TableService>(TableService);

@@ -15,7 +15,7 @@ import "reflect-metadata";
 import { Component } from "nuxt-property-decorator";
 
 import NavigationComponent from "~/src/client/components/navigation.component.vue";
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 import PersonModalComponent from "~/src/client/components/modal/person-modal.component.vue";
 import FilterModalComponent from "~/src/client/components/modal/filter-modal.component.vue";
 import ProgressModalComponent from "~/src/client/components/modal/progress-modal.component.vue";

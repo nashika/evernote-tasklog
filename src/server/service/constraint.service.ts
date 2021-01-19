@@ -1,15 +1,15 @@
 import { injectable } from "inversify";
 import _ from "lodash";
 
-import BaseServerService from "~/src/server/service/base-server.service";
-import TableService from "~/src/server/service/table.service";
-import logger from "~/src/server/logger";
-import NoteEntity from "~/src/common/entity/note.entity";
-import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
+import { BaseServerService } from "~/src/server/service/base-server.service";
+import { TableService } from "~/src/server/service/table.service";
+import { logger } from "~/src/server/logger";
+import { NoteEntity } from "~/src/common/entity/note.entity";
+import { ConstraintResultEntity } from "~/src/common/entity/constraint-result.entity";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @injectable()
-export default class ConstraintService extends BaseServerService {
+export class ConstraintService extends BaseServerService {
   constructor(protected tableService: TableService) {
     super();
   }

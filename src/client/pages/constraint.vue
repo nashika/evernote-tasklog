@@ -11,9 +11,9 @@
 import { Component } from "nuxt-property-decorator";
 import _ from "lodash";
 
-import BaseComponent from "~/src/client/components/base.component";
-import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
-import NoteEntity from "~/src/common/entity/note.entity";
+import { BaseComponent } from "~/src/client/components/base.component";
+import { ConstraintResultEntity } from "~/src/common/entity/constraint-result.entity";
+import { NoteEntity } from "~/src/common/entity/note.entity";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 

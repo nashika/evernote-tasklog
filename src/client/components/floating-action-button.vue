@@ -11,7 +11,7 @@
 <script lang="ts">
 import { Component, Prop } from "nuxt-property-decorator";
 
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 
 @Component

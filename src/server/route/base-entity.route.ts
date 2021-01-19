@@ -1,18 +1,19 @@
 import _ from "lodash";
 import SocketIO from "socket.io";
 
-import BaseRoute from "~/src/server/route/base.route";
-import container from "~/src/common/inversify.config";
-import TableService from "~/src/server/service/table.service";
-import SessionService from "~/src/server/service/session.service";
-import BaseEntity, {
+import { BaseRoute } from "~/src/server/route/base.route";
+import { container } from "~/src/common/inversify.config";
+import { TableService } from "~/src/server/service/table.service";
+import { SessionService } from "~/src/server/service/session.service";
+import {
   TEntityClass,
   FindManyEntityOptions,
+  BaseEntity,
 } from "~/src/common/entity/base.entity";
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
-import BaseTable from "~/src/server/table/base.table";
+import { BaseTable } from "~/src/server/table/base.table";
 
-export default abstract class BaseEntityRoute<
+export abstract class BaseEntityRoute<
   TEntity extends BaseEntity,
   TTable extends BaseTable<TEntity>
 > extends BaseRoute {

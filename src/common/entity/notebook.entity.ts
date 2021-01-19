@@ -1,7 +1,7 @@
-import BaseEvernoteEntity from "./base-evernote.entity";
+import { BaseEvernoteEntity } from "./base-evernote.entity";
 import { EntityParams } from "./base.entity";
 
-export default class NotebookEntity extends BaseEvernoteEntity {
+export class NotebookEntity extends BaseEvernoteEntity {
   FIELD_NAMES!:
     | "name"
     | "defaultNotebook"

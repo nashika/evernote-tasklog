@@ -2,13 +2,14 @@ import _ from "lodash";
 import moment from "moment";
 
 import { injectable } from "inversify";
-import NoteEntity, {
+import {
   IFindManyNoteEntityOptions,
+  NoteEntity,
 } from "~/src/common/entity/note.entity";
-import TimeLogEntity from "~/src/common/entity/time-log.entity";
-import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
-import BaseClientService from "~/src/client/service/base-client.service";
-import RequestService from "~/src/client/service/request.service";
+import { TimeLogEntity } from "~/src/common/entity/time-log.entity";
+import { ProfitLogEntity } from "~/src/common/entity/profit-log.entity";
+import { BaseClientService } from "~/src/client/service/base-client.service";
+import { RequestService } from "~/src/client/service/request.service";
 import {
   FindManyEntityOptions,
   FindEntityWhereOptions,
@@ -58,7 +59,7 @@ interface INoteLogsResult {
 }
 
 @injectable()
-export default class NoteLogsService extends BaseClientService {
+export class NoteLogsService extends BaseClientService {
   constructor(protected requestService: RequestService) {
     super();
   }

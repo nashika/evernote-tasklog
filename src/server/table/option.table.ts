@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
 
-import BaseTable from "~/src/server/table/base.table";
-import OptionEntity from "~/src/common/entity/option.entity";
+import { BaseTable } from "~/src/server/table/base.table";
+import { OptionEntity } from "~/src/common/entity/option.entity";
 
 @injectable()
-export default class OptionTable extends BaseTable<OptionEntity> {
+export class OptionTable extends BaseTable<OptionEntity> {
   async findValueByKey(key: string): Promise<any> {
     const entity = await this.findByPrimary(key);
     return entity ? entity.value : null;

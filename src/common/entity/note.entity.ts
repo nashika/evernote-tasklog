@@ -1,7 +1,7 @@
-import BaseEvernoteEntity from "./base-evernote.entity";
+import { BaseEvernoteEntity } from "./base-evernote.entity";
 import { EntityParams, FindManyEntityOptions } from "./base.entity";
 
-export default class NoteEntity extends BaseEvernoteEntity {
+export class NoteEntity extends BaseEvernoteEntity {
   FIELD_NAMES!:
     | "title"
     | "content"

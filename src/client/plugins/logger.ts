@@ -7,11 +7,9 @@ export const logger = logLevel.getLogger("evernote-tasklog");
 
 logger.setLevel(appConfigLoader.app.logLevel);
 
-const loggerPlugin: Plugin = (_context, inject) => {
+export const loggerPlugin: Plugin = (_context, inject) => {
   inject("logger", logger);
 };
-
-export default loggerPlugin;
 
 declare module "vue/types/vue" {
   interface Vue {

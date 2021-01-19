@@ -21,7 +21,7 @@ b-navbar.d-print-none(toggleable="sm", type="dark", variant="dark", fixed="top")
 <script lang="ts">
 import { Component } from "nuxt-property-decorator";
 
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 
 @Component
 export default class NavigationComponent extends BaseComponent {

@@ -1,7 +1,7 @@
 import { ISession } from "connect-typeorm";
-import BaseEntity, { EntityParams } from "~/src/common/entity/base.entity";
+import { BaseEntity, EntityParams } from "~/src/common/entity/base.entity";
 
-export default class SessionEntity extends BaseEntity implements ISession {
+export class SessionEntity extends BaseEntity implements ISession {
   FIELD_NAMES!: "expiredAt" | "id" | "json" | BaseEntity["FIELD_NAMES2"];
 
   static readonly params: EntityParams<SessionEntity> = {

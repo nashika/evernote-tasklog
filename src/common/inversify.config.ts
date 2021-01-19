@@ -2,20 +2,20 @@ import "reflect-metadata";
 import { Container } from "inversify";
 
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
-import BaseEntity from "~/src/common/entity/base.entity";
-import AttendanceEntity from "~/src/common/entity/attendance.entity";
-import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
-import LinkedNotebookEntity from "~/src/common/entity/linked-notebook.entity";
-import NoteEntity from "~/src/common/entity/note.entity";
-import NotebookEntity from "~/src/common/entity/notebook.entity";
-import OptionEntity from "~/src/common/entity/option.entity";
-import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
-import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
-import SessionEntity from "~/src/common/entity/session.entity";
-import TagEntity from "~/src/common/entity/tag.entity";
-import TimeLogEntity from "~/src/common/entity/time-log.entity";
+import { BaseEntity } from "~/src/common/entity/base.entity";
+import { AttendanceEntity } from "~/src/common/entity/attendance.entity";
+import { ConstraintResultEntity } from "~/src/common/entity/constraint-result.entity";
+import { LinkedNotebookEntity } from "~/src/common/entity/linked-notebook.entity";
+import { NoteEntity } from "~/src/common/entity/note.entity";
+import { NotebookEntity } from "~/src/common/entity/notebook.entity";
+import { OptionEntity } from "~/src/common/entity/option.entity";
+import { ProfitLogEntity } from "~/src/common/entity/profit-log.entity";
+import { SavedSearchEntity } from "~/src/common/entity/saved-search.entity";
+import { SessionEntity } from "~/src/common/entity/session.entity";
+import { TagEntity } from "~/src/common/entity/tag.entity";
+import { TimeLogEntity } from "~/src/common/entity/time-log.entity";
 
-const container = new Container();
+export const container = new Container();
 
 // Entity系
 container
@@ -62,5 +62,3 @@ container
   .bind<BaseEntity>(SYMBOL_TYPES.Entity)
   .toConstructor(TimeLogEntity)
   .whenTargetNamed(SYMBOL_TABLES.timeLog);
-
-export default container;

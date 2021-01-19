@@ -1,11 +1,11 @@
 import { injectable } from "inversify";
 import { Socket } from "socket.io";
 
-import BaseRoute from "~/src/server/route/base.route";
-import SyncService from "~/src/server/service/sync.service";
+import { BaseRoute } from "~/src/server/route/base.route";
+import { SyncService } from "~/src/server/service/sync.service";
 
 @injectable()
-export default class SyncRoute extends BaseRoute {
+export class SyncRoute extends BaseRoute {
   constructor(protected syncService: SyncService) {
     super();
   }

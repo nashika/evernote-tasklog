@@ -1,6 +1,6 @@
-import BaseEntity, { EntityParams } from "./base.entity";
+import { BaseEntity, EntityParams } from "./base.entity";
 
-export default class ProfitLogEntity extends BaseEntity {
+export class ProfitLogEntity extends BaseEntity {
   FIELD_NAMES!:
     | "id"
     | "noteGuid"

@@ -9,7 +9,7 @@
 import _ from "lodash";
 import { Component, Prop } from "nuxt-property-decorator";
 
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 
 @Component
 export default class AttendanceTimePickerComponent extends BaseComponent {

@@ -3,38 +3,38 @@ import _ from "lodash";
 import { injectable } from "inversify";
 import { Connection, createConnection, EntitySchema } from "typeorm";
 
-import BaseServerService from "./base-server.service";
-import container from "~/src/common/inversify.config";
-import NotebookEntity from "~/src/common/entity/notebook.entity";
-import TagEntity from "~/src/common/entity/tag.entity";
-import BaseEntity, { TEntityClass } from "~/src/common/entity/base.entity";
+import { BaseServerService } from "./base-server.service";
+import { container } from "~/src/common/inversify.config";
+import { NotebookEntity } from "~/src/common/entity/notebook.entity";
+import { TagEntity } from "~/src/common/entity/tag.entity";
+import { BaseEntity, TEntityClass } from "~/src/common/entity/base.entity";
 import { SYMBOL_TYPES } from "~/src/common/symbols";
-import BaseTable from "~/src/server/table/base.table";
-import ConstraintResultTable from "~/src/server/table/constraint-result.table";
-import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
-import LinkedNotebookTable from "~/src/server/table/linked-notebook.table";
-import LinkedNotebookEntity from "~/src/common/entity/linked-notebook.entity";
-import NoteTable from "~/src/server/table/note.table";
-import NoteEntity from "~/src/common/entity/note.entity";
-import NotebookTable from "~/src/server/table/notebook.table";
-import OptionTable from "~/src/server/table/option.table";
-import OptionEntity from "~/src/common/entity/option.entity";
-import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
-import ProfitLogTable from "~/src/server/table/profit-log.table";
-import SavedSearchTable from "~/src/server/table/saved-search.table";
-import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
-import TagTable from "~/src/server/table/tag.table";
-import TimeLogTable from "~/src/server/table/time-log.table";
-import TimeLogEntity from "~/src/common/entity/time-log.entity";
-import AttendanceTable from "~/src/server/table/attendance.table";
-import AttendanceEntity from "~/src/common/entity/attendance.entity";
-import SessionEntity from "~/src/common/entity/session.entity";
-import SessionTable from "~/src/server/table/session.table";
-import logger from "~/src/server/logger";
+import { BaseTable } from "~/src/server/table/base.table";
+import { ConstraintResultTable } from "~/src/server/table/constraint-result.table";
+import { ConstraintResultEntity } from "~/src/common/entity/constraint-result.entity";
+import { LinkedNotebookTable } from "~/src/server/table/linked-notebook.table";
+import { LinkedNotebookEntity } from "~/src/common/entity/linked-notebook.entity";
+import { NoteTable } from "~/src/server/table/note.table";
+import { NoteEntity } from "~/src/common/entity/note.entity";
+import { NotebookTable } from "~/src/server/table/notebook.table";
+import { OptionTable } from "~/src/server/table/option.table";
+import { OptionEntity } from "~/src/common/entity/option.entity";
+import { ProfitLogEntity } from "~/src/common/entity/profit-log.entity";
+import { ProfitLogTable } from "~/src/server/table/profit-log.table";
+import { SavedSearchTable } from "~/src/server/table/saved-search.table";
+import { SavedSearchEntity } from "~/src/common/entity/saved-search.entity";
+import { TagTable } from "~/src/server/table/tag.table";
+import { TimeLogTable } from "~/src/server/table/time-log.table";
+import { TimeLogEntity } from "~/src/common/entity/time-log.entity";
+import { AttendanceTable } from "~/src/server/table/attendance.table";
+import { AttendanceEntity } from "~/src/common/entity/attendance.entity";
+import { SessionEntity } from "~/src/common/entity/session.entity";
+import { SessionTable } from "~/src/server/table/session.table";
+import { logger } from "~/src/server/logger";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @injectable()
-export default class TableService extends BaseServerService {
+export class TableService extends BaseServerService {
   caches: {
     tags: { [guid: string]: TagEntity };
     notebooks: { [guid: string]: NotebookEntity };

@@ -1,11 +1,11 @@
 import { injectable } from "inversify";
 
-import BaseTable from "~/src/server/table/base.table";
-import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
-import NoteEntity from "~/src/common/entity/note.entity";
+import { BaseTable } from "~/src/server/table/base.table";
+import { ProfitLogEntity } from "~/src/common/entity/profit-log.entity";
+import { NoteEntity } from "~/src/common/entity/note.entity";
 
 @injectable()
-export default class ProfitLogTable extends BaseTable<ProfitLogEntity> {
+export class ProfitLogTable extends BaseTable<ProfitLogEntity> {
   async parse(note: NoteEntity, lines: string[]): Promise<void> {
     const profitLogs: ProfitLogEntity[] = [];
     for (const line of lines) {

@@ -7,8 +7,8 @@ import {
 import Evernote from "evernote";
 import _ from "lodash";
 
-import NotebookEntity from "~/src/common/entity/notebook.entity";
-import TagEntity from "~/src/common/entity/tag.entity";
+import { NotebookEntity } from "~/src/common/entity/notebook.entity";
+import { TagEntity } from "~/src/common/entity/tag.entity";
 import { myService } from "~/src/client/service";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
@@ -17,7 +17,7 @@ import { appConfigLoader } from "~/src/common/util/app-config-loader";
   stateFactory: true,
   namespaced: true,
 })
-export default class DatastoreModule extends VuexModule {
+export class DatastoreModule extends VuexModule {
   user: Evernote.Types.User | null = null;
   currentPersonId: number = 0;
   notebooks: { [guid: string]: NotebookEntity } = {};

@@ -7,7 +7,7 @@ import { myStore } from "~/src/client/store/index";
   stateFactory: true,
   namespaced: true,
 })
-export default class ProgressModule extends VuexModule {
+export class ProgressModule extends VuexModule {
   isActive: boolean = false;
   allCount: number = 0;
   completeCount: number = 0;

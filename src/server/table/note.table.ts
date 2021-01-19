@@ -1,17 +1,18 @@
 import { injectable } from "inversify";
 import _ from "lodash";
 
-import TableService from "~/src/server/service/table.service";
-import NoteEntity, {
+import { TableService } from "~/src/server/service/table.service";
+import {
   IFindManyNoteEntityOptions,
+  NoteEntity,
 } from "~/src/common/entity/note.entity";
-import BaseEvernoteTable from "~/src/server/table/base-evernote.table";
-import logger from "~/src/server/logger";
-import EvernoteClientService from "~/src/server/service/evernote-client.service";
+import { BaseEvernoteTable } from "~/src/server/table/base-evernote.table";
+import { logger } from "~/src/server/logger";
+import { EvernoteClientService } from "~/src/server/service/evernote-client.service";
 import { FindEntityWhereOptions } from "~/src/common/entity/base.entity";
 
 @injectable()
-export default class NoteTable extends BaseEvernoteTable<NoteEntity> {
+export class NoteTable extends BaseEvernoteTable<NoteEntity> {
   constructor(
     protected tableService: TableService,
     protected evernoteClientService: EvernoteClientService

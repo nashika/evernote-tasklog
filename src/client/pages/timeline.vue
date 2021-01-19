@@ -15,12 +15,12 @@ import {
   TimelineHiddenDateOption,
 } from "vis-timeline";
 
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
-import NoteEntity from "~/src/common/entity/note.entity";
+import { NoteEntity } from "~/src/common/entity/note.entity";
 import { abbreviateFilter } from "~/src/client/filter/abbreviate.filter";
-import TimeLogEntity from "~/src/common/entity/time-log.entity";
+import { TimeLogEntity } from "~/src/common/entity/time-log.entity";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 import { exclusiveExecSingle } from "~/src/common/util/exclusive-exec";
 

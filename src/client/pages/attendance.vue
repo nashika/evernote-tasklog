@@ -43,8 +43,8 @@ import moment from "moment";
 import _ from "lodash";
 import Vue from "vue";
 
-import BaseComponent from "../components/base.component";
-import AttendanceEntity from "../../common/entity/attendance.entity";
+import { BaseComponent } from "../components/base.component";
+import { AttendanceEntity } from "../../common/entity/attendance.entity";
 import { assertIsDefined } from "~/src/common/util/assert";
 import AttendanceTimePickerComponent from "~/src/client/components/attendance-time-picker.component.vue";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";

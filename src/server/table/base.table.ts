@@ -20,7 +20,7 @@ import { EntitySchemaOptions } from "typeorm/entity-schema/EntitySchemaOptions";
 import { injectable } from "inversify";
 
 import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
-import BaseEntity, {
+import {
   TEntityClass,
   EntityColumnType,
   FindEntityWhereColumnOperators,
@@ -28,13 +28,14 @@ import BaseEntity, {
   FindManyEntityOptions,
   FindOneEntityOptions,
   EntityToInterface,
+  BaseEntity,
 } from "~/src/common/entity/base.entity";
-import container from "~/src/common/inversify.config";
-import logger from "~/src/server/logger";
+import { container } from "~/src/common/inversify.config";
+import { logger } from "~/src/server/logger";
 import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
-export default abstract class BaseTable<T extends BaseEntity> {
+export abstract class BaseTable<T extends BaseEntity> {
   readonly EntityClass: TEntityClass<T>;
 
   readonly schema: EntitySchema<EntityToInterface<T>>;

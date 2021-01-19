@@ -51,8 +51,8 @@
 import { Component } from "nuxt-property-decorator";
 import _ from "lodash";
 
-import BaseComponent from "~/src/client/components/base.component";
-import NoteEntity from "~/src/common/entity/note.entity";
+import { BaseComponent } from "~/src/client/components/base.component";
+import { NoteEntity } from "~/src/common/entity/note.entity";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 import {
   INoteLogsServiceNoteFilterParams,

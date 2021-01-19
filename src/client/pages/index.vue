@@ -2,7 +2,7 @@
 import { Component } from "nuxt-property-decorator";
 import { NuxtContext } from "~/src/types/nuxt";
 
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 
 @Component
 export default class extends BaseComponent {

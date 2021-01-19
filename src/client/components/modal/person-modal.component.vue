@@ -13,7 +13,7 @@ b-modal(id="person-modal", title="Person", ok-only, @shown="shown()", @hidden="h
 <script lang="ts">
 import { Component } from "nuxt-property-decorator";
 
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @Component({})

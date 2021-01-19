@@ -1,6 +1,7 @@
 import { NuxtConfig } from "@nuxt/types";
 import webpack from "webpack";
-import icons from "./src/client/icons";
+
+import { icons } from "./src/client/icons";
 
 const webpackConfig: webpack.Configuration = {
   /*

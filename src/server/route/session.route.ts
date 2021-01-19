@@ -1,11 +1,11 @@
 import { injectable } from "inversify";
 import SocketIO from "socket.io";
 
-import BaseRoute from "~/src/server/route/base.route";
-import SessionService from "~/src/server/service/session.service";
+import { BaseRoute } from "~/src/server/route/base.route";
+import { SessionService } from "~/src/server/service/session.service";
 
 @injectable()
-export default class SessionRoute extends BaseRoute {
+export class SessionRoute extends BaseRoute {
   constructor(protected sessionService: SessionService) {
     super();
   }

@@ -9,7 +9,7 @@ b-modal(id="progress-modal", :visible="$myStore.progress.isActive", title="Loadi
 <script lang="ts">
 import { Component } from "nuxt-property-decorator";
 
-import BaseComponent from "~/src/client/components/base.component";
+import { BaseComponent } from "~/src/client/components/base.component";
 
 @Component({})
 export default class ProgressModalComponent extends BaseComponent {}

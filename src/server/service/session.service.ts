@@ -5,17 +5,17 @@ import Express from "express";
 import ExpressSession from "express-session";
 import { TypeormStore } from "connect-typeorm";
 
-import BaseServerService from "./base-server.service";
-import logger from "~/src/server/logger";
-import TableService from "~/src/server/service/table.service";
-import SocketIoService from "~/src/server/service/socket-io.service";
+import { BaseServerService } from "./base-server.service";
+import { logger } from "~/src/server/logger";
+import { TableService } from "~/src/server/service/table.service";
+import { SocketIoService } from "~/src/server/service/socket-io.service";
 
 export interface ISession {
   user: Evernote.Types.User;
 }
 
 @injectable()
-export default class SessionService extends BaseServerService {
+export class SessionService extends BaseServerService {
   constructor(
     protected tableService: TableService,
     protected socketIoService: SocketIoService

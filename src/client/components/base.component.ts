@@ -5,7 +5,7 @@ import numeral from "numeral";
 
 import { NuxtContext } from "~/src/types/nuxt";
 
-export default abstract class BaseComponent extends Vue {
+export abstract class BaseComponent extends Vue {
   lodash = _;
   moment = moment;
   numeral = numeral;

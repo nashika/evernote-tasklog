@@ -2,21 +2,21 @@ import { injectable } from "inversify";
 import Evernote from "evernote";
 import _ from "lodash";
 
-import LinkedNotebookEntity from "~/src/common/entity/linked-notebook.entity";
-import TagEntity from "~/src/common/entity/tag.entity";
-import NoteEntity from "~/src/common/entity/note.entity";
-import NotebookEntity from "~/src/common/entity/notebook.entity";
-import SavedSearchEntity from "~/src/common/entity/saved-search.entity";
-import BaseServerService from "~/src/server/service/base-server.service";
-import TableService from "~/src/server/service/table.service";
-import EvernoteClientService from "~/src/server/service/evernote-client.service";
-import ConstraintService from "~/src/server/service/constraint.service";
-import SocketIoService from "~/src/server/service/socket-io.service";
-import logger from "~/src/server/logger";
+import { LinkedNotebookEntity } from "~/src/common/entity/linked-notebook.entity";
+import { TagEntity } from "~/src/common/entity/tag.entity";
+import { NoteEntity } from "~/src/common/entity/note.entity";
+import { NotebookEntity } from "~/src/common/entity/notebook.entity";
+import { SavedSearchEntity } from "~/src/common/entity/saved-search.entity";
+import { BaseServerService } from "~/src/server/service/base-server.service";
+import { TableService } from "~/src/server/service/table.service";
+import { EvernoteClientService } from "~/src/server/service/evernote-client.service";
+import { ConstraintService } from "~/src/server/service/constraint.service";
+import { SocketIoService } from "~/src/server/service/socket-io.service";
+import { logger } from "~/src/server/logger";
 import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
-export default class SyncService extends BaseServerService {
+export class SyncService extends BaseServerService {
   private static startInterval = 30 * 1000;
   private static increaseInterval = 1.25;
   private static maxInterval = 5 * 60 * 1000;
