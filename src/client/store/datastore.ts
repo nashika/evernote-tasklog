@@ -17,7 +17,7 @@ import { appConfigLoader } from "~/src/common/util/app-config-loader";
   stateFactory: true,
   namespaced: true,
 })
-export class DatastoreModule extends VuexModule {
+export default class DatastoreModule extends VuexModule {
   user: Evernote.Types.User | null = null;
   currentPersonId: number = 0;
   notebooks: { [guid: string]: NotebookEntity } = {};

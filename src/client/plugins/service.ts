@@ -2,9 +2,10 @@ import { Plugin } from "@nuxt/types";
 
 import { myService } from "~/src/client/service";
 
-export const servicePlugin: Plugin = (_context, inject) => {
+const servicePlugin: Plugin = (_context, inject) => {
   inject("myService", myService);
 };
+export default servicePlugin;
 
 declare module "vue/types/vue" {
   interface Vue {

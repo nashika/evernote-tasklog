@@ -1,8 +1,8 @@
 import { Store } from "vuex";
 import { getModule } from "vuex-module-decorators";
 
-import { DatastoreModule } from "~/src/client/store/datastore";
-import { ProgressModule } from "~/src/client/store/progress";
+import DatastoreModule from "~/src/client/store/datastore";
+import ProgressModule from "~/src/client/store/progress";
 
 interface IMyStore {
   datastore: DatastoreModule;
