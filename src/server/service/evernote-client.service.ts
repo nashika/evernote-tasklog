@@ -2,10 +2,10 @@ import { injectable } from "inversify";
 import Evernote from "evernote";
 
 import NoteEntity from "~/src/common/entity/note.entity";
-import configLoader from "~/src/common/util/config-loader";
 import BaseServerService from "~/src/server/service/base-server.service";
 import { assertIsDefined } from "~/src/common/util/assert";
 import logger from "~/src/server/logger";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @injectable()
 export default class EvernoteClientService extends BaseServerService {
@@ -21,8 +21,8 @@ export default class EvernoteClientService extends BaseServerService {
   initialize(): void {
     logger.info("Evernoteクライアントサービスの初期化を開始しました.");
     this._client = new Evernote.Client({
-      token: configLoader.app.token,
-      sandbox: configLoader.app.sandbox,
+      token: appConfigLoader.app.token,
+      sandbox: appConfigLoader.app.sandbox,
     });
     logger.info("Evernoteクライアントサービスの初期化を完了しました.");
   }

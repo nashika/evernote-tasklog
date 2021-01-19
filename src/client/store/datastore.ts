@@ -9,8 +9,8 @@ import _ from "lodash";
 
 import NotebookEntity from "~/src/common/entity/notebook.entity";
 import TagEntity from "~/src/common/entity/tag.entity";
-import configLoader from "~/src/common/util/config-loader";
 import { myService } from "~/src/client/service";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @Module({
   name: "datastore",
@@ -26,7 +26,7 @@ export default class DatastoreModule extends VuexModule {
 
   get currentPerson(): AppConfig.IPersonConfig | null {
     return (
-      _.find(configLoader.app.persons, { id: this.currentPersonId }) ?? null
+      _.find(appConfigLoader.app.persons, { id: this.currentPersonId }) ?? null
     );
   }
 

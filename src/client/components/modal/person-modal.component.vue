@@ -14,11 +14,11 @@ b-modal(id="person-modal", title="Person", ok-only, @shown="shown()", @hidden="h
 import { Component } from "nuxt-property-decorator";
 
 import BaseComponent from "~/src/client/components/base.component";
-import configLoader from "~/src/common/util/config-loader";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @Component({})
 export default class PersonModalComponent extends BaseComponent {
-  persons: AppConfig.IPersonConfig[] = configLoader.app.persons;
+  persons: AppConfig.IPersonConfig[] = appConfigLoader.app.persons;
   currentPersonId: number = 0;
   changed: boolean = false;
 

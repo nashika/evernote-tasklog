@@ -12,8 +12,8 @@ import config from "../../nuxt.config";
 import "~/src/server/inversify.config";
 import MainService from "~/src/server/service/main.service";
 import logger from "~/src/server/logger";
-import configLoader from "~/src/common/util/config-loader";
 import container from "~/src/common/inversify.config";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 const app = express();
 
@@ -37,7 +37,7 @@ async function start() {
     // Listen the server
     logger.info(`Webサーバを起動します.`);
     let server: http.Server;
-    if (configLoader.app.https) {
+    if (appConfigLoader.app.https) {
       const httpsServer = https.createServer(
         {
           key: fs.readFileSync(path.join(__dirname, "ssl/private_key.pem")),
@@ -60,7 +60,7 @@ async function start() {
 
     logger.info(
       `Webサーバの起動を完了しました. ${
-        configLoader.app.https ? "https" : "http"
+        appConfigLoader.app.https ? "https" : "http"
       }://${host}:${port}`
     );
   } catch (err) {

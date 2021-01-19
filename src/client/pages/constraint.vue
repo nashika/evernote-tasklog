@@ -14,8 +14,8 @@ import _ from "lodash";
 import BaseComponent from "~/src/client/components/base.component";
 import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
 import NoteEntity from "~/src/common/entity/note.entity";
-import configLoader from "~/src/common/util/config-loader";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 interface IConstraintResultRecord {
   noteTitle: string;
@@ -80,7 +80,7 @@ export default class ConstraintModeComponent extends BaseComponent {
           noteGuid: constraintResult.noteGuid,
           constraintId: constraintResult.constraintId,
           constraintLabel:
-            _.find(configLoader.app.constraints, {
+            _.find(appConfigLoader.app.constraints, {
               id: constraintResult.constraintId,
             })?.label ?? "制約名未設定",
         });

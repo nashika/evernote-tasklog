@@ -6,7 +6,7 @@ import TableService from "~/src/server/service/table.service";
 import logger from "~/src/server/logger";
 import NoteEntity from "~/src/common/entity/note.entity";
 import ConstraintResultEntity from "~/src/common/entity/constraint-result.entity";
-import configLoader from "~/src/common/util/config-loader";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @injectable()
 export default class ConstraintService extends BaseServerService {
@@ -46,7 +46,7 @@ export default class ConstraintService extends BaseServerService {
 
   private async check(note: NoteEntity): Promise<void> {
     if (note.deleted) return;
-    for (const constraint of configLoader.app.constraints) {
+    for (const constraint of appConfigLoader.app.constraints) {
       if (!this.eval(note, constraint.query)) continue;
       const constraintResult = new ConstraintResultEntity();
       constraintResult.noteGuid = note.guid;

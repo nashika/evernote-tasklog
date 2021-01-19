@@ -2,7 +2,7 @@ import * as _ from "lodash";
 
 import appConfig from "~/config/app.config";
 
-class ConfigLoader {
+class AppConfigLoader {
   private readonly caches: { [configName: string]: any };
 
   constructor() {
@@ -36,5 +36,4 @@ class ConfigLoader {
   }
 }
 
-const configLoader = new ConfigLoader();
-export default configLoader;
+export const appConfigLoader = new AppConfigLoader();

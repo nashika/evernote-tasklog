@@ -3,7 +3,7 @@ import { injectable } from "inversify";
 import BaseTable from "~/src/server/table/base.table";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import NoteEntity from "~/src/common/entity/note.entity";
-import configLoader from "~/src/common/util/config-loader";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @injectable()
 export default class TimeLogTable extends BaseTable<TimeLogEntity> {
@@ -32,7 +32,7 @@ export default class TimeLogTable extends BaseTable<TimeLogEntity> {
         timeLog.date = new Date(dateText + " " + timeText).getTime();
         if (timeText) timeLog.allDay = false;
         // parse person
-        for (const person of configLoader.app.persons) {
+        for (const person of appConfigLoader.app.persons) {
           if (attributesText.includes(person.name))
             timeLog.personId = person.id;
         }

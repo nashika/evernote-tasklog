@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as log4js from "log4js";
 
-import configLoader from "~/src/common/util/config-loader";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 log4js.configure(<any>{
   appenders: {
@@ -28,11 +28,11 @@ log4js.configure(<any>{
   categories: {
     default: {
       appenders: ["system", "out"],
-      level: configLoader.app.logLevel,
+      level: appConfigLoader.app.logLevel,
     },
     access: {
       appenders: ["access", "out"],
-      level: configLoader.app.logLevel,
+      level: appConfigLoader.app.logLevel,
     },
   },
 });

@@ -17,7 +17,7 @@ import {
 
 import BaseComponent from "~/src/client/components/base.component";
 import { INoteLogsServiceNoteFilterParams } from "~/src/client/service/note-logs.service";
-import configLoader from "~/src/common/util/config-loader";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 import NoteEntity from "~/src/common/entity/note.entity";
 import { abbreviateFilter } from "~/src/client/filter/abbreviate.filter";
 import TimeLogEntity from "~/src/common/entity/time-log.entity";
@@ -62,7 +62,7 @@ export default class TimelineModeComponent extends BaseComponent {
         this.timelineGroups = [];
         this.timelineItems = [];
         const sortedPersons: AppConfig.IPersonConfig[] = _.sortBy(
-          configLoader.app.persons,
+          appConfigLoader.app.persons,
           (person) =>
             this.$myStore.datastore.currentPersonId === person.id ? 1 : 2
         );
@@ -123,19 +123,19 @@ export default class TimelineModeComponent extends BaseComponent {
         // 稼働時間以外を隠す設定
         let hiddenDates: TimelineHiddenDateOption[];
         if (
-          configLoader.app.workingTimeStart &&
-          configLoader.app.workingTimeEnd
+          appConfigLoader.app.workingTimeStart &&
+          appConfigLoader.app.workingTimeEnd
         )
           hiddenDates = [
             {
               start: moment()
                 .subtract(1, "days")
                 .startOf("day")
-                .hour(configLoader.app.workingTimeEnd)
+                .hour(appConfigLoader.app.workingTimeEnd)
                 .toDate(),
               end: moment()
                 .startOf("day")
-                .hour(configLoader.app.workingTimeStart)
+                .hour(appConfigLoader.app.workingTimeStart)
                 .toDate(),
               repeat: "daily",
             },

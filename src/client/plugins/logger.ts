@@ -1,10 +1,11 @@
 import { Plugin } from "@nuxt/types";
 import logLevel from "loglevel";
 
-import configLoader from "~/src/common/util/config-loader";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 export const logger = logLevel.getLogger("evernote-tasklog");
-logger.setLevel(configLoader.app.logLevel);
+
+logger.setLevel(appConfigLoader.app.logLevel);
 
 const loggerPlugin: Plugin = (_context, inject) => {
   inject("logger", logger);

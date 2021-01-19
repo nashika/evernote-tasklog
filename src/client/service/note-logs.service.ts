@@ -9,13 +9,13 @@ import TimeLogEntity from "~/src/common/entity/time-log.entity";
 import ProfitLogEntity from "~/src/common/entity/profit-log.entity";
 import BaseClientService from "~/src/client/service/base-client.service";
 import RequestService from "~/src/client/service/request.service";
-import configLoader from "~/src/common/util/config-loader";
 import {
   FindManyEntityOptions,
   FindEntityWhereOptions,
 } from "~/src/common/entity/base.entity";
 import { assertIsDefined } from "~/src/common/util/assert";
 import { myStore } from "~/src/client/store";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 export interface INoteLogsServiceNoteFilterParams {
   start?: moment.Moment;
@@ -135,7 +135,7 @@ export default class NoteLogsService extends BaseClientService {
     myStore.progress.next("Checking notes count.");
     const options = this.makeNoteFindOptions(params);
     const count = await this.requestService.count(NoteEntity, options);
-    if (count > configLoader.app.warningNoteCount)
+    if (count > appConfigLoader.app.warningNoteCount)
       if (
         !window.confirm(
           `Current query find ${count} notes. It is too many. Continue anyway?`

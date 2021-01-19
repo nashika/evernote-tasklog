@@ -52,7 +52,6 @@ import { Component } from "nuxt-property-decorator";
 import _ from "lodash";
 
 import BaseComponent from "~/src/client/components/base.component";
-import configLoader from "~/src/common/util/config-loader";
 import NoteEntity from "~/src/common/entity/note.entity";
 import FloatingActionButtonComponent from "~/src/client/components/floating-action-button.vue";
 import {
@@ -61,6 +60,7 @@ import {
   TProfitLogsResult,
   TTimeLogsResult,
 } from "~/src/client/service/note-logs.service";
+import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 interface INoteRecord {
   guid: string;
@@ -135,7 +135,7 @@ export default class NotesComponent extends BaseComponent {
     await super.mounted();
     this.existPersons = [];
     this.filterParams = this.$myService.noteLogs.makeDefaultNoteFilterParams(
-      configLoader.app.defaultFilterParams.notes
+      appConfigLoader.app.defaultFilterParams.notes
     );
     await this.reload();
   }
@@ -174,7 +174,7 @@ export default class NotesComponent extends BaseComponent {
         title: note.title,
         notebookName: this.$myStore.datastore.notebooks[note.notebookGuid].name,
         updated: note.updated,
-        persons: _(configLoader.app.persons)
+        persons: _(appConfigLoader.app.persons)
           .keyBy((person) => "$" + person.id)
           .mapValues((_person) => ({ spentTime: 0, profit: 0 }))
           .value(),
@@ -187,7 +187,7 @@ export default class NotesComponent extends BaseComponent {
       title: "合計",
       notebookName: "",
       updated: 0,
-      persons: _(configLoader.app.persons)
+      persons: _(appConfigLoader.app.persons)
         .keyBy((person) => "$" + person.id)
         .mapValues((_person) => ({ spentTime: 0, profit: 0 }))
         .value(),
@@ -214,7 +214,7 @@ export default class NotesComponent extends BaseComponent {
         if (spentTime > 0) personsHash[timeLog.personId] = true;
       }
     }
-    this.existPersons = _.filter(configLoader.app.persons, (person) =>
+    this.existPersons = _.filter(appConfigLoader.app.persons, (person) =>
       _.has(personsHash, person.id)
     );
   }
