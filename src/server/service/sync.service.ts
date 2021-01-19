@@ -12,7 +12,7 @@ import { TableService } from "~/src/server/service/table.service";
 import { EvernoteClientService } from "~/src/server/service/evernote-client.service";
 import { ConstraintService } from "~/src/server/service/constraint.service";
 import { SocketIoService } from "~/src/server/service/socket-io.service";
-import { logger } from "~/src/server/logger";
+import { logger } from "~/src/common/logger";
 import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()

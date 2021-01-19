@@ -2,7 +2,7 @@ import _ from "lodash";
 import SocketIO from "socket.io";
 import { injectable } from "inversify";
 
-import { logger } from "../logger";
+import { logger } from "~/src/common/logger";
 
 export abstract class CodeError extends Error {
   code: number = 0;

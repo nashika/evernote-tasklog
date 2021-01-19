@@ -2,6 +2,10 @@ import { SYMBOL_TABLES, SYMBOL_TYPES } from "~/src/common/symbols";
 
 import { BaseEntity } from "~/src/common/entity/base.entity";
 
+import { container } from "~/src/common/inversify.config";
+import { serverLogger } from "~/src/server/logger";
+import { ILogger } from "~/src/common/logger";
+
 import { ConstraintService } from "~/src/server/service/constraint.service";
 import { EvernoteClientService } from "~/src/server/service/evernote-client.service";
 import { MainService } from "~/src/server/service/main.service";
@@ -35,7 +39,8 @@ import { SessionTable } from "~/src/server/table/session.table";
 import { TagTable } from "~/src/server/table/tag.table";
 import { TimeLogTable } from "~/src/server/table/time-log.table";
 
-import { container } from "~/src/common/inversify.config";
+// Logger
+container.bind<ILogger>(SYMBOL_TYPES.Logger).toConstantValue(serverLogger);
 
 // Service系
 container

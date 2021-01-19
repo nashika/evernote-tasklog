@@ -88,6 +88,7 @@
     "jest": "^26.0.0",
     "keycharm": "^0.4.0",
     "lint-staged": "^10.0.0",
+    "loglevel": "^1.7.1",
     "node-sass": "^5.0.0",
     "nodemon": "^2.0.0",
     "npm-check-updates": "^10.2.5",

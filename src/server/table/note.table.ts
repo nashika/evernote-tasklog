@@ -7,7 +7,7 @@ import {
   NoteEntity,
 } from "~/src/common/entity/note.entity";
 import { BaseEvernoteTable } from "~/src/server/table/base-evernote.table";
-import { logger } from "~/src/server/logger";
+import { logger } from "~/src/common/logger";
 import { EvernoteClientService } from "~/src/server/service/evernote-client.service";
 import { FindEntityWhereOptions } from "~/src/common/entity/base.entity";
 

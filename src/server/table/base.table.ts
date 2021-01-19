@@ -31,8 +31,8 @@ import {
   BaseEntity,
 } from "~/src/common/entity/base.entity";
 import { container } from "~/src/common/inversify.config";
-import { logger } from "~/src/server/logger";
 import { assertIsDefined } from "~/src/common/util/assert";
+import { logger } from "~/src/common/logger";
 
 @injectable()
 export abstract class BaseTable<T extends BaseEntity> {

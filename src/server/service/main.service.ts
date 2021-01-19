@@ -3,10 +3,10 @@ import Express from "express";
 
 import { injectable } from "inversify";
 
-import { logger } from "../logger";
 import { TableService } from "./table.service";
 import { BaseServerService } from "./base-server.service";
 import { SocketIoService } from "./socket-io.service";
+import { logger } from "~/src/common/logger";
 import { SyncService } from "~/src/server/service/sync.service";
 import { EvernoteClientService } from "~/src/server/service/evernote-client.service";
 import { SessionService } from "~/src/server/service/session.service";

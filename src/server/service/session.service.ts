@@ -6,7 +6,7 @@ import ExpressSession from "express-session";
 import { TypeormStore } from "connect-typeorm";
 
 import { BaseServerService } from "./base-server.service";
-import { logger } from "~/src/server/logger";
+import { logger } from "~/src/common/logger";
 import { TableService } from "~/src/server/service/table.service";
 import { SocketIoService } from "~/src/server/service/socket-io.service";
 

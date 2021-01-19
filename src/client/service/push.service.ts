@@ -3,7 +3,7 @@ import Push from "push.js";
 import { injectable } from "inversify";
 import { BaseClientService } from "./base-client.service";
 import { SocketIoClientService } from "./socket-io-client.service";
-import { logger } from "~/src/client/plugins/logger";
+import { logger } from "~/src/common/logger";
 import DefaultLayoutComponent from "~/src/client/layouts/default.vue";
 import { RequestService } from "~/src/client/service/request.service";
 import { NoteEntity } from "~/src/common/entity/note.entity";

@@ -1,5 +1,6 @@
 export const SYMBOL_TYPES = {
   Entity: Symbol.for("Entity"),
+  Logger: Symbol.for("Logger"),
   Route: Symbol.for("Route"),
   Service: Symbol.for("Service"),
   Table: Symbol.for("Table"),

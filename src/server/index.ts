@@ -11,8 +11,8 @@ import { Nuxt, Builder } from "nuxt";
 import config from "../../nuxt.config";
 import "~/src/server/inversify.config";
 import { MainService } from "~/src/server/service/main.service";
-import { logger } from "~/src/server/logger";
 import { container } from "~/src/common/inversify.config";
+import { logger } from "~/src/common/logger";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 const app = express();

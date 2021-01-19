@@ -30,7 +30,7 @@ import { AttendanceTable } from "~/src/server/table/attendance.table";
 import { AttendanceEntity } from "~/src/common/entity/attendance.entity";
 import { SessionEntity } from "~/src/common/entity/session.entity";
 import { SessionTable } from "~/src/server/table/session.table";
-import { logger } from "~/src/server/logger";
+import { logger } from "~/src/common/logger";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @injectable()

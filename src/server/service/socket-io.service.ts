@@ -2,8 +2,8 @@ import { Server as HttpServer } from "http";
 import SocketIo from "socket.io";
 import { injectable } from "inversify";
 
-import { logger } from "../logger";
 import { BaseServerService } from "./base-server.service";
+import { logger } from "~/src/common/logger";
 import { container } from "~/src/common/inversify.config";
 import { BaseRoute } from "~/src/server/route/base.route";
 import { SYMBOL_TYPES } from "~/src/common/symbols";

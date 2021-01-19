@@ -1,7 +1,7 @@
 import SocketIoClient from "socket.io-client";
 
 import { injectable } from "inversify";
-import { logger } from "../plugins/logger";
+import { logger } from "~/src/common/logger";
 
 @injectable()
 export class SocketIoClientService {

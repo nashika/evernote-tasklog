@@ -4,7 +4,7 @@ import Evernote from "evernote";
 import { NoteEntity } from "~/src/common/entity/note.entity";
 import { BaseServerService } from "~/src/server/service/base-server.service";
 import { assertIsDefined } from "~/src/common/util/assert";
-import { logger } from "~/src/server/logger";
+import { logger } from "~/src/common/logger";
 import { appConfigLoader } from "~/src/common/util/app-config-loader";
 
 @injectable()
