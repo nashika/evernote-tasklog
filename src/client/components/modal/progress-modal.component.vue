@@ -12,5 +12,13 @@ import { Component } from "nuxt-property-decorator";
 import { BaseComponent } from "~/src/client/components/base.component";
 
 @Component({})
-export default class ProgressModalComponent extends BaseComponent {}
+export default class ProgressModalComponent extends BaseComponent {
+  async mounted(): Promise<void> {
+    // バックグラウンドで2回表示されると消えない問題を無理矢理対応
+    setInterval(() => {
+      if (!this.$myStore.progress.isActive)
+        this.$bvModal.hide("progress-modal");
+    }, 1000);
+  }
+}
 </script>

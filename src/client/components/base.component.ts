@@ -2,6 +2,7 @@ import { Vue } from "nuxt-property-decorator";
 import _ from "lodash";
 import moment from "moment";
 import numeral from "numeral";
+import "bootstrap-vue";
 
 import { NuxtContext } from "~/src/types/nuxt";
 
