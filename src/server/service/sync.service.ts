@@ -17,11 +17,11 @@ import { assertIsDefined } from "~/src/common/util/assert";
 
 @injectable()
 export class SyncService extends BaseServerService {
-  private static startInterval = 30 * 1000;
-  private static increaseInterval = 1.25;
+  private static startInterval = 10 * 1000;
+  private static increaseInterval = 1.5;
   private static maxInterval = 5 * 60 * 1000;
 
-  public updateCount: number = 0;
+  updateCount: number = 0;
 
   private nextLockPromise: Promise<void> = Promise.resolve();
   private lockResolves: Array<() => void>;
