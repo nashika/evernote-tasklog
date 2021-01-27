@@ -30,4 +30,5 @@ module.exports = {
     "no-console": "off",
     "no-debugger": "off",
   },
+  ignorePatterns: ["vue-shim.d.ts"],
 };
