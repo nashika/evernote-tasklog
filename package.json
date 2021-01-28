@@ -9,13 +9,10 @@
     "url": "git+https://github.com/nashika/evernote-tasklog.git"
   },
   "scripts": {
-    "dev": "nuxt-ts",
+    "dev": "ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/index.ts",
+    "start": "cross-env NODE_ENV=production ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/index.ts",
     "build": "nuxt-ts build",
     "build-analyze": "nuxt-ts build --analyze",
-    "start": "nuxt-ts start",
-    "server": "ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/index.ts",
-    "server-production": "cross-env NODE_ENV=production ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/index.ts",
-    "generate": "nuxt-ts generate",
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
     "script:check-constraint": "ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/script/check-constraint.ts",
     "script:database-sync": "ts-node --compiler-options {\\\"module\\\":\\\"commonjs\\\"} -r tsconfig-paths/register --files ./src/server/script/database-sync.ts",
