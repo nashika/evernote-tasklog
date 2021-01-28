@@ -27,7 +27,7 @@ export class Code500Error extends CodeError {
 export abstract class BaseRoute {
   abstract get basePath(): string;
 
-  abstract async connect(_socket: SocketIO.Socket): Promise<void>;
+  abstract connect(_socket: SocketIO.Socket): Promise<void>;
 
   protected on(
     socket: SocketIO.Socket,
